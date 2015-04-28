@@ -9,7 +9,11 @@
 """
 
 # Module imports
-import os, re, argparse, ConfigParser, logging
+import os
+import re
+import argparse
+import ConfigParser
+import logging
 from multiprocessing.dummy import Pool as ThreadPool
 from argparse import RawTextHelpFormatter
 from lockfile import LockFile, LockTimeout
@@ -52,7 +56,7 @@ class _SyndaProcessingContext(object):
         #_init_logging(args.logdir) # Logger initiates by synda worker
         # "merge" product is mandatory through the configuration file used by synda
         # synda submit non-latest path to translate
-        self.directory = _check_directory(re.sub('v[0-9]*$','latest', os.path.normpath(full_path_variable)))
+        self.directory = _check_directory(re.sub('v[0-9]*$', 'latest', os.path.normpath(full_path_variable)))
         self.outdir = '/home/esg-user/mapfiles/pending/'
         self.verbose = True
         self.keep = True
@@ -68,64 +72,75 @@ class _Exception(Exception):
     """Exception type to log encountered error."""
     def __init__(self, msg=''):
         self.msg = msg
+
     def __str__(self):
         print
         _log('error', self.msg)
 
 
-
 def _get_args():
     """Returns parsed command line arguments."""
     parser = argparse.ArgumentParser(
-                        description="""Build ESG-F mapfiles upon local ESG-F datanode bypassing esgscan_directory\ncommand-line.""",
-                        formatter_class = RawTextHelpFormatter,
-                        add_help=False,
-                        epilog = """Developed by Levavasseur, G. (CNRS/IPSL)""")
-    parser.add_argument('directory',
-                        type=str,
-                        nargs = '?',
-                        help = 'Directory to recursively scan')
-    parser.add_argument('-h', '--help',
-                        action = "help",
-                        help = """Show this help message and exit.\n\n""")
-    parser.add_argument('-p', '--project',
-                        type = str,
-                        choices = ['cmip5', 'cordex'],
-                        required = True,
-                        help="""Required project to build mapfiles among:\n- cmip5\n- cordex\n\n""")
-    parser.add_argument('-c','--config',
-                        type = str,
-                        default = '{0}/esg_mapfiles.ini'.format(os.getcwd()),
-                        help = """Path of configuration INI file\n(default is '{workdir}/esg_mapfiles.ini').\n\n""") 
-    parser.add_argument('-o','--outdir',
-                        type = str,
-                        default = os.getcwd(),
-                        help = """Mapfile(s) output directory\n(default is working directory).\n\n""")
-    parser.add_argument('-l', '--logdir',
-                        type = str,
-                        nargs = '?',
-                        const = os.getcwd(),
-                        help = """Logfile directory (default is working directory).\nIf not, standard output is used.\n\n""")
-    parser.add_argument('-m','--mapfile',
-                        type = str,
-                        default = 'mapfile.txt',
-                        help = """Output mapfile name. Only used without --per-dataset option\n(default is 'mapfile.txt').\n\n""")
-    parser.add_argument('-d','--per-dataset',
-                        action = 'store_true',
-                        default = False,
-                        help = """Produce ONE mapfile PER dataset.\n\n""")
-    parser.add_argument('-k', '--keep-going',
-                        action = 'store_true',
-                        default = False,                       
-                        help = """Keep going if some files cannot be processed.\n\n""")
-    parser.add_argument('-v', '--verbose',
-                        action = 'store_true',
-                        default = False,
-                        help = """Verbose mode.\n\n""")
-    parser.add_argument('-V', '--Version',
-                        action = 'version',
-                        version = '%(prog)s ({0})'.format(__version__),
-                        help = """Program version.""")
+        description="""Build ESG-F mapfiles upon local ESG-F datanode bypassing esgscan_directory\ncommand-line.""",
+        formatter_class=RawTextHelpFormatter,
+        add_help=False,
+        epilog="""Developed by Levavasseur, G. (CNRS/IPSL)""")
+    parser.add_argument(
+        'directory',
+        type=str,
+        nargs='?',
+        help='Directory to recursively scan')
+    parser.add_argument(
+        '-h', '--help',
+        action="help",
+        help="""Show this help message and exit.\n\n""")
+    parser.add_argument(
+        '-p', '--project',
+        type=str,
+        choices=['cmip5', 'cordex'],
+        required=True,
+        help="""Required project to build mapfiles among:\n- cmip5\n- cordex\n\n""")
+    parser.add_argument(
+        '-c', '--config',
+        type=str,
+        default='{0}/esg_mapfiles.ini'.format(os.getcwd()),
+        help="""Path of configuration INI file\n(default is '{workdir}/esg_mapfiles.ini').\n\n""")
+    parser.add_argument(
+        '-o', '--outdir',
+        type=str,
+        default=os.getcwd(),
+        help="""Mapfile(s) output directory\n(default is working directory).\n\n""")
+    parser.add_argument(
+        '-l', '--logdir',
+        type=str,
+        nargs='?',
+        const=os.getcwd(),
+        help="""Logfile directory (default is working directory).\nIf not, standard output is used.\n\n""")
+    parser.add_argument(
+        '-m', '--mapfile',
+        type=str,
+        default='mapfile.txt',
+        help="""Output mapfile name. Only used without --per-dataset option\n(default is 'mapfile.txt').\n\n""")
+    parser.add_argument(
+        '-d', '--per-dataset',
+        action='store_true',
+        default=False,
+        help="""Produce ONE mapfile PER dataset.\n\n""")
+    parser.add_argument(
+        '-k', '--keep-going',
+        action='store_true',
+        default=False,                       
+        help="""Keep going if some files cannot be processed.\n\n""")
+    parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        default=False,
+        help="""Verbose mode.\n\n""")
+    parser.add_argument(
+        '-V', '--Version',
+        action='version',
+        version='%(prog)s ({0})'.format(__version__),
+        help="""Program version.""")
     return parser.parse_args()
 
 
@@ -146,14 +161,15 @@ def _get_unique_logfile(logdir):
 def _init_logging(logdir):
     """Creates logfile or formates console message"""
     if logdir:
-        if not os.path.exists(logdir): os.mkdir(logdir)
-        logging.basicConfig(filename = _get_unique_logfile(logdir),
-                            level = logging.DEBUG,
-                            format = '%(asctime)s %(levelname)s %(message)s',
-                            datefmt = '%Y/%m/%d %I:%M:%S %p')
+        if not os.path.exists(logdir):
+            os.mkdir(logdir)
+        logging.basicConfig(filename=_get_unique_logfile(logdir),
+                            level=logging.DEBUG,
+                            format='%(asctime)s %(levelname)s %(message)s',
+                            datefmt='%Y/%m/%d %I:%M:%S %p')
     else:
-        logging.basicConfig(level = logging.DEBUG,
-                            format = '%(message)s')
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(message)s')
 
 
 def _log(level, msg):
@@ -201,10 +217,11 @@ def _get_options(section, facet, config):
 def _check_facets(attributes, ctx):
     """Check all attribute regarding controlled vocabulary."""
     for facet in attributes.keys():
-        if not facet in ['project','filename','variable','root','version','ensemble']:
+        if not facet in ['project', 'filename', 'variable', 'root', 'version', 'ensemble']:
             options = _get_options(attributes['project'].lower(), facet, ctx.cfg)
             if not attributes[facet] in options:
-                if not ctx.keep: _rmdtemp(ctx)
+                if not ctx.keep:
+                    _rmdtemp(ctx)
                 raise _Exception('"{0}" not in "{1}_options" for {2}'.format(attributes[facet], facet, file))
 
 
@@ -215,21 +232,23 @@ def _checksum(file, ctx):
         shell = os.popen("md5sum {0} | awk -F ' ' '{{ print $1 }}'".format(file), 'r')
         return shell.readline()[:-1]
     except:
-        if not ctx.keep: _rmdtemp(ctx)
+        if not ctx.keep:
+            _rmdtemp(ctx)
         raise _Exception('Checksum failed for {0}'.format(file))
 
 
 def _rmdtemp(ctx):
     """Remove temporary directory and its content."""
     # This function occurs juste before each exception raised to clean temporary directory
-    if ctx.verbose: _log('warning', 'Delete temporary directory {0}'.format(ctx.dtemp))
+    if ctx.verbose:
+        _log('warning', 'Delete temporary directory {0}'.format(ctx.dtemp))
     rmtree(ctx.dtemp)
 
 
 def _yield_inputs(ctx):
     """Generator yielding set of parameters to be passed to file processing."""
     for file in _get_file_list(ctx.directory):
-       yield file, ctx
+        yield file, ctx
 
 
 def _write(outfile, msg):
@@ -252,12 +271,12 @@ def _wrapper_keep_going(inputs):
         return None
 
 
-def _process(inputs): 
+def _process(inputs):
     """File processing."""
     # Extract inputs from tuple
     file, ctx = inputs
     # Matching file full path with corresponding project pattern to get all attributes
-    try: 
+    try:
         attributes = re.match(ctx.pattern, file).groupdict()
     except:
         # Fails can be due to:
@@ -266,7 +285,8 @@ def _process(inputs):
         # -> Wrong version format (defined as one or more digit after 'v')
         # -> Wrong ensemble format (defined as r[0-9]i[0-9]p[0-9])
         # -> Mistake in the DRS tree of your filesystem.
-        if not ctx.keep: _rmdtemp(ctx)
+        if not ctx.keep:
+            _rmdtemp(ctx)
         raise _Exception('Matching failed for {0}'.format(file))
     else:
         # Control vocabulary of each facet
@@ -286,14 +306,15 @@ def _process(inputs):
         # Generate a lockfile to avoid that several threads write on the same file at the same time
         # LockFile is acquired and released after writing.
         # Acquiring LockFile is timeouted if it's locked by other thread.
-        # Each process adds one line to the appropriate mapfile 
+        # Each process adds one line to the appropriate mapfile
         lock = LockFile(outfile)
         try:
-            lock.acquire(timeout = int(ctx.cfg.defaults()['lockfile_timeout']))
+            lock.acquire(timeout=int(ctx.cfg.defaults()['lockfile_timeout']))
             _write(outfile, '{0} | {1} | {2} | mod_time={3} | checksum={4} | checksum_type={5}\n'.format(master_ID, file, size, str(mtime)+'.000000', checksum, 'MD5'))
             lock.release()
         except LockTimeout:
-            if not ctx.keep: _rmdtemp(ctx)
+            if not ctx.keep:
+                _rmdtemp(ctx)
             raise _Exception('Timeout exceeded for {0}'.format(file))
         _log('info', '{0} <-- {1}'.format(outmap, file))
         # Return mapfile name
@@ -304,13 +325,14 @@ def main(ctx):
     """Main process."""
     # Create output directory if not exists
     if not os.path.isdir(ctx.outdir):
-        if ctx.verbose: _log('warning', 'Create output directory: {0}'.format(ctx.outdir))
+        if ctx.verbose:
+            _log('warning', 'Create output directory: {0}'.format(ctx.outdir))
         os.mkdir(ctx.outdir)
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.cfg.defaults()['threads_number']))
-    # Return the list of generated mapfiles in temporary directory 
+    # Return the list of generated mapfiles in temporary directory
     if ctx.keep:
-        outmaps = filter(lambda m: m != None, pool.map(_wrapper_keep_going, _yield_inputs(ctx)))
+        outmaps = filter(lambda m: m is not None, pool.map(_wrapper_keep_going, _yield_inputs(ctx)))
     else:
         outmaps = pool.map(_wrapper, _yield_inputs(ctx))
     # Close threads pool
