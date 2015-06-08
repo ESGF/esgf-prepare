@@ -266,19 +266,19 @@ def _write(outfile, msg):
 
 def _wrapper(inputs):
     """Wrapper for pool map multiple arguments wrapper."""
-    return _process(inputs)
+    return _file_process(inputs)
 
 
 def _wrapper_keep_going(inputs):
     """Like _wrapper, but returns None if exception encountered"""
     try:
-        return _process(inputs)
+        return _file_process(inputs)
     except:
         _log('warning', '{0} skipped'.format(inputs[0]))
         return None
 
 
-def _process(inputs):
+def _file_process(inputs):
     """File processing."""
     # Extract inputs from tuple
     file, ctx = inputs
@@ -328,7 +328,7 @@ def _process(inputs):
         return outmap
 
 
-def main(ctx):
+def _dir_process(ctx):
     """Main process."""
     # Create output directory if not exists
     if not os.path.isdir(ctx.outdir):
@@ -353,12 +353,21 @@ def main(ctx):
 
 
 def run(job):
-    """Main entry point for call by synda."""
+    """Main entry point for call by synda call."""
     # Instanciate synda processing context
     ctx = _SyndaProcessingContext(job['full_path_variable'])
     _log('info', 'mapfile.py started (dataset_path = {0})'.format(ctx.directory))
-    main(ctx)
+    _dir_process(ctx)
     _log('info', 'mapfile.py complete')
+
+
+def main():
+    """Main entry point for command-line call."""
+     # Instanciate context initialization
+    ctx = _ProcessingContext(_get_args())
+    _log('info', 'Scan started for {0}'.format(ctx.directory))
+    _dir_process(ctx)
+    _log('info', 'Scan completed for {0}'.format(ctx.directory))
 
 
 # Main entry point for stand-alone call.
@@ -366,5 +375,5 @@ if __name__ == "__main__":
     # Instanciate context initialization
     ctx = _ProcessingContext(_get_args())
     _log('info', 'Scan started for {0}'.format(ctx.directory))
-    main(ctx)
+    _dir_process(ctx)
     _log('info', 'Scan completed for {0}'.format(ctx.directory))
