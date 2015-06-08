@@ -1,17 +1,20 @@
 .. esg_mapfiles documentation master file, created by
-   sphinx-quickstart on Wed Jun  3 12:48:21 2015.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+   sphinx-quickstart on Fri Jun  5 17:09:27 2015.
 
-Welcome to esg_mapfiles's documentation!
-========================================
-
-Contents:
+esg_mapfiles
+============
 
 .. toctree::
    :maxdepth: 2
 
-
+   description
+   installation
+   configuration
+   usage
+   faq
+   credits
+   log
+   autodoc
 
 Indices and tables
 ==================

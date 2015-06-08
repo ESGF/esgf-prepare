@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # esg_mapfiles documentation build configuration file, created by
-# sphinx-quickstart on Wed Jun  3 12:48:21 2015.
+# sphinx-quickstart on Fri Jun  5 17:09:27 2015.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -18,7 +18,7 @@ import os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../sources'))
 
 # -- General configuration ------------------------------------------------
 
@@ -30,11 +30,6 @@ import os
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.coverage',
-    'sphinx.ext.pngmath',
-    'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
 ]
 
@@ -52,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'esg_mapfiles'
-copyright = u'2015, LEVAVASSEUR, G.'
+copyright = u'2015, Levavasseur, G.'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -90,7 +85,7 @@ exclude_patterns = ['_build']
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
-#show_authors = False
+show_authors = True
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -205,7 +200,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'esg_mapfiles.tex', u'esg\\_mapfiles Documentation',
-   u'LEVAVASSEUR, G.', 'manual'),
+   u'Levavasseur, G.', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -235,7 +230,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'esg_mapfiles', u'esg_mapfiles Documentation',
-     [u'LEVAVASSEUR, G.'], 1)
+     [u'Levavasseur, G.'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -249,7 +244,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'esg_mapfiles', u'esg_mapfiles Documentation',
-   u'LEVAVASSEUR, G.', 'esg_mapfiles', 'One line description of project.',
+   u'Levavasseur, G.', 'esg_mapfiles', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -264,7 +259,3 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
-
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'http://docs.python.org/': None}

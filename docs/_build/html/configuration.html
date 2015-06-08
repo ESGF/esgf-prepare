@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration &mdash; esg_mapfiles 0.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="esg_mapfiles 0.4 documentation" href="index.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">esg_mapfiles 0.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>Edit the esg_mapfiles.ini to set the number of threads you want (default is 4 threads).</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[DEFAULT]</span>
+<span class="na">threads_number</span> <span class="o">=</span> <span class="s">4</span>
+</pre></div>
+</div>
+<div class="section" id="add-a-new-project">
+<h2>Add a new project<a class="headerlink" href="#add-a-new-project" title="Permalink to this headline">¶</a></h2>
+<p>To add a supported project, just add a new project section in your configuration file. The options prefix (called <em>facet</em> in the following template) must have the same name as <em>dataset_ID</em> items and <em>directory_format</em> variables.</p>
+<p><em>dataset_ID</em> items correspond to a sorted list of facets defining dataset master ID.</p>
+<p>The <em>directory_format</em> option defines the DRS of your project using a regex to match with your full files paths. Feel free to defined a new tree or file extension
+if necessary using all regex facilities.</p>
+<p>Follow this template:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[your_project]</span>
+<span class="na">facet1_options</span> <span class="o">=</span> <span class="s">value1, value2, ...</span>
+<span class="na">facet2_options</span> <span class="o">=</span> <span class="s">value1, value2, ...</span>
+<span class="na">facet3_options</span> <span class="o">=</span> <span class="s">value1, value2, ...</span>
+<span class="na">dataset_ID</span> <span class="o">=</span> <span class="s">facet1, facet2, facet3</span>
+<span class="na">directory_format</span> <span class="o">=</span> <span class="s">/(?P&lt;root&gt;[\w./-]+)/(?P&lt;project&gt;[\w.-]+)/(?P&lt;facet1&gt;[\w.-]+)/(?P&lt;facet2&gt;[\w.-]+)/(?P&lt;facet3&gt;[\w.-]+)/(?P&lt;filename&gt;[\w.-]+\.nc)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#add-a-new-project">Add a new project</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">Usage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/configuration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">esg_mapfiles 0.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Levavasseur, G..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

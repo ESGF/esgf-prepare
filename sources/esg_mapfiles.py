@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 """
-.. module:: esg_mapfiles.py
    :platform: Unix
    :synopsis: Build ESG-F mapfiles without esgscan_directory upon local ESG-F datanode.
-
-.. moduleauthor:: Levavasseur, G. <glipsl@ipsl.jussieu.fr>
+   :members:
 
 """
+
+#.. moduleauthor:: Levavasseur, G. <glipsl@ipsl.jussieu.fr>
 
 # Module imports
 import os
@@ -79,7 +79,16 @@ class _Exception(Exception):
 
 
 def _get_args():
-    """Returns parsed command line arguments."""
+    """
+    Returns parsed command line arguments.
+
+    :param numerateur: le numerateur de la division
+    :type numerateur: int
+    :param denominateur: le denominateur de la division
+    :type denominateur: int
+    :return: la valeur entiere de la division
+    :rtype: int
+    """
     parser = argparse.ArgumentParser(
         description="""Build ESG-F mapfiles upon local ESG-F datanode bypassing esgscan_directory\ncommand-line.""",
         formatter_class=RawTextHelpFormatter,
