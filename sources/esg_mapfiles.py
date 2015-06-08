@@ -6,8 +6,6 @@
 
 """
 
-#.. moduleauthor:: Levavasseur, G. <glipsl@ipsl.jussieu.fr>
-
 # Module imports
 import os
 import re
