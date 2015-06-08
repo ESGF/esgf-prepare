@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-setup(name='esg_mapfiles',
+setup(name='esgmapfiles',
       version='0.4',
       description='Build ESG-F mapfiles without esgscan_directory upon local ESG-F datanode.',
       author='Levavasseur Guillaume',
