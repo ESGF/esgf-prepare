@@ -472,7 +472,7 @@ def _file_process(inputs):
     """
     _file_process(inputs)
 
-    File processing:
+    File process that\:
      * Auto-detects facets,
      * Builds dataset ID,
      * Does checksums,
@@ -537,7 +537,7 @@ def _file_process(inputs):
 
 def _process(ctx):
     """
-    Main process that:
+    Main process that\:
      * Creates mapfiles output directory if necessary,
      * Instanciates threads pools,
      * Copies mapfile(s) to the output directory,
