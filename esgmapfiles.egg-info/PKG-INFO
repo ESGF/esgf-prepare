@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: esgmapfiles
+Version: 0.4
+Summary: Build ESG-F mapfiles without esgscan_directory upon local ESG-F datanode.
+Home-page: http://esgf-mapfiles.readthedocs.org/en/latest/index.html
+Author: Levavasseur Guillaume
+Author-email: glipsl@ipsl.jussieu.fr
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
