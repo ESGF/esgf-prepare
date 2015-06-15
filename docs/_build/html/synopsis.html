@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Synopsis &mdash; esg_mapfiles 0.5 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="esg_mapfiles 0.5 documentation" href="index.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="esg_mapfiles" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="esg_mapfiles"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">esg_mapfiles 0.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="synopsis">
+<h1>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h1>
+<p>The publication process of ESGF nodes requires <em>mapfiles</em>. Mapfiles are text files where each line describes a file to publish on the following format:</p>
+<div class="highlight-python"><div class="highlight"><pre>dataset_ID | absolute_path | size_bytes [ | option=value ]
+</pre></div>
+</div>
+<ol class="lowerroman simple">
+<li>All values have to be pipe-separated.</li>
+<li>The dataset identifier, the absolute path and the size (in bytes) are required.</li>
+<li>Adding the file checksum and the checksum type as optional values is strongly recommended.</li>
+</ol>
+<p>Security policies of computing centres, that often host ESGF data and datanodes, do not allow to easily use the <tt class="docutils literal"><span class="pre">esgscan_directory</span></tt> ESGF command-line that is conventionally used to generate mapfiles. Moreover, this command becomes time consuming to checksums a lot of data.</p>
+<p><tt class="docutils literal"><span class="pre">esg_mapfiles</span></tt> is a flexible alternative command-line tool allowing you to easily generate mapfiles independently from ESGF nodes.</p>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>Directory as input</strong></dt>
+<dd>In comparison with previous versions, you only need to specifiy the directory to recursively scan. To include several data directories in one mapfile and to publish them at once, you can use all Unix wildcards in the path or submit several paths.</dd>
+<dt><strong>Multi-project</strong></dt>
+<dd><tt class="docutils literal"><span class="pre">esg_mapfiles</span></tt> is currently provided supporting CMIP5 and CORDEX <em>Data Reference Syntax</em>. Nevertheless, you can easily add a new &#8220;project&#8221; section in the configuration file to support yours. Please follow the INI syntax.</dd>
+<dt><strong>Facets auto-detection</strong></dt>
+<dd>The dataset&#8217;s facets will be automatically detect using the <tt class="docutils literal"><span class="pre">directory_format</span></tt> regular expression in the configuration file where all facet options have to be declared. This ensures an appropriated mapfile generation by preventing DRS mistakes and checking the controlled vocabulary.</dd>
+<dt><strong>Multithreading</strong></dt>
+<dd>To compute the checksum of a lot of large files becomes time consuming. We implement multithreading at file level. Each file is processed by a thread that writes the resulting line in the corresponding mapfile. A lock file system orders the simultaneous access to mapfiles by the threads to avoid any conflicts.</dd>
+<dt><strong>Mapfile granularity control</strong></dt>
+<dd>You can choose to produce one mapfile per dataset. In this case you the mapfile automatically takes the name of the dataset identifier. Consequently, you can set your own &#8220;mapfile-granularity&#8221;.</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A dataset is defined by all DRS tree before the version.</p>
+</div>
+<dl class="docutils">
+<dt><strong>Only latest version</strong></dt>
+<dd>You can choose to only include the latest versions of the datasets in your mapfile. In this case, the walk through the filesystem is filtered. Only the folders with the &#8220;latest&#8221; symbolic link are recursively scanned.</dd>
+<dt><strong>SYNDA implemtentation</strong></dt>
+<dd><tt class="docutils literal"><span class="pre">esg_mapfiles.py</span></tt> can be called by SYNDA post-processing workers. This uses the <tt class="docutils literal"><span class="pre">run()</span></tt> function instead of the <tt class="docutils literal"><span class="pre">main()</span></tt>.</dd>
+<dt><strong>Useful configuration file</strong></dt>
+<dd>All projects definitions (DRS, facets) are centralized in one configuration file (INI format) in a simplier way than the <tt class="docutils literal"><span class="pre">esg.ini</span></tt> file on ESGF nodes.</dd>
+<dt><strong>Keep going</strong></dt>
+<dd>You can ignored all errors raised by unmatching files in the submitted path(s) in order to keep going the generation process in any case. To help you to have a short diagnostic, the number of scanned file is displayed at the end.</dd>
+<dt><strong>Output directory</strong></dt>
+<dd>An output directory can be defined to store and organized your mapfiles.</dd>
+<dt><strong>Use a logfile</strong></dt>
+<dd>You can initiate a logger instead of the standard output. This could be useful for automatic workflows. The logfile name is automatically defined and unique (using the date and the job&#8217;s PID). You can define an output directory for your logs.</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Synopsis</a><ul>
+<li><a class="reference internal" href="#features">Features</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">esg_mapfiles</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Installation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/synopsis.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="esg_mapfiles"
+             >previous</a> |</li>
+        <li><a href="index.html">esg_mapfiles 0.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Levavasseur, G..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

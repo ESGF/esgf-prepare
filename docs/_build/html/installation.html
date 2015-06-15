@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &mdash; esg_mapfiles 0.4 documentation</title>
+    <title>Installation &mdash; esg_mapfiles 0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4',
+        VERSION:     '0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="esg_mapfiles 0.4 documentation" href="index.html" />
+    <link rel="top" title="esg_mapfiles 0.5 documentation" href="index.html" />
     <link rel="next" title="Configuration" href="configuration.html" />
-    <link rel="prev" title="Description" href="description.html" /> 
+    <link rel="prev" title="Synopsis" href="synopsis.html" /> 
   </head>
   <body>
     <div class="related">
@@ -41,9 +41,9 @@
           <a href="configuration.html" title="Configuration"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="description.html" title="Description"
+          <a href="synopsis.html" title="Synopsis"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">esg_mapfiles 0.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">esg_mapfiles 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -54,35 +54,73 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>To execute esg_mapfiles.py you has to be logged on filesystem hosting data to publish.</p>
-<p>Fork this GitHub project or download the Python script and its configuration file:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">download:</th><td class="field-body"><a class="reference external" href="http://dods.ipsl.jussieu.fr/glipsl/esg_mapfiles.py">esg_mapfiles.py</a></td>
-</tr>
-<tr class="field-even field"><th class="field-name">download:</th><td class="field-body"><a class="reference external" href="http://dods.ipsl.jussieu.fr/glipsl/esg_mapfiles.ini">esg_mapfiles.ini</a></td>
-</tr>
-</tbody>
-</table>
+<div class="section" id="usual-pip-installation">
+<h2>Usual PIP installation<a class="headerlink" href="#usual-pip-installation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre>pip install esgmapfiles
+</pre></div>
+</div>
+</div>
+<div class="section" id="pip-installation-from-github">
+<h2>PIP installation from GitHub<a class="headerlink" href="#pip-installation-from-github" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre>pip install -e git://github.com/Prodiguer/esgf-mapfiles.git@masters#egg<span class="o">=</span>esg_mapfiles
+</pre></div>
+</div>
+</div>
+<div class="section" id="installation-from-github">
+<h2>Installation from GitHub<a class="headerlink" href="#installation-from-github" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Create a new directory:</li>
+</ol>
+<div class="highlight-bash"><div class="highlight"><pre>mkdir esgmapfiles
+<span class="nb">cd </span>esgmapfiles
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>Clone <a class="reference external" href="https://github.com/Prodiguer/esgf-mapfiles">our GitHub project</a>:</li>
+</ol>
+<div class="highlight-bash"><div class="highlight"><pre>git init
+git clone git@github.com:Prodiguer/esgf-mapfiles.git
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li>Run the <tt class="docutils literal"><span class="pre">setup.py</span></tt>:</li>
+</ol>
+<div class="highlight-bash"><div class="highlight"><pre>python setup.py install
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li>The <tt class="docutils literal"><span class="pre">esg_mapfile</span></tt> command-line is ready.</li>
+</ol>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">To run <tt class="docutils literal"><span class="pre">esg_mapfiles</span></tt> you have to be logged on filesystem hosting the data to publish.</p>
+</div>
+</div>
 <div class="section" id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
-<dt><em>esg_mapfiles.py</em> uses the following basic Python libraries includes in Python 2.5+. Becareful your Python environment includes:</dt>
+<dt><tt class="docutils literal"><span class="pre">esg_mapfiles</span></tt> uses the following basic Python libraries includes in Python 2.5+. Becareful your Python environment includes:</dt>
 <dd><ul class="first last simple">
 <li>os, sys, re, logging</li>
 <li>argparse</li>
 <li>ConfigParser</li>
 <li>tempfile</li>
 <li>datetime</li>
+<li>functools</li>
 <li>multiprocessing</li>
 <li>shutil</li>
 </ul>
 </dd>
 </dl>
-<p>Please install the <em>lockfile</em> library not inclued in most Python distributions:</p>
+<p>Please install the <tt class="docutils literal"><span class="pre">lockfile</span></tt> library not inclued in most Python distributions using the usual PIP command-line:</p>
 <div class="highlight-bash"><div class="highlight"><pre>pip install lockfile
+</pre></div>
+</div>
+<p>or download and intall the <a class="reference external" href="https://pypi.python.org/pypi/lockfile">sources from PIP</a>:</p>
+<div class="highlight-bash"><div class="highlight"><pre>wget https://pypi.python.org/packages/source/l/lockfile/lockfile-0.10.2.tar.gz#md5<span class="o">=</span>1aa6175a6d57f082cd12e7ac6102ab15
+tar -xzvf lockfile-0.10.2.tar.gz
+<span class="nb">cd </span>lockfile-0.10.2/
+python setup.py install
 </pre></div>
 </div>
 </div>
@@ -97,14 +135,17 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#usual-pip-installation">Usual PIP installation</a></li>
+<li><a class="reference internal" href="#pip-installation-from-github">PIP installation from GitHub</a></li>
+<li><a class="reference internal" href="#installation-from-github">Installation from GitHub</a></li>
 <li><a class="reference internal" href="#dependencies">Dependencies</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="description.html"
-                        title="previous chapter">Description</a></p>
+  <p class="topless"><a href="synopsis.html"
+                        title="previous chapter">Synopsis</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="configuration.html"
                         title="next chapter">Configuration</a></p>
@@ -143,9 +184,9 @@
           <a href="configuration.html" title="Configuration"
              >next</a> |</li>
         <li class="right" >
-          <a href="description.html" title="Description"
+          <a href="synopsis.html" title="Synopsis"
              >previous</a> |</li>
-        <li><a href="index.html">esg_mapfiles 0.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">esg_mapfiles 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

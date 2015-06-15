@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 """
    :platform: Unix
-   :synopsis: Build ESG-F mapfiles without esgscan_directory upon local ESG-F datanode.
-   :members:
+   :synopsis: Build ESGF mapfiles without ``esgscan_directory`` upon local ESGF datanode.
 
 """
 
@@ -13,15 +12,15 @@ import argparse
 import ConfigParser
 import logging
 from multiprocessing.dummy import Pool as ThreadPool
+from functools import wraps
 from argparse import RawTextHelpFormatter
 from lockfile import LockFile, LockTimeout
 from datetime import datetime
 from tempfile import mkdtemp
 from shutil import copy2, rmtree
 
-
 # Program version
-__version__ = '{0} {1}-{2}-{3}'.format('v0.4', '2015', '03', '27')
+__version__ = '{0} {1}-{2}-{3}'.format('v0.5', '2015', '06', '12')
 
 # Log levels
 _LEVELS = {'debug': logging.error,
@@ -33,15 +32,52 @@ _LEVELS = {'debug': logging.error,
 
 
 class _ProcessingContext(object):
-    """Encapsulate processing context information for main process."""
+    """
+    Encapsulates the following processing context/information for main process:
+
+    +------------------+-------------+---------------------------------+
+    | Attribute        | Type        | Description                     |
+    +==================+=============+=================================+
+    | *self*.directory | *list*      | Directories to scan             |
+    +------------------+-------------+---------------------------------+
+    | *self*.latest    | *boolean*   | True if latest version          |
+    +------------------+-------------+---------------------------------+
+    | *self*.outdir    | *str*       | Output directory                |
+    +------------------+-------------+---------------------------------+
+    | *self*.verbose   | *boolean*   | True if verbose mode            |
+    +------------------+-------------+---------------------------------+
+    | *self*.keep      | *boolean*   | True if keep going mode         |
+    +------------------+-------------+---------------------------------+
+    | *self*.project   | *str*       | Project                         |
+    +------------------+-------------+---------------------------------+
+    | *self*.dataset   | *boolean*   | True if one mapfile per dataset |
+    +------------------+-------------+---------------------------------+
+    | *self*.checksum  | *boolean*   | True if checksums into mapfile  |
+    +------------------+-------------+---------------------------------+
+    | *self*.outmap    | *str*       | Mapfile output name             |
+    +------------------+-------------+---------------------------------+
+    | *self*.cfg       | *callable*  | Configuration file parser       |
+    +------------------+-------------+---------------------------------+
+    | *self*.pattern   | *re object* | DRS regex pattern               |
+    +------------------+-------------+---------------------------------+
+    | *self*.dtemp     | *str*       | Directory of temporary files    |
+    +------------------+-------------+---------------------------------+
+
+    :param dict args: Parsed command-line arguments
+    :returns: The processing context
+    :rtype: *dict*
+
+    """
     def __init__(self, args):
         _init_logging(args.logdir)
         self.directory = _check_directory(args.directory)
+        self.latest = args.latest
         self.outdir = args.outdir
         self.verbose = args.verbose
         self.keep = args.keep_going
         self.project = args.project
         self.dataset = args.per_dataset
+        self.checksum = args.checksum
         self.outmap = args.mapfile
         self.cfg = _config_parse(args.config)
         self.pattern = re.compile(self.cfg.get(self.project, 'directory_format'))
@@ -49,17 +85,54 @@ class _ProcessingContext(object):
 
 
 class _SyndaProcessingContext(object):
-    """Encapsulate processing context information for synda call."""
+    """
+    Encapsulates the following processing context/information for SYNDA call:
+
+    +------------------+-------------+----------------------------------------------------+
+    | Attribute        | Type        | Description                                        |
+    +==================+=============+====================================================+
+    | *self*.directory | *list*      | Variable path to scan                              |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.latest    | *boolean*   | True: only scan latest version                     |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.outdir    | *str*       | Output directory: /home/esg-user/mapfiles/pending/ |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.verbose   | *boolean*   | True: verbose mode                                 |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.keep      | *boolean*   | True: keep going mode                              |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.project   | *str*       | Project: cmip5                                     |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.dataset   | *boolean*   | True: one mapfile per dataset                      |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.checksum  | *boolean*   | True: checksums into mapfile                       |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.outmap    | *str*       | None: no mapfile output name                       |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.cfg       | *callable*  | Configuration file parser                          |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.pattern   | *re object* | DRS regex pattern                                  |
+    +------------------+-------------+----------------------------------------------------+
+    | *self*.dtemp     | *str*       | Directory of temporary files                       |
+    +------------------+-------------+----------------------------------------------------+
+
+    :param str full_path_variable: Full path of a variable to process
+    :returns: A specific processing context for SYNDA
+    :rtype: *dict*
+
+    """
     def __init__(self, full_path_variable):
         #_init_logging(args.logdir) # Logger initiates by synda worker
         # "merge" product is mandatory through the configuration file used by synda
         # synda submit non-latest path to translate
         self.directory = _check_directory(re.sub('v[0-9]*$', 'latest', os.path.normpath(full_path_variable)))
+        self.latest = True
         self.outdir = '/home/esg-user/mapfiles/pending/'
         self.verbose = True
         self.keep = True
         self.project = 'cmip5'
         self.dataset = True
+        self.checksum = True
         self.outmap = False
         self.cfg = _config_parse('/home/esg-user/mapfiles/mapfile.ini')
         self.pattern = re.compile(self.cfg.get(self.project, 'directory_format'))
@@ -67,8 +140,15 @@ class _SyndaProcessingContext(object):
 
 
 class _Exception(Exception):
-    """Exception type to log encountered error."""
-    def __init__(self, msg=''):
+    """
+    When an error is encountered, logs a message with the ``ERROR`` status.
+
+    :param str msg: Error message to log
+    :returns: The logged message with the ``ERROR`` status
+    :rtype: *str*
+
+    """
+    def __init__(self, msg):
         self.msg = msg
 
     def __str__(self):
@@ -78,25 +158,19 @@ class _Exception(Exception):
 
 def _get_args():
     """
-    Returns parsed command line arguments.
+    Returns parsed command-line arguments. See ``esgmapfiles -h`` for full description.
 
-    :param numerateur: le numerateur de la division
-    :type numerateur: int
-    :param denominateur: le denominateur de la division
-    :type denominateur: int
-    :return: la valeur entiere de la division
-    :rtype: int
     """
     parser = argparse.ArgumentParser(
-        description="""Build ESG-F mapfiles upon local ESG-F datanode bypassing esgscan_directory\ncommand-line.""",
+        description="""Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory\ncommand-line.""",
         formatter_class=RawTextHelpFormatter,
         add_help=False,
         epilog="""Developed by Levavasseur, G. (CNRS/IPSL)""")
     parser.add_argument(
         'directory',
         type=str,
-        nargs='?',
-        help='Directory to recursively scan')
+        nargs='+',
+        help='One or more directories to recursively scan. Unix wildcards are allowed.')
     parser.add_argument(
         '-h', '--help',
         action="help",
@@ -110,8 +184,8 @@ def _get_args():
     parser.add_argument(
         '-c', '--config',
         type=str,
-        default='{0}/esg_mapfiles.ini'.format(os.getcwd()),
-        help="""Path of configuration INI file\n(default is '{workdir}/esg_mapfiles.ini').\n\n""")
+        default='{0}/config.ini'.format(os.getcwd()),
+        help="""Path of configuration INI file\n(default is '{workdir}/config.ini').\n\n""")
     parser.add_argument(
         '-o', '--outdir',
         type=str,
@@ -120,8 +194,8 @@ def _get_args():
     parser.add_argument(
         '-l', '--logdir',
         type=str,
-        nargs='?',
         const=os.getcwd(),
+        nargs='?',
         help="""Logfile directory (default is working directory).\nIf not, standard output is used.\n\n""")
     parser.add_argument(
         '-m', '--mapfile',
@@ -132,11 +206,21 @@ def _get_args():
         '-d', '--per-dataset',
         action='store_true',
         default=False,
-        help="""Produce ONE mapfile PER dataset.\n\n""")
+        help="""Produces ONE mapfile PER dataset. It takes priority over --mapfile.\n\n""")
+    parser.add_argument(
+        '-L', '--latest',
+        action='store_true',
+        default=False,
+        help="""Generates mapfiles with latest versions only.\n\n""")
+    parser.add_argument(
+        '-C', '--checksum',
+        action='store_true',
+        default=False,
+        help="""Includes file checksums into mapfiles.\n\n""")
     parser.add_argument(
         '-k', '--keep-going',
         action='store_true',
-        default=False,                       
+        default=False,
         help="""Keep going if some files cannot be processed.\n\n""")
     parser.add_argument(
         '-v', '--verbose',
@@ -151,26 +235,36 @@ def _get_args():
     return parser.parse_args()
 
 
-def _check_directory(path):
-    """Checks if supplied directroy exists """
-    directory = os.path.normpath(path)
-    if not os.path.isdir(directory):
-        raise _Exception('No such directory: {0}'.format(directory))
-    return directory
+def _check_directory(paths):
+    """
+    Checks if all supplied directories exist. All paths are normalized before without trailing slash.
 
+    :param list paths: List of paths
+    :returns: The same input list if all paths exist
+    :rtype: *list*
+    :raises Error: if one directory do not exist
 
-def _get_unique_logfile(logdir):
-    """Get unique logfile name."""
-    logfile = 'esg_mapfile-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
-    return os.path.join(logdir, logfile)
+    """
+    for path in paths:
+        directory = os.path.normpath(path)
+        if not os.path.isdir(directory):
+            raise _Exception('No such directory: {0}'.format(directory))
+    return paths
 
 
 def _init_logging(logdir):
-    """Creates logfile or formates console message"""
+    """
+    Initiates the logging configuration (output, message formatting). In the case of a logfile, the logfile name is unique and formatted as follows:\n
+    esgmapfiles-YYYYMMDD-HHMMSS-PID.log
+
+    :param str logdir: The relative or absolute logfile directory. If ``None`` the standard output is used.
+
+    """
     if logdir:
+        logfile = 'esgmapfiles-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
         if not os.path.exists(logdir):
             os.mkdir(logdir)
-        logging.basicConfig(filename=_get_unique_logfile(logdir),
+        logging.basicConfig(filename=os.path.join(logdir, logfile),
                             level=logging.DEBUG,
                             format='%(asctime)s %(levelname)s %(message)s',
                             datefmt='%Y/%m/%d %I:%M:%S %p')
@@ -180,35 +274,63 @@ def _init_logging(logdir):
 
 
 def _log(level, msg):
-    """Pointer to level logs."""
+    """
+    Points to the log level as follows:
+
+    +-----------+-------------------+
+    | Log level | Log function      |
+    +===========+===================+
+    | debug     | logging.error     |
+    +-----------+-------------------+
+    | info      | logging.info      |
+    +-----------+-------------------+
+    | warning   | logging.warning   |
+    +-----------+-------------------+
+    | error     | logging.error     |
+    +-----------+-------------------+
+    | critical  | logging.critical  |
+    +-----------+-------------------+
+    | exception | logging.exception |
+    +-----------+-------------------+
+
+    :param str level: The log level
+    :param str msg: The message to log
+    :returns: A pointer to the appropriate log method
+    :rtype: *dict*
+
+    """
     return _LEVELS[level](msg)
 
 
 def _config_parse(config_path):
-    """Parses configuration file if exists."""
+    """
+    Parses the configuration file if exists. If not, raises an exception.
+
+    :param str config_path: The absolute or relative path of the configuration file
+    :returns: The configuration file parser
+    :rtype: *dict*
+    :raises Error: If no configuration file exists
+
+    """
     if not os.path.isfile(config_path):
         raise _Exception('Configuration file not found')
     cfg = ConfigParser.ConfigParser()
     cfg.read(config_path)
-    # No parsing error just empty list
     if not cfg:
         raise _Exception('Configuration file parsing failed')
     return cfg
 
 
-def _get_file_list(directory):
-    """Yields file walinking DRS tree ignoring 'files' or 'latest' directories."""
-    for root, dirs, files in os.walk(directory):
-        if 'files' in dirs:
-            dirs.remove('files')
-        if 'latest' in dirs:
-            dirs.remove('latest')
-        for file in files:
-            yield os.path.join(root, file)
-
-
 def _get_master_ID(attributes, config):
-    """Returns master ID and version from dataset path."""
+    """
+    Builds the master identifier of a dataset.
+
+    :param dict attributes: The attributes auto-detected with DRS pattern
+    :param dict config: The absolute or relative path of the configuration file
+    :returns: The master ID
+    :rtype: *str*
+
+    """
     facets = config.get(attributes['project'].lower(), 'dataset_ID').replace(" ", "").split(',')
     ID = [attributes['project'].lower()]
     for facet in facets:
@@ -216,16 +338,18 @@ def _get_master_ID(attributes, config):
     return '.'.join(ID)
 
 
-def _get_options(section, facet, config):
-    """Get facet options of a section as list."""
-    return config.get(section, '{0}_options'.format(facet)).replace(" ", "").split(',')
-
-
 def _check_facets(attributes, ctx):
-    """Check all attribute regarding controlled vocabulary."""
+    """
+    Checks all attributes from path. Each attribute or facet is auto-detected using the DRS pattern (regex) and compared to its corresponding options declared into the configuration file.
+
+    :param dict attributes: The attributes auto-detected with DRS pattern
+    :param dict ctx: The processing context
+    :raises Error: If an option of an attribute is not declared
+
+    """
     for facet in attributes.keys():
         if not facet in ['project', 'filename', 'variable', 'root', 'version', 'ensemble']:
-            options = _get_options(attributes['project'].lower(), facet, ctx.cfg)
+            options = ctx.cfg.get(attributes['project'].lower(), '{0}_options'.format(facet)).replace(" ", "").split(',')
             if not attributes[facet] in options:
                 if not ctx.keep:
                     _rmdtemp(ctx)
@@ -233,8 +357,14 @@ def _check_facets(attributes, ctx):
 
 
 def _checksum(file, ctx):
-    """Do MD5 checksum by Shell"""
-    # Here 'md5sum' from Unix filesystem is used avoiding python memory limits
+    """
+    Does the MD5 checksum by the Shell. md5sum avoids Python memory limits.
+
+    :param str file: The full path of a file
+    :param dict ctx: The processing context
+    :raises Error: If the checksum fails
+
+    """
     try:
         shell = os.popen("md5sum {0} | awk -F ' ' '{{ print $1 }}'".format(file), 'r')
         return shell.readline()[:-1]
@@ -245,7 +375,12 @@ def _checksum(file, ctx):
 
 
 def _rmdtemp(ctx):
-    """Remove temporary directory and its content."""
+    """
+    Removes the temporary directory and its content.
+
+    :param dict ctx: The processing context
+
+    """
     # This function occurs juste before each exception raised to clean temporary directory
     if ctx.verbose:
         _log('warning', 'Delete temporary directory {0}'.format(ctx.dtemp))
@@ -253,24 +388,60 @@ def _rmdtemp(ctx):
 
 
 def _yield_inputs(ctx):
-    """Generator yielding set of parameters to be passed to file processing."""
-    for file in _get_file_list(ctx.directory):
-        yield file, ctx
+    """
+    Yields all files to process within tuples with the processing context. The file walking through the DRS tree follows symbolic links and ignores the "files" directories and "latest" symbolic links if ``--latest`` is None.
+
+    :param dict ctx: The processing context
+    :returns: Attach the processing context to a file to process as an iterator of tuples
+    :rtype: *iter*
+
+    """
+    for directory in ctx.directory:
+        for root, dirs, files in os.walk(directory, followlinks=True):
+            if '/files' not in root:
+                if not ctx.latest:
+                    if '/latest' not in root:
+                        for file in files:
+                            yield os.path.join(root, file), ctx
+                else:
+                    if not re.compile('/v[0-9]*').search(root):
+                        for file in files:
+                            yield os.path.join(root, file), ctx
 
 
 def _write(outfile, msg):
-    """Writes in mapfile."""
+    """
+    Writes in a mapfile using the ``with`` statement.
+
+    :param str outfile: The mapfile full path
+    :param str msg: The line to write
+
+    """
     with open(outfile, 'a+') as f:
         f.write(msg)
 
 
 def _wrapper(inputs):
-    """Wrapper for pool map multiple arguments wrapper."""
+    """
+    Transparent wrapper for pool map.
+
+    :param tuple inputs: A tuple with the file path and the processing context
+    :returns: The :func:`_file_process` call
+    :rtype: *callable*
+
+    """
     return _file_process(inputs)
 
 
 def _wrapper_keep_going(inputs):
-    """Like _wrapper, but returns None if exception encountered"""
+    """
+    Like :func:`_wrapper`, but returns ``None`` if an exception is encountered.
+
+    :param tuple inputs: A tuple with the file path and the processing context
+    :returns: The :func:`_file_process` call
+    :rtype: *callable*
+
+    """
     try:
         return _file_process(inputs)
     except:
@@ -278,8 +449,40 @@ def _wrapper_keep_going(inputs):
         return None
 
 
+def _counted(fct):
+    """
+    Decorator used to count all file process calls.
+
+    :param callable fct: The function to monitor
+    :returns: A wrapped function with a ``.called`` attribute
+    :rtype: *callable*
+
+    """
+    @wraps(fct)  # Convenience decorator to keep the _file_process docstring
+    def wrapper(*args, **kwargs):
+        wrapper.called += 1
+        return fct(*args, **kwargs)
+    wrapper.called = 0
+    wrapper.__name__ = fct.__name__
+    return wrapper
+
+
+@_counted
 def _file_process(inputs):
-    """File processing."""
+    """
+    _file_process(inputs)
+
+    File processing:
+     * Auto-detects facets,
+     * Builds dataset ID,
+     * Does checksums,
+     * Writes to appropriate mapfile.
+
+    :param tuple inputs: A tuple with the file path and the processing context
+    :return: The output mapfile name
+    :rtype: *str*
+
+    """
     # Extract inputs from tuple
     file, ctx = inputs
     # Matching file full path with corresponding project pattern to get all attributes
@@ -303,7 +506,8 @@ def _file_process(inputs):
         # Retrieve size and modification time
         (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(file)
         # Make the file checksum (MD5)
-        checksum = _checksum(file, ctx)
+        if ctx.checksum:
+            checksum = _checksum(file, ctx)
         # Build mapfile name if one per dataset, or read the supplied name instead
         if ctx.dataset:
             outmap = '{0}.{1}'.format(master_ID, attributes['version'])
@@ -317,7 +521,10 @@ def _file_process(inputs):
         lock = LockFile(outfile)
         try:
             lock.acquire(timeout=int(ctx.cfg.defaults()['lockfile_timeout']))
-            _write(outfile, '{0} | {1} | {2} | mod_time={3} | checksum={4} | checksum_type={5}\n'.format(master_ID, file, size, str(mtime)+'.000000', checksum, 'MD5'))
+            if ctx.checksum:
+                _write(outfile, '{0} | {1} | {2} | mod_time={3} | checksum={4} | checksum_type={5}\n'.format(master_ID, file, size, str(mtime)+'.000000', checksum, 'MD5'))
+            else:
+                _write(outfile, '{0} | {1} | {2} | mod_time={3}\n'.format(master_ID, file, size, str(mtime)+'.000000'))
             lock.release()
         except LockTimeout:
             if not ctx.keep:
@@ -328,8 +535,17 @@ def _file_process(inputs):
         return outmap
 
 
-def _dir_process(ctx):
-    """Main process."""
+def _process(ctx):
+    """
+    Main process that:
+     * Creates mapfiles output directory if necessary,
+     * Instanciates threads pools,
+     * Copies mapfile(s) to the output directory,
+     * Removes the temporary directory and its contents.
+
+    :param dict ctx: The processing context
+
+    """
     # Create output directory if not exists
     if not os.path.isdir(ctx.outdir):
         if ctx.verbose:
@@ -353,27 +569,31 @@ def _dir_process(ctx):
 
 
 def run(job):
-    """Main entry point for call by synda call."""
+    """
+    Main entry point for SYNDA call.
+
+    :param dict job: A dictionnary with the variable full path to scan
+
+    """
     # Instanciate synda processing context
     ctx = _SyndaProcessingContext(job['full_path_variable'])
     _log('info', 'mapfile.py started (dataset_path = {0})'.format(ctx.directory))
-    _dir_process(ctx)
+    _process(ctx)
     _log('info', 'mapfile.py complete')
 
 
 def main():
-    """Main entry point for command-line call."""
-     # Instanciate context initialization
+    """
+    Main entry point for stand-alone call.
+
+    """
+    # Instanciate context initialization
     ctx = _ProcessingContext(_get_args())
-    _log('info', 'Scan started for {0}'.format(ctx.directory))
-    _dir_process(ctx)
-    _log('info', 'Scan completed for {0}'.format(ctx.directory))
+    _log('info', '==> Scan started')
+    _process(ctx)
+    _log('info', '==> Scan completed ({0} files)'.format(_file_process.called))
 
 
 # Main entry point for stand-alone call.
 if __name__ == "__main__":
-    # Instanciate context initialization
-    ctx = _ProcessingContext(_get_args())
-    _log('info', 'Scan started for {0}'.format(ctx.directory))
-    _dir_process(ctx)
-    _log('info', 'Scan completed for {0}'.format(ctx.directory))
+    main()

@@ -2,27 +2,74 @@
 Installation
 ************
 
-To execute esg_mapfiles.py you has to be logged on filesystem hosting data to publish.
+Usual PIP installation 
+++++++++++++++++++++++
 
-Fork this GitHub project or download the Python script and its configuration file:
+.. code-block:: bash
 
-:download: `esg_mapfiles.py <http://dods.ipsl.jussieu.fr/glipsl/esg_mapfiles.py>`_
-:download: `esg_mapfiles.ini <http://dods.ipsl.jussieu.fr/glipsl/esg_mapfiles.ini>`_
+  pip install esgmapfiles
+
+PIP installation from GitHub
+++++++++++++++++++++++++++++
+
+.. code-block:: bash
+
+  pip install -e git://github.com/Prodiguer/esgf-mapfiles.git@masters#egg=esg_mapfiles
+
+Installation from GitHub
+++++++++++++++++++++++++
+
+1. Create a new directory:
+
+.. code-block:: bash
+
+  mkdir esgmapfiles
+  cd esgmapfiles
+
+2. Clone `our GitHub project <https://github.com/Prodiguer/esgf-mapfiles>`_:
+
+.. code-block:: bash
+
+  git init
+  git clone git@github.com:Prodiguer/esgf-mapfiles.git
+
+3. Run the ``setup.py``:
+
+.. code-block:: bash
+
+  python setup.py install
+
+4. The ``esg_mapfile`` command-line is ready.
+
+
+.. warning:: To run ``esg_mapfiles`` you have to be logged on filesystem hosting the data to publish.
 
 Dependencies
-------------
+++++++++++++
 
-*esg_mapfiles.py* uses the following basic Python libraries includes in Python 2.5+. Becareful your Python environment includes:
+``esg_mapfiles`` uses the following basic Python libraries includes in Python 2.5+. Becareful your Python environment includes:
  * os, sys, re, logging
  * argparse
  * ConfigParser
  * tempfile
  * datetime
+ * functools
  * multiprocessing
  * shutil
 
-Please install the *lockfile* library not inclued in most Python distributions:
+Please install the ``lockfile`` library not inclued in most Python distributions using the usual PIP command-line:
 
 .. code-block:: bash
 
    pip install lockfile
+
+or download and intall the `sources from PIP <https://pypi.python.org/pypi/lockfile>`_:
+
+.. code-block:: bash
+
+  wget https://pypi.python.org/packages/source/l/lockfile/lockfile-0.10.2.tar.gz#md5=1aa6175a6d57f082cd12e7ac6102ab15
+  tar -xzvf lockfile-0.10.2.tar.gz 
+  cd lockfile-0.10.2/
+  python setup.py install
+
+

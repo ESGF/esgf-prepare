@@ -2,11 +2,9 @@
 Code documentation
 ******************
 
-esg_mapfiles.ini
-================
-
-esg_mapfiles.py
+esgmapfiles.py
 ===============
 
 .. automodule:: esgmapfiles
-.. autofunction:: esgmapfiles._get_args
+
+.. moduleauthor::  Levavasseur Guillaume (CNRS/IPSL) <glipsl@ipsl.jussieu.fr>

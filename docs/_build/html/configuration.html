@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Configuration &mdash; esg_mapfiles 0.4 documentation</title>
+    <title>Configuration &mdash; esg_mapfiles 0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4',
+        VERSION:     '0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="esg_mapfiles 0.4 documentation" href="index.html" />
+    <link rel="top" title="esg_mapfiles 0.5 documentation" href="index.html" />
     <link rel="next" title="Usage" href="usage.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">esg_mapfiles 0.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">esg_mapfiles 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -54,25 +54,55 @@
             
   <div class="section" id="configuration">
 <h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
-<p>Edit the esg_mapfiles.ini to set the number of threads you want (default is 4 threads).</p>
+<p>The only conguration you have to do at least is to define the threads number under the <tt class="docutils literal"><span class="pre">[DEFAULT]</span></tt> section. Edit the <tt class="docutils literal"><span class="pre">config.ini</span></tt> to set the number of threads you want (default is 4 threads).</p>
 <div class="highlight-ini"><div class="highlight"><pre><span class="k">[DEFAULT]</span>
 <span class="na">threads_number</span> <span class="o">=</span> <span class="s">4</span>
 </pre></div>
 </div>
 <div class="section" id="add-a-new-project">
 <h2>Add a new project<a class="headerlink" href="#add-a-new-project" title="Permalink to this headline">¶</a></h2>
-<p>To add a supported project, just add a new project section in your configuration file. The options prefix (called <em>facet</em> in the following template) must have the same name as <em>dataset_ID</em> items and <em>directory_format</em> variables.</p>
-<p><em>dataset_ID</em> items correspond to a sorted list of facets defining dataset master ID.</p>
-<p>The <em>directory_format</em> option defines the DRS of your project using a regex to match with your full files paths. Feel free to defined a new tree or file extension
-if necessary using all regex facilities.</p>
-<p>Follow this template:</p>
+<p>Edit the <tt class="docutils literal"><span class="pre">config.ini</span></tt> as follows:</p>
+<ol class="arabic simple">
+<li>Define your &#8220;project&#8221; section in brackets:</li>
+</ol>
 <div class="highlight-ini"><div class="highlight"><pre><span class="k">[your_project]</span>
-<span class="na">facet1_options</span> <span class="o">=</span> <span class="s">value1, value2, ...</span>
-<span class="na">facet2_options</span> <span class="o">=</span> <span class="s">value1, value2, ...</span>
-<span class="na">facet3_options</span> <span class="o">=</span> <span class="s">value1, value2, ...</span>
-<span class="na">dataset_ID</span> <span class="o">=</span> <span class="s">facet1, facet2, facet3</span>
-<span class="na">directory_format</span> <span class="o">=</span> <span class="s">/(?P&lt;root&gt;[\w./-]+)/(?P&lt;project&gt;[\w.-]+)/(?P&lt;facet1&gt;[\w.-]+)/(?P&lt;facet2&gt;[\w.-]+)/(?P&lt;facet3&gt;[\w.-]+)/(?P&lt;filename&gt;[\w.-]+\.nc)</span>
 </pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The <tt class="docutils literal"><span class="pre">-p</span></tt> option directly refers to the name of &#8220;project&#8221; sections.</p>
+</div>
+<ol class="arabic simple" start="2">
+<li>Declare all options of each facet/attribute of your <em>Data Reference Syntax</em> (DRS) following this template:</li>
+</ol>
+<div class="highlight-ini"><div class="highlight"><pre><span class="na">facet1_options</span> <span class="o">=</span> <span class="s">value1, value2, value3, ...</span>
+<span class="na">facet2_options</span> <span class="o">=</span> <span class="s">value1, value2, value3, ...</span>
+<span class="na">facet3_options</span> <span class="o">=</span> <span class="s">value1, value2, value3, ...</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li>Define the dataset identifier format. The dataset identifier is the ordered list of facets.</li>
+</ol>
+<div class="highlight-ini"><div class="highlight"><pre><span class="na">dataset_ID</span> <span class="o">=</span> <span class="s">facet1, facet2, facet3</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The frist attribute of each line of a mapfile is the master ID of the corresponding dataset. It corresponds to the <tt class="docutils literal"><span class="pre">dataset</span> <span class="pre">ID</span></tt> dot-separated.</p>
+</div>
+<ol class="arabic simple" start="4">
+<li>Define the DRS tree of your project on your filesystem. The <tt class="docutils literal"><span class="pre">directory_format</span></tt> is requiered for auto-detection and uses a regular expression to match with your full files paths.</li>
+</ol>
+<div class="highlight-ini"><div class="highlight"><pre><span class="na">directory_format</span> <span class="o">=</span> <span class="s">/(?P&lt;root&gt;[\w./-]+)/(?P&lt;project&gt;[\w.-]+)/(?P&lt;facet1&gt;[\w.-]+)/(?P&lt;facet2&gt;[\w.-]+)/(?P&lt;facet3&gt;[\w.-]+)/(?P&lt;filename&gt;[\w.-]+\.nc)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Feel free to defined a new tree or file extension if necessary using all regex facilities.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The options prefix (&#8220;facet&#8221;) must have the same name as the <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> items and the <tt class="docutils literal"><span class="pre">directory_format</span></tt> variables.</p>
 </div>
 </div>
 </div>
@@ -134,7 +164,7 @@ if necessary using all regex facilities.</p>
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li><a href="index.html">esg_mapfiles 0.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">esg_mapfiles 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

@@ -2,100 +2,198 @@
 Usage
 *****
 
-.. code-block:: bash
-
-   $> ./esg_mapfiles.py -h
-
-      usage: esg_mapfiles.py [-h] -p {cmip5,cordex} [-c CONFIG] [-o OUTDIR]
-                             [-l [LOGDIR]] [-m MAPFILE] [-d] [-v] [-V]
-                             [directory]
-
-      Build ESG-F mapfiles upon local ESG-F datanode bypassing esgscan_directory
-      command-line.
-
-      positional arguments:
-        directory             Directory to recursively scan
-
-      optional arguments:
-        -h, --help            Show this help message and exit.
-
-        -p {cmip5,cordex}, --project {cmip5,cordex}
-                              Required project to build mapfiles among:
-                              - cmip5
-                              - cordex
-
-        -c CONFIG, --config CONFIG
-                              Path of configuration INI file
-                              (default is '{workdir}/esg_mapfiles.ini').
-
-        -o OUTDIR, --outdir OUTDIR
-                              Mapfile(s) output directory
-                              (default is working directory).
-
-        -l [LOGDIR], --logdir [LOGDIR]
-                              Logfile directory. If not, standard output is used.
-
-        -m MAPFILE, --mapfile MAPFILE
-                              Output mapfile name. Only used without --per-dataset option
-                              (default is 'mapfile.txt').
-
-        -d, --per-dataset     Produce ONE mapfile PER dataset.
-
-        -k, --keep-going      Keep going if some files cannot be processed.
-
-        -v, --verbose         Verbose mode.
-
-        -V, --Version         Program version.
-
-      Developped by Levavasseur, G. (CNRS/IPSL)
-
-Examples
---------
-
-Run the script with verbosity and one mapfile per dataset:
+Here is the command-line help:
 
 .. code-block:: bash
 
-   $> ./esg_mapfiles.py /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr/ -p cmip5 -d -v
-   Scan started for /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr
-   cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20110427 <-- /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr/ocnBgchem/Oyr/r1i1p1/v20110427/o2/o2_Oyr_IPSL-CM5A-LR_1pctCO2_r1i1p1_1950-1989.nc
-   [...]
-   cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20120430 <-- /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr/ocnBgchem/Oyr/r1i1p1/v20120430/o2/o2_Oyr_IPSL-CM5A-LR_1pctCO2_r1i1p1_1850-1949.nc
-   Scan completed for /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr
-   Delete temporary directory /tmp/tmpCPadoq
+   $> esg_mapfiles -h
+   usage: esg_mapfiles.py [-h] -p [{cmip5,cordex}] [-c [CONFIG]] [-o [OUTDIR]]
+                         [-l [LOGDIR]] [-m [MAPFILE]] [-d] [-L] [-C] [-k] [-v]
+                         [-V]
+                         directory [directory ...]
 
-   $> ls -l
-   cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20110427
-   cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20111010
-   cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20120430
+   Build ESG-F mapfiles upon local ESG-F datanode bypassing esgscan_directory
+   command-line.
 
-   $> cat cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20110427
-   cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1 | /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr/ocnBgchem/Oyr/r1i1p1/v20110427/o2/o2_Oyr_IPSL-CM5A-LR_1pctCO2_r1i1p1_1950-1989.nc | 135602104 | mod_time=1299499118.000000 | checksum=bd7823e10667f27069803e87dc7ec514 | checksum_type=MD5
-   cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1 | /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr/ocnBgchem/Oyr/r1i1p1/v20110427/co3satcalc/co3satcalc_Oyr_IPSL-CM5A-LR_1pctCO2_r1i1p1_1950-1989.nc | 135602192 | mod_time=1299500260.000000 | checksum=735dd172b16df41fae0994a18426cb6d | checksum_type=MD5
-   [...]
+   positional arguments:
+     directory             One or more directories to recursively scan. Unix wildcards are allowed.
 
+   optional arguments:
+     -h, --help            Show this help message and exit.
+                           
+     -p [{cmip5,cordex}], --project [{cmip5,cordex}]
+                           Required project to build mapfiles among:
+                           - cmip5
+                           - cordex
+                           
+     -c [CONFIG], --config [CONFIG]
+                           Path of configuration INI file
+                           (default is '{workdir}/config.ini').
+                           
+     -o [OUTDIR], --outdir [OUTDIR]
+                           Mapfile(s) output directory
+                           (default is working directory).
+                           
+     -l [LOGDIR], --logdir [LOGDIR]
+                           Logfile directory (default is working directory).
+                           If not, standard output is used.
+                           
+     -m [MAPFILE], --mapfile [MAPFILE]
+                           Output mapfile name. Only used without --per-dataset option
+                           (default is 'mapfile.txt').
+                           
+     -d, --per-dataset     Produces ONE mapfile PER dataset.
+                           
+     -L, --latest          Generates mapfiles with latest versions only.
+                           
+     -C, --checksum        Includes file checksums into mapfiles.
+                           
+     -k, --keep-going      Keep going if some files cannot be processed.
+                           
+     -v, --verbose         Verbose mode.
+                           
+     -V, --Version         Program version.
 
-Run the script with a logfile, a mapfiles output directory and without one mapfile per dataset:
+   Developed by Levavasseur, G. (CNRS/IPSL)
+
+Tutorials
+---------
+
+To generate a mapfile with verbosity using default parameters:
 
 .. code-block:: bash
 
-   $> ./esg_mapfiles.py /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301/ -p cordex -c esg_mapfiles.ini -o my_mapfiles_dir -l -m my_mapfile
+   $> esg_mapfiles /path/to/scan -p cmip5 -v
+   ==> Scan started
+   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   Delete temporary directory /tmp/tmpzspsLH
+   ==> Scan completed (3 files)
 
-   $> cat esg_mapfile-20150213-150235-13754.log
-   2015/02/13 03:02:35 PM INFO Scan started for /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301
-   2015/02/13 03:02:35 PM INFO my_mapfile <-- /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301/tas_EUR-11_IPSL-IPSL-CM5A-MR_historical_r1i1p1_IPSL-INERIS-WRF331F_v1_mon_200101-200512.nc
-   [...]
-   2015/02/13 03:02:35 PM INFO my_mapfile <-- /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301/tas_EUR-11_IPSL-IPSL-CM5A-MR_historical_r1i1p1_IPSL-INERIS-WRF331F_v1_mon_198101-199012.nc
-   2015/02/13 03:02:35 PM INFO Scan completed for /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301
+   $> cat mapfile.txt
+   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
+   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
 
-   $> cat my_mapfiles_dir/my_mapfile
-   cordex.output.EUR-11.IPSL-INERIS.IPSL-IPSL-CM5A-MR.historical.r1i1p1.IPSL-INERIS-WRF331F.v1.mon.tas | /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301/tas_EUR-11_IPSL-IPSL-CM5A-MR_historical_r1i1p1_IPSL-INERIS-WRF331F_v1_mon_200101-200512.nc | 27734202 | mod_time=1393851905.000000 | checksum=b7d27645058c3545cefde2b56ae512a4 | checksum_type=MD5
-   cordex.output.EUR-11.IPSL-INERIS.IPSL-IPSL-CM5A-MR.historical.r1i1p1.IPSL-INERIS-WRF331F.v1.mon.tas | /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301/tas_EUR-11_IPSL-IPSL-CM5A-MR_historical_r1i1p1_IPSL-INERIS-WRF331F_v1_mon_197101-198012.nc | 49880917 | mod_time=1417447725.000000 | checksum=9ace849d1573075c39b6724b22a16c2d | checksum_type=MD5
-   [...]
-
-
-Publish your data using the usual *esgpublish* command line on your ESG-F datanode:
+To generate a mapfile with files checksums:
 
 .. code-block:: bash
 
-   esgpublish [...] --map cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20110427
+   $> esg_mapfiles /path/to/scan -p cmip5 -C
+   ==> Scan started
+   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   ==> Scan completed (3 files)
+
+   $> cat mapfile.txt
+   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=MD5
+   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=MD5
+   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=MD5
+
+
+To generate one mapfile per dataset:
+
+.. code-block:: bash
+
+   $> esg_mapfiles /path/to/scan -p cmip5 -d
+   ==> Scan started
+   mapfile.dataset1 <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   mapfile.dataset2 <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   mapfile.dataset3 <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   ==> Scan completed (3 files)
+
+   $> cat mapfile.dataset*
+   mapfile.dataset1
+   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
+
+   mapfile.dataset2
+   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+
+   mapfile.dataset3
+   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+
+To specify the configuration file:
+
+.. code-block:: bash
+
+   $> esg_mapfiles /path/to/scan -p cmip5 -c /path/to/configfile/config.ini
+
+To skip files that cannot be processed:
+
+.. code-block:: bash
+
+   $> esg_mapfiles /path/to/scan -p cmip5
+   ==> Scan started
+   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   Traceback (most recent call last):
+     File "./esg_mapfiles.py", line 411, in <module>
+       main()
+     File "./esg_mapfiles.py", line 405, in main
+       _directory_process(ctx)
+     File "./esg_mapfiles.py", line 380, in _directory_process
+       outmaps = pool.map(_wrapper, _yield_inputs(ctx))
+     File "/home/glipsl/anaconda/lib/python2.7/multiprocessing/pool.py", line 251, in map
+       return self.map_async(func, iterable, chunksize).get()
+     File "/home/glipsl/anaconda/lib/python2.7/multiprocessing/pool.py", line 558, in get
+       raise self._value
+   __main__._Exception
+   Matching failed for file2.pdf
+
+   $> esg_mapfiles /path/to/scan -p cmip5 -k
+   ==> Scan started
+   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   Delete temporary directory /tmp/tmpzspsLH
+   ==> Scan completed (2 files)
+
+
+To use a logfile (the logfile directory is optionnal):
+
+.. code-block:: bash
+
+   $> esg_mapfiles /path/to/scan -p cmip5 -l /path/to/logfile -v
+
+   $> cat /path/to/logfile/esg_mapfiles-YYYYMMDD-HHMMSS-PID.log
+   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
+   YYYY/MM/DD HH:MM:SS INFO mapfile.dataset1 <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   YYYY/MM/DD HH:MM:SS INFO mapfile.dataset2 <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   YYYY/MM/DD HH:MM:SS INFO mapfile.dataset3 <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   YYYY/MM/DD HH:MM:SS WARNING Delete temporary directory /tmp/tmpzspsLH
+   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
+
+To generate a mapfile specifying filename and output directory (the --per-dataset option takes priority over --mapfile option):
+
+.. code-block:: bash
+
+   $> esg_mapfiles /path/to/scan -p cmip5 -o /path/to/mapfile -m mymapfile.txt
+   ==> Scan started
+   mymapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   mymapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   mymapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   ==> Scan completed (3 files)
+
+   $> cat /path/to/mapfile/mymapfile.txt
+   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
+   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+
+To generate a mapfile walking through "latest" directories only:
+
+.. code-block:: bash
+
+   $> esg_mapfiles /path/to/scan -p cmip5 -L
+   ==> Scan started
+   mapfile.txt <-- /path/to/scan/.../latest/.../file1.nc
+   mapfile.txt <-- /path/to/scan/.../latest/.../file2.nc
+   mapfile.txt <-- /path/to/scan/.../latest/.../file3.nc
+   Delete temporary directory /tmp/tmpzspsLH
+   ==> Scan completed (3 files)
+
+   $> cat mapfile.txt
+   dataset_ID1 | /path/to/scan/.../latest/.../file1.nc | size1 | mod_time1
+   dataset_ID2 | /path/to/scan/.../latest/.../file2.nc | size2 | mod_time2
+   dataset_ID3 | /path/to/scan/.../latest/.../file3.nc | size3 | mod_time3
+
+.. note:: All the previous examples can be combined safely.

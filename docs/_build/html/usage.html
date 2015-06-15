@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Usage &mdash; esg_mapfiles 0.4 documentation</title>
+    <title>Usage &mdash; esg_mapfiles 0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4',
+        VERSION:     '0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="esg_mapfiles 0.4 documentation" href="index.html" />
+    <link rel="top" title="esg_mapfiles 0.5 documentation" href="index.html" />
     <link rel="next" title="Frequently asked questions" href="faq.html" />
     <link rel="prev" title="Configuration" href="configuration.html" /> 
   </head>
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="configuration.html" title="Configuration"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">esg_mapfiles 0.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">esg_mapfiles 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -54,93 +54,182 @@
             
   <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> ./esg_mapfiles.py -h
+<p>Here is the command-line help:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles -h
+usage: esg_mapfiles.py <span class="o">[</span>-h<span class="o">]</span> -p <span class="o">[{</span>cmip5,cordex<span class="o">}]</span> <span class="o">[</span>-c <span class="o">[</span>CONFIG<span class="o">]]</span> <span class="o">[</span>-o <span class="o">[</span>OUTDIR<span class="o">]]</span>
+                      <span class="o">[</span>-l <span class="o">[</span>LOGDIR<span class="o">]]</span> <span class="o">[</span>-m <span class="o">[</span>MAPFILE<span class="o">]]</span> <span class="o">[</span>-d<span class="o">]</span> <span class="o">[</span>-L<span class="o">]</span> <span class="o">[</span>-C<span class="o">]</span> <span class="o">[</span>-k<span class="o">]</span> <span class="o">[</span>-v<span class="o">]</span>
+                      <span class="o">[</span>-V<span class="o">]</span>
+                      directory <span class="o">[</span>directory ...<span class="o">]</span>
 
-   usage: esg_mapfiles.py <span class="o">[</span>-h<span class="o">]</span> -p <span class="o">{</span>cmip5,cordex<span class="o">}</span> <span class="o">[</span>-c CONFIG<span class="o">]</span> <span class="o">[</span>-o OUTDIR<span class="o">]</span>
-                          <span class="o">[</span>-l <span class="o">[</span>LOGDIR<span class="o">]]</span> <span class="o">[</span>-m MAPFILE<span class="o">]</span> <span class="o">[</span>-d<span class="o">]</span> <span class="o">[</span>-v<span class="o">]</span> <span class="o">[</span>-V<span class="o">]</span>
-                          <span class="o">[</span>directory<span class="o">]</span>
+Build ESG-F mapfiles upon <span class="nb">local </span>ESG-F datanode bypassing esgscan_directory
+<span class="nb">command</span>-line.
 
-   Build ESG-F mapfiles upon <span class="nb">local </span>ESG-F datanode bypassing esgscan_directory
-   <span class="nb">command</span>-line.
+positional arguments:
+  directory             One or more directories to recursively scan. Unix wildcards are allowed.
 
-   positional arguments:
-     directory             Directory to recursively scan
+optional arguments:
+  -h, --help            Show this <span class="nb">help </span>message and exit.
 
-   optional arguments:
-     -h, --help            Show this <span class="nb">help </span>message and exit.
+  -p <span class="o">[{</span>cmip5,cordex<span class="o">}]</span>, --project <span class="o">[{</span>cmip5,cordex<span class="o">}]</span>
+                        Required project to build mapfiles among:
+                        - cmip5
+                        - cordex
 
-     -p <span class="o">{</span>cmip5,cordex<span class="o">}</span>, --project <span class="o">{</span>cmip5,cordex<span class="o">}</span>
-                           Required project to build mapfiles among:
-                           - cmip5
-                           - cordex
+  -c <span class="o">[</span>CONFIG<span class="o">]</span>, --config <span class="o">[</span>CONFIG<span class="o">]</span>
+                        Path of configuration INI file
+                        <span class="o">(</span>default is <span class="s1">&#39;{workdir}/config.ini&#39;</span><span class="o">)</span>.
 
-     -c CONFIG, --config CONFIG
-                           Path of configuration INI file
-                           <span class="o">(</span>default is <span class="s1">&#39;{workdir}/esg_mapfiles.ini&#39;</span><span class="o">)</span>.
+  -o <span class="o">[</span>OUTDIR<span class="o">]</span>, --outdir <span class="o">[</span>OUTDIR<span class="o">]</span>
+                        Mapfile<span class="o">(</span>s<span class="o">)</span> output directory
+                        <span class="o">(</span>default is working directory<span class="o">)</span>.
 
-     -o OUTDIR, --outdir OUTDIR
-                           Mapfile<span class="o">(</span>s<span class="o">)</span> output directory
-                           <span class="o">(</span>default is working directory<span class="o">)</span>.
+  -l <span class="o">[</span>LOGDIR<span class="o">]</span>, --logdir <span class="o">[</span>LOGDIR<span class="o">]</span>
+                        Logfile directory <span class="o">(</span>default is working directory<span class="o">)</span>.
+                        If not, standard output is used.
 
-     -l <span class="o">[</span>LOGDIR<span class="o">]</span>, --logdir <span class="o">[</span>LOGDIR<span class="o">]</span>
-                           Logfile directory. If not, standard output is used.
+  -m <span class="o">[</span>MAPFILE<span class="o">]</span>, --mapfile <span class="o">[</span>MAPFILE<span class="o">]</span>
+                        Output mapfile name. Only used without --per-dataset option
+                        <span class="o">(</span>default is <span class="s1">&#39;mapfile.txt&#39;</span><span class="o">)</span>.
 
-     -m MAPFILE, --mapfile MAPFILE
-                           Output mapfile name. Only used without --per-dataset option
-                           <span class="o">(</span>default is <span class="s1">&#39;mapfile.txt&#39;</span><span class="o">)</span>.
+  -d, --per-dataset     Produces ONE mapfile PER dataset.
 
-     -d, --per-dataset     Produce ONE mapfile PER dataset.
+  -L, --latest          Generates mapfiles with latest versions only.
 
-     -k, --keep-going      Keep going <span class="k">if </span>some files cannot be processed.
+  -C, --checksum        Includes file checksums into mapfiles.
 
-     -v, --verbose         Verbose mode.
+  -k, --keep-going      Keep going <span class="k">if </span>some files cannot be processed.
 
-     -V, --Version         Program version.
+  -v, --verbose         Verbose mode.
 
-   Developped by Levavasseur, G. <span class="o">(</span>CNRS/IPSL<span class="o">)</span>
+  -V, --Version         Program version.
+
+Developed by Levavasseur, G. <span class="o">(</span>CNRS/IPSL<span class="o">)</span>
 </pre></div>
 </div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>Run the script with verbosity and one mapfile per dataset:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> ./esg_mapfiles.py /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr/ -p cmip5 -d -v
-Scan started <span class="k">for</span> /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr
-cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20110427 &lt;-- /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr/ocnBgchem/Oyr/r1i1p1/v20110427/o2/o2_Oyr_IPSL-CM5A-LR_1pctCO2_r1i1p1_1950-1989.nc
-<span class="o">[</span>...<span class="o">]</span>
-cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20120430 &lt;-- /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr/ocnBgchem/Oyr/r1i1p1/v20120430/o2/o2_Oyr_IPSL-CM5A-LR_1pctCO2_r1i1p1_1850-1949.nc
-Scan completed <span class="k">for</span> /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr
-Delete temporary directory /tmp/tmpCPadoq
+<div class="section" id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h2>
+<p>To generate a mapfile with verbosity using default parameters:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -v
+<span class="o">==</span>&gt; Scan started
+mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+Delete temporary directory /tmp/tmpzspsLH
+<span class="o">==</span>&gt; Scan completed <span class="o">(</span>3 files<span class="o">)</span>
 
-<span class="nv">$&gt;</span> ls -l
-cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20110427
-cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20111010
-cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20120430
-
-<span class="nv">$&gt;</span> cat cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20110427
-cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1 | /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr/ocnBgchem/Oyr/r1i1p1/v20110427/o2/o2_Oyr_IPSL-CM5A-LR_1pctCO2_r1i1p1_1950-1989.nc | 135602104 | <span class="nv">mod_time</span><span class="o">=</span>1299499118.000000 | <span class="nv">checksum</span><span class="o">=</span>bd7823e10667f27069803e87dc7ec514 | <span class="nv">checksum_type</span><span class="o">=</span>MD5
-cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1 | /prodigfs/esg/CMIP5/output1/IPSL/IPSL-CM5A-LR/1pctCO2/yr/ocnBgchem/Oyr/r1i1p1/v20110427/co3satcalc/co3satcalc_Oyr_IPSL-CM5A-LR_1pctCO2_r1i1p1_1950-1989.nc | 135602192 | <span class="nv">mod_time</span><span class="o">=</span>1299500260.000000 | <span class="nv">checksum</span><span class="o">=</span>735dd172b16df41fae0994a18426cb6d | <span class="nv">checksum_type</span><span class="o">=</span>MD5
-<span class="o">[</span>...<span class="o">]</span>
+<span class="nv">$&gt;</span> cat mapfile.txt
+dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
+dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
 </pre></div>
 </div>
-<p>Run the script with a logfile, a mapfiles output directory and without one mapfile per dataset:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> ./esg_mapfiles.py /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301/ -p cordex -c esg_mapfiles.ini -o my_mapfiles_dir -l -m my_mapfile
+<p>To generate a mapfile with files checksums:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -C
+<span class="o">==</span>&gt; Scan started
+mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+<span class="o">==</span>&gt; Scan completed <span class="o">(</span>3 files<span class="o">)</span>
 
-<span class="nv">$&gt;</span> cat esg_mapfile-20150213-150235-13754.log
-2015/02/13 03:02:35 PM INFO Scan started <span class="k">for</span> /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301
-2015/02/13 03:02:35 PM INFO my_mapfile &lt;-- /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301/tas_EUR-11_IPSL-IPSL-CM5A-MR_historical_r1i1p1_IPSL-INERIS-WRF331F_v1_mon_200101-200512.nc
-<span class="o">[</span>...<span class="o">]</span>
-2015/02/13 03:02:35 PM INFO my_mapfile &lt;-- /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301/tas_EUR-11_IPSL-IPSL-CM5A-MR_historical_r1i1p1_IPSL-INERIS-WRF331F_v1_mon_198101-199012.nc
-2015/02/13 03:02:35 PM INFO Scan completed <span class="k">for</span> /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301
-
-<span class="nv">$&gt;</span> cat my_mapfiles_dir/my_mapfile
-cordex.output.EUR-11.IPSL-INERIS.IPSL-IPSL-CM5A-MR.historical.r1i1p1.IPSL-INERIS-WRF331F.v1.mon.tas | /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301/tas_EUR-11_IPSL-IPSL-CM5A-MR_historical_r1i1p1_IPSL-INERIS-WRF331F_v1_mon_200101-200512.nc | 27734202 | <span class="nv">mod_time</span><span class="o">=</span>1393851905.000000 | <span class="nv">checksum</span><span class="o">=</span>b7d27645058c3545cefde2b56ae512a4 | <span class="nv">checksum_type</span><span class="o">=</span>MD5
-cordex.output.EUR-11.IPSL-INERIS.IPSL-IPSL-CM5A-MR.historical.r1i1p1.IPSL-INERIS-WRF331F.v1.mon.tas | /ccc/work/cont003/cordex/cordex/output/EUR-11/IPSL-INERIS/IPSL-IPSL-CM5A-MR/historical/r1i1p1/IPSL-INERIS-WRF331F/v1/mon/tas/v20140301/tas_EUR-11_IPSL-IPSL-CM5A-MR_historical_r1i1p1_IPSL-INERIS-WRF331F_v1_mon_197101-198012.nc | 49880917 | <span class="nv">mod_time</span><span class="o">=</span>1417447725.000000 | <span class="nv">checksum</span><span class="o">=</span>9ace849d1573075c39b6724b22a16c2d | <span class="nv">checksum_type</span><span class="o">=</span>MD5
-<span class="o">[</span>...<span class="o">]</span>
+<span class="nv">$&gt;</span> cat mapfile.txt
+dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | <span class="nv">checksum_type</span><span class="o">=</span>MD5
+dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | <span class="nv">checksum_type</span><span class="o">=</span>MD5
+dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | <span class="nv">checksum_type</span><span class="o">=</span>MD5
 </pre></div>
 </div>
-<p>Publish your data using the usual <em>esgpublish</em> command line on your ESG-F datanode:</p>
-<div class="highlight-bash"><div class="highlight"><pre>esgpublish <span class="o">[</span>...<span class="o">]</span> --map cmip5.output1.IPSL.IPSL-CM5A-LR.1pctCO2.yr.ocnBgchem.Oyr.r1i1p1.v20110427
+<p>To generate one mapfile per dataset:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -d
+<span class="o">==</span>&gt; Scan started
+mapfile.dataset1 &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+mapfile.dataset2 &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+mapfile.dataset3 &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+<span class="o">==</span>&gt; Scan completed <span class="o">(</span>3 files<span class="o">)</span>
+
+<span class="nv">$&gt;</span> cat mapfile.dataset*
+mapfile.dataset1
+dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
+
+mapfile.dataset2
+dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+
+mapfile.dataset3
+dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
 </pre></div>
+</div>
+<p>To specify the configuration file:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -c /path/to/configfile/config.ini
+</pre></div>
+</div>
+<p>To skip files that cannot be processed:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p <span class="nv">cmip5</span>
+<span class="o">==</span>&gt; Scan started
+mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
+  File <span class="s2">&quot;./esg_mapfiles.py&quot;</span>, line 411, in &lt;module&gt;
+    main<span class="o">()</span>
+  File <span class="s2">&quot;./esg_mapfiles.py&quot;</span>, line 405, in main
+    _directory_process<span class="o">(</span>ctx<span class="o">)</span>
+  File <span class="s2">&quot;./esg_mapfiles.py&quot;</span>, line 380, in _directory_process
+    <span class="nv">outmaps</span> <span class="o">=</span> pool.map<span class="o">(</span>_wrapper, _yield_inputs<span class="o">(</span>ctx<span class="o">))</span>
+  File <span class="s2">&quot;/home/glipsl/anaconda/lib/python2.7/multiprocessing/pool.py&quot;</span>, line 251, in map
+    <span class="k">return </span>self.map_async<span class="o">(</span>func, iterable, chunksize<span class="o">)</span>.get<span class="o">()</span>
+  File <span class="s2">&quot;/home/glipsl/anaconda/lib/python2.7/multiprocessing/pool.py&quot;</span>, line 558, in get
+    raise self._value
+__main__._Exception
+Matching failed <span class="k">for </span>file2.pdf
+
+<span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -k
+<span class="o">==</span>&gt; Scan started
+mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+Delete temporary directory /tmp/tmpzspsLH
+<span class="o">==</span>&gt; Scan completed <span class="o">(</span>2 files<span class="o">)</span>
+</pre></div>
+</div>
+<p>To use a logfile (the logfile directory is optionnal):</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -l /path/to/logfile -v
+
+<span class="nv">$&gt;</span> cat /path/to/logfile/esg_mapfiles-YYYYMMDD-HHMMSS-PID.log
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO mapfile.dataset1 &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO mapfile.dataset2 &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO mapfile.dataset3 &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+YYYY/MM/DD HH:MM:SS WARNING Delete temporary directory /tmp/tmpzspsLH
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span>3 files<span class="o">)</span>
+</pre></div>
+</div>
+<p>To generate a mapfile specifying filename and output directory (the &#8211;per-dataset option takes priority over &#8211;mapfile option):</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -o /path/to/mapfile -m mymapfile.txt
+<span class="o">==</span>&gt; Scan started
+mymapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+mymapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+mymapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+<span class="o">==</span>&gt; Scan completed <span class="o">(</span>3 files<span class="o">)</span>
+
+<span class="nv">$&gt;</span> cat /path/to/mapfile/mymapfile.txt
+dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
+dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+</pre></div>
+</div>
+<p>To generate a mapfile walking through &#8220;latest&#8221; directories only:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -L
+<span class="o">==</span>&gt; Scan started
+mapfile.txt &lt;-- /path/to/scan/.../latest/.../file1.nc
+mapfile.txt &lt;-- /path/to/scan/.../latest/.../file2.nc
+mapfile.txt &lt;-- /path/to/scan/.../latest/.../file3.nc
+Delete temporary directory /tmp/tmpzspsLH
+<span class="o">==</span>&gt; Scan completed <span class="o">(</span>3 files<span class="o">)</span>
+
+<span class="nv">$&gt;</span> cat mapfile.txt
+dataset_ID1 | /path/to/scan/.../latest/.../file1.nc | size1 | mod_time1
+dataset_ID2 | /path/to/scan/.../latest/.../file2.nc | size2 | mod_time2
+dataset_ID3 | /path/to/scan/.../latest/.../file3.nc | size3 | mod_time3
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All the previous examples can be combined safely.</p>
 </div>
 </div>
 </div>
@@ -154,7 +243,7 @@ cordex.output.EUR-11.IPSL-INERIS.IPSL-IPSL-CM5A-MR.historical.r1i1p1.IPSL-INERIS
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Usage</a><ul>
-<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#tutorials">Tutorials</a></li>
 </ul>
 </li>
 </ul>
@@ -202,7 +291,7 @@ cordex.output.EUR-11.IPSL-INERIS.IPSL-IPSL-CM5A-MR.historical.r1i1p1.IPSL-INERIS
         <li class="right" >
           <a href="configuration.html" title="Configuration"
              >previous</a> |</li>
-        <li><a href="index.html">esg_mapfiles 0.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">esg_mapfiles 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
