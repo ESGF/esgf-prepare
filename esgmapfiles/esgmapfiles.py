@@ -184,8 +184,8 @@ def _get_args():
     parser.add_argument(
         '-c', '--config',
         type=str,
-        default='{0}/config.ini'.format(os.getcwd()),
-        help="""Path of configuration INI file\n(default is '{workdir}/config.ini').\n\n""")
+        default='{0}/config.ini'.format(os.path.dirname(os.path.abspath(__file__))),
+        help="""Path of configuration INI file\n(default is {0}/config.ini).\n\n""".format(os.path.dirname(os.path.abspath(__file__))))
     parser.add_argument(
         '-o', '--outdir',
         type=str,

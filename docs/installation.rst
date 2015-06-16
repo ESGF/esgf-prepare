@@ -63,7 +63,7 @@ Please install the ``lockfile`` library not inclued in most Python distributions
 
    pip install lockfile
 
-or download and intall the `sources from PIP <https://pypi.python.org/pypi/lockfile>`_:
+or download and intall the `sources from PyPi <https://pypi.python.org/pypi/lockfile>`_:
 
 .. code-block:: bash
 

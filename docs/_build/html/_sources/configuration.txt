@@ -9,6 +9,9 @@ The only conguration you have to do at least is to define the threads number und
    [DEFAULT]
    threads_number = 4
 
+The configuration file is included in the package and is in the default installation directory of your Python packages (see ``esg_mapfiles -h``). Feel free to copy it and made your own using the ``-c/--config`` option (see :ref:`usage`).
+
+
 Add a new project
 +++++++++++++++++
 

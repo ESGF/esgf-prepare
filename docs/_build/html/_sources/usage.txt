@@ -1,3 +1,5 @@
+.. _usage:
+
 *****
 Usage
 *****
@@ -28,7 +30,7 @@ Here is the command-line help:
                            
      -c [CONFIG], --config [CONFIG]
                            Path of configuration INI file
-                           (default is '{workdir}/config.ini').
+                           (default is ~/anaconda/lib/python2.7/site-packages/esgmapfiles/config.ini).
                            
      -o [OUTDIR], --outdir [OUTDIR]
                            Mapfile(s) output directory
