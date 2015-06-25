@@ -20,7 +20,7 @@ from tempfile import mkdtemp
 from shutil import copy2, rmtree
 
 # Program version
-__version__ = '{0} {1}-{2}-{3}'.format('v0.5.1', '2015', '06', '12')
+__version__ = '{0} {1}-{2}-{3}'.format('v0.5.2', '2015', '06', '25')
 
 # Log levels
 _LEVELS = {'debug': logging.error,
