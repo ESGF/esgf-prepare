@@ -126,9 +126,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">keep</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">keep_going</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">per_dataset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">checksum</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">checksum</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outmap</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">mapfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">_config_parse</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checksum</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">defaults</span><span class="p">()[</span><span class="s">&#39;checksum_type&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="s">&#39;directory_format&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtemp</span> <span class="o">=</span> <span class="n">mkdtemp</span><span class="p">()</span>
 
@@ -265,7 +265,7 @@
         <span class="s">&#39;-C&#39;</span><span class="p">,</span> <span class="s">&#39;--checksum&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Includes file checksums into mapfiles.</span><span class="se">\n\n</span><span class="s">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Includes file checksums into mapfiles (default is a SHA256 checksum).</span><span class="se">\n\n</span><span class="s">&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s">&#39;-k&#39;</span><span class="p">,</span> <span class="s">&#39;--keep-going&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
@@ -407,7 +407,7 @@
 </div>
 <div class="viewcode-block" id="_checksum"><a class="viewcode-back" href="../autodoc.html#esgmapfiles._checksum">[docs]</a><span class="k">def</span> <span class="nf">_checksum</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Does the MD5 checksum by the Shell. md5sum avoids Python memory limits.</span>
+<span class="sd">    Does the MD5 or SHA256 checksum by the Shell avoiding Python memory limits.</span>
 
 <span class="sd">    :param str file: The full path of a file</span>
 <span class="sd">    :param dict ctx: The processing context</span>
@@ -415,7 +415,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">shell</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s">&quot;md5sum {0} | awk -F &#39; &#39; &#39;{{ print $1 }}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">file</span><span class="p">),</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum</span> <span class="o">==</span> <span class="s">&#39;SHA256&#39;</span><span class="p">:</span>
+            <span class="n">shell</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s">&quot;sha256sum {0} | awk -F &#39; &#39; &#39;{{ print $1 }}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">file</span><span class="p">),</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum</span> <span class="o">==</span> <span class="s">&#39;MD5&#39;</span><span class="p">:</span>
+            <span class="n">shell</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s">&quot;md5sum {0} | awk -F &#39; &#39; &#39;{{ print $1 }}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">file</span><span class="p">),</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">keep</span><span class="p">:</span>
+                <span class="n">_rmdtemp</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">_Exception</span><span class="p">(</span><span class="s">&#39;Invalid checksum type: {0} instead of MD5 or SHA256&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">checksum</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">shell</span><span class="o">.</span><span class="n">readline</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">keep</span><span class="p">:</span>
@@ -571,7 +578,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">defaults</span><span class="p">()[</span><span class="s">&#39;lockfile_timeout&#39;</span><span class="p">]))</span>
             <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum</span><span class="p">:</span>
-                <span class="n">_write</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s">&#39;{0} | {1} | {2} | mod_time={3} | checksum={4} | checksum_type={5}</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">master_ID</span><span class="p">,</span> <span class="nb">file</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">mtime</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;.000000&#39;</span><span class="p">,</span> <span class="n">checksum</span><span class="p">,</span> <span class="s">&#39;MD5&#39;</span><span class="p">))</span>
+                <span class="n">_write</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s">&#39;{0} | {1} | {2} | mod_time={3} | checksum={4} | checksum_type={5}</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">master_ID</span><span class="p">,</span> <span class="nb">file</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">mtime</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;.000000&#39;</span><span class="p">,</span> <span class="n">checksum</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">_write</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s">&#39;{0} | {1} | {2} | mod_time={3}</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">master_ID</span><span class="p">,</span> <span class="nb">file</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">mtime</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;.000000&#39;</span><span class="p">))</span>
             <span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>

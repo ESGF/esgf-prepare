@@ -2,7 +2,7 @@
 Configuration
 *************
 
-The only conguration you have to do at least is to define the threads number under the ``[DEFAULT]`` section. Edit the ``config.ini`` to set the number of threads you want (default is 4 threads).
+The only conguration you have to do at least is to define the threads number under the ``[DEFAULT]`` section in the configuration INI file. Edit the ``config.ini`` to set the number of threads you want (default is 4 threads).
 
 .. code-block:: ini
 
@@ -10,6 +10,12 @@ The only conguration you have to do at least is to define the threads number und
    threads_number = 4
 
 The configuration file is included in the package and is in the default installation directory of your Python packages (see ``esg_mapfiles -h``). Feel free to copy it and made your own using the ``-c/--config`` option (see :ref:`usage`).
+
+You can also define the checksum type you want in this section. MD5 or SHA256 (default) checksums are supported. Only SHA256 checksums are allowed for ESGF publication.
+
+.. code-block:: ini
+
+   checksum_type = SHA256
 
 
 Add a new project

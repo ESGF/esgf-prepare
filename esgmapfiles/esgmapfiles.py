@@ -20,7 +20,7 @@ from tempfile import mkdtemp
 from shutil import copy2, rmtree
 
 # Program version
-__version__ = '{0} {1}-{2}-{3}'.format('v0.5', '2015', '06', '12')
+__version__ = '{0} {1}-{2}-{3}'.format('v0.5.1', '2015', '06', '12')
 
 # Log levels
 _LEVELS = {'debug': logging.error,
@@ -77,9 +77,9 @@ class _ProcessingContext(object):
         self.keep = args.keep_going
         self.project = args.project
         self.dataset = args.per_dataset
-        self.checksum = args.checksum
         self.outmap = args.mapfile
         self.cfg = _config_parse(args.config)
+        self.checksum = str(self.cfg.defaults()['checksum_type'])
         self.pattern = re.compile(self.cfg.get(self.project, 'directory_format'))
         self.dtemp = mkdtemp()
 
@@ -216,7 +216,7 @@ def _get_args():
         '-C', '--checksum',
         action='store_true',
         default=False,
-        help="""Includes file checksums into mapfiles.\n\n""")
+        help="""Includes file checksums into mapfiles (default is a SHA256 checksum).\n\n""")
     parser.add_argument(
         '-k', '--keep-going',
         action='store_true',
@@ -358,7 +358,7 @@ def _check_facets(attributes, ctx):
 
 def _checksum(file, ctx):
     """
-    Does the MD5 checksum by the Shell. md5sum avoids Python memory limits.
+    Does the MD5 or SHA256 checksum by the Shell avoiding Python memory limits.
 
     :param str file: The full path of a file
     :param dict ctx: The processing context
@@ -366,7 +366,14 @@ def _checksum(file, ctx):
 
     """
     try:
-        shell = os.popen("md5sum {0} | awk -F ' ' '{{ print $1 }}'".format(file), 'r')
+        if ctx.checksum == 'SHA256':
+            shell = os.popen("sha256sum {0} | awk -F ' ' '{{ print $1 }}'".format(file), 'r')
+        elif ctx.checksum == 'MD5':
+            shell = os.popen("md5sum {0} | awk -F ' ' '{{ print $1 }}'".format(file), 'r')
+        else:
+            if not ctx.keep:
+                _rmdtemp(ctx)
+            raise _Exception('Invalid checksum type: {0} instead of MD5 or SHA256'.format(ctx.checksum))
         return shell.readline()[:-1]
     except:
         if not ctx.keep:
@@ -522,7 +529,7 @@ def _file_process(inputs):
         try:
             lock.acquire(timeout=int(ctx.cfg.defaults()['lockfile_timeout']))
             if ctx.checksum:
-                _write(outfile, '{0} | {1} | {2} | mod_time={3} | checksum={4} | checksum_type={5}\n'.format(master_ID, file, size, str(mtime)+'.000000', checksum, 'MD5'))
+                _write(outfile, '{0} | {1} | {2} | mod_time={3} | checksum={4} | checksum_type={5}\n'.format(master_ID, file, size, str(mtime)+'.000000', checksum, ctx.checksum))
             else:
                 _write(outfile, '{0} | {1} | {2} | mod_time={3}\n'.format(master_ID, file, size, str(mtime)+'.000000'))
             lock.release()
