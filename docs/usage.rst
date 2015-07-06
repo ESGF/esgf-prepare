@@ -90,9 +90,9 @@ To generate a mapfile with files checksums:
    ==> Scan completed (3 files)
 
    $> cat mapfile.txt
-   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=MD5
-   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=MD5
-   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=MD5
+   dataset_ID1#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=MD5
+   dataset_ID2#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=MD5
+   dataset_ID3#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=MD5
 
 
 To generate one mapfile per dataset:
@@ -101,20 +101,22 @@ To generate one mapfile per dataset:
 
    $> esg_mapfiles /path/to/scan -p cmip5 -d
    ==> Scan started
-   mapfile.dataset1 <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   mapfile.dataset2 <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   mapfile.dataset3 <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1#YYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2#YYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3#YYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    ==> Scan completed (3 files)
 
-   $> cat mapfile.dataset*
-   mapfile.dataset1
-   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
+   $> cat dataset_ID*
+   dataset_ID1#YYYYMMDD
+   dataset_ID1#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
 
-   mapfile.dataset2
-   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+   dataset_ID2#YYYYMMDD
+   dataset_ID2#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
 
-   mapfile.dataset3
-   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+   dataset_ID3#YYYYMMDD
+   dataset_ID3#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+
+.. note:: The mapfile name corresponds to the dataset ID.
 
 To specify the configuration file:
 
@@ -159,13 +161,13 @@ To use a logfile (the logfile directory is optionnal):
 
    $> cat /path/to/logfile/esg_mapfiles-YYYYMMDD-HHMMSS-PID.log
    YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO mapfile.dataset1 <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO mapfile.dataset2 <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO mapfile.dataset3 <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   YYYY/MM/DD HH:MM:SS INFO mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   YYYY/MM/DD HH:MM:SS INFO mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   YYYY/MM/DD HH:MM:SS INFO mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    YYYY/MM/DD HH:MM:SS WARNING Delete temporary directory /tmp/tmpzspsLH
    YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
 
-To generate a mapfile specifying filename and output directory (the --per-dataset option takes priority over --mapfile option):
+To generate a mapfile specifying filename and output directory (the ``--per-dataset`` option takes priority over ``--mapfile`` option):
 
 .. code-block:: bash
 
@@ -177,25 +179,29 @@ To generate a mapfile specifying filename and output directory (the --per-datase
    ==> Scan completed (3 files)
 
    $> cat /path/to/mapfile/mymapfile.txt
-   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
-   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
-   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+   dataset_ID1#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
+   dataset_ID2#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+   dataset_ID3#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
 
-To generate a mapfile walking through "latest" directories only:
+To generate a mapfile walking through *latest* directories only. The versions pointed by the latest symlinks are kept within the dataset ID but not in the mapfile name:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p cmip5 -L
+   $> esg_mapfiles /path/to/scan -p cmip5 -L -d
    ==> Scan started
-   mapfile.txt <-- /path/to/scan/.../latest/.../file1.nc
-   mapfile.txt <-- /path/to/scan/.../latest/.../file2.nc
-   mapfile.txt <-- /path/to/scan/.../latest/.../file3.nc
-   Delete temporary directory /tmp/tmpzspsLH
+   dataset_ID1#YYYYMMDD <-- /path/to/scan/.../latest/.../file1.nc
+   dataset_ID2#YYYYMMDD <-- /path/to/scan/.../latest/.../file2.nc
+   dataset_ID3#YYYYMMDD <-- /path/to/scan/.../latest/.../file3.nc
    ==> Scan completed (3 files)
 
-   $> cat mapfile.txt
-   dataset_ID1 | /path/to/scan/.../latest/.../file1.nc | size1 | mod_time1
-   dataset_ID2 | /path/to/scan/.../latest/.../file2.nc | size2 | mod_time2
-   dataset_ID3 | /path/to/scan/.../latest/.../file3.nc | size3 | mod_time3
+   $> cat dataset_ID*
+   dataset_ID1#latest
+   dataset_ID1#YYYYMMDD | /path/to/scan/.../latest/.../file1.nc | size1 | mod_time1
+
+   dataset_ID2#latest
+   dataset_ID2#YYYYMMDD | /path/to/scan/.../latest/.../file2.nc | size2 | mod_time2
+
+   dataset_ID3#latest
+   dataset_ID3#YYYYMMDD | /path/to/scan/.../latest/.../file3.nc | size3 | mod_time3
 
 .. note:: All the previous examples can be combined safely.

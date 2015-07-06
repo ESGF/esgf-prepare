@@ -39,11 +39,11 @@ Edit the ``config.ini`` as follows:
    facet2_options = value1, value2, value3, ...
    facet3_options = value1, value2, value3, ...
 
-3. Define the dataset identifier format. The dataset identifier is the ordered list of facets.
+3. Define the dataset identifier format. The dataset identifier is the ordered list of facets dot-separated ending with the hash-separated version.
 
 .. code-block:: ini
 
-   dataset_ID = facet1, facet2, facet3
+   dataset_ID = facet1.facet2.facet3#version
 
 .. note:: The frist attribute of each line of a mapfile is the master ID of the corresponding dataset. It corresponds to the ``dataset ID`` dot-separated.
 

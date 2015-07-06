@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>esgmapfiles &mdash; esg_mapfiles 0.5 documentation</title>
+    <title>esgmapfiles &mdash; esg_mapfiles 0.5.2 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.5',
+        VERSION:     '0.5.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="esg_mapfiles 0.5 documentation" href="../index.html" />
+    <link rel="top" title="esg_mapfiles 0.5.2 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">esg_mapfiles 0.5 documentation</a> &raquo;</li>
+        <li><a href="../index.html">esg_mapfiles 0.5.2 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -69,7 +69,7 @@
 <span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copy2</span><span class="p">,</span> <span class="n">rmtree</span>
 
 <span class="c"># Program version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s">&#39;{0} {1}-{2}-{3}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;v0.5&#39;</span><span class="p">,</span> <span class="s">&#39;2015&#39;</span><span class="p">,</span> <span class="s">&#39;06&#39;</span><span class="p">,</span> <span class="s">&#39;12&#39;</span><span class="p">)</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s">&#39;{0} {1}-{2}-{3}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;v0.5.2&#39;</span><span class="p">,</span> <span class="s">&#39;2015&#39;</span><span class="p">,</span> <span class="s">&#39;06&#39;</span><span class="p">,</span> <span class="s">&#39;25&#39;</span><span class="p">)</span>
 
 <span class="c"># Log levels</span>
 <span class="n">_LEVELS</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;debug&#39;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
@@ -128,7 +128,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">per_dataset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outmap</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">mapfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">_config_parse</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">checksum</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">defaults</span><span class="p">()[</span><span class="s">&#39;checksum_type&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">checksum</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checksum</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">defaults</span><span class="p">()[</span><span class="s">&#39;checksum_type&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checksum</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="s">&#39;directory_format&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtemp</span> <span class="o">=</span> <span class="n">mkdtemp</span><span class="p">()</span>
 
@@ -376,15 +379,19 @@
 
 <span class="sd">    :param dict attributes: The attributes auto-detected with DRS pattern</span>
 <span class="sd">    :param dict config: The absolute or relative path of the configuration file</span>
-<span class="sd">    :returns: The master ID</span>
+<span class="sd">    :returns: The master ID with the version</span>
 <span class="sd">    :rtype: *str*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">facets</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s">&#39;project&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s">&#39;dataset_ID&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
-    <span class="n">ID</span> <span class="o">=</span> <span class="p">[</span><span class="n">attributes</span><span class="p">[</span><span class="s">&#39;project&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+    <span class="n">dataset_ID</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s">&#39;project&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s">&#39;dataset_ID&#39;</span><span class="p">)</span>
+    <span class="n">facets</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;\.|#&#39;</span><span class="p">,</span> <span class="n">dataset_ID</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
-        <span class="n">ID</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
-    <span class="k">return</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">facet</span> <span class="o">==</span> <span class="s">&#39;project&#39;</span><span class="p">:</span>
+            <span class="n">dataset_ID</span> <span class="o">=</span> <span class="n">dataset_ID</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">facet</span> <span class="o">==</span> <span class="s">&#39;version&#39;</span><span class="p">:</span>
+            <span class="n">dataset_ID</span> <span class="o">=</span> <span class="n">dataset_ID</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
+        <span class="n">dataset_ID</span> <span class="o">=</span> <span class="n">dataset_ID</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">dataset_ID</span>
 
 </div>
 <div class="viewcode-block" id="_check_facets"><a class="viewcode-back" href="../autodoc.html#esgmapfiles._check_facets">[docs]</a><span class="k">def</span> <span class="nf">_check_facets</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
@@ -437,7 +444,7 @@
 <span class="sd">    :param dict ctx: The processing context</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c"># This function occurs juste before each exception raised to clean temporary directory</span>
+    <span class="c"># This function occurs just before each exception raised to clean temporary directory</span>
     <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
         <span class="n">_log</span><span class="p">(</span><span class="s">&#39;warning&#39;</span><span class="p">,</span> <span class="s">&#39;Delete temporary directory {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">dtemp</span><span class="p">))</span>
     <span class="n">rmtree</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">dtemp</span><span class="p">)</span>
@@ -557,8 +564,11 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c"># Control vocabulary of each facet</span>
         <span class="n">_check_facets</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
-        <span class="c"># Deduce master ID from fulle path</span>
-        <span class="n">master_ID</span> <span class="o">=</span> <span class="n">_get_master_ID</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="c"># Deduce master ID from full path and --latest option</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">latest</span><span class="p">:</span>
+            <span class="n">master_ID</span> <span class="o">=</span> <span class="n">_get_master_ID</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">],</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">r&#39;(latest)&#39;</span><span class="p">,</span> <span class="nb">file</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])))[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">master_ID</span> <span class="o">=</span> <span class="n">_get_master_ID</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:])</span>
         <span class="c"># Retrieve size and modification time</span>
         <span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">ino</span><span class="p">,</span> <span class="n">dev</span><span class="p">,</span> <span class="n">nlink</span><span class="p">,</span> <span class="n">uid</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span> <span class="n">mtime</span><span class="p">,</span> <span class="n">ctime</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
         <span class="c"># Make the file checksum (MD5)</span>
@@ -686,7 +696,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">esg_mapfiles 0.5 documentation</a> &raquo;</li>
+        <li><a href="../index.html">esg_mapfiles 0.5.2 documentation</a> &raquo;</li>
           <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

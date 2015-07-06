@@ -20,7 +20,7 @@ from tempfile import mkdtemp
 from shutil import copy2, rmtree
 
 # Program version
-__version__ = '{0} {1}-{2}-{3}'.format('v0.5.2', '2015', '06', '25')
+__version__ = '{0} {1}-{2}-{3}'.format('v0.5.3', '2015', '07', '06')
 
 # Log levels
 _LEVELS = {'debug': logging.error,
@@ -79,7 +79,10 @@ class _ProcessingContext(object):
         self.dataset = args.per_dataset
         self.outmap = args.mapfile
         self.cfg = _config_parse(args.config)
-        self.checksum = str(self.cfg.defaults()['checksum_type'])
+        if args.checksum:
+            self.checksum = str(self.cfg.defaults()['checksum_type'])
+        else:
+            self.checksum = None
         self.pattern = re.compile(self.cfg.get(self.project, 'directory_format'))
         self.dtemp = mkdtemp()
 
@@ -327,15 +330,19 @@ def _get_master_ID(attributes, config):
 
     :param dict attributes: The attributes auto-detected with DRS pattern
     :param dict config: The absolute or relative path of the configuration file
-    :returns: The master ID
+    :returns: The master ID with the version
     :rtype: *str*
 
     """
-    facets = config.get(attributes['project'].lower(), 'dataset_ID').replace(" ", "").split(',')
-    ID = [attributes['project'].lower()]
+    dataset_ID = config.get(attributes['project'].lower(), 'dataset_ID')
+    facets = re.split('\.|#', dataset_ID)
     for facet in facets:
-        ID.append(attributes[facet])
-    return '.'.join(ID)
+        if facet == 'project':
+            dataset_ID = dataset_ID.replace(facet, attributes[facet].lower())
+        if facet == 'version':
+            dataset_ID = dataset_ID.replace(facet, attributes[facet])
+        dataset_ID = dataset_ID.replace(facet, attributes[facet])
+    return dataset_ID
 
 
 def _check_facets(attributes, ctx):
@@ -388,7 +395,7 @@ def _rmdtemp(ctx):
     :param dict ctx: The processing context
 
     """
-    # This function occurs juste before each exception raised to clean temporary directory
+    # This function occurs just before each exception raised to clean temporary directory
     if ctx.verbose:
         _log('warning', 'Delete temporary directory {0}'.format(ctx.dtemp))
     rmtree(ctx.dtemp)
@@ -508,8 +515,11 @@ def _file_process(inputs):
     else:
         # Control vocabulary of each facet
         _check_facets(attributes, ctx)
-        # Deduce master ID from fulle path
-        master_ID = _get_master_ID(attributes, ctx.cfg)
+        # Deduce master ID from full path and --latest option
+        if ctx.latest:
+            master_ID = _get_master_ID(attributes, ctx.cfg).replace(attributes['version'], os.path.basename(os.path.realpath(''.join(re.split(r'(latest)', file)[:-1])))[1:])
+        else:
+            master_ID = _get_master_ID(attributes, ctx.cfg).replace(attributes['version'], attributes['version'][1:])
         # Retrieve size and modification time
         (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(file)
         # Make the file checksum (MD5)
