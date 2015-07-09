@@ -14,7 +14,7 @@ PIP installation from GitHub
 
 .. code-block:: bash
 
-  pip install -e git://github.com/Prodiguer/esgf-mapfiles.git@masters#egg=esg_mapfiles
+  pip install -e git://github.com/Prodiguer/esgf-mapfiles.git@master#egg=esgmapfiles
 
 Installation from GitHub
 ++++++++++++++++++++++++
@@ -48,14 +48,15 @@ Dependencies
 ++++++++++++
 
 ``esg_mapfiles`` uses the following basic Python libraries includes in Python 2.5+. Becareful your Python environment includes:
- * os, sys, re, logging
- * argparse
- * ConfigParser
- * tempfile
- * datetime
- * functools
- * multiprocessing
- * shutil
+
+ * `os <https://docs.python.org/2/library/os.html>`_, `sys <https://docs.python.org/2/library/sys.html>`_, `re <https://docs.python.org/2/library/re.html>`_, `logging <https://docs.python.org/2/library/logging.html>`_
+ * `argparse <https://docs.python.org/2/library/argparse.html>`_
+ * `ConfigParser <https://docs.python.org/2/library/configparser.html>`_
+ * `tempfile <https://docs.python.org/2/library/tempfile.html>`_
+ * `datetime <https://docs.python.org/2/library/datetime.html>`_
+ * `functools <https://docs.python.org/2/library/functools.html>`_
+ * `multiprocessing <https://docs.python.org/2/library/multiprocessing.html>`_
+ * `shutil <https://docs.python.org/2/library/shutil.html>`_
 
 Please install the ``lockfile`` library not inclued in most Python distributions using the usual PIP command-line:
 
@@ -71,5 +72,3 @@ or download and intall the `sources from PyPi <https://pypi.python.org/pypi/lock
   tar -xzvf lockfile-0.10.2.tar.gz 
   cd lockfile-0.10.2/
   python setup.py install
-
-

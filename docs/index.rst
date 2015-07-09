@@ -1,6 +1,3 @@
-.. esg_mapfiles documentation master file, created by
-   sphinx-quickstart on Fri Jun  5 17:09:27 2015.
-
 esg_mapfiles
 ============
 

@@ -35,33 +35,35 @@ class _ProcessingContext(object):
     """
     Encapsulates the following processing context/information for main process:
 
-    +------------------+-------------+---------------------------------+
-    | Attribute        | Type        | Description                     |
-    +==================+=============+=================================+
-    | *self*.directory | *list*      | Directories to scan             |
-    +------------------+-------------+---------------------------------+
-    | *self*.latest    | *boolean*   | True if latest version          |
-    +------------------+-------------+---------------------------------+
-    | *self*.outdir    | *str*       | Output directory                |
-    +------------------+-------------+---------------------------------+
-    | *self*.verbose   | *boolean*   | True if verbose mode            |
-    +------------------+-------------+---------------------------------+
-    | *self*.keep      | *boolean*   | True if keep going mode         |
-    +------------------+-------------+---------------------------------+
-    | *self*.project   | *str*       | Project                         |
-    +------------------+-------------+---------------------------------+
-    | *self*.dataset   | *boolean*   | True if one mapfile per dataset |
-    +------------------+-------------+---------------------------------+
-    | *self*.checksum  | *boolean*   | True if checksums into mapfile  |
-    +------------------+-------------+---------------------------------+
-    | *self*.outmap    | *str*       | Mapfile output name             |
-    +------------------+-------------+---------------------------------+
-    | *self*.cfg       | *callable*  | Configuration file parser       |
-    +------------------+-------------+---------------------------------+
-    | *self*.pattern   | *re object* | DRS regex pattern               |
-    +------------------+-------------+---------------------------------+
-    | *self*.dtemp     | *str*       | Directory of temporary files    |
-    +------------------+-------------+---------------------------------+
+    +---------------------+-------------+-------------------------------------+
+    | Attribute           | Type        | Description                         |
+    +=====================+=============+=====================================+
+    | *self*.directory    | *list*      | Directories to scan                 |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.latest       | *boolean*   | True if latest version              |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.outdir       | *str*       | Output directory                    |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.verbose      | *boolean*   | True if verbose mode                |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.keep         | *boolean*   | True if keep going mode             |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.with_version | *boolean*   | True: include version in dataset ID |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.project      | *str*       | Project                             |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.dataset      | *boolean*   | True if one mapfile per dataset     |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.checksum     | *boolean*   | True if checksums into mapfile      |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.outmap       | *str*       | Mapfile output name                 |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.cfg          | *callable*  | Configuration file parser           |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.pattern      | *re object* | DRS regex pattern                   |
+    +---------------------+-------------+-------------------------------------+
+    | *self*.dtemp        | *str*       | Directory of temporary files        |
+    +---------------------+-------------+-------------------------------------+
 
     :param dict args: Parsed command-line arguments
     :returns: The processing context
@@ -75,6 +77,7 @@ class _ProcessingContext(object):
         self.outdir = args.outdir
         self.verbose = args.verbose
         self.keep = args.keep_going
+        self.with_version = args.with_version
         self.project = args.project
         self.dataset = args.per_dataset
         self.outmap = args.mapfile
@@ -91,33 +94,35 @@ class _SyndaProcessingContext(object):
     """
     Encapsulates the following processing context/information for SYNDA call:
 
-    +------------------+-------------+----------------------------------------------------+
-    | Attribute        | Type        | Description                                        |
-    +==================+=============+====================================================+
-    | *self*.directory | *list*      | Variable path to scan                              |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.latest    | *boolean*   | True: only scan latest version                     |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.outdir    | *str*       | Output directory: /home/esg-user/mapfiles/pending/ |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.verbose   | *boolean*   | True: verbose mode                                 |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.keep      | *boolean*   | True: keep going mode                              |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.project   | *str*       | Project: cmip5                                     |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.dataset   | *boolean*   | True: one mapfile per dataset                      |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.checksum  | *boolean*   | True: checksums into mapfile                       |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.outmap    | *str*       | None: no mapfile output name                       |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.cfg       | *callable*  | Configuration file parser                          |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.pattern   | *re object* | DRS regex pattern                                  |
-    +------------------+-------------+----------------------------------------------------+
-    | *self*.dtemp     | *str*       | Directory of temporary files                       |
-    +------------------+-------------+----------------------------------------------------+
+    +---------------------+-------------+----------------------------------------------------+
+    | Attribute           | Type        | Description                                        |
+    +=====================+=============+====================================================+
+    | *self*.directory    | *list*      | Variable path to scan                              |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.latest       | *boolean*   | True: only scan latest version                     |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.outdir       | *str*       | Output directory: /home/esg-user/mapfiles/pending/ |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.verbose      | *boolean*   | True: verbose mode                                 |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.keep         | *boolean*   | True: keep going mode                              |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.with_version | *boolean*   | True: include version in dataset ID                |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.project      | *str*       | Project: cmip5                                     |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.dataset      | *boolean*   | True: one mapfile per dataset                      |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.checksum     | *boolean*   | True: checksums into mapfile                       |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.outmap       | *str*       | None: no mapfile output name                       |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.cfg          | *callable*  | Configuration file parser                          |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.pattern      | *re object* | DRS regex pattern                                  |
+    +---------------------+-------------+----------------------------------------------------+
+    | *self*.dtemp        | *str*       | Directory of temporary files                       |
+    +---------------------+-------------+----------------------------------------------------+
 
     :param str full_path_variable: Full path of a variable to process
     :returns: A specific processing context for SYNDA
@@ -133,6 +138,7 @@ class _SyndaProcessingContext(object):
         self.outdir = '/home/esg-user/mapfiles/pending/'
         self.verbose = True
         self.keep = True
+        self.with_version = False
         self.project = 'cmip5'
         self.dataset = True
         self.checksum = True
@@ -161,7 +167,7 @@ class _Exception(Exception):
 
 def _get_args():
     """
-    Returns parsed command-line arguments. See ``esgmapfiles -h`` for full description.
+    Returns parsed command-line arguments. See ``esg_mapfiles -h`` for full description.
 
     """
     parser = argparse.ArgumentParser(
@@ -216,6 +222,11 @@ def _get_args():
         default=False,
         help="""Generates mapfiles with latest versions only.\n\n""")
     parser.add_argument(
+        '-w', '--with-version',
+        action='store_true',
+        default=False,
+        help="""Includes DRS version into dataset ID (ESGF 2.0 compatibility).\n\n""")
+    parser.add_argument(
         '-C', '--checksum',
         action='store_true',
         default=False,
@@ -264,9 +275,9 @@ def _init_logging(logdir):
 
     """
     if logdir:
-        logfile = 'esgmapfiles-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
+        logfile = 'esg_mapfiles-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
         if not os.path.exists(logdir):
-            os.mkdir(logdir)
+            os.makedirs(logdir)
         logging.basicConfig(filename=os.path.join(logdir, logfile),
                             level=logging.DEBUG,
                             format='%(asctime)s %(levelname)s %(message)s',
@@ -499,6 +510,7 @@ def _file_process(inputs):
     """
     # Extract inputs from tuple
     file, ctx = inputs
+    print file
     # Matching file full path with corresponding project pattern to get all attributes
     try:
         attributes = re.match(ctx.pattern, file).groupdict()
@@ -516,10 +528,14 @@ def _file_process(inputs):
         # Control vocabulary of each facet
         _check_facets(attributes, ctx)
         # Deduce master ID from full path and --latest option
-        if ctx.latest:
-            master_ID = _get_master_ID(attributes, ctx.cfg).replace(attributes['version'], os.path.basename(os.path.realpath(''.join(re.split(r'(latest)', file)[:-1])))[1:])
+        if ctx.with_version:
+            if ctx.latest:
+                master_ID = _get_master_ID(attributes, ctx.cfg).replace(attributes['version'], os.path.basename(os.path.realpath(''.join(re.split(r'(latest)', file)[:-1])))[1:])
+            else:
+                master_ID = _get_master_ID(attributes, ctx.cfg).replace(attributes['version'], attributes['version'][1:])
         else:
-            master_ID = _get_master_ID(attributes, ctx.cfg).replace(attributes['version'], attributes['version'][1:])
+            master_ID = _get_master_ID(attributes, ctx.cfg).replace('#' + attributes['version'], '')
+
         # Retrieve size and modification time
         (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(file)
         # Make the file checksum (MD5)
@@ -527,7 +543,10 @@ def _file_process(inputs):
             checksum = _checksum(file, ctx)
         # Build mapfile name if one per dataset, or read the supplied name instead
         if ctx.dataset:
-            outmap = '{0}.{1}'.format(master_ID, attributes['version'])
+            if ctx.with_version:
+                outmap = '{0}{1}{2}'.format(master_ID.split('#')[0], '.', attributes['version'])
+            else:
+                outmap = master_ID.split('#')[0]
         else:
             outmap = ctx.outmap
         outfile = os.path.join(ctx.dtemp, outmap)
@@ -567,7 +586,7 @@ def _process(ctx):
     if not os.path.isdir(ctx.outdir):
         if ctx.verbose:
             _log('warning', 'Create output directory: {0}'.format(ctx.outdir))
-        os.mkdir(ctx.outdir)
+        os.makedirs(ctx.outdir)
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.cfg.defaults()['threads_number']))
     # Return the list of generated mapfiles in temporary directory

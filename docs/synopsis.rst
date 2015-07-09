@@ -32,12 +32,15 @@ Features
   To compute the checksum of a lot of large files becomes time consuming. We implement multithreading at file level. Each file is processed by a thread that writes the resulting line in the corresponding mapfile. A lock file system orders the simultaneous access to mapfiles by the threads to avoid any conflicts.
 
 **Mapfile granularity control**
-  You can choose to produce one mapfile per dataset. In this case you the mapfile automatically takes the name of the dataset identifier. Consequently, you can set your own "mapfile-granularity". 
+  You can choose to produce one mapfile per dataset. In this case your mapfiles automatically take the name of the dataset identifier. Consequently, you can set your own "mapfile-granularity". 
 
 .. note:: A dataset is defined by all DRS tree before the version.
 
 **Only latest version**
    You can choose to only include the latest versions of the datasets in your mapfile. In this case, the walk through the filesystem is filtered. Only the folders with the "latest" symbolic link are recursively scanned.
+
+**Mapfile with DRS version**
+   You can choose to include the DRS version into each dataset ID. This is compatible with the ESGF 2.0 release and lead to a full-slave behaviour of the ESGF publisher. With this mapfile syntax the ``--new-version` option of the publisher command-lines is deprecated.
 
 **SYNDA implemtentation**
   ``esg_mapfiles.py`` can be called by SYNDA post-processing workers. This uses the ``run()`` function instead of the ``main()``. 

@@ -74,9 +74,9 @@ To generate a mapfile with verbosity using default parameters:
    ==> Scan completed (3 files)
 
    $> cat mapfile.txt
-   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
-   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
-   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+   dataset_ID1#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
+   dataset_ID2#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+   dataset_ID3#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
 
 To generate a mapfile with files checksums:
 
@@ -101,19 +101,19 @@ To generate one mapfile per dataset:
 
    $> esg_mapfiles /path/to/scan -p cmip5 -d
    ==> Scan started
-   dataset_ID1#YYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   dataset_ID2#YYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   dataset_ID3#YYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    ==> Scan completed (3 files)
 
-   $> cat dataset_ID*
-   dataset_ID1#YYYYMMDD
+   $> cat dataset_ID.v*
+   dataset_ID1.vYYYYMMDD
    dataset_ID1#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
 
-   dataset_ID2#YYYYMMDD
+   dataset_ID2.vYYYYMMDD
    dataset_ID2#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
 
-   dataset_ID3#YYYYMMDD
+   dataset_ID3.vYYYYMMDD
    dataset_ID3#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
 
 .. note:: The mapfile name corresponds to the dataset ID.
@@ -189,19 +189,19 @@ To generate a mapfile walking through *latest* directories only. The versions po
 
    $> esg_mapfiles /path/to/scan -p cmip5 -L -d
    ==> Scan started
-   dataset_ID1#YYYYMMDD <-- /path/to/scan/.../latest/.../file1.nc
-   dataset_ID2#YYYYMMDD <-- /path/to/scan/.../latest/.../file2.nc
-   dataset_ID3#YYYYMMDD <-- /path/to/scan/.../latest/.../file3.nc
+   dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../latest/.../file1.nc
+   dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../latest/.../file2.nc
+   dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../latest/.../file3.nc
    ==> Scan completed (3 files)
 
    $> cat dataset_ID*
-   dataset_ID1#latest
+   dataset_ID1.latest
    dataset_ID1#YYYYMMDD | /path/to/scan/.../latest/.../file1.nc | size1 | mod_time1
 
-   dataset_ID2#latest
+   dataset_ID2.latest
    dataset_ID2#YYYYMMDD | /path/to/scan/.../latest/.../file2.nc | size2 | mod_time2
 
-   dataset_ID3#latest
+   dataset_ID3.latest
    dataset_ID3#YYYYMMDD | /path/to/scan/.../latest/.../file3.nc | size3 | mod_time3
 
 .. note:: All the previous examples can be combined safely.
