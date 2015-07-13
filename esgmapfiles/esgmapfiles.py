@@ -350,8 +350,6 @@ def _get_master_ID(attributes, config):
     for facet in facets:
         if facet == 'project':
             dataset_ID = dataset_ID.replace(facet, attributes[facet].lower())
-        if facet == 'version':
-            dataset_ID = dataset_ID.replace(facet, attributes[facet])
         dataset_ID = dataset_ID.replace(facet, attributes[facet])
     return dataset_ID
 
@@ -510,7 +508,6 @@ def _file_process(inputs):
     """
     # Extract inputs from tuple
     file, ctx = inputs
-    print file
     # Matching file full path with corresponding project pattern to get all attributes
     try:
         attributes = re.match(ctx.pattern, file).groupdict()
@@ -543,10 +540,7 @@ def _file_process(inputs):
             checksum = _checksum(file, ctx)
         # Build mapfile name if one per dataset, or read the supplied name instead
         if ctx.dataset:
-            if ctx.with_version:
-                outmap = '{0}{1}{2}'.format(master_ID.split('#')[0], '.', attributes['version'])
-            else:
-                outmap = master_ID.split('#')[0]
+            outmap = '{0}{1}{2}'.format(master_ID.split('#')[0], '.', attributes['version'])
         else:
             outmap = ctx.outmap
         outfile = os.path.join(ctx.dtemp, outmap)
