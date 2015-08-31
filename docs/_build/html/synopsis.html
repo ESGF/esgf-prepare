@@ -53,49 +53,54 @@
           <div class="body">
             
   <div class="section" id="synopsis">
-<h1>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h1>
-<p>The publication process of ESGF nodes requires <em>mapfiles</em>. Mapfiles are text files where each line describes a file to publish on the following format:</p>
+<span id="id1"></span><h1>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h1>
+<p>The publication process of the <a class="reference external" href="http://pcmdi9.llnl.gov/">ESG-F</a> nodes requires <em>mapfiles</em>. Mapfiles are text files where each line describes a file to publish on the following format:</p>
 <div class="highlight-python"><div class="highlight"><pre>dataset_ID | absolute_path | size_bytes [ | option=value ]
 </pre></div>
 </div>
-<ol class="lowerroman simple">
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<ol class="last lowerroman simple">
 <li>All values have to be pipe-separated.</li>
 <li>The dataset identifier, the absolute path and the size (in bytes) are required.</li>
 <li>Adding the file checksum and the checksum type as optional values is strongly recommended.</li>
 </ol>
-<p>Security policies of computing centres, that often host ESGF data and datanodes, do not allow to easily use the <tt class="docutils literal"><span class="pre">esgscan_directory</span></tt> ESGF command-line that is conventionally used to generate mapfiles. Moreover, this command becomes time consuming to checksums a lot of data.</p>
-<p><tt class="docutils literal"><span class="pre">esg_mapfiles</span></tt> is a flexible alternative command-line tool allowing you to easily generate mapfiles independently from ESGF nodes.</p>
+</div>
+<p>Security policies of computing centres, that often host <a class="reference external" href="http://pcmdi9.llnl.gov/">ESG-F</a> data and datanodes, do not allow to easily use the <cite>esgscan_directory`</cite> ESG-F command-line (see the <a class="reference external" href="https://github.com/ESGF/esg-publisher">ESG-F publisher</a>) that is conventionally used to generate mapfiles. Moreover, this command becomes time consuming to checksums a lot of data.</p>
+<p><tt class="docutils literal"><span class="pre">esg_mapfiles</span></tt> is a flexible alternative command-line tool allowing you to easily generate mapfiles independently from <a class="reference external" href="http://pcmdi9.llnl.gov/">ESG-F</a> nodes.</p>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><strong>Directory as input</strong></dt>
-<dd>In comparison with previous versions, you only need to specifiy the directory to recursively scan. To include several data directories in one mapfile and to publish them at once, you can use all Unix wildcards in the path or submit several paths.</dd>
+<dd>You only need to specifiy the directory to recursively scan. To include several data directories in one mapfile and to publish them at once, you can use all Unix wildcards in the path or submit several paths.</dd>
 <dt><strong>Multi-project</strong></dt>
-<dd><tt class="docutils literal"><span class="pre">esg_mapfiles</span></tt> is currently provided supporting CMIP5 and CORDEX <em>Data Reference Syntax</em>. Nevertheless, you can easily add a new &#8220;project&#8221; section in the configuration file to support yours. Please follow the INI syntax.</dd>
+<dd><tt class="docutils literal"><span class="pre">time_axis</span></tt> is currently provided supporting <a class="reference external" href="http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf">CMIP5</a> and <a class="reference external" href="https://www.medcordex.eu/cordex_archive_specifications_2.2_30sept2013.pdf">CORDEX</a> <em>Data Reference Syntax</em> (DRS). Nevertheless, you can easily add a new &#8220;project&#8221; section in the configuration file to support yours. Please follow the <a class="reference external" href="https://en.wikipedia.org/wiki/INI_file">INI syntax</a>.</dd>
 <dt><strong>Facets auto-detection</strong></dt>
-<dd>The dataset&#8217;s facets will be automatically detect using the <tt class="docutils literal"><span class="pre">directory_format</span></tt> regular expression in the configuration file where all facet options have to be declared. This ensures an appropriated mapfile generation by preventing DRS mistakes and checking the controlled vocabulary.</dd>
+<dd>The dataset facets will be automatically detect using the <tt class="docutils literal"><span class="pre">directory_format</span></tt> regular expression in the configuration file where all facet options have to be declared. This ensures an appropriated mapfile generation by preventing DRS mistakes and checking the controlled vocabulary.</dd>
 <dt><strong>Multithreading</strong></dt>
 <dd>To compute the checksum of a lot of large files becomes time consuming. We implement multithreading at file level. Each file is processed by a thread that writes the resulting line in the corresponding mapfile. A lock file system orders the simultaneous access to mapfiles by the threads to avoid any conflicts.</dd>
 <dt><strong>Mapfile granularity control</strong></dt>
-<dd>You can choose to produce one mapfile per dataset. In this case you the mapfile automatically takes the name of the dataset identifier. Consequently, you can set your own &#8220;mapfile-granularity&#8221;.</dd>
+<dd>You can choose to produce one mapfile per dataset (i.e., to generate one mapfile per each version of each dataset). In this case your mapfiles automatically take the name of the dataset identifier with DRS version as suffix. Consequently, you can set your own &#8220;mapfile-granularity&#8221; and control your publications by concatenating several mapfiles.</dd>
 </dl>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">A dataset is defined by all DRS tree before the version.</p>
+<p class="last">A dataset is defined by one version of all upstream DRS tree.</p>
 </div>
 <dl class="docutils">
 <dt><strong>Only latest version</strong></dt>
-<dd>You can choose to only include the latest versions of the datasets in your mapfile. In this case, the walk through the filesystem is filtered. Only the folders with the &#8220;latest&#8221; symbolic link are recursively scanned.</dd>
-<dt><strong>SYNDA implemtentation</strong></dt>
-<dd><tt class="docutils literal"><span class="pre">esg_mapfiles.py</span></tt> can be called by SYNDA post-processing workers. This uses the <tt class="docutils literal"><span class="pre">run()</span></tt> function instead of the <tt class="docutils literal"><span class="pre">main()</span></tt>.</dd>
+<dd>You can choose to only include the latest versions of the datasets in your mapfile. In this case, the walk through the filesystem is filtered. Only the folders pointed by a &#8220;latest&#8221; symbolic link are recursively scanned.</dd>
+<dt><strong>Mapfile with DRS version</strong></dt>
+<dd>You can choose to include the DRS version into each dataset ID. This is compatible with the <a class="reference external" href="http://pcmdi9.llnl.gov/">ESG-F</a> 2.0 release and leads to a full-slave behaviour of the <a class="reference external" href="https://github.com/ESGF/esg-publisher">ESG-F publisher</a>. With this mapfile syntax the <tt class="docutils literal"><span class="pre">--new-version</span></tt> option of the publisher command-lines is deprecated.</dd>
+<dt><strong>Developer&#8217;s entry point</strong></dt>
+<dd><tt class="docutils literal"><span class="pre">esg_mapfiles</span></tt> can be imported and call in your own scripts. Just pass a dictionnary with your flags to the <tt class="docutils literal"><span class="pre">run(job={})</span></tt> function (see <a class="reference internal" href="autodoc.html#autodoc"><em>Code documentation</em></a>).</dd>
 <dt><strong>Useful configuration file</strong></dt>
-<dd>All projects definitions (DRS, facets) are centralized in one configuration file (INI format) in a simplier way than the <tt class="docutils literal"><span class="pre">esg.ini</span></tt> file on ESGF nodes.</dd>
-<dt><strong>Keep going</strong></dt>
-<dd>You can ignored all errors raised by unmatching files in the submitted path(s) in order to keep going the generation process in any case. To help you to have a short diagnostic, the number of scanned file is displayed at the end.</dd>
+<dd>All projects definitions (DRS, facets) are centralized into one INI configuration file in a simplier way than the <tt class="docutils literal"><span class="pre">esg.ini</span></tt> file on <a class="reference external" href="http://pcmdi9.llnl.gov/">ESG-F</a> nodes.</dd>
+<dt><strong>Keep threads tracebacks</strong></dt>
+<dd>The threads-processes do not shutdown the main process of <tt class="docutils literal"><span class="pre">esg_mapfiles</span></tt> run. If an error occurs on a thread, the traceback of the child-process is not raised to the main process. To help you to have a fast debug, the tracebacks of each threads can be raised using the <tt class="docutils literal"><span class="pre">-v/--verbose</span></tt> option (see <a class="reference internal" href="usage.html#usage"><em>Usage</em></a>).</dd>
 <dt><strong>Output directory</strong></dt>
 <dd>An output directory can be defined to store and organized your mapfiles.</dd>
 <dt><strong>Use a logfile</strong></dt>
-<dd>You can initiate a logger instead of the standard output. This could be useful for automatic workflows. The logfile name is automatically defined and unique (using the date and the job&#8217;s PID). You can define an output directory for your logs.</dd>
+<dd>You can initiate a logger instead of the standard output. This could be useful for automatic workflows. The logfile name is automatically defined and unique (using the the job&#8217;s name, the date and the job&#8217;s PID). You can define an output directory for your logs too.</dd>
 </dl>
 </div>
 </div>

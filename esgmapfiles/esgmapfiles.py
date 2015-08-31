@@ -30,7 +30,7 @@ class ProcessingContext(object):
     +---------------------+-------------+---------------------------------------+
     | Attribute           | Type        | Description                           |
     +=====================+=============+=======================================+
-    | *self*.directory    | *list*      | Path to scan as a list of directories |
+    | *self*.directory    | *list*      | Paths to scan                         |
     +---------------------+-------------+---------------------------------------+
     | *self*.latest       | *boolean*   | True if latest version                |
     +---------------------+-------------+---------------------------------------+
@@ -40,7 +40,7 @@ class ProcessingContext(object):
     +---------------------+-------------+---------------------------------------+
     | *self*.keep         | *boolean*   | True if keep going mode               |
     +---------------------+-------------+---------------------------------------+
-    | *self*.with_version | *boolean*   | True: include version in dataset ID   |
+    | *self*.with_version | *boolean*   | True to include version in dataset ID |
     +---------------------+-------------+---------------------------------------+
     | *self*.project      | *str*       | Project                               |
     +---------------------+-------------+---------------------------------------+
@@ -60,20 +60,26 @@ class ProcessingContext(object):
     :param dict args: Parsed command-line arguments
     :returns: The processing context
     :rtype: *dict*
+    :raises Error: If the project name is inconsistent with the sections names from the configuration file
 
     """
     def __init__(self, args):
         init_logging(args.logdir)
-        self.directory = check_directory(args.directory)
+        for path in args.directory:
+            check_directory(path)
+        self.directory = args.directory
         self.outmap = args.mapfile
         self.verbose = args.verbose
         self.latest = args.latest
         self.outdir = args.outdir
         self.keep = args.keep_going
         self.with_version = args.with_version
-        self.project = args.project
         self.dataset = args.per_dataset
         self.cfg = config_parse(args.config)
+        if args.project in self.cfg.sections():
+            self.project = args.project
+        else:
+            raise Exception('No section in configuration file corresponds to "{0}" project. Supported projects are {1}.'.format(args.project, self.cfg.sections()))
         if args.checksum:
             self.checksum = str(self.cfg.defaults()['checksum_type'])
         else:
@@ -85,9 +91,9 @@ class ProcessingContext(object):
 def get_args(job):
     """
     Returns parsed command-line arguments. See ``esg_mapfiles -h`` for full description.
-    If a ``job`` is supplied by SYNDA returns an overloaded parser. ``job`` dictionnary can be used as developper's entry point.
+    A ``job`` dictionnary can be used as developper's entry point to overload the parser.
 
-    :param dict job: Dictionnary instead of command-line arguments.
+    :param dict job: Optionnal dictionnary instead of command-line arguments.
     :returns: The corresponding ``argparse`` Namespace
 
     """
@@ -108,9 +114,8 @@ def get_args(job):
     parser.add_argument(
         '-p', '--project',
         type=str,
-        choices=['cmip5', 'cordex'],
         required=True,
-        help="""Required project to build mapfiles among:\n- cmip5\n- cordex\n\n""")
+        help="""Required project name corresponding to a section of the configuration file.\n\n""")
     parser.add_argument(
         '-c', '--config',
         type=str,
@@ -146,17 +151,12 @@ def get_args(job):
         '-w', '--with-version',
         action='store_true',
         default=False,
-        help="""Includes DRS version into dataset ID (ESGF 2.0 compatibility).\n\n""")
+        help="""Includes DRS version into dataset ID (ESGF 2.x compatibility).\n\n""")
     parser.add_argument(
         '-C', '--checksum',
         action='store_true',
         default=False,
         help="""Includes file checksums into mapfiles (default is a SHA256 checksum).\n\n""")
-    parser.add_argument(
-        '-k', '--keep-going',
-        action='store_true',
-        default=False,
-        help="""Keep going if some files cannot be processed.\n\n""")
     parser.add_argument(
         '-v', '--verbose',
         action='store_true',
@@ -170,14 +170,14 @@ def get_args(job):
     if job is None:
         return parser.parse_args()
     else:
-        # SYNDA submit non-latest path to translate
-        return parser.parse_args([re.sub('v[0-9]*$', 'latest', os.path.normpath(job['full_path_variable'])), '-p', 'cmip5', '-c', '/home/esg-user/mapfiles/mapfile.ini', '-o', '/home/esg-user/mapfiles/pending/', '-l', 'synda_logger', '-d', '-L', '-C', '-k', '-v'])
+        # SYNDA submits non-latest path to translate
+        return parser.parse_args([re.sub('v[0-9]*$', 'latest', os.path.normpath(job['full_path_variable'])), '-p', 'cmip5', '-c', '/home/esg-user/mapfile.ini', '-o', '/home/esg-user/mapfiles/pending/', '-l', 'synda_logger', '-d', '-L', '-C', '-v'])
 
 
 def init_logging(logdir):
     """
-    Initiates the logging configuration (output, message formatting). In the case of a logfile, the logfile name is unique and formatted as follows:\n
-    esgmapfiles-YYYYMMDD-HHMMSS-PID.log
+    Initiates the logging configuration (output, message formatting). In the case of a logfile, the logfile name is unique and formatted as follows:
+    name-YYYYMMDD-HHMMSS-PID.log
 
     :param str logdir: The relative or absolute logfile directory. If ``None`` the standard output is used.
 
@@ -186,7 +186,8 @@ def init_logging(logdir):
         # Logger initiates by SYNDA worker
         pass
     elif logdir:
-        logfile = 'esg_mapfiles-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
+        name = os.path.splitext(os.path.basename(os.path.abspath(__file__)))[0]
+        logfile = '{0}-{1}-{2}.log'.format(name, datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
         if not os.path.exists(logdir):
             os.makedirs(logdir)
         logging.basicConfig(filename=os.path.join(logdir, logfile),
@@ -198,26 +199,25 @@ def init_logging(logdir):
                             format='%(message)s')
 
 
-def check_directory(paths):
+def check_directory(path):
     """
-    Checks if all supplied directories exist. All paths are normalized before without trailing slash.
+    Checks if the supplied directory exists. The path is normalized before without trailing slash.
 
-    :param list paths: List of paths
-    :returns: The same input list if all paths exist
-    :rtype: *list*
-    :raises Error: if one directory do not exist
+    :param list paths: The path to check
+    :returns: The same path if exists
+    :rtype: *str*
+    :raises Error: If the directory does not exist
 
     """
-    for path in paths:
-        directory = os.path.normpath(path)
-        if not os.path.isdir(directory):
-            raise Exception('No such directory: {0}'.format(directory))
-    return paths
+    directory = os.path.normpath(path)
+    if not os.path.isdir(directory):
+        raise Exception('No such directory: {0}'.format(directory))
+    return directory
 
 
 def config_parse(config_path):
     """
-    Parses the configuration file if exists. If not, raises an exception.
+    Parses the configuration file if exists.
 
     :param str config_path: The absolute or relative path of the configuration file
     :returns: The configuration file parser
@@ -234,17 +234,17 @@ def config_parse(config_path):
     return cfg
 
 
-def get_master_ID(attributes, config):
+def get_master_ID(attributes, ctx):
     """
     Builds the master identifier of a dataset.
 
     :param dict attributes: The attributes auto-detected with DRS pattern
-    :param dict config: The absolute or relative path of the configuration file
+    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :returns: The master ID with the version
     :rtype: *str*
 
     """
-    dataset_ID = config.get(attributes['project'].lower(), 'dataset_ID')
+    dataset_ID = ctx.cfg.get(ctx.project, 'dataset_ID')
     facets = re.split('\.|#', dataset_ID)
     for facet in facets:
         if facet == 'project':
@@ -258,15 +258,15 @@ def check_facets(attributes, ctx, file):
     Checks all attributes from path. Each attribute or facet is auto-detected using the DRS pattern (regex) and compared to its corresponding options declared into the configuration file.
 
     :param dict attributes: The attributes auto-detected with DRS pattern
-    :param dict ctx: The processing context
+    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :raises Error: If an option of an attribute is not declared
 
     """
     for facet in attributes.keys():
         if not facet in ['project', 'filename', 'variable', 'root', 'version', 'ensemble']:
-            options = ctx.cfg.get(attributes['project'].lower(), '{0}_options'.format(facet)).replace(" ", "").split(',')
+            options = ctx.cfg.get(ctx.project, '{0}_options'.format(facet)).replace(" ", "").split(',')
             if not attributes[facet] in options:
-                raise Exception('"{0}" is missing in "{1}_options" of the "{2}" section from the configuration file to properly process {3}'.format(attributes[facet], facet, attributes['project'].lower(), file))
+                raise Exception('"{0}" is missing in "{1}_options" of the "{2}" section from the configuration file to properly process {3}'.format(attributes[facet], facet, ctx.project, file))
 
 
 def checksum(file, ctx):
@@ -274,7 +274,7 @@ def checksum(file, ctx):
     Does the MD5 or SHA256 checksum by the Shell avoiding Python memory limits.
 
     :param str file: The full path of a file
-    :param dict ctx: The processing context
+    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :raises Error: If the checksum fails
 
     """
@@ -293,7 +293,7 @@ def rmdtemp(ctx):
     """
     Removes the temporary directory and its content.
 
-    :param dict ctx: The processing context
+    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
 
     """
     if ctx.verbose:
@@ -305,7 +305,7 @@ def yield_inputs(ctx):
     """
     Yields all files to process within tuples with the processing context. The file walking through the DRS tree follows symbolic links and ignores the "files" directories and "latest" symbolic links if ``--latest`` is None.
 
-    :param dict ctx: The processing context
+    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :returns: Attach the processing context to a file to process as an iterator of tuples
     :rtype: *iter*
 
@@ -349,7 +349,7 @@ def wrapper(inputs):
     try:
         return file_process(inputs)
     except:
-        if ctx.keep:
+        if not ctx.verbose:
             logging.warning('{0} skipped'.format(inputs[0]))
         else:
             logging.exception('A thread-process fails:')
@@ -377,7 +377,7 @@ def counted(fct):
 @counted
 def file_process(inputs):
     """
-    _file_process(inputs)
+    file_process(inputs)
 
     File process that\:
      * Auto-detects facets,
@@ -409,11 +409,11 @@ def file_process(inputs):
         # Deduce master ID from full path and --latest option
         if ctx.with_version:
             if ctx.latest:
-                master_ID = get_master_ID(attributes, ctx.cfg).replace(attributes['version'], os.path.basename(os.path.realpath(''.join(re.split(r'(latest)', file)[:-1])))[1:])
+                master_ID = get_master_ID(attributes, ctx).replace(attributes['version'], os.path.basename(os.path.realpath(''.join(re.split(r'(latest)', file)[:-1])))[1:])
             else:
-                master_ID = get_master_ID(attributes, ctx.cfg).replace(attributes['version'], attributes['version'][1:])
+                master_ID = get_master_ID(attributes, ctx).replace(attributes['version'], attributes['version'][1:])
         else:
-            master_ID = get_master_ID(attributes, ctx.cfg).replace('#' + attributes['version'], '')
+            master_ID = get_master_ID(attributes, ctx).replace('#' + attributes['version'], '')
 
         # Retrieve size and modification time
         (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(file)
@@ -470,7 +470,7 @@ def run(job):
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.cfg.defaults()['threads_number']))
     # Return the list of generated mapfiles in temporary directory
-    outmaps = filter(lambda m: m is not None, pool.map(wrapper, yield_inputs(ctx)))
+    outmaps = filter(lambda m: m is not None, pool.imap(wrapper, yield_inputs(ctx)))
     # Close threads pool
     pool.close()
     pool.join()
@@ -483,7 +483,7 @@ def run(job):
         copy2(os.path.join(ctx.dtemp, outmap), ctx.outdir)
     # Remove temporary directory
     rmdtemp(ctx)
-    logging.info('==> Scan completed ({0} files)'.format(file_process.called))
+    logging.info('==> Scan completed ({0} files scanned)'.format(file_process.called))
 
 
 # Main entry point for stand-alone call.

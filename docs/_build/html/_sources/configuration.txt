@@ -1,3 +1,5 @@
+.. _configuration:
+
 *************
 Configuration
 *************
@@ -29,7 +31,7 @@ Edit the ``config.ini`` as follows:
 
    [your_project]
 
-.. warning:: The ``-p`` option directly refers to the name of "project" sections.
+.. warning:: The ``-p/--project`` option directly refers to the name of a "project" section.
 
 2. Declare all options of each facet/attribute of your *Data Reference Syntax* (DRS) following this template:
 
@@ -55,5 +57,5 @@ Edit the ``config.ini`` as follows:
 
 .. note:: Feel free to defined a new tree or file extension if necessary using all regex facilities.
 
-.. warning:: The options prefix ("facet") must have the same name as the ``dataset_ID`` items and the ``directory_format`` variables.
+.. warning:: The options prefix ``facetX`` must have the same name as the ``dataset_ID`` items and the ``directory_format`` attributes/variables.
 

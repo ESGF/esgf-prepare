@@ -9,54 +9,49 @@ Here is the command-line help:
 .. code-block:: bash
 
    $> esg_mapfiles -h
-   usage: esgmapfiles.py [-h] -p {cmip5,cordex} [-c CONFIG] [-o OUTDIR]
-                        [-l [LOGDIR]] [-m MAPFILE] [-d] [-L] [-w] [-C] [-k] [-v]
-                        [-V]
-                        directory [directory ...]
+   usage: esgmapfiles.py [-h] -p PROJECT [-c CONFIG] [-o OUTDIR] [-l [LOGDIR]]
+                         [-m MAPFILE] [-d] [-L] [-w] [-C] [-k] [-v] [-V]
+                         directory [directory ...]
 
    Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory
    command-line.
 
    positional arguments:
-    directory             One or more directories to recursively scan. Unix wildcards are allowed.
+     directory             One or more directories to recursively scan. Unix wildcards are allowed.
 
    optional arguments:
-    -h, --help            Show this help message and exit.
-                          
-    -p {cmip5,cordex}, --project {cmip5,cordex}
-                          Required project to build mapfiles among:
-                          - cmip5
-                          - cordex
-                          
-    -c CONFIG, --config CONFIG
-                          Path of configuration INI file
+     -h, --help            Show this help message and exit.
+                           
+     -p PROJECT, --project PROJECT
+                           Required project name corresponding to a section of the configuration file.
+                           
+     -c CONFIG, --config CONFIG
+                           Path of configuration INI file
                            (default is ~/anaconda/lib/python2.7/site-packages/esgmapfiles/config.ini).
                           
-    -o OUTDIR, --outdir OUTDIR
-                          Mapfile(s) output directory
-                          (default is working directory).
-                          
-    -l [LOGDIR], --logdir [LOGDIR]
-                          Logfile directory (default is working directory).
-                          If not, standard output is used.
-                          
-    -m MAPFILE, --mapfile MAPFILE
-                          Output mapfile name. Only used without --per-dataset option
-                          (default is 'mapfile.txt').
-                          
-    -d, --per-dataset     Produces ONE mapfile PER dataset. It takes priority over --mapfile.
-                          
-    -L, --latest          Generates mapfiles with latest versions only.
-                          
-    -w, --with-version    Includes DRS version into dataset ID (ESGF 2.0 compatibility).
-                          
-    -C, --checksum        Includes file checksums into mapfiles (default is a SHA256 checksum).
-                          
-    -k, --keep-going      Keep going if some files cannot be processed.
-                          
-    -v, --verbose         Verbose mode.
-                          
-    -V, --Version         Program version.
+     -o OUTDIR, --outdir OUTDIR
+                           Mapfile(s) output directory
+                           (default is working directory).
+                           
+     -l [LOGDIR], --logdir [LOGDIR]
+                           Logfile directory (default is working directory).
+                           If not, standard output is used.
+                           
+     -m MAPFILE, --mapfile MAPFILE
+                           Output mapfile name. Only used without --per-dataset option
+                           (default is 'mapfile.txt').
+                           
+     -d, --per-dataset     Produces ONE mapfile PER dataset. It takes priority over --mapfile.
+                           
+     -L, --latest          Generates mapfiles with latest versions only.
+                           
+     -w, --with-version    Includes DRS version into dataset ID (ESGF 2.x compatibility).
+                           
+     -C, --checksum        Includes file checksums into mapfiles (default is a SHA256 checksum).
+                           
+     -v, --verbose         Verbose mode.
+                           
+     -V, --Version         Program version.
 
    Developed by Levavasseur, G. (CNRS/IPSL)
 
@@ -81,6 +76,10 @@ To generate a mapfile with verbosity using default parameters:
    dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
 
 To generate a mapfile with files checksums:
+
+.. note:: The ``-v/--verbose`` raises the tracebacks of thread-processes (default is the "silent" mode).
+
+.. warning:: The ``-p/--project`` is case-sensitive.
 
 .. code-block:: bash
 
@@ -141,42 +140,13 @@ To specify the configuration file:
 
    $> esg_mapfiles /path/to/scan -p cmip5 -c /path/to/configfile/config.ini
 
-To skip files that cannot be processed:
-
-.. code-block:: bash
-
-   $> esg_mapfiles /path/to/scan -p cmip5
-   ==> Scan started
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   Traceback (most recent call last):
-     File "./esg_mapfiles.py", line 411, in <module>
-       main()
-     File "./esg_mapfiles.py", line 405, in main
-       _directory_process(ctx)
-     File "./esg_mapfiles.py", line 380, in _directory_process
-       outmaps = pool.map(_wrapper, _yield_inputs(ctx))
-     File "/home/glipsl/anaconda/lib/python2.7/multiprocessing/pool.py", line 251, in map
-       return self.map_async(func, iterable, chunksize).get()
-     File "/home/glipsl/anaconda/lib/python2.7/multiprocessing/pool.py", line 558, in get
-       raise self._value
-   __main__._Exception
-   Matching failed for file2.pdf
-
-   $> esg_mapfiles /path/to/scan -p cmip5 -k
-   ==> Scan started
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-   Delete temporary directory /tmp/tmpzspsLH
-   ==> Scan completed (2 files)
-
-
 To use a logfile (the logfile directory is optionnal):
 
 .. code-block:: bash
 
    $> esg_mapfiles /path/to/scan -p cmip5 -l /path/to/logfile -v
 
-   $> cat /path/to/logfile/esg_mapfiles-YYYYMMDD-HHMMSS-PID.log
+   $> cat /path/to/logfile/esgmapfiles-YYYYMMDD-HHMMSS-PID.log
    YYYY/MM/DD HH:MM:SS INFO ==> Scan started
    YYYY/MM/DD HH:MM:SS INFO mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    YYYY/MM/DD HH:MM:SS INFO mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
