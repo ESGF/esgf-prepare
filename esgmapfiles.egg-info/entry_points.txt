@@ -1,3 +1,0 @@
-[console_scripts]
-esg_mapfiles = esgmapfiles.esgmapfiles:main
-
