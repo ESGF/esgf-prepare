@@ -447,7 +447,7 @@ def file_process(inputs):
         return outmap
 
 
-def run(job):
+def run(job=None):
     """
     Main process that\:
      * Instanciates processing context
@@ -488,4 +488,4 @@ def run(job):
 
 # Main entry point for stand-alone call.
 if __name__ == "__main__":
-    run(job=None)
+    run()
