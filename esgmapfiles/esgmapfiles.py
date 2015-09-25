@@ -36,8 +36,6 @@ class ProcessingContext(object):
     +---------------------+-------------+---------------------------------------+
     | *self*.verbose      | *boolean*   | True if verbose mode                  |
     +---------------------+-------------+---------------------------------------+
-    | *self*.keep         | *boolean*   | True if keep going mode               |
-    +---------------------+-------------+---------------------------------------+
     | *self*.with_version | *boolean*   | True to include version in dataset ID |
     +---------------------+-------------+---------------------------------------+
     | *self*.project      | *str*       | Project                               |
@@ -70,7 +68,6 @@ class ProcessingContext(object):
         self.verbose = args.verbose
         self.latest = args.latest
         self.outdir = args.outdir
-        self.keep = args.keep_going
         self.with_version = args.with_version
         self.dataset = args.per_dataset
         self.cfg = config_parse(args.config)
