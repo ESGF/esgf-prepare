@@ -9,9 +9,9 @@ Here is the command-line help:
 .. code-block:: bash
 
    $> esg_mapfiles -h
-   usage: esgmapfiles.py [-h] -p PROJECT [-c CONFIG] [-o OUTDIR] [-l [LOGDIR]]
-                         [-m MAPFILE] [-d] [-L] [-w] [-C] [-k] [-v] [-V]
-                         directory [directory ...]
+   usage: esgmapfiles [-h] -p PROJECT [-c CONFIG] [-o OUTDIR] [-l [LOGDIR]]
+                      [-m MAPFILE] [-d] [-L] [-w] [-C] [-k] [-v] [-V]
+                      directory [directory ...]
 
    Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory
    command-line.
@@ -62,7 +62,7 @@ To generate a mapfile with verbosity using default parameters:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p cmip5 -v
+   $> esg_mapfiles /path/to/scan -p PROJECT -v
    ==> Scan started
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -83,7 +83,7 @@ To generate a mapfile with files checksums:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p cmip5 -C
+   $> esg_mapfiles /path/to/scan -p PROJECT -C
    ==> Scan started
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -99,7 +99,7 @@ To generate a mapfile with DRS versions:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p cmip5 -w
+   $> esg_mapfiles /path/to/scan -p PROJECT -w
    ==> Scan started
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -115,7 +115,7 @@ To generate one mapfile per dataset:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p cmip5 -d
+   $> esg_mapfiles /path/to/scan -p PROJECT -d
    ==> Scan started
    dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -138,13 +138,13 @@ To specify the configuration file:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p cmip5 -c /path/to/configfile/config.ini
+   $> esg_mapfiles /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
 
 To use a logfile (the logfile directory is optionnal):
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p cmip5 -l /path/to/logfile -v
+   $> esg_mapfiles /path/to/scan -p PROJECT -l /path/to/logfile -v
 
    $> cat /path/to/logfile/esgmapfiles-YYYYMMDD-HHMMSS-PID.log
    YYYY/MM/DD HH:MM:SS INFO ==> Scan started
@@ -158,7 +158,7 @@ To generate a mapfile specifying filename and output directory:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p cmip5 -o /path/to/mapfile -m mymapfile.txt
+   $> esg_mapfiles /path/to/scan -p PROJECT -o /path/to/mapfile -m mymapfile.txt
    ==> Scan started
    mymapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    mymapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -176,7 +176,7 @@ To generate a mapfile walking through *latest* directories only:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p cmip5 -L -d -w
+   $> esg_mapfiles /path/to/scan -p PROJECT -L -d -w
    ==> Scan started
    dataset_ID1.latest <-- /path/to/scan/.../latest/.../file1.nc
    dataset_ID2.latest <-- /path/to/scan/.../latest/.../file2.nc

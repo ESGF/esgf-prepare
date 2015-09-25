@@ -47,7 +47,7 @@ Features
    You can choose to include the DRS version into each dataset ID. This is compatible with the `ESG-F <http://pcmdi9.llnl.gov/>`_ 2.0 release and leads to a full-slave behaviour of the `ESG-F publisher <https://github.com/ESGF/esg-publisher>`_. With this mapfile syntax the ``--new-version`` option of the publisher command-lines is deprecated.
 
 **Developer's entry point**
-  ``esg_mapfiles`` can be imported and call in your own scripts. Just pass a dictionnary with your flags to the ``run(job={})`` function (see :ref:`autodoc`). 
+  ``esg_mapfiles`` can be imported and called in your own scripts. Just pass a dictionnary with your flags to the ``run(job={})`` function (see :ref:`autodoc`). 
 
 **Useful configuration file**
   All projects definitions (DRS, facets) are centralized into one INI configuration file in a simplier way than the ``esg.ini`` file on `ESG-F <http://pcmdi9.llnl.gov/>`_ nodes.
