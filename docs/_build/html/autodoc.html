@@ -95,39 +95,35 @@
 <td><em>boolean</em></td>
 <td>True if verbose mode</td>
 </tr>
-<tr class="row-even"><td><em>self</em>.keep</td>
-<td><em>boolean</em></td>
-<td>True if keep going mode</td>
-</tr>
-<tr class="row-odd"><td><em>self</em>.with_version</td>
+<tr class="row-even"><td><em>self</em>.with_version</td>
 <td><em>boolean</em></td>
 <td>True to include version in dataset ID</td>
 </tr>
-<tr class="row-even"><td><em>self</em>.project</td>
+<tr class="row-odd"><td><em>self</em>.project</td>
 <td><em>str</em></td>
 <td>Project</td>
 </tr>
-<tr class="row-odd"><td><em>self</em>.dataset</td>
+<tr class="row-even"><td><em>self</em>.dataset</td>
 <td><em>boolean</em></td>
 <td>True if one mapfile per dataset</td>
 </tr>
-<tr class="row-even"><td><em>self</em>.checksum</td>
+<tr class="row-odd"><td><em>self</em>.checksum</td>
 <td><em>boolean</em></td>
 <td>True if checksums into mapfile</td>
 </tr>
-<tr class="row-odd"><td><em>self</em>.outmap</td>
+<tr class="row-even"><td><em>self</em>.outmap</td>
 <td><em>str</em></td>
 <td>Mapfile output name</td>
 </tr>
-<tr class="row-even"><td><em>self</em>.cfg</td>
+<tr class="row-odd"><td><em>self</em>.cfg</td>
 <td><em>callable</em></td>
 <td>Configuration file parser</td>
 </tr>
-<tr class="row-odd"><td><em>self</em>.pattern</td>
+<tr class="row-even"><td><em>self</em>.pattern</td>
 <td><em>re object</em></td>
 <td>DRS regex pattern</td>
 </tr>
-<tr class="row-even"><td><em>self</em>.dtemp</td>
+<tr class="row-odd"><td><em>self</em>.dtemp</td>
 <td><em>str</em></td>
 <td>Directory of temporary files</td>
 </tr>
@@ -161,61 +157,6 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job</strong> (<em>dict</em>) &#8211; Optionnal dictionnary instead of command-line arguments.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding <tt class="docutils literal"><span class="pre">argparse</span></tt> Namespace</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgmapfiles.init_logging">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">init_logging</tt><big>(</big><em>logdir</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#init_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.init_logging" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initiates the logging configuration (output, message formatting). In the case of a logfile, the logfile name is unique and formatted as follows:
-name-YYYYMMDD-HHMMSS-PID.log</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logdir</strong> (<em>str</em>) &#8211; The relative or absolute logfile directory. If <tt class="docutils literal"><span class="pre">None</span></tt> the standard output is used.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgmapfiles.check_directory">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">check_directory</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#check_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.check_directory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if the supplied directory exists. The path is normalized before without trailing slash.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paths</strong> (<em>list</em>) &#8211; The path to check</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The same path if exists</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises Error:</th><td class="field-body">If the directory does not exist</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgmapfiles.config_parse">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">config_parse</tt><big>(</big><em>config_path</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#config_parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.config_parse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parses the configuration file if exists.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config_path</strong> (<em>str</em>) &#8211; The absolute or relative path of the configuration file</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The configuration file parser</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>dict</em></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises Error:</th><td class="field-body">If no configuration file exists</td>
 </tr>
 </tbody>
 </table>
@@ -402,15 +343,16 @@ name-YYYYMMDD-HHMMSS-PID.log</p>
 
 <dl class="function">
 <dt id="esgmapfiles.run">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">run</tt><big>(</big><em>job</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.run" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">esgmapfiles.</tt><tt class="descname">run</tt><big>(</big><em>job=None</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.run" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>Main process that:</dt>
 <dd><ul class="first last simple">
-<li>Instanciates processing context</li>
+<li>Instantiates processing context,</li>
 <li>Creates mapfiles output directory if necessary,</li>
-<li>Instanciates threads pools,</li>
+<li>Instantiates threads pools,</li>
 <li>Copies mapfile(s) to the output directory,</li>
 <li>Removes the temporary directory and its contents.</li>
+<li>Implement exit status values as described in get_args (search for &#8216;epilog&#8217;)</li>
 </ul>
 </dd>
 </dl>
@@ -426,6 +368,249 @@ name-YYYYMMDD-HHMMSS-PID.log</p>
 
 <p><em>Module author: Levavasseur Guillaume (CNRS/IPSL) &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;jussieu&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>jussieu<span>&#46;</span>fr</a>&gt;</em></p>
 </div>
+<div class="section" id="module-checkvocab">
+<span id="checkvocab-py"></span><h2>checkvocab.py<a class="headerlink" href="#module-checkvocab" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Utility to check (and update) the configuration INI file used by esg_mapfiles.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="checkvocab.ProcessingContext">
+<em class="property">class </em><tt class="descclassname">checkvocab.</tt><tt class="descname">ProcessingContext</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#ProcessingContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.ProcessingContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encapsulates the following processing context/information for main process:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="18%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Attribute</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><em>self</em>.directory</td>
+<td><em>list</em></td>
+<td>Paths to scan</td>
+</tr>
+<tr class="row-odd"><td><em>self</em>.project</td>
+<td><em>str</em></td>
+<td>Project</td>
+</tr>
+<tr class="row-even"><td><em>self</em>.cfg</td>
+<td><em>callable</em></td>
+<td>Configuration file parser</td>
+</tr>
+<tr class="row-odd"><td><em>self</em>.pattern</td>
+<td><em>re object</em></td>
+<td>DRS regex pattern</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>dict</em>) &#8211; Parsed command-line arguments</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The processing context</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>dict</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises Error:</th><td class="field-body">If the project name is inconsistent with the sections names from the configuration file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="checkvocab.get_args">
+<tt class="descclassname">checkvocab.</tt><tt class="descname">get_args</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/checkvocab.html#get_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns parsed command-line arguments. See <tt class="docutils literal"><span class="pre">esg_mapfiles_check_vocab</span> <span class="pre">-h</span></tt> for full description.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The corresponding <tt class="docutils literal"><span class="pre">argparse</span></tt> Namespace</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="checkvocab.get_dsets_from_tree">
+<tt class="descclassname">checkvocab.</tt><tt class="descname">get_dsets_from_tree</tt><big>(</big><em>ctx</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#get_dsets_from_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_dsets_from_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yields datasets to process. Only the &#8220;dataset part&#8221; of the DRS tree is returned (i.e., from &#8220;root&#8221; to &#8220;member/ensemble&#8221; facet).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The dataset as a part of the DRS tree</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>iter</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="checkvocab.strip_hash_to_end">
+<tt class="descclassname">checkvocab.</tt><tt class="descname">strip_hash_to_end</tt><big>(</big><em>id</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#strip_hash_to_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.strip_hash_to_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cuts the <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> before the ending version.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; The <tt class="docutils literal"><span class="pre">dataset_id</span></tt> string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> without version</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="checkvocab.id_components">
+<tt class="descclassname">checkvocab.</tt><tt class="descname">id_components</tt><big>(</big><em>id</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#id_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.id_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts/splits the <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> string into a list of facets.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; The <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The facets list</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>list</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="checkvocab.get_facets_from_config">
+<tt class="descclassname">checkvocab.</tt><tt class="descname">get_facets_from_config</tt><big>(</big><em>ctx</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#get_facets_from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_facets_from_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all facets described by the <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> option from the configuration file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The facets list</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>list</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="checkvocab.get_facet_values_from_tree">
+<tt class="descclassname">checkvocab.</tt><tt class="descname">get_facet_values_from_tree</tt><big>(</big><em>ctx</em>, <em>dsets</em>, <em>facets</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#get_facet_values_from_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_facet_values_from_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all used values of each facet from the DRS tree, according to the supplied direcotries.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</li>
+<li><strong>dsets</strong> (<em>iter</em>) &#8211; The dataset part of the DRS tree</li>
+<li><strong>facets</strong> (<em>list</em>) &#8211; The facets list</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The declared values of each facet</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>dict</em></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="checkvocab.get_facet_values_from_config">
+<tt class="descclassname">checkvocab.</tt><tt class="descname">get_facet_values_from_config</tt><big>(</big><em>ctx</em>, <em>facets</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#get_facet_values_from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_facet_values_from_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all declared values of each facet from the configuration file, according to the project section.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</li>
+<li><strong>facets</strong> (<em>list</em>) &#8211; The facets list</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The declared values of each facet</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>dict</em></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="checkvocab.compare_values">
+<tt class="descclassname">checkvocab.</tt><tt class="descname">compare_values</tt><big>(</big><em>project</em>, <em>facets</em>, <em>used_values</em>, <em>declared_values</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#compare_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.compare_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares used values from DRS tree with all declared values in configuration file for each facet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>project</strong> (<em>str</em>) &#8211; The project name</li>
+<li><strong>facets</strong> (<em>list</em>) &#8211; The facets list</li>
+<li><strong>used_values</strong> (<em>dict</em>) &#8211; The used values from DRS tree</li>
+<li><strong>declared_values</strong> (<em>dict</em>) &#8211; The declred values from the configuration file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if undeclared values in configuration file are used in DRS tree</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>boolean</em></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="checkvocab.main">
+<tt class="descclassname">checkvocab.</tt><tt class="descname">main</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/checkvocab.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.main" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Main process that:</dt>
+<dd><ul class="first last simple">
+<li>Instanciates processing context</li>
+<li>Parses the configuration files options and values,</li>
+<li>Deduces facets and values from directories,</li>
+<li>Compares the values of each facet between both,</li>
+<li>Print or log the checking.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p><em>Module author: Levavasseur Guillaume (CNRS/IPSL) &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;jussieu&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>jussieu<span>&#46;</span>fr</a>&gt;</em></p>
+<p><em>Code author: Iwi Alan (BADC) &lt;<a class="reference external" href="mailto:alan&#46;iwi&#37;&#52;&#48;stfc&#46;ac&#46;uk">alan<span>&#46;</span>iwi<span>&#64;</span>stfc<span>&#46;</span>ac<span>&#46;</span>uk</a>&gt;&gt;</em></p>
+</div>
 </div>
 
 
@@ -438,6 +623,7 @@ name-YYYYMMDD-HHMMSS-PID.log</p>
   <ul>
 <li><a class="reference internal" href="#">Code documentation</a><ul>
 <li><a class="reference internal" href="#module-esgmapfiles">esgmapfiles.py</a></li>
+<li><a class="reference internal" href="#module-checkvocab">checkvocab.py</a></li>
 </ul>
 </li>
 </ul>

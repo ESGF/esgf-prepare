@@ -1,25 +1,25 @@
 .. _installation:
 
-************
+
 Installation
-************
+============
 
 Usual PIP installation 
-++++++++++++++++++++++
+**********************
 
 .. code-block:: bash
 
   pip install esgmapfiles
 
 PIP installation from GitHub
-++++++++++++++++++++++++++++
+****************************
 
 .. code-block:: bash
 
   pip install -e git://github.com/Prodiguer/esgf-mapfiles.git@master#egg=esgmapfiles
 
 Installation from GitHub
-++++++++++++++++++++++++
+************************
 
 1. Create a new directory:
 
@@ -47,7 +47,7 @@ Installation from GitHub
 .. warning:: To run ``esg_mapfiles`` you have to be logged on filesystem hosting the data to publish.
 
 Dependencies
-++++++++++++
+************
 
 ``esg_mapfiles`` uses the following basic Python libraries includes in Python 2.5+. Becareful your Python environment includes:
 

@@ -15,7 +15,7 @@ from argparse import RawTextHelpFormatter
 from esgmapfilesutils import init_logging, check_directory, config_parse
 
 # Program version
-__version__ = '{0} {1}-{2}-{3}'.format('v0.1', '2015', '09', '02')
+__version__ = '{0} {1}-{2}-{3}'.format('v0.1', '2015', '10', '05')
 
 
 class ProcessingContext(object):
@@ -26,8 +26,6 @@ class ProcessingContext(object):
     | Attribute           | Type        | Description                           |
     +=====================+=============+=======================================+
     | *self*.directory    | *list*      | Paths to scan                         |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.verbose      | *boolean*   | True if verbose mode                  |
     +---------------------+-------------+---------------------------------------+
     | *self*.project      | *str*       | Project                               |
     +---------------------+-------------+---------------------------------------+
@@ -47,7 +45,6 @@ class ProcessingContext(object):
         for path in args.directory:
             check_directory(path)
         self.directory = args.directory
-        self.verbose = args.verbose
         self.cfg = config_parse(args.config)
         if args.project in self.cfg.sections():
             self.project = args.project
@@ -61,7 +58,7 @@ class ProcessingContext(object):
 
 def get_args():
     """
-    Returns parsed command-line arguments. See ``esg_mapfiles -h`` for full description.
+    Returns parsed command-line arguments. See ``esg_mapfiles_check_vocab -h`` for full description.
 
     :returns: The corresponding ``argparse`` Namespace
 
@@ -70,7 +67,7 @@ def get_args():
         description="""Check the configuration file to use with esg_mapfiles command-line.""",
         formatter_class=RawTextHelpFormatter,
         add_help=False,
-        epilog="""Developed by Iwi A. (BADC) and Levavasseur, G. (CNRS/IPSL)""")
+        epilog="""Developed by Iwi, A. (BADC) and Levavasseur, G. (CNRS/IPSL)""")
     parser.add_argument(
         'directory',
         type=str,
@@ -97,11 +94,6 @@ def get_args():
         nargs='?',
         help="""Logfile directory (default is working directory).\nIf not, standard output is used.\n\n""")
     parser.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        default=False,
-        help="""Verbose mode.\n\n""")
-    parser.add_argument(
         '-V', '--Version',
         action='version',
         version='%(prog)s ({0})'.format(__version__),
@@ -126,7 +118,7 @@ def get_dsets_from_tree(ctx):
 
 def strip_hash_to_end(id):
     """
-    Ctus the ``dataset_ID`` before the ending version.
+    Cuts the ``dataset_ID`` before the ending version.
 
     :param str id: The ``dataset_id`` string
     :returns: The ``dataset_ID`` without version

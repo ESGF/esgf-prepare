@@ -1,20 +1,20 @@
 .. _usage:
 
-*****
 Usage
-*****
+=====
+
+esg_mapfiles_check_vocab 
+++++++++++++++++++++++++
 
 Here is the command-line help:
 
 .. code-block:: bash
 
-   $> esg_mapfiles -h
-   usage: esg_mapfiles [-h] -p PROJECT [-c CONFIG] [-o OUTDIR] [-l [LOGDIR]]
-                       [-m MAPFILE] [-d] [-L] [-w] [-C] [-v] [-V]
-                       directory [directory ...]
+   $> esg_mapfiles_check_vocab -h
+   usage: esg_mapfiles_check_vocab [-h] -p PROJECT [-c CONFIG] [-l [LOGDIR]] [-V]
+                                   directory [directory ...]
 
-   Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory
-   command-line.
+   Check the configuration file to use with esg_mapfiles command-line.
 
    positional arguments:
      directory             One or more directories to recursively scan. Unix wildcards are allowed.
@@ -26,32 +26,118 @@ Here is the command-line help:
                            Required project name corresponding to a section of the configuration file.
                            
      -c CONFIG, --config CONFIG
-                           Path of configuration INI file
-                           (default is ~/anaconda/lib/python2.7/site-packages/esgmapfiles/config.ini).
-                          
-     -o OUTDIR, --outdir OUTDIR
-                           Mapfile(s) output directory
-                           (default is working directory).
+                           Path of the configuration INI file to check
+                           (default is ~/lib/python2.7/site-packages/esgmapfiles-0.5-py2.7.egg/esgmapfiles/config.ini).
                            
      -l [LOGDIR], --logdir [LOGDIR]
                            Logfile directory (default is working directory).
                            If not, standard output is used.
                            
-     -m MAPFILE, --mapfile MAPFILE
-                           Output mapfile name. Only used without --per-dataset option
-                           (default is 'mapfile.txt').
-                           
-     -d, --per-dataset     Produces ONE mapfile PER dataset. It takes priority over --mapfile.
-                           
-     -L, --latest          Generates mapfiles with latest versions only.
-                           
-     -w, --with-version    Includes DRS version into dataset ID (ESGF 2.x compatibility).
-                           
-     -C, --checksum        Includes file checksums into mapfiles (default is a SHA256 checksum).
-                           
-     -v, --verbose         Verbose mode.
-                           
      -V, --Version         Program version.
+
+   Developed by Iwi, A. (BADC) and Levavasseur, G. (CNRS/IPSL)
+
+Tutorials
+---------
+
+To check the facet options declared in your configuration file:
+
+.. code-block:: bash
+
+   $> esg_mapfiles_check_vocab /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
+   project_options - No declared values
+   project_options - Used values: CMIP5
+   product_options - Declared values: output2, output, output1
+   product_options - Used values: output1
+   product_options - Unused values: output2, output
+   institute_options - Declared values: UNSW, ICHEC, CCCma, LASG-CESS, BCC, MIROC, NCEP, MOHC, IPSL, SMHI, CMCC, CSIRO-BOM, COLA-CFS, MPI-M, NCAR, NIMR-KMA, CSIRO-QCCCE, CCCMA, INPE, BNU, NOAA-NCEP, CNRM-CERFACS, NASA-GMAO, NASA-GISS, FIO, NOAA-GFDL, LASG-IAP, INM, NSF-DOE-NCAR, NICAM, NCC, MRI
+   institute_options - Used values: IPSL
+   institute_options - Unused values: ICHEC, CCCma, LASG-CESS, BCC, UNSW, CSIRO-BOM, MOHC, INM, CMCC, NCEP, COLA-CFS, MPI-M, NCAR, NIMR-KMA, CSIRO-QCCCE, CCCMA, INPE, BNU, NOAA-NCEP, CNRM-CERFACS, NASA-GMAO, NASA-GISS, FIO, NOAA-GFDL, NSF-DOE-NCAR, LASG-IAP, SMHI, MIROC, NICAM, NCC, MRI
+   model_options - Declared values: MIROC4h, ACCESS1-0, ACCESS1-3, CESM1-CAM5-1-FV2, FGOALS-g2, MIROC5, GFDL-ESM2M, FIO-ESM, MIROC-ESM, CMCC-CMS, MPI-ESM-LR, HadCM3, INM-CM4, IPSL-CM5B-LR, GEOS-5, HadGEM2-AO, CanESM2, FGOALS-s2, MRI-AGCM3-2S, MPI-ESM-P, HadGEM2-A, MRI-ESM1, MPI-ESM-MR, CSIRO-Mk3-6-0, MRI-CGCM3, CESM1-BGC, SP-CCSM4, MRI-AGCM3.2H, inmcm4, CESM1-FASTCHEM, GISS-E2-R-CC, BNU-ESM, CNRM-CM5-2, CCSM4, GFDL-CM2p1, GFDL-ESM2G, FGOALS-gl, bcc-csm1-1-m, CanCM4, MRI-AGCM3.2S, NorESM1-M, CESM1-WACCM, IPSL-CM5A-MR, IPSL-CM5A-LR, GFDL-CM3, NICAM-09, MRI-AGCM3-2H, CNRM-CM5, GFDL-HIRAM-C180, GISS-E2-H, EC-EARTH, MIROC-ESM-CHEM, CSIRO-Mk3L-1-2, NorESM1-ME, CMCC-CM, GISS-E2-R, HadGEM2-CC, GISS-E2-H-CC, CanAM4, CMCC-CESM, CFSv2-2011, HadGEM2-ES, bcc-csm1-1, CESM1-CAM5, GFDL-HIRAM-C360
+   [...]
+   MIP_table_options - Used values: Amon, cfMon, Omon, fx, aero, Oyr, OImon, cfDay, Lmon, day
+   MIP_table_options - Unused values: cf3hr, 3hr, cfOff, grids, 6hrLev, 6hrPlev, Aclim, LIclim, cfSites, Lclim, LImon, Oclim
+   ensemble_options - No declared values
+   ensemble_options - Used values: r1i1p1, r0i0p0
+
+If a used option is missing:
+
+.. code-block:: bash
+
+   $> esg_mapfiles_check_vocab /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
+   project_options - No declared values
+   project_options - Used values: CMIP5
+   product_options - Declared values: output2, output
+   product_options - Used values: output1
+   product_options - UNDECLARED values: output1
+   product_options - UPDATED values to delcare: output2, output, output1
+   product_options - Unused values: output2, output
+   institute_options - Declared values: UNSW, ICHEC, CCCma, LASG-CESS, BCC, MIROC, NCEP, MOHC, IPSL, SMHI, CMCC, CSIRO-BOM, COLA-CFS, MPI-M, NCAR, NIMR-KMA, CSIRO-QCCCE, CCCMA, INPE, BNU, NOAA-NCEP, CNRM-CERFACS, NASA-GMAO, NASA-GISS, FIO, NOAA-GFDL, LASG-IAP, INM, NSF-DOE-NCAR, NICAM, NCC, MRI
+   institute_options - Used values: IPSL
+   institute_options - Unused values: ICHEC, CCCma, LASG-CESS, BCC, UNSW, CSIRO-BOM, MOHC, INM, CMCC, NCEP, COLA-CFS, MPI-M, NCAR, NIMR-KMA, CSIRO-QCCCE, CCCMA, INPE, BNU, NOAA-NCEP, CNRM-CERFACS, NASA-GMAO, NASA-GISS, FIO, NOAA-GFDL, NSF-DOE-NCAR, LASG-IAP, SMHI, MIROC, NICAM, NCC, MRI
+   model_options - Declared values: MIROC4h, ACCESS1-0, ACCESS1-3, CESM1-CAM5-1-FV2, FGOALS-g2, MIROC5, GFDL-ESM2M, FIO-ESM, MIROC-ESM, CMCC-CMS, MPI-ESM-LR, HadCM3, INM-CM4, IPSL-CM5B-LR, GEOS-5, HadGEM2-AO, CanESM2, FGOALS-s2, MRI-AGCM3-2S, MPI-ESM-P, HadGEM2-A, MRI-ESM1, MPI-ESM-MR, CSIRO-Mk3-6-0, MRI-CGCM3, CESM1-BGC, SP-CCSM4, MRI-AGCM3.2H, inmcm4, CESM1-FASTCHEM, GISS-E2-R-CC, BNU-ESM, CNRM-CM5-2, CCSM4, GFDL-CM2p1, GFDL-ESM2G, FGOALS-gl, bcc-csm1-1-m, CanCM4, MRI-AGCM3.2S, NorESM1-M, CESM1-WACCM, IPSL-CM5A-MR, IPSL-CM5A-LR, GFDL-CM3, NICAM-09, MRI-AGCM3-2H, CNRM-CM5, GFDL-HIRAM-C180, GISS-E2-H, EC-EARTH, MIROC-ESM-CHEM, CSIRO-Mk3L-1-2, NorESM1-ME, CMCC-CM, GISS-E2-R, HadGEM2-CC, GISS-E2-H-CC, CanAM4, CMCC-CESM, CFSv2-2011, HadGEM2-ES, bcc-csm1-1, CESM1-CAM5, GFDL-HIRAM-C360
+   [...]
+   MIP_table_options - Used values: Amon, cfMon, Omon, fx, aero, Oyr, OImon, cfDay, Lmon, day
+   MIP_table_options - Unused values: cf3hr, 3hr, cfOff, grids, 6hrLev, 6hrPlev, Aclim, LIclim, cfSites, Lclim, LImon, Oclim
+   ensemble_options - No declared values
+   ensemble_options - Used values: r1i1p1, r0i0p0
+   !!!!!!! THERE WERE UNDECLARED VALUES USED !!!!!!!!
+
+esg_mapfiles 
+++++++++++++
+
+Here is the command-line help:
+
+.. code-block:: bash
+
+   $> esg_mapfiles -h
+   usage: esgmapfiles.py [-h] -p PROJECT [-c CONFIG] [-o OUTDIR] [-l [LOGDIR]]
+                         [-m MAPFILE] [-d] [-L] [-w] [-C] [-v] [-V]
+                         directory [directory ...]
+
+   Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory command-line.
+
+   Exit status:
+   [0]: Successful scanning of all files encountered,
+   [1]: No valid data files found and no mapfile produced and,
+   [2]: A mapfile was produced but some files were skipped.
+
+   positional arguments:
+    directory             One or more directories to recursively scan. Unix wildcards are allowed.
+
+   optional arguments:
+    -h, --help            Show this help message and exit.
+                          
+    -p PROJECT, --project PROJECT
+                          Required project name corresponding to a section of the configuration file.
+                          
+    -c CONFIG, --config CONFIG
+                          Path of configuration INI file
+                          (default is ~/lib/python2.7/site-packages/esgmapfiles-0.5-py2.7.egg/esgmapfiles/config.ini).
+                          
+    -o OUTDIR, --outdir OUTDIR
+                          Mapfile(s) output directory
+                          (default is working directory).
+                          
+    -l [LOGDIR], --logdir [LOGDIR]
+                          Logfile directory (default is working directory).
+                          If not, standard output is used.
+                          
+    -m MAPFILE, --mapfile MAPFILE
+                          Output mapfile name. Only used without --per-dataset option
+                          (default is 'mapfile.txt').
+                          
+    -d, --per-dataset     Produces ONE mapfile PER dataset. It takes priority over --mapfile.
+                          
+    -L, --latest          Generates mapfiles with latest versions only.
+                          
+    -w, --with-version    Includes DRS version into dataset ID (ESGF 2.x compatibility).
+                          
+    -C, --checksum        Includes file checksums into mapfiles (default is a SHA256 checksum).
+                          
+    -v, --verbose         Verbose mode.
+                          
+    -V, --Version         Program version.
 
    Developed by Levavasseur, G. (CNRS/IPSL)
 

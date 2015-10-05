@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>checkvocab &mdash; esg_mapfiles 0.5.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="esg_mapfiles 0.5.2 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">esg_mapfiles 0.5.2 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for checkvocab</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">   :platform: Unix</span>
+<span class="sd">   :synopsis: Utility to check (and update) the configuration INI file used by esg_mapfiles.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Module imports</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">RawTextHelpFormatter</span>
+<span class="kn">from</span> <span class="nn">esgmapfilesutils</span> <span class="kn">import</span> <span class="n">init_logging</span><span class="p">,</span> <span class="n">check_directory</span><span class="p">,</span> <span class="n">config_parse</span>
+
+<span class="c"># Program version</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s">&#39;{0} {1}-{2}-{3}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;v0.1&#39;</span><span class="p">,</span> <span class="s">&#39;2015&#39;</span><span class="p">,</span> <span class="s">&#39;10&#39;</span><span class="p">,</span> <span class="s">&#39;05&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../autodoc.html#checkvocab.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encapsulates the following processing context/information for main process:</span>
+
+<span class="sd">    +---------------------+-------------+---------------------------------------+</span>
+<span class="sd">    | Attribute           | Type        | Description                           |</span>
+<span class="sd">    +=====================+=============+=======================================+</span>
+<span class="sd">    | *self*.directory    | *list*      | Paths to scan                         |</span>
+<span class="sd">    +---------------------+-------------+---------------------------------------+</span>
+<span class="sd">    | *self*.project      | *str*       | Project                               |</span>
+<span class="sd">    +---------------------+-------------+---------------------------------------+</span>
+<span class="sd">    | *self*.cfg          | *callable*  | Configuration file parser             |</span>
+<span class="sd">    +---------------------+-------------+---------------------------------------+</span>
+<span class="sd">    | *self*.pattern      | *re object* | DRS regex pattern                     |</span>
+<span class="sd">    +---------------------+-------------+---------------------------------------+</span>
+
+<span class="sd">    :param dict args: Parsed command-line arguments</span>
+<span class="sd">    :returns: The processing context</span>
+<span class="sd">    :rtype: *dict*</span>
+<span class="sd">    :raises Error: If the project name is inconsistent with the sections names from the configuration file</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">init_logging</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">logdir</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
+            <span class="n">check_directory</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">config_parse</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;No section in configuration file corresponds to &quot;{0}&quot; project. Supported projects are {1}.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">()))</span>
+
+        <span class="n">regex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="s">&#39;directory_format&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+        <span class="n">regex_end</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">string</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;version&#39;</span><span class="p">,</span> <span class="n">string</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">regex</span><span class="p">[:</span><span class="n">regex_end</span><span class="p">]))</span>
+
+</div>
+<div class="viewcode-block" id="get_args"><a class="viewcode-back" href="../autodoc.html#checkvocab.get_args">[docs]</a><span class="k">def</span> <span class="nf">get_args</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns parsed command-line arguments. See ``esg_mapfiles_check_vocab -h`` for full description.</span>
+
+<span class="sd">    :returns: The corresponding ``argparse`` Namespace</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Check the configuration file to use with esg_mapfiles command-line.&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">RawTextHelpFormatter</span><span class="p">,</span>
+        <span class="n">add_help</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Developed by Iwi, A. (BADC) and Levavasseur, G. (CNRS/IPSL)&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;directory&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;+&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&#39;One or more directories to recursively scan. Unix wildcards are allowed.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;-h&#39;</span><span class="p">,</span> <span class="s">&#39;--help&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s">&quot;help&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Show this help message and exit.</span><span class="se">\n\n</span><span class="s">&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;-p&#39;</span><span class="p">,</span> <span class="s">&#39;--project&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Required project name corresponding to a section of the configuration file.</span><span class="se">\n\n</span><span class="s">&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="s">&#39;--config&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s">&#39;{0}/config.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Path of the configuration INI file to check</span><span class="se">\n</span><span class="s">(default is {0}/config.ini).</span><span class="se">\n\n</span><span class="s">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;-l&#39;</span><span class="p">,</span> <span class="s">&#39;--logdir&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;?&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Logfile directory (default is working directory).</span><span class="se">\n</span><span class="s">If not, standard output is used.</span><span class="se">\n\n</span><span class="s">&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;-V&#39;</span><span class="p">,</span> <span class="s">&#39;--Version&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s">&#39;version&#39;</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%(prog)s</span><span class="s"> ({0})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;&quot;Program version.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="get_dsets_from_tree"><a class="viewcode-back" href="../autodoc.html#checkvocab.get_dsets_from_tree">[docs]</a><span class="k">def</span> <span class="nf">get_dsets_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Yields datasets to process. Only the &quot;dataset part&quot; of the DRS tree is returned (i.e., from &quot;root&quot; to &quot;member/ensemble&quot; facet).</span>
+
+<span class="sd">    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)</span>
+<span class="sd">    :returns: The dataset as a part of the DRS tree</span>
+<span class="sd">    :rtype: *iter*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;v[0-9]+$&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="strip_hash_to_end"><a class="viewcode-back" href="../autodoc.html#checkvocab.strip_hash_to_end">[docs]</a><span class="k">def</span> <span class="nf">strip_hash_to_end</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cuts the ``dataset_ID`` before the ending version.</span>
+
+<span class="sd">    :param str id: The ``dataset_id`` string</span>
+<span class="sd">    :returns: The ``dataset_ID`` without version</span>
+<span class="sd">    :rtype: *str*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">id</span><span class="p">[:</span><span class="nb">id</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&quot;#&quot;</span><span class="p">)]</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">id</span>
+
+</div>
+<div class="viewcode-block" id="id_components"><a class="viewcode-back" href="../autodoc.html#checkvocab.id_components">[docs]</a><span class="k">def</span> <span class="nf">id_components</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts/splits the ``dataset_ID`` string into a list of facets.</span>
+
+<span class="sd">    :param str id: The ``dataset_ID`` string</span>
+<span class="sd">    :returns: The facets list</span>
+<span class="sd">    :rtype: *list*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">strip_hash_to_end</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_facets_from_config"><a class="viewcode-back" href="../autodoc.html#checkvocab.get_facets_from_config">[docs]</a><span class="k">def</span> <span class="nf">get_facets_from_config</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns all facets described by the ``dataset_ID`` option from the configuration file.</span>
+
+<span class="sd">    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)</span>
+<span class="sd">    :returns: The facets list</span>
+<span class="sd">    :rtype: *list*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">id_components</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="s">&quot;dataset_ID&quot;</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="get_facet_values_from_tree"><a class="viewcode-back" href="../autodoc.html#checkvocab.get_facet_values_from_tree">[docs]</a><span class="k">def</span> <span class="nf">get_facet_values_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="n">facets</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns all used values of each facet from the DRS tree, according to the supplied direcotries.</span>
+
+<span class="sd">    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)</span>
+<span class="sd">    :param iter dsets: The dataset part of the DRS tree</span>
+<span class="sd">    :param list facets: The facets list</span>
+<span class="sd">    :returns: The declared values of each facet</span>
+<span class="sd">    :rtype: *dict*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">used_values</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
+        <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">dsets</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dset</span><span class="p">))</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;The &quot;directory_format&quot; regex cannot match {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dset</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">attributes</span><span class="p">[</span><span class="s">&#39;root&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">facets</span><span class="p">):</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;{0} skipped because of {1} facets instead of {2} excpected.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">attributes</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">facets</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">used_values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">used_values</span>
+
+</div>
+<div class="viewcode-block" id="get_facet_values_from_config"><a class="viewcode-back" href="../autodoc.html#checkvocab.get_facet_values_from_config">[docs]</a><span class="k">def</span> <span class="nf">get_facet_values_from_config</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">facets</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns all declared values of each facet from the configuration file, according to the project section.</span>
+
+<span class="sd">    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)</span>
+<span class="sd">    :param list facets: The facets list</span>
+<span class="sd">    :returns: The declared values of each facet</span>
+<span class="sd">    :rtype: *dict*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">declared_values</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s">&#39;{0}_options&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+            <span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,\s+&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">key</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">declared_values</span>
+
+</div>
+<div class="viewcode-block" id="compare_values"><a class="viewcode-back" href="../autodoc.html#checkvocab.compare_values">[docs]</a><span class="k">def</span> <span class="nf">compare_values</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">used_values</span><span class="p">,</span> <span class="n">declared_values</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compares used values from DRS tree with all declared values in configuration file for each facet.</span>
+
+<span class="sd">    :param str project: The project name</span>
+<span class="sd">    :param list facets: The facets list</span>
+<span class="sd">    :param dict used_values: The used values from DRS tree</span>
+<span class="sd">    :param dict declared_values: The declred values from the configuration file</span>
+
+<span class="sd">    :returns: True if undeclared values in configuration file are used in DRS tree</span>
+<span class="sd">    :rtype: *boolean*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">any_disallowed</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;{0}_options - No declared values&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;{0}_options - Used values: {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;{0}_options - Declared values: {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;{0}_options - Used values: {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])))</span>
+            <span class="n">disallowed_values</span> <span class="o">=</span> <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
+            <span class="n">unused_values</span> <span class="o">=</span> <span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">disallowed_values</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;{0}_options - UNDECLARED values: {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])))</span>
+                <span class="n">any_disallowed</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;{0}_options - UPDATED values to delcare: {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]))))</span>
+            <span class="k">if</span> <span class="n">unused_values</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;{0}_options - Unused values: {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unused_values</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">any_disallowed</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39; THERE WERE UNDECLARED VALUES USED &#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="s">&#39;!&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">any_disallowed</span>
+
+</div>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../autodoc.html#checkvocab.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main process that\:</span>
+<span class="sd">     * Instanciates processing context</span>
+<span class="sd">     * Parses the configuration files options and values,</span>
+<span class="sd">     * Deduces facets and values from directories,</span>
+<span class="sd">     * Compares the values of each facet between both,</span>
+<span class="sd">     * Print or log the checking.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Instanciate processing context from command-line arguments or SYNDA job dictionnary</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">ProcessingContext</span><span class="p">(</span><span class="n">get_args</span><span class="p">())</span>
+    <span class="c"># Get exepected facets from dataset_ID in configuration file</span>
+    <span class="n">facets</span> <span class="o">=</span> <span class="n">get_facets_from_config</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="c"># Get facets values declared into configuration file</span>
+    <span class="n">facet_values_config</span> <span class="o">=</span> <span class="n">get_facet_values_from_config</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">facets</span><span class="p">)</span>
+    <span class="c"># Get dataset list from DRS tree</span>
+    <span class="n">dsets</span> <span class="o">=</span> <span class="n">get_dsets_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="c"># Get facets values used by DRS tree</span>
+    <span class="n">facet_values_tree</span> <span class="o">=</span> <span class="n">get_facet_values_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="n">facets</span><span class="p">)</span>
+    <span class="n">any_disallowed</span> <span class="o">=</span> <span class="n">compare_values</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">facet_values_tree</span><span class="p">,</span> <span class="n">facet_values_config</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">any_disallowed</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="c"># Main entry point for stand-alone call.</span></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">esg_mapfiles 0.5.2 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Levavasseur, G..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

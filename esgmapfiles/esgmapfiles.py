@@ -19,7 +19,7 @@ from tempfile import mkdtemp
 from shutil import copy2, rmtree
 
 # Program version
-__version__ = '{0} {1}-{2}-{3}'.format('v0.5.3', '2015', '07', '06')
+__version__ = '{0} {1}-{2}-{3}'.format('v0.5.3', '2015', '10', '05')
 
 
 class ProcessingContext(object):
@@ -94,15 +94,12 @@ def get_args(job):
 
     """
     parser = argparse.ArgumentParser(
-        description="""Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory\ncommand-line.""",
+        description="""Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory command-line.\n\nExit status:\n[0]: Successful scanning of all files encountered,\n[1]: No valid data files found and no mapfile produced and,\n[2]: A mapfile was produced but some files were skipped.""",
         formatter_class=RawTextHelpFormatter,
         add_help=False,
         epilog="""
 
-Exit status:
-        0 successful scanning of all files encountered
-        1 no valid data files found and no mapfile produced
-        2 a mapfile was produced but some files were skipped
+
 
 Developed by Levavasseur, G. (CNRS/IPSL)""")
     parser.add_argument(
@@ -190,7 +187,9 @@ def get_master_ID(attributes, ctx):
     dataset_ID = ctx.cfg.get(ctx.project, 'dataset_ID')
     facets = re.split('\.|#', dataset_ID)
     for facet in facets:
-        dataset_ID = dataset_ID.replace(facet, attributes[facet])
+        if facet == 'project':
+            dataset_ID = dataset_ID.replace(facet, attributes[facet].lower())
+        # dataset_ID = dataset_ID.replace(facet, attributes[facet])
     return dataset_ID
 
 
@@ -391,7 +390,7 @@ def file_process(inputs):
 def run(job=None):
     """
     Main process that\:
-     * Instantiates processing context
+     * Instantiates processing context,
      * Creates mapfiles output directory if necessary,
      * Instantiates threads pools,
      * Copies mapfile(s) to the output directory,
@@ -420,17 +419,16 @@ def run(job=None):
     # Raises exception when all processed files failed (filtered list empty)
     if not outmaps:
         rmdtemp(ctx)
-        raise Exception('All files have been ignored or have failed: no mapfile.')
+        raise Exception('All files have been ignored or have failed leading to no mapfile.')
     # Overwrite each existing mapfile in output directory
     for outmap in list(set(outmaps)):
         copy2(os.path.join(ctx.dtemp, outmap), ctx.outdir)
     # Remove temporary directory
     rmdtemp(ctx)
-    logging.info('==> Scan completed ({0} files scanned)'.format(file_process.called))
-    # non-zero exit status if any files got filtered
+    logging.info('==> Scan completed ({0} file(s) scanned)'.format(file_process.called))
+    # Non-zero exit status if any files got filtered
     if None in outmaps_all:
-        logging.warning("==> %d file(s) skipped", 
-                        len(outmaps_all) - len(outmaps))
+        logging.warning('==> Scan completed ({0} file(s) skipped)'.format(len(outmaps_all) - len(outmaps)))
         sys.exit(2)
 
 

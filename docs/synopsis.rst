@@ -1,8 +1,7 @@
 .. _synopsis:
 
-********
 Synopsis
-********
+========
 
 The publication process of the `ESG-F <http://pcmdi9.llnl.gov/>`_ nodes requires *mapfiles*. Mapfiles are text files where each line describes a file to publish on the following format:
 ::
@@ -21,7 +20,7 @@ Security policies of computing centres, that often host `ESG-F <http://pcmdi9.ll
 
 
 Features
-++++++++
+********
 
 **Directory as input**
   You only need to specifiy the directory to recursively scan. To include several data directories in one mapfile and to publish them at once, you can use all Unix wildcards in the path or submit several paths.

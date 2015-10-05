@@ -54,14 +54,14 @@
             
   <div class="section" id="usage">
 <span id="id1"></span><h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="esg-mapfiles-check-vocab">
+<h2>esg_mapfiles_check_vocab<a class="headerlink" href="#esg-mapfiles-check-vocab" title="Permalink to this headline">¶</a></h2>
 <p>Here is the command-line help:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles -h
-usage: esgmapfiles.py <span class="o">[</span>-h<span class="o">]</span> -p PROJECT <span class="o">[</span>-c CONFIG<span class="o">]</span> <span class="o">[</span>-o OUTDIR<span class="o">]</span> <span class="o">[</span>-l <span class="o">[</span>LOGDIR<span class="o">]]</span>
-                      <span class="o">[</span>-m MAPFILE<span class="o">]</span> <span class="o">[</span>-d<span class="o">]</span> <span class="o">[</span>-L<span class="o">]</span> <span class="o">[</span>-w<span class="o">]</span> <span class="o">[</span>-C<span class="o">]</span> <span class="o">[</span>-k<span class="o">]</span> <span class="o">[</span>-v<span class="o">]</span> <span class="o">[</span>-V<span class="o">]</span>
-                      directory <span class="o">[</span>directory ...<span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles_check_vocab -h
+usage: esg_mapfiles_check_vocab <span class="o">[</span>-h<span class="o">]</span> -p PROJECT <span class="o">[</span>-c CONFIG<span class="o">]</span> <span class="o">[</span>-l <span class="o">[</span>LOGDIR<span class="o">]]</span> <span class="o">[</span>-V<span class="o">]</span>
+                                directory <span class="o">[</span>directory ...<span class="o">]</span>
 
-Build ESGF mapfiles upon <span class="nb">local </span>ESGF datanode bypassing esgscan_directory
-<span class="nb">command</span>-line.
+Check the configuration file to use with esg_mapfiles <span class="nb">command</span>-line.
 
 positional arguments:
   directory             One or more directories to recursively scan. Unix wildcards are allowed.
@@ -73,40 +73,120 @@ optional arguments:
                         Required project name corresponding to a section of the configuration file.
 
   -c CONFIG, --config CONFIG
-                        Path of configuration INI file
-                        <span class="o">(</span>default is ~/anaconda/lib/python2.7/site-packages/esgmapfiles/config.ini<span class="o">)</span>.
-
-  -o OUTDIR, --outdir OUTDIR
-                        Mapfile<span class="o">(</span>s<span class="o">)</span> output directory
-                        <span class="o">(</span>default is working directory<span class="o">)</span>.
+                        Path of the configuration INI file to check
+                        <span class="o">(</span>default is ~/lib/python2.7/site-packages/esgmapfiles-0.5-py2.7.egg/esgmapfiles/config.ini<span class="o">)</span>.
 
   -l <span class="o">[</span>LOGDIR<span class="o">]</span>, --logdir <span class="o">[</span>LOGDIR<span class="o">]</span>
                         Logfile directory <span class="o">(</span>default is working directory<span class="o">)</span>.
                         If not, standard output is used.
 
-  -m MAPFILE, --mapfile MAPFILE
-                        Output mapfile name. Only used without --per-dataset option
-                        <span class="o">(</span>default is <span class="s1">&#39;mapfile.txt&#39;</span><span class="o">)</span>.
-
-  -d, --per-dataset     Produces ONE mapfile PER dataset. It takes priority over --mapfile.
-
-  -L, --latest          Generates mapfiles with latest versions only.
-
-  -w, --with-version    Includes DRS version into dataset ID <span class="o">(</span>ESGF 2.x compatibility<span class="o">)</span>.
-
-  -C, --checksum        Includes file checksums into mapfiles <span class="o">(</span>default is a SHA256 checksum<span class="o">)</span>.
-
-  -v, --verbose         Verbose mode.
-
   -V, --Version         Program version.
+
+Developed by Iwi, A. <span class="o">(</span>BADC<span class="o">)</span> and Levavasseur, G. <span class="o">(</span>CNRS/IPSL<span class="o">)</span>
+</pre></div>
+</div>
+<div class="section" id="tutorials">
+<h3>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h3>
+<p>To check the facet options declared in your configuration file:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles_check_vocab /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
+project_options - No declared values
+project_options - Used values: CMIP5
+product_options - Declared values: output2, output, output1
+product_options - Used values: output1
+product_options - Unused values: output2, output
+institute_options - Declared values: UNSW, ICHEC, CCCma, LASG-CESS, BCC, MIROC, NCEP, MOHC, IPSL, SMHI, CMCC, CSIRO-BOM, COLA-CFS, MPI-M, NCAR, NIMR-KMA, CSIRO-QCCCE, CCCMA, INPE, BNU, NOAA-NCEP, CNRM-CERFACS, NASA-GMAO, NASA-GISS, FIO, NOAA-GFDL, LASG-IAP, INM, NSF-DOE-NCAR, NICAM, NCC, MRI
+institute_options - Used values: IPSL
+institute_options - Unused values: ICHEC, CCCma, LASG-CESS, BCC, UNSW, CSIRO-BOM, MOHC, INM, CMCC, NCEP, COLA-CFS, MPI-M, NCAR, NIMR-KMA, CSIRO-QCCCE, CCCMA, INPE, BNU, NOAA-NCEP, CNRM-CERFACS, NASA-GMAO, NASA-GISS, FIO, NOAA-GFDL, NSF-DOE-NCAR, LASG-IAP, SMHI, MIROC, NICAM, NCC, MRI
+model_options - Declared values: MIROC4h, ACCESS1-0, ACCESS1-3, CESM1-CAM5-1-FV2, FGOALS-g2, MIROC5, GFDL-ESM2M, FIO-ESM, MIROC-ESM, CMCC-CMS, MPI-ESM-LR, HadCM3, INM-CM4, IPSL-CM5B-LR, GEOS-5, HadGEM2-AO, CanESM2, FGOALS-s2, MRI-AGCM3-2S, MPI-ESM-P, HadGEM2-A, MRI-ESM1, MPI-ESM-MR, CSIRO-Mk3-6-0, MRI-CGCM3, CESM1-BGC, SP-CCSM4, MRI-AGCM3.2H, inmcm4, CESM1-FASTCHEM, GISS-E2-R-CC, BNU-ESM, CNRM-CM5-2, CCSM4, GFDL-CM2p1, GFDL-ESM2G, FGOALS-gl, bcc-csm1-1-m, CanCM4, MRI-AGCM3.2S, NorESM1-M, CESM1-WACCM, IPSL-CM5A-MR, IPSL-CM5A-LR, GFDL-CM3, NICAM-09, MRI-AGCM3-2H, CNRM-CM5, GFDL-HIRAM-C180, GISS-E2-H, EC-EARTH, MIROC-ESM-CHEM, CSIRO-Mk3L-1-2, NorESM1-ME, CMCC-CM, GISS-E2-R, HadGEM2-CC, GISS-E2-H-CC, CanAM4, CMCC-CESM, CFSv2-2011, HadGEM2-ES, bcc-csm1-1, CESM1-CAM5, GFDL-HIRAM-C360
+<span class="o">[</span>...<span class="o">]</span>
+MIP_table_options - Used values: Amon, cfMon, Omon, fx, aero, Oyr, OImon, cfDay, Lmon, day
+MIP_table_options - Unused values: cf3hr, 3hr, cfOff, grids, 6hrLev, 6hrPlev, Aclim, LIclim, cfSites, Lclim, LImon, Oclim
+ensemble_options - No declared values
+ensemble_options - Used values: r1i1p1, r0i0p0
+</pre></div>
+</div>
+<p>If a used option is missing:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles_check_vocab /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
+project_options - No declared values
+project_options - Used values: CMIP5
+product_options - Declared values: output2, output
+product_options - Used values: output1
+product_options - UNDECLARED values: output1
+product_options - UPDATED values to delcare: output2, output, output1
+product_options - Unused values: output2, output
+institute_options - Declared values: UNSW, ICHEC, CCCma, LASG-CESS, BCC, MIROC, NCEP, MOHC, IPSL, SMHI, CMCC, CSIRO-BOM, COLA-CFS, MPI-M, NCAR, NIMR-KMA, CSIRO-QCCCE, CCCMA, INPE, BNU, NOAA-NCEP, CNRM-CERFACS, NASA-GMAO, NASA-GISS, FIO, NOAA-GFDL, LASG-IAP, INM, NSF-DOE-NCAR, NICAM, NCC, MRI
+institute_options - Used values: IPSL
+institute_options - Unused values: ICHEC, CCCma, LASG-CESS, BCC, UNSW, CSIRO-BOM, MOHC, INM, CMCC, NCEP, COLA-CFS, MPI-M, NCAR, NIMR-KMA, CSIRO-QCCCE, CCCMA, INPE, BNU, NOAA-NCEP, CNRM-CERFACS, NASA-GMAO, NASA-GISS, FIO, NOAA-GFDL, NSF-DOE-NCAR, LASG-IAP, SMHI, MIROC, NICAM, NCC, MRI
+model_options - Declared values: MIROC4h, ACCESS1-0, ACCESS1-3, CESM1-CAM5-1-FV2, FGOALS-g2, MIROC5, GFDL-ESM2M, FIO-ESM, MIROC-ESM, CMCC-CMS, MPI-ESM-LR, HadCM3, INM-CM4, IPSL-CM5B-LR, GEOS-5, HadGEM2-AO, CanESM2, FGOALS-s2, MRI-AGCM3-2S, MPI-ESM-P, HadGEM2-A, MRI-ESM1, MPI-ESM-MR, CSIRO-Mk3-6-0, MRI-CGCM3, CESM1-BGC, SP-CCSM4, MRI-AGCM3.2H, inmcm4, CESM1-FASTCHEM, GISS-E2-R-CC, BNU-ESM, CNRM-CM5-2, CCSM4, GFDL-CM2p1, GFDL-ESM2G, FGOALS-gl, bcc-csm1-1-m, CanCM4, MRI-AGCM3.2S, NorESM1-M, CESM1-WACCM, IPSL-CM5A-MR, IPSL-CM5A-LR, GFDL-CM3, NICAM-09, MRI-AGCM3-2H, CNRM-CM5, GFDL-HIRAM-C180, GISS-E2-H, EC-EARTH, MIROC-ESM-CHEM, CSIRO-Mk3L-1-2, NorESM1-ME, CMCC-CM, GISS-E2-R, HadGEM2-CC, GISS-E2-H-CC, CanAM4, CMCC-CESM, CFSv2-2011, HadGEM2-ES, bcc-csm1-1, CESM1-CAM5, GFDL-HIRAM-C360
+<span class="o">[</span>...<span class="o">]</span>
+MIP_table_options - Used values: Amon, cfMon, Omon, fx, aero, Oyr, OImon, cfDay, Lmon, day
+MIP_table_options - Unused values: cf3hr, 3hr, cfOff, grids, 6hrLev, 6hrPlev, Aclim, LIclim, cfSites, Lclim, LImon, Oclim
+ensemble_options - No declared values
+ensemble_options - Used values: r1i1p1, r0i0p0
+!!!!!!! THERE WERE UNDECLARED VALUES USED !!!!!!!!
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="esg-mapfiles">
+<h2>esg_mapfiles<a class="headerlink" href="#esg-mapfiles" title="Permalink to this headline">¶</a></h2>
+<p>Here is the command-line help:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles -h
+usage: esgmapfiles.py <span class="o">[</span>-h<span class="o">]</span> -p PROJECT <span class="o">[</span>-c CONFIG<span class="o">]</span> <span class="o">[</span>-o OUTDIR<span class="o">]</span> <span class="o">[</span>-l <span class="o">[</span>LOGDIR<span class="o">]]</span>
+                      <span class="o">[</span>-m MAPFILE<span class="o">]</span> <span class="o">[</span>-d<span class="o">]</span> <span class="o">[</span>-L<span class="o">]</span> <span class="o">[</span>-w<span class="o">]</span> <span class="o">[</span>-C<span class="o">]</span> <span class="o">[</span>-v<span class="o">]</span> <span class="o">[</span>-V<span class="o">]</span>
+                      directory <span class="o">[</span>directory ...<span class="o">]</span>
+
+Build ESGF mapfiles upon <span class="nb">local </span>ESGF datanode bypassing esgscan_directory <span class="nb">command</span>-line.
+
+Exit status:
+<span class="o">[</span>0<span class="o">]</span>: Successful scanning of all files encountered,
+<span class="o">[</span>1<span class="o">]</span>: No valid data files found and no mapfile produced and,
+<span class="o">[</span>2<span class="o">]</span>: A mapfile was produced but some files were skipped.
+
+positional arguments:
+ directory             One or more directories to recursively scan. Unix wildcards are allowed.
+
+optional arguments:
+ -h, --help            Show this <span class="nb">help </span>message and exit.
+
+ -p PROJECT, --project PROJECT
+                       Required project name corresponding to a section of the configuration file.
+
+ -c CONFIG, --config CONFIG
+                       Path of configuration INI file
+                       <span class="o">(</span>default is ~/lib/python2.7/site-packages/esgmapfiles-0.5-py2.7.egg/esgmapfiles/config.ini<span class="o">)</span>.
+
+ -o OUTDIR, --outdir OUTDIR
+                       Mapfile<span class="o">(</span>s<span class="o">)</span> output directory
+                       <span class="o">(</span>default is working directory<span class="o">)</span>.
+
+ -l <span class="o">[</span>LOGDIR<span class="o">]</span>, --logdir <span class="o">[</span>LOGDIR<span class="o">]</span>
+                       Logfile directory <span class="o">(</span>default is working directory<span class="o">)</span>.
+                       If not, standard output is used.
+
+ -m MAPFILE, --mapfile MAPFILE
+                       Output mapfile name. Only used without --per-dataset option
+                       <span class="o">(</span>default is <span class="s1">&#39;mapfile.txt&#39;</span><span class="o">)</span>.
+
+ -d, --per-dataset     Produces ONE mapfile PER dataset. It takes priority over --mapfile.
+
+ -L, --latest          Generates mapfiles with latest versions only.
+
+ -w, --with-version    Includes DRS version into dataset ID <span class="o">(</span>ESGF 2.x compatibility<span class="o">)</span>.
+
+ -C, --checksum        Includes file checksums into mapfiles <span class="o">(</span>default is a SHA256 checksum<span class="o">)</span>.
+
+ -v, --verbose         Verbose mode.
+
+ -V, --Version         Program version.
 
 Developed by Levavasseur, G. <span class="o">(</span>CNRS/IPSL<span class="o">)</span>
 </pre></div>
 </div>
-<div class="section" id="tutorials">
-<h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3>Tutorials<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>To generate a mapfile with verbosity using default parameters:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -v
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p PROJECT -v
 <span class="o">==</span>&gt; Scan started
 mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
 mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -129,7 +209,7 @@ dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
 <p class="first admonition-title">Warning</p>
 <p class="last">The <tt class="docutils literal"><span class="pre">-p/--project</span></tt> is case-sensitive.</p>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -C
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p PROJECT -C
 <span class="o">==</span>&gt; Scan started
 mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
 mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -143,7 +223,7 @@ dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | che
 </pre></div>
 </div>
 <p>To generate a mapfile with DRS versions:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -w
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p PROJECT -w
 <span class="o">==</span>&gt; Scan started
 mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
 mapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -157,7 +237,7 @@ dataset_ID3#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_ti
 </pre></div>
 </div>
 <p>To generate one mapfile per dataset:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -d
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p PROJECT -d
 <span class="o">==</span>&gt; Scan started
 dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
 dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -180,11 +260,11 @@ dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
 <p class="last">The mapfile name corresponds to the dataset ID with the DRS version as suffix.</p>
 </div>
 <p>To specify the configuration file:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -c /path/to/configfile/config.ini
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
 </pre></div>
 </div>
 <p>To use a logfile (the logfile directory is optionnal):</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -l /path/to/logfile -v
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p PROJECT -l /path/to/logfile -v
 
 <span class="nv">$&gt;</span> cat /path/to/logfile/esgmapfiles-YYYYMMDD-HHMMSS-PID.log
 YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
@@ -196,7 +276,7 @@ YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; S
 </pre></div>
 </div>
 <p>To generate a mapfile specifying filename and output directory:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -o /path/to/mapfile -m mymapfile.txt
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p PROJECT -o /path/to/mapfile -m mymapfile.txt
 <span class="o">==</span>&gt; Scan started
 mymapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
 mymapfile.txt &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -214,7 +294,7 @@ dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
 <p class="last">The <tt class="docutils literal"><span class="pre">--per-dataset</span></tt> option takes priority over <tt class="docutils literal"><span class="pre">--mapfile</span></tt> option.</p>
 </div>
 <p>To generate a mapfile walking through <em>latest</em> directories only:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p cmip5 -L -d -w
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$&gt;</span> esg_mapfiles /path/to/scan -p PROJECT -L -d -w
 <span class="o">==</span>&gt; Scan started
 dataset_ID1.latest &lt;-- /path/to/scan/.../latest/.../file1.nc
 dataset_ID2.latest &lt;-- /path/to/scan/.../latest/.../file2.nc
@@ -242,6 +322,7 @@ dataset_ID3#YYYYMMDD | /path/to/scan/.../latest/.../file3.nc | size3 | mod_time3
 </div>
 </div>
 </div>
+</div>
 
 
           </div>
@@ -252,7 +333,14 @@ dataset_ID3#YYYYMMDD | /path/to/scan/.../latest/.../file3.nc | size3 | mod_time3
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Usage</a><ul>
+<li><a class="reference internal" href="#esg-mapfiles-check-vocab">esg_mapfiles_check_vocab</a><ul>
 <li><a class="reference internal" href="#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#esg-mapfiles">esg_mapfiles</a><ul>
+<li><a class="reference internal" href="#id2">Tutorials</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
