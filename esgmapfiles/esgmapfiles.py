@@ -182,8 +182,6 @@ def get_master_ID(attributes, ctx):
     dataset_ID = ctx.cfg.get(ctx.project, 'dataset_ID')
     facets = re.split('\.|#', dataset_ID)
     for facet in facets:
-        if facet == 'project':
-            dataset_ID = dataset_ID.replace(facet, attributes[facet].lower())
         dataset_ID = dataset_ID.replace(facet, attributes[facet])
     return dataset_ID
 
