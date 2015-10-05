@@ -97,7 +97,14 @@ def get_args(job):
         description="""Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory\ncommand-line.""",
         formatter_class=RawTextHelpFormatter,
         add_help=False,
-        epilog="""Developed by Levavasseur, G. (CNRS/IPSL)""")
+        epilog="""
+
+Exit status:
+        0 successful scanning of all files encountered
+        1 no valid data files found and no mapfile produced
+        2 a mapfile was produced but some files were skipped
+
+Developed by Levavasseur, G. (CNRS/IPSL)""")
     parser.add_argument(
         'directory',
         type=str,
@@ -389,11 +396,7 @@ def run(job=None):
      * Instantiates threads pools,
      * Copies mapfile(s) to the output directory,
      * Removes the temporary directory and its contents.
-
-    Exit status:
-        0 successful scanning of all files encountered
-        1 no valid data files found and no mapfile produced
-        2 a mapfile was produced but some files were skipped
+     * Implement exit status values as described in get_args (search for 'epilog')
 
     :param dict job: A job from SYNDA if supplied instead of classical command-line use.
 
