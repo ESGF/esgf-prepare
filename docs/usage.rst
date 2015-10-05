@@ -9,9 +9,9 @@ Here is the command-line help:
 .. code-block:: bash
 
    $> esg_mapfiles -h
-   usage: esgmapfiles [-h] -p PROJECT [-c CONFIG] [-o OUTDIR] [-l [LOGDIR]]
-                      [-m MAPFILE] [-d] [-L] [-w] [-C] [-k] [-v] [-V]
-                      directory [directory ...]
+   usage: esg_mapfiles [-h] -p PROJECT [-c CONFIG] [-o OUTDIR] [-l [LOGDIR]]
+                       [-m MAPFILE] [-d] [-L] [-w] [-C] [-v] [-V]
+                       directory [directory ...]
 
    Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory
    command-line.
