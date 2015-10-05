@@ -8,6 +8,7 @@
 # Module imports
 import re
 import os
+import sys
 import logging
 import argparse
 from argparse import RawTextHelpFormatter
@@ -265,7 +266,10 @@ def main():
     dsets = get_dsets_from_tree(ctx)
     # Get facets values used by DRS tree
     facet_values_tree = get_facet_values_from_tree(ctx, dsets, facets)
-    compare_values(ctx.project, facets, facet_values_tree, facet_values_config)
+    any_disallowed = compare_values(ctx.project, facets, facet_values_tree, facet_values_config)
+    if any_disallowed:
+        sys.exit(1)
+
 
 # Main entry point for stand-alone call.
 if __name__ == '__main__':
