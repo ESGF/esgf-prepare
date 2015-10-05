@@ -5,6 +5,7 @@
 
 """
 
+import sys
 import os
 import re
 import argparse
@@ -383,11 +384,16 @@ def file_process(inputs):
 def run(job=None):
     """
     Main process that\:
-     * Instanciates processing context
+     * Instantiates processing context
      * Creates mapfiles output directory if necessary,
-     * Instanciates threads pools,
+     * Instantiates threads pools,
      * Copies mapfile(s) to the output directory,
      * Removes the temporary directory and its contents.
+
+    Exit status:
+        0 successful scanning of all files encountered
+        1 no valid data files found and no mapfile produced
+        2 a mapfile was produced but some files were skipped
 
     :param dict job: A job from SYNDA if supplied instead of classical command-line use.
 
@@ -403,12 +409,13 @@ def run(job=None):
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.cfg.defaults()['threads_number']))
     # Return the list of generated mapfiles in temporary directory
-    outmaps = filter(lambda m: m is not None, pool.imap(wrapper, yield_inputs(ctx)))
+    outmaps_all = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
+    outmaps = filter(lambda m: m is not None, outmaps_all)
     # Close threads pool
     pool.close()
     pool.join()
-    # Raises exception when all processed files failed
-    if not any(outmaps):
+    # Raises exception when all processed files failed (filtered list empty)
+    if not outmaps:
         rmdtemp(ctx)
         raise Exception('All files have been ignored or have failed: no mapfile.')
     # Overwrite each existing mapfile in output directory
@@ -417,6 +424,11 @@ def run(job=None):
     # Remove temporary directory
     rmdtemp(ctx)
     logging.info('==> Scan completed ({0} files scanned)'.format(file_process.called))
+    # non-zero exit status if any files got filtered
+    if None in outmaps_all:
+        logging.warning("==> %d file(s) skipped", 
+                        len(outmaps_all) - len(outmaps))
+        sys.exit(2)
 
 
 # Main entry point for stand-alone call.
