@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# esg_mapfiles documentation build configuration file, created by
+# esgscan_directory documentation build configuration file, created by
 # sphinx-quickstart on Fri Jun  5 17:09:27 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'esg_mapfiles'
+project = u'esgscan_directory'
 copyright = u'2015, Levavasseur, G.'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -101,7 +101,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'classic'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -179,7 +179,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'esg_mapfilesdoc'
+htmlhelp_basename = 'esgscan_directorydoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -199,7 +199,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'esg_mapfiles.tex', u'esg\\_mapfiles Documentation',
+  ('index', 'esgscan_directory.tex', u'esg\\_mapfiles Documentation',
    u'Levavasseur, G.', 'manual'),
 ]
 
@@ -229,7 +229,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'esg_mapfiles', u'esg_mapfiles Documentation',
+    ('index', 'esgscan_directory', u'esgscan_directory Documentation',
      [u'Levavasseur, G.'], 1)
 ]
 
@@ -243,8 +243,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'esg_mapfiles', u'esg_mapfiles Documentation',
-   u'Levavasseur, G.', 'esg_mapfiles', 'One line description of project.',
+  ('index', 'esgscan_directory', u'esgscan_directory Documentation',
+   u'Levavasseur, G.', 'esgscan_directory', 'One line description of project.',
    'Miscellaneous'),
 ]
 

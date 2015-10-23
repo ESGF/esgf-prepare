@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Code documentation &mdash; esg_mapfiles 0.5.2 documentation</title>
+    <title>Code documentation &mdash; esgscan_directory 0.5.2 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,11 +23,11 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="esg_mapfiles 0.5.2 documentation" href="index.html" />
+    <link rel="top" title="esgscan_directory 0.5.2 documentation" href="index.html" />
     <link rel="prev" title="Changelog" href="log.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -39,14 +39,14 @@
         <li class="right" >
           <a href="log.html" title="Changelog"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">esg_mapfiles 0.5.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">esgscan_directory 0.5.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="code-documentation">
 <span id="autodoc"></span><h1>Code documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h1>
@@ -58,13 +58,13 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
 </tr>
-<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Build ESGF mapfiles without <tt class="docutils literal"><span class="pre">esgscan_directory</span></tt> upon local ESGF datanode.</td>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Build ESGF mapfiles without <code class="docutils literal"><span class="pre">esgscan_directory</span></code> upon local ESGF datanode.</td>
 </tr>
 </tbody>
 </table>
 <dl class="class">
 <dt id="esgmapfiles.ProcessingContext">
-<em class="property">class </em><tt class="descclassname">esgmapfiles.</tt><tt class="descname">ProcessingContext</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#ProcessingContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.ProcessingContext" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgmapfiles.</code><code class="descname">ProcessingContext</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#ProcessingContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.ProcessingContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encapsulates the following processing context/information for main process:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -147,16 +147,16 @@
 
 <dl class="function">
 <dt id="esgmapfiles.get_args">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">get_args</tt><big>(</big><em>job</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#get_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.get_args" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns parsed command-line arguments. See <tt class="docutils literal"><span class="pre">esg_mapfiles</span> <span class="pre">-h</span></tt> for full description.
-A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can be used as developper&#8217;s entry point to overload the parser.</p>
+<code class="descclassname">esgmapfiles.</code><code class="descname">get_args</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#get_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.get_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns parsed command-line arguments. See <code class="docutils literal"><span class="pre">esg_mapfiles</span> <span class="pre">-h</span></code> for full description.
+A <code class="docutils literal"><span class="pre">job</span></code> dictionnary can be used as developper&#8217;s entry point to overload the parser.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>job</strong> (<em>dict</em>) &#8211; Optionnal dictionnary instead of command-line arguments.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding <tt class="docutils literal"><span class="pre">argparse</span></tt> Namespace</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding <code class="docutils literal"><span class="pre">argparse</span></code> Namespace</td>
 </tr>
 </tbody>
 </table>
@@ -164,7 +164,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="esgmapfiles.get_master_ID">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">get_master_ID</tt><big>(</big><em>attributes</em>, <em>ctx</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#get_master_ID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.get_master_ID" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgmapfiles.</code><code class="descname">get_master_ID</code><span class="sig-paren">(</span><em>attributes</em>, <em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#get_master_ID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.get_master_ID" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds the master identifier of a dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -172,7 +172,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>attributes</strong> (<em>dict</em>) &#8211; The attributes auto-detected with DRS pattern</li>
-<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#esgmapfiles.ProcessingContext" title="esgmapfiles.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</li>
+<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#esgmapfiles.ProcessingContext" title="esgmapfiles.ProcessingContext"><code class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></code></a> class instance)</li>
 </ul>
 </td>
 </tr>
@@ -188,7 +188,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="esgmapfiles.check_facets">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">check_facets</tt><big>(</big><em>attributes</em>, <em>ctx</em>, <em>file</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#check_facets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.check_facets" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgmapfiles.</code><code class="descname">check_facets</code><span class="sig-paren">(</span><em>attributes</em>, <em>ctx</em>, <em>file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#check_facets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.check_facets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks all attributes from path. Each attribute or facet is auto-detected using the DRS pattern (regex) and compared to its corresponding options declared into the configuration file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -196,7 +196,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>attributes</strong> (<em>dict</em>) &#8211; The attributes auto-detected with DRS pattern</li>
-<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#esgmapfiles.ProcessingContext" title="esgmapfiles.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</li>
+<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#esgmapfiles.ProcessingContext" title="esgmapfiles.ProcessingContext"><code class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></code></a> class instance)</li>
 </ul>
 </td>
 </tr>
@@ -209,7 +209,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="esgmapfiles.checksum">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">checksum</tt><big>(</big><em>file</em>, <em>ctx</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.checksum" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgmapfiles.</code><code class="descname">checksum</code><span class="sig-paren">(</span><em>file</em>, <em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.checksum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Does the MD5 or SHA256 checksum by the Shell avoiding Python memory limits.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -217,7 +217,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>file</strong> (<em>str</em>) &#8211; The full path of a file</li>
-<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#esgmapfiles.ProcessingContext" title="esgmapfiles.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</li>
+<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#esgmapfiles.ProcessingContext" title="esgmapfiles.ProcessingContext"><code class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></code></a> class instance)</li>
 </ul>
 </td>
 </tr>
@@ -230,13 +230,13 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="esgmapfiles.rmdtemp">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">rmdtemp</tt><big>(</big><em>ctx</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#rmdtemp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.rmdtemp" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgmapfiles.</code><code class="descname">rmdtemp</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#rmdtemp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.rmdtemp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes the temporary directory and its content.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#esgmapfiles.ProcessingContext" title="esgmapfiles.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#esgmapfiles.ProcessingContext" title="esgmapfiles.ProcessingContext"><code class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></code></a> class instance)</td>
 </tr>
 </tbody>
 </table>
@@ -244,13 +244,13 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="esgmapfiles.yield_inputs">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">yield_inputs</tt><big>(</big><em>ctx</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#yield_inputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.yield_inputs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Yields all files to process within tuples with the processing context. The file walking through the DRS tree follows symbolic links and ignores the &#8220;files&#8221; directories and &#8220;latest&#8221; symbolic links if <tt class="docutils literal"><span class="pre">--latest</span></tt> is None.</p>
+<code class="descclassname">esgmapfiles.</code><code class="descname">yield_inputs</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#yield_inputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.yield_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yields all files to process within tuples with the processing context. The file walking through the DRS tree follows symbolic links and ignores the &#8220;files&#8221; directories and &#8220;latest&#8221; symbolic links if <code class="docutils literal"><span class="pre">--latest</span></code> is None.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#esgmapfiles.ProcessingContext" title="esgmapfiles.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#esgmapfiles.ProcessingContext" title="esgmapfiles.ProcessingContext"><code class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></code></a> class instance)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Attach the processing context to a file to process as an iterator of tuples</td>
 </tr>
@@ -262,8 +262,8 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="esgmapfiles.write">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">write</tt><big>(</big><em>outfile</em>, <em>msg</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes in a mapfile using the <tt class="docutils literal"><span class="pre">with</span></tt> statement.</p>
+<code class="descclassname">esgmapfiles.</code><code class="descname">write</code><span class="sig-paren">(</span><em>outfile</em>, <em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes in a mapfile using the <code class="docutils literal"><span class="pre">with</span></code> statement.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -280,7 +280,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="esgmapfiles.wrapper">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">wrapper</tt><big>(</big><em>inputs</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.wrapper" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgmapfiles.</code><code class="descname">wrapper</code><span class="sig-paren">(</span><em>inputs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transparent wrapper for pool map.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -288,7 +288,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputs</strong> (<em>tuple</em>) &#8211; A tuple with the file path and the processing context</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <tt class="xref py py-func docutils literal"><span class="pre">_file_process()</span></tt> call</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <code class="xref py py-func docutils literal"><span class="pre">_file_process()</span></code> call</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>callable</em></td>
 </tr>
@@ -298,7 +298,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="esgmapfiles.counted">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">counted</tt><big>(</big><em>fct</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#counted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.counted" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgmapfiles.</code><code class="descname">counted</code><span class="sig-paren">(</span><em>fct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#counted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.counted" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator used to count all file process calls.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -306,7 +306,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fct</strong> (<em>callable</em>) &#8211; The function to monitor</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A wrapped function with a <tt class="docutils literal"><span class="pre">.called</span></tt> attribute</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A wrapped function with a <code class="docutils literal"><span class="pre">.called</span></code> attribute</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>callable</em></td>
 </tr>
@@ -316,7 +316,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="esgmapfiles.file_process">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">file_process</tt><big>(</big><em>inputs</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#file_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.file_process" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgmapfiles.</code><code class="descname">file_process</code><span class="sig-paren">(</span><em>inputs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#file_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.file_process" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>File process that:</dt>
 <dd><ul class="first last simple">
@@ -343,7 +343,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="esgmapfiles.run">
-<tt class="descclassname">esgmapfiles.</tt><tt class="descname">run</tt><big>(</big><em>job=None</em><big>)</big><a class="reference internal" href="_modules/esgmapfiles.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.run" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgmapfiles.</code><code class="descname">run</code><span class="sig-paren">(</span><em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgmapfiles.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgmapfiles.run" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>Main process that:</dt>
 <dd><ul class="first last simple">
@@ -382,7 +382,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 </table>
 <dl class="class">
 <dt id="checkvocab.ProcessingContext">
-<em class="property">class </em><tt class="descclassname">checkvocab.</tt><tt class="descname">ProcessingContext</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#ProcessingContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.ProcessingContext" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">checkvocab.</code><code class="descname">ProcessingContext</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/checkvocab.html#ProcessingContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.ProcessingContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encapsulates the following processing context/information for main process:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -433,13 +433,13 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="checkvocab.get_args">
-<tt class="descclassname">checkvocab.</tt><tt class="descname">get_args</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/checkvocab.html#get_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_args" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns parsed command-line arguments. See <tt class="docutils literal"><span class="pre">esg_mapfiles_check_vocab</span> <span class="pre">-h</span></tt> for full description.</p>
+<code class="descclassname">checkvocab.</code><code class="descname">get_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/checkvocab.html#get_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns parsed command-line arguments. See <code class="docutils literal"><span class="pre">esg_mapfiles_check_vocab</span> <span class="pre">-h</span></code> for full description.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The corresponding <tt class="docutils literal"><span class="pre">argparse</span></tt> Namespace</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The corresponding <code class="docutils literal"><span class="pre">argparse</span></code> Namespace</td>
 </tr>
 </tbody>
 </table>
@@ -447,13 +447,13 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="checkvocab.get_dsets_from_tree">
-<tt class="descclassname">checkvocab.</tt><tt class="descname">get_dsets_from_tree</tt><big>(</big><em>ctx</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#get_dsets_from_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_dsets_from_tree" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">checkvocab.</code><code class="descname">get_dsets_from_tree</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/checkvocab.html#get_dsets_from_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_dsets_from_tree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Yields datasets to process. Only the &#8220;dataset part&#8221; of the DRS tree is returned (i.e., from &#8220;root&#8221; to &#8220;member/ensemble&#8221; facet).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><code class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></code></a> class instance)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The dataset as a part of the DRS tree</td>
 </tr>
@@ -465,15 +465,15 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="checkvocab.strip_hash_to_end">
-<tt class="descclassname">checkvocab.</tt><tt class="descname">strip_hash_to_end</tt><big>(</big><em>id</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#strip_hash_to_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.strip_hash_to_end" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cuts the <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> before the ending version.</p>
+<code class="descclassname">checkvocab.</code><code class="descname">strip_hash_to_end</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/checkvocab.html#strip_hash_to_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.strip_hash_to_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cuts the <code class="docutils literal"><span class="pre">dataset_ID</span></code> before the ending version.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; The <tt class="docutils literal"><span class="pre">dataset_id</span></tt> string</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; The <code class="docutils literal"><span class="pre">dataset_id</span></code> string</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> without version</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <code class="docutils literal"><span class="pre">dataset_ID</span></code> without version</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
@@ -483,13 +483,13 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="checkvocab.id_components">
-<tt class="descclassname">checkvocab.</tt><tt class="descname">id_components</tt><big>(</big><em>id</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#id_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.id_components" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts/splits the <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> string into a list of facets.</p>
+<code class="descclassname">checkvocab.</code><code class="descname">id_components</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/checkvocab.html#id_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.id_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts/splits the <code class="docutils literal"><span class="pre">dataset_ID</span></code> string into a list of facets.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; The <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> string</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; The <code class="docutils literal"><span class="pre">dataset_ID</span></code> string</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The facets list</td>
 </tr>
@@ -501,13 +501,13 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="checkvocab.get_facets_from_config">
-<tt class="descclassname">checkvocab.</tt><tt class="descname">get_facets_from_config</tt><big>(</big><em>ctx</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#get_facets_from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_facets_from_config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns all facets described by the <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> option from the configuration file.</p>
+<code class="descclassname">checkvocab.</code><code class="descname">get_facets_from_config</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/checkvocab.html#get_facets_from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_facets_from_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all facets described by the <code class="docutils literal"><span class="pre">dataset_ID</span></code> option from the configuration file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><code class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></code></a> class instance)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The facets list</td>
 </tr>
@@ -519,14 +519,14 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="checkvocab.get_facet_values_from_tree">
-<tt class="descclassname">checkvocab.</tt><tt class="descname">get_facet_values_from_tree</tt><big>(</big><em>ctx</em>, <em>dsets</em>, <em>facets</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#get_facet_values_from_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_facet_values_from_tree" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">checkvocab.</code><code class="descname">get_facet_values_from_tree</code><span class="sig-paren">(</span><em>ctx</em>, <em>dsets</em>, <em>facets</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/checkvocab.html#get_facet_values_from_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_facet_values_from_tree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns all used values of each facet from the DRS tree, according to the supplied direcotries.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</li>
+<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><code class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></code></a> class instance)</li>
 <li><strong>dsets</strong> (<em>iter</em>) &#8211; The dataset part of the DRS tree</li>
 <li><strong>facets</strong> (<em>list</em>) &#8211; The facets list</li>
 </ul>
@@ -544,14 +544,14 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="checkvocab.get_facet_values_from_config">
-<tt class="descclassname">checkvocab.</tt><tt class="descname">get_facet_values_from_config</tt><big>(</big><em>ctx</em>, <em>facets</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#get_facet_values_from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_facet_values_from_config" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">checkvocab.</code><code class="descname">get_facet_values_from_config</code><span class="sig-paren">(</span><em>ctx</em>, <em>facets</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/checkvocab.html#get_facet_values_from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.get_facet_values_from_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns all declared values of each facet from the configuration file, according to the project section.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><tt class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></tt></a> class instance)</li>
+<li><strong>ctx</strong> (<em>dict</em>) &#8211; The processing context (as a <a class="reference internal" href="#checkvocab.ProcessingContext" title="checkvocab.ProcessingContext"><code class="xref py py-func docutils literal"><span class="pre">ProcessingContext()</span></code></a> class instance)</li>
 <li><strong>facets</strong> (<em>list</em>) &#8211; The facets list</li>
 </ul>
 </td>
@@ -568,7 +568,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="checkvocab.compare_values">
-<tt class="descclassname">checkvocab.</tt><tt class="descname">compare_values</tt><big>(</big><em>project</em>, <em>facets</em>, <em>used_values</em>, <em>declared_values</em><big>)</big><a class="reference internal" href="_modules/checkvocab.html#compare_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.compare_values" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">checkvocab.</code><code class="descname">compare_values</code><span class="sig-paren">(</span><em>project</em>, <em>facets</em>, <em>used_values</em>, <em>declared_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/checkvocab.html#compare_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.compare_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares used values from DRS tree with all declared values in configuration file for each facet.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -594,7 +594,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
 
 <dl class="function">
 <dt id="checkvocab.main">
-<tt class="descclassname">checkvocab.</tt><tt class="descname">main</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/checkvocab.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.main" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">checkvocab.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/checkvocab.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#checkvocab.main" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>Main process that:</dt>
 <dd><ul class="first last simple">
@@ -617,7 +617,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -631,12 +631,14 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
   <h4>Previous topic</h4>
   <p class="topless"><a href="log.html"
                         title="previous chapter">Changelog</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/autodoc.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/autodoc.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -653,7 +655,7 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -665,12 +667,12 @@ A <tt class="docutils literal"><span class="pre">job</span></tt> dictionnary can
         <li class="right" >
           <a href="log.html" title="Changelog"
              >previous</a> |</li>
-        <li><a href="index.html">esg_mapfiles 0.5.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">esgscan_directory 0.5.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Levavasseur, G..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

@@ -3,18 +3,18 @@
 Usage
 =====
 
-esg_mapfiles_check_vocab 
-++++++++++++++++++++++++
+esgscan_check_vocab 
++++++++++++++++++++
 
 Here is the command-line help:
 
 .. code-block:: bash
 
-   $> esg_mapfiles_check_vocab -h
-   usage: esg_mapfiles_check_vocab [-h] -p PROJECT [-c CONFIG] [-l [LOGDIR]] [-V]
+   $> esgscan_check_vocab -h
+   usage: esgscan_check_vocab [-h] -p PROJECT [-c CONFIG] [-l [LOGDIR]] [-V]
                                    directory [directory ...]
 
-   Check the configuration file to use with esg_mapfiles command-line.
+   Check the configuration file to use with esgscan_directory command-line.
 
    positional arguments:
      directory             One or more directories to recursively scan. Unix wildcards are allowed.
@@ -44,7 +44,7 @@ To check the facet options declared in your configuration file:
 
 .. code-block:: bash
 
-   $> esg_mapfiles_check_vocab /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
+   $> esgscan_check_vocab /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
    project_options - No declared values
    project_options - Used values: CMIP5
    product_options - Declared values: output2, output, output1
@@ -64,7 +64,7 @@ If a used option is missing:
 
 .. code-block:: bash
 
-   $> esg_mapfiles_check_vocab /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
+   $> esgscan_check_vocab /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
    project_options - No declared values
    project_options - Used values: CMIP5
    product_options - Declared values: output2, output
@@ -83,14 +83,14 @@ If a used option is missing:
    ensemble_options - Used values: r1i1p1, r0i0p0
    !!!!!!! THERE WERE UNDECLARED VALUES USED !!!!!!!!
 
-esg_mapfiles 
-++++++++++++
+esgscan_directory 
++++++++++++++++++
 
 Here is the command-line help:
 
 .. code-block:: bash
 
-   $> esg_mapfiles -h
+   $> esgscan_directory -h
    usage: esgmapfiles.py [-h] -p PROJECT [-c CONFIG] [-o OUTDIR] [-l [LOGDIR]]
                          [-m MAPFILE] [-d] [-L] [-w] [-C] [-v] [-V]
                          directory [directory ...]
@@ -148,7 +148,7 @@ To generate a mapfile with verbosity using default parameters:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p PROJECT -v
+   $> esgscan_directory /path/to/scan -p PROJECT -v
    ==> Scan started
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -169,7 +169,7 @@ To generate a mapfile with files checksums:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p PROJECT -C
+   $> esgscan_directory /path/to/scan -p PROJECT -C
    ==> Scan started
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -185,7 +185,7 @@ To generate a mapfile with DRS versions:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p PROJECT -w
+   $> esgscan_directory /path/to/scan -p PROJECT -w
    ==> Scan started
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -201,7 +201,7 @@ To generate one mapfile per dataset:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p PROJECT -d
+   $> esgscan_directory /path/to/scan -p PROJECT -d
    ==> Scan started
    dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -224,13 +224,13 @@ To specify the configuration file:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
+   $> esgscan_directory /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
 
 To use a logfile (the logfile directory is optionnal):
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p PROJECT -l /path/to/logfile -v
+   $> esgscan_directory /path/to/scan -p PROJECT -l /path/to/logfile -v
 
    $> cat /path/to/logfile/esgmapfiles-YYYYMMDD-HHMMSS-PID.log
    YYYY/MM/DD HH:MM:SS INFO ==> Scan started
@@ -244,7 +244,7 @@ To generate a mapfile specifying filename and output directory:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p PROJECT -o /path/to/mapfile -m mymapfile.txt
+   $> esgscan_directory /path/to/scan -p PROJECT -o /path/to/mapfile -m mymapfile.txt
    ==> Scan started
    mymapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
    mymapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
@@ -262,7 +262,7 @@ To generate a mapfile walking through *latest* directories only:
 
 .. code-block:: bash
 
-   $> esg_mapfiles /path/to/scan -p PROJECT -L -d -w
+   $> esgscan_directory /path/to/scan -p PROJECT -L -d -w
    ==> Scan started
    dataset_ID1.latest <-- /path/to/scan/.../latest/.../file1.nc
    dataset_ID2.latest <-- /path/to/scan/.../latest/.../file2.nc

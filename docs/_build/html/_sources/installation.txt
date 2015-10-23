@@ -16,7 +16,7 @@ PIP installation from GitHub
 
 .. code-block:: bash
 
-  pip install -e git://github.com/Prodiguer/esgf-mapfiles.git@master#egg=esgmapfiles
+  pip install -e git://github.com/IS-ENES-Data/esgf-mapfiles.git@master#egg=esgmapfiles
 
 Installation from GitHub
 ************************
@@ -28,12 +28,12 @@ Installation from GitHub
   mkdir esgmapfiles
   cd esgmapfiles
 
-2. Clone `our GitHub project <https://github.com/Prodiguer/esgf-mapfiles>`_:
+2. Clone `our GitHub project <https://github.com/IS-ENES-Data/esgf-mapfiles>`_:
 
 .. code-block:: bash
 
   git init
-  git clone git@github.com:Prodiguer/esgf-mapfiles.git
+  git clone git@github.com:IS-ENES-Data/esgf-mapfiles.git
 
 3. Run the ``setup.py``:
 
@@ -44,12 +44,12 @@ Installation from GitHub
 4. The ``esg_mapfile`` command-line is ready.
 
 
-.. warning:: To run ``esg_mapfiles`` you have to be logged on filesystem hosting the data to publish.
+.. warning:: To run ``esgscan_directory`` you have to be logged on filesystem hosting the data to publish.
 
 Dependencies
 ************
 
-``esg_mapfiles`` uses the following basic Python libraries includes in Python 2.5+. Becareful your Python environment includes:
+``esgscan_directory`` uses the following basic Python libraries includes in Python 2.5+. Becareful your Python environment includes:
 
  * `os <https://docs.python.org/2/library/os.html>`_, `sys <https://docs.python.org/2/library/sys.html>`_, `re <https://docs.python.org/2/library/re.html>`_, `logging <https://docs.python.org/2/library/logging.html>`_
  * `argparse <https://docs.python.org/2/library/argparse.html>`_

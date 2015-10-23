@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='esgmapfiles',
-      version='0.5',
+      version='0.6',
       description='Build ESGF mapfiles without esgscan_directory upon local ESGF datanode.',
       author='Levavasseur Guillaume',
       author_email='glipsl@ipsl.jussieu.fr',

@@ -6,18 +6,16 @@ Credits
 Developer/Author
 ****************
 
-.. codeauthor:: Levavasseur Guillaume (CNRS/IPSL) <glipsl@ipsl.jussieu.fr>
+`Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>`_ (`CNRS <http://www.cnrs.fr/>`_/`IPSL <https://www.ipsl.fr/>`_)
+
+Contributors
+************
+
+`Katharina BERGER <berger@dkrz.de>`_ (`DKRZ <https://www.dkrz.de/>`_)
+
+`Alan IWI <alan.iwi@stfc.ac.uk>`_ (`STFC <http://www.stfc.ac.uk/>`_/`BADC <https://badc.nerc.ac.uk/home/>`_)
 
 Contacts
 ********
 
-To submit bugs, suggestions or ideas:
-
-.. sectionauthor:: Levavasseur G. (CNRS/IPSL) <glipsl@ipsl.jussieu.fr>
-
-.. sectionauthor:: Denvil S. (CNRS/IPSL) <sdipsl@ipsl.jussieu.fr>
-
-Acknowledgments
-***************
-
-Thanks to Alan Iwi (`BADC <https://badc.nerc.ac.uk/home/>`_) for suggesting and developing some improvements of ``esg_mapfiles``.
+To submit bugs, suggestions or ideas, please address your comments to `Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>`_ or post your issue on our `GitHub repository <https://github.com/IS-ENES-Data/esgf-mapfiles>`_.
