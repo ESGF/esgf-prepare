@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Configuration &mdash; esg_mapfiles 0.5.2 documentation</title>
+    <title>Configuration &mdash; esgscan_directory 0.5.2 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,12 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="esg_mapfiles 0.5.2 documentation" href="index.html" />
+    <link rel="top" title="esgscan_directory 0.5.2 documentation" href="index.html" />
     <link rel="next" title="Usage" href="usage.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -43,30 +43,30 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">esg_mapfiles 0.5.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">esgscan_directory 0.5.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="configuration">
 <span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
-<p>The only conguration you have to do at least is to define the threads number under the <tt class="docutils literal"><span class="pre">[DEFAULT]</span></tt> section in the configuration INI file. Edit the <tt class="docutils literal"><span class="pre">config.ini</span></tt> to set the number of threads you want (default is 4 threads).</p>
+<p>The only conguration you have to do at least is to define the threads number under the <code class="docutils literal"><span class="pre">[DEFAULT]</span></code> section in the configuration INI file. Edit the <code class="docutils literal"><span class="pre">config.ini</span></code> to set the number of threads you want (default is 4 threads).</p>
 <div class="highlight-ini"><div class="highlight"><pre><span class="k">[DEFAULT]</span>
 <span class="na">threads_number</span> <span class="o">=</span> <span class="s">4</span>
 </pre></div>
 </div>
-<p>The configuration file is included in the package and is in the default installation directory of your Python packages (see <tt class="docutils literal"><span class="pre">esg_mapfiles</span> <span class="pre">-h</span></tt>). Feel free to copy it and made your own using the <tt class="docutils literal"><span class="pre">-c/--config</span></tt> option (see <a class="reference internal" href="usage.html#usage"><em>Usage</em></a>).</p>
+<p>The configuration file is included in the package and is in the default installation directory of your Python packages (see <code class="docutils literal"><span class="pre">esgscan_directory</span> <span class="pre">-h</span></code>). Feel free to copy it and made your own using the <code class="docutils literal"><span class="pre">-c/--config</span></code> option (see <a class="reference internal" href="usage.html#usage"><span>Usage</span></a>).</p>
 <p>You can also define the checksum type you want in this section. MD5 or SHA256 (default) checksums are supported. Only SHA256 checksums are allowed for ESGF publication.</p>
 <div class="highlight-ini"><div class="highlight"><pre><span class="na">checksum_type</span> <span class="o">=</span> <span class="s">SHA256</span>
 </pre></div>
 </div>
 <div class="section" id="add-a-new-project">
 <h2>Add a new project<a class="headerlink" href="#add-a-new-project" title="Permalink to this headline">¶</a></h2>
-<p>Edit the <tt class="docutils literal"><span class="pre">config.ini</span></tt> as follows:</p>
+<p>Edit the <code class="docutils literal"><span class="pre">config.ini</span></code> as follows:</p>
 <ol class="arabic simple">
 <li>Define your &#8220;project&#8221; section in brackets:</li>
 </ol>
@@ -75,7 +75,7 @@
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">The <tt class="docutils literal"><span class="pre">-p/--project</span></tt> option directly refers to the name of a &#8220;project&#8221; section.</p>
+<p class="last">The <code class="docutils literal"><span class="pre">-p/--project</span></code> option directly refers to the name of a &#8220;project&#8221; section.</p>
 </div>
 <ol class="arabic simple" start="2">
 <li>Declare all options of each facet/attribute of your <em>Data Reference Syntax</em> (DRS) following this template:</li>
@@ -93,10 +93,10 @@
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The frist attribute of each line of a mapfile is the master ID of the corresponding dataset. It corresponds to the <tt class="docutils literal"><span class="pre">dataset</span> <span class="pre">ID</span></tt> dot-separated.</p>
+<p class="last">The frist attribute of each line of a mapfile is the master ID of the corresponding dataset. It corresponds to the <code class="docutils literal"><span class="pre">dataset</span> <span class="pre">ID</span></code> dot-separated.</p>
 </div>
 <ol class="arabic simple" start="4">
-<li>Define the DRS tree of your project on your filesystem. The <tt class="docutils literal"><span class="pre">directory_format</span></tt> is requiered for auto-detection and uses a regular expression to match with your full files paths.</li>
+<li>Define the DRS tree of your project on your filesystem. The <code class="docutils literal"><span class="pre">directory_format</span></code> is requiered for auto-detection and uses a regular expression to match with your full files paths.</li>
 </ol>
 <div class="highlight-ini"><div class="highlight"><pre><span class="na">directory_format</span> <span class="o">=</span> <span class="s">/(?P&lt;root&gt;[\w./-]+)/(?P&lt;project&gt;[\w.-]+)/(?P&lt;facet1&gt;[\w.-]+)/(?P&lt;facet2&gt;[\w.-]+)/(?P&lt;facet3&gt;[\w.-]+)/(?P&lt;filename&gt;[\w.-]+\.nc)</span>
 </pre></div>
@@ -107,7 +107,7 @@
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">The options prefix <tt class="docutils literal"><span class="pre">facetX</span></tt> must have the same name as the <tt class="docutils literal"><span class="pre">dataset_ID</span></tt> items and the <tt class="docutils literal"><span class="pre">directory_format</span></tt> attributes/variables.</p>
+<p class="last">The options prefix <code class="docutils literal"><span class="pre">facetX</span></code> must have the same name as the <code class="docutils literal"><span class="pre">dataset_ID</span></code> items and the <code class="docutils literal"><span class="pre">directory_format</span></code> attributes/variables.</p>
 </div>
 </div>
 </div>
@@ -116,7 +116,7 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -132,12 +132,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="usage.html"
                         title="next chapter">Usage</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/configuration.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/configuration.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -154,7 +156,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -169,12 +171,12 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li><a href="index.html">esg_mapfiles 0.5.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">esgscan_directory 0.5.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Levavasseur, G..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

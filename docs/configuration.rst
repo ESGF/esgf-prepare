@@ -11,7 +11,7 @@ The only conguration you have to do at least is to define the threads number und
    [DEFAULT]
    threads_number = 4
 
-The configuration file is included in the package and is in the default installation directory of your Python packages (see ``esg_mapfiles -h``). Feel free to copy it and made your own using the ``-c/--config`` option (see :ref:`usage`).
+The configuration file is included in the package and is in the default installation directory of your Python packages (see ``esgscan_directory -h``). Feel free to copy it and made your own using the ``-c/--config`` option (see :ref:`usage`).
 
 You can also define the checksum type you want in this section. MD5 or SHA256 (default) checksums are supported. Only SHA256 checksums are allowed for ESGF publication.
 

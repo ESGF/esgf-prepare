@@ -14,10 +14,7 @@ The publication process of the `ESG-F <http://pcmdi9.llnl.gov/>`_ nodes requires
    ii. The dataset identifier, the absolute path and the size (in bytes) are required.
    iii. Adding the file checksum and the checksum type as optional values is strongly recommended.
 
-Security policies of computing centres, that often host `ESG-F <http://pcmdi9.llnl.gov/>`_ data and datanodes, do not allow to easily use the `esgscan_directory`` ESG-F command-line (see the `ESG-F publisher <https://github.com/ESGF/esg-publisher>`_) that is conventionally used to generate mapfiles. Moreover, this command becomes time consuming to checksums a lot of data.
-
-``esg_mapfiles`` is a flexible alternative command-line tool allowing you to easily generate mapfiles independently from `ESG-F <http://pcmdi9.llnl.gov/>`_ nodes.
-
+``esgscan_directory`` is a flexible command-line tool allowing you to easily generate mapfiles. 
 
 Features
 ********
@@ -46,13 +43,19 @@ Features
    You can choose to include the DRS version into each dataset ID. This is compatible with the `ESG-F <http://pcmdi9.llnl.gov/>`_ 2.0 release and leads to a full-slave behaviour of the `ESG-F publisher <https://github.com/ESGF/esg-publisher>`_. With this mapfile syntax the ``--new-version`` option of the publisher command-lines is deprecated.
 
 **Developer's entry point**
-  ``esg_mapfiles`` can be imported and called in your own scripts. Just pass a dictionnary with your flags to the ``run(job={})`` function (see :ref:`autodoc`). 
+  ``esgscan_directory`` can be imported and called in your own scripts. Just pass a dictionnary with your flags to the ``run(job={})`` function (see :ref:`autodoc`). 
 
-**Useful configuration file**
-  All projects definitions (DRS, facets) are centralized into one INI configuration file in a simplier way than the ``esg.ini`` file on `ESG-F <http://pcmdi9.llnl.gov/>`_ nodes.
+**Standalone**
+  Security policies of computing centres, that often host `ESG-F <http://pcmdi9.llnl.gov/>`_ data and datanodes, do not allow to easily access the node configuration. ``esgscan_directory`` is not part of `ESG-F <http://pcmdi9.llnl.gov/>`_ software stack and can be run as standalone tool outside any `ESG-F <http://pcmdi9.llnl.gov/>`_ node.
+
+**Compatible with ESG-F node configuration file**
+  Each `ESG-F <http://pcmdi9.llnl.gov/>`_ node centralizes all projects definitions (DRS, facets) one INI configuration file ``esg.ini`` file. To ensure a right facets auto-detection, ``esgscan_directory`` directly works from ``esg.ini``.
+
+**Vocabulary checkup**
+  ``esgscan_directory`` was accompanied by ``esgscan_check_vocab``. This module allows you to easily check the facet options declared in your configuration file depending on the direcotires you want to recursively scan.
 
 **Keep threads tracebacks**
-  The threads-processes do not shutdown the main process of ``esg_mapfiles`` run. If an error occurs on a thread, the traceback of the child-process is not raised to the main process. To help you to have a fast debug, the tracebacks of each threads can be raised using the ``-v/--verbose`` option (see :ref:`usage`).
+  The threads-processes do not shutdown the main process of ``esgscan_directory`` run. If an error occurs on a thread, the traceback of the child-process is not raised to the main process. To help you to have a fast debug, the tracebacks of each threads can be raised using the ``-v/--verbose`` option (see :ref:`usage`).
 
 **Output directory**
   An output directory can be defined to store and organized your mapfiles.
