@@ -10,7 +10,7 @@ import os
 import re
 import argparse
 import logging
-from esgmapfilesutils import init_logging, check_directory, config_parse
+from esgmapfilesutils import init_logging, check_directory, config_parse, split_line, split_record, split_map
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import wraps
 from argparse import RawTextHelpFormatter
@@ -72,17 +72,31 @@ class ProcessingContext(object):
         self.with_version = args.with_version
         self.dataset = args.per_dataset
         self.cfg = config_parse(args.config)
-        if args.project in self.cfg.sections():
-            self.project = args.project
-        else:
+        self.project_section = 'project:' + args.project
+        if not self.project_section in self.cfg.sections():
             raise Exception('No section in configuration file corresponds to "{0}" project. Supported projects are {1}.'.format(args.project, self.cfg.sections()))
-        if args.checksum:
-            self.checksum = str(self.cfg.defaults()['checksum_type'])
+        
+        line = self.cfg.defaults()['checksum']
+        if line is not None:
+            self.checksum_client, self.checksum_type = split_line(line)
         else:
-            self.checksum = None
-        self.pattern = re.compile(self.cfg.get(self.project, 'directory_format'))
+            self.checksum_client, self.checksum_type = None
+        
+        # Pattern matching %(name)s from esg.ini
+        ini_pat = re.compile(r'%\(([^()]*)\)s')
+        
+        # modify directory_format to python-re compatible version
+        directory_format = self.cfg.get(self.project_section, 'directory_format', raw=True)
+        
+        pat = directory_format.strip()
+        pat2 = pat.replace('\.','__ESCAPE_DOT__')
+        pat3 = pat2.replace('.', r'\.')
+        pat4 = pat3.replace('__ESCAPE_DOT__', r'\.')
+        pat5 = re.sub(ini_pat, r'(?P<\1>[\w.-]+)', pat4)
+        pat_fin = pat5+'/(?P<filename>[\w.-]+\.nc)'
+        self.pattern = re.compile(pat_fin)
+        
         self.dtemp = mkdtemp()
-
 
 def get_args(job):
     """
@@ -94,7 +108,11 @@ def get_args(job):
 
     """
     parser = argparse.ArgumentParser(
-        description="""Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory command-line.\n\nExit status:\n[0]: Successful scanning of all files encountered,\n[1]: No valid data files found and no mapfile produced and,\n[2]: A mapfile was produced but some files were skipped.""",
+        description="""Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory command-line.\n\n
+        Exit status:\n
+        [0]: Successful scanning of all files encountered,\n
+        [1]: No valid data files found and no mapfile produced and,\n
+        [2]: A mapfile was produced but some files were skipped.""",
         formatter_class=RawTextHelpFormatter,
         add_help=False,
         epilog="""
@@ -171,7 +189,8 @@ Developed by Levavasseur, G. (CNRS/IPSL)""")
         return parser.parse_args()
     else:
         # SYNDA submits non-latest path to translate
-        return parser.parse_args([re.sub('v[0-9]*$', 'latest', os.path.normpath(job['full_path_variable'])), '-p', 'cmip5', '-c', '/home/esg-user/mapfile.ini', '-o', '/home/esg-user/mapfiles/pending/', '-l', 'synda_logger', '-d', '-L', '-C', '-v'])
+        return parser.parse_args([re.sub('v[0-9]*$', 'latest', os.path.normpath(job['full_path_variable'])), '-p', 'cmip5', '-c', '/home/esg-user/mapfile.ini',
+                                  '-o', '/home/esg-user/mapfiles/pending/', '-l', 'synda_logger', '-d', '-L', '-C', '-v'])
 
 
 def get_master_ID(attributes, ctx):
@@ -184,7 +203,7 @@ def get_master_ID(attributes, ctx):
     :rtype: *str*
 
     """
-    dataset_ID = ctx.cfg.get(ctx.project, 'dataset_ID')
+    dataset_ID = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, attributes)
     facets = re.split('\.|#', dataset_ID)
     for facet in facets:
         if facet == 'project':
@@ -195,40 +214,59 @@ def get_master_ID(attributes, ctx):
 
 def check_facets(attributes, ctx, file):
     """
-    Checks all attributes from path. Each attribute or facet is auto-detected using the DRS pattern (regex) and compared to its corresponding options declared into the configuration file.
+    Checks all attributes from path.
+    Each attribute or facet is auto-detected using the DRS pattern (regex) and compared to its corresponding options declared into the configuration file.
 
     :param dict attributes: The attributes auto-detected with DRS pattern
     :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :raises Error: If an option of an attribute is not declared
 
     """
+    maps = ctx.cfg.get(ctx.project_section, 'maps').replace(" ", "").split(',')
     for facet in attributes.keys():
         if not facet in ['project', 'filename', 'variable', 'root', 'version', 'ensemble']:
-            options = ctx.cfg.get(ctx.project, '{0}_options'.format(facet)).replace(" ", "").split(',')
-            if not attributes[facet] in options:
-                raise Exception('"{0}" is missing in "{1}_options" of the "{2}" section from the configuration file to properly process {3}'.format(attributes[facet], facet, ctx.project, file))
+            if ctx.cfg.has_option(ctx.project_section, '{0}_map'.format(facet)) or ctx.cfg.has_option(ctx.project_section, '{0}_options'.format(facet)):
+                # options following the "map" format in the configuration file
+                if '{0}_map'.format(facet) in maps:
+                    from_keys, to_keys, value_map = split_map(ctx.cfg.get(ctx.project_section, '{0}_map'.format(facet)))
+                    if facet in to_keys:
+                        pos = to_keys.index(facet)
+                        options = set(zip(*value_map.values())[pos])
+                    else:
+                        msg = 'Option "{0}_map" is missing in the configuration file'.format(facet)
+                        logging.warning(msg)
+                        raise Exception(msg)
+                # experiment_options follows the form "<project> | <experiment> | <long_name>" => needs special treatment
+                elif facet == 'experiment':
+                    experiment_options = split_record(ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)))
+                    options = zip(*experiment_options)[1]
+                else:
+                    options = ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)).replace(" ", "").split(',')
+                if not attributes[facet] in options:
+                    msg = '"{0}" is missing in "{1}_options" of the "{2}" section from the configuration file to properly process {3}'.format(attributes[facet], facet, ctx.project_section, file)
+                    logging.warning(msg)
+                    raise Exception(msg)
+            else:  # TODO model_options not in esg.ini but in esgcet_models_table
+                msg = 'No option for facet "{0}" in the configuration file'.format(facet)
+                logging.warning(msg)                
 
 
-def checksum(file, ctx):
+def checksum(file, checksum_type, checksum_client):
     """
-    Does the MD5 or SHA256 checksum by the Shell avoiding Python memory limits.
+    Does the checksum by the Shell avoiding Python memory limits.
 
     :param str file: The full path of a file
     :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :raises Error: If the checksum fails
 
     """
-    assert (ctx.checksum in ['SHA256', 'MD5']), 'Invalid checksum type: {0} instead of MD5 or SHA256'.format(ctx.checksum)
     try:
-        if ctx.checksum == 'SHA256':
-            shell = os.popen("sha256sum {0} | awk -F ' ' '{{ print $1 }}'".format(file), 'r')
-        elif ctx.checksum == 'MD5':
-            shell = os.popen("md5sum {0} | awk -F ' ' '{{ print $1 }}'".format(file), 'r')
+        shell = os.popen("{0} {1} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, file), 'r')
         return shell.readline()[:-1]
     except:
-        raise Exception('Checksum failed for {0}'.format(file))
+        raise Exception('{0} checksum failed for {1}'.format(checksum_type, file))
 
-
+   
 def rmdtemp(ctx):
     """
     Removes the temporary directory and its content.
@@ -243,7 +281,8 @@ def rmdtemp(ctx):
 
 def yield_inputs(ctx):
     """
-    Yields all files to process within tuples with the processing context. The file walking through the DRS tree follows symbolic links and ignores the "files" directories and "latest" symbolic links if ``--latest`` is None.
+    Yields all files to process within tuples with the processing context.
+    The file walking through the DRS tree follows symbolic links and ignores the "files" directories and "latest" symbolic links if ``--latest`` is None.
 
     :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :returns: Attach the processing context to a file to process as an iterator of tuples
@@ -346,20 +385,22 @@ def file_process(inputs):
     else:
         # Control vocabulary of each facet
         check_facets(attributes, ctx, file)
+            
         # Deduce master ID from full path and --latest option
+        master_ID = get_master_ID(attributes, ctx)
+        
+        # add version number to master_ID
         if ctx.with_version:
             if ctx.latest:
-                master_ID = get_master_ID(attributes, ctx).replace(attributes['version'], os.path.basename(os.path.realpath(''.join(re.split(r'(latest)', file)[:-1])))[1:])
+                master_ID = '{0}#{1}'.format(master_ID, os.path.basename(os.path.realpath(''.join(re.split(r'(latest)', file)[:-1])))[1:])
             else:
-                master_ID = get_master_ID(attributes, ctx).replace(attributes['version'], attributes['version'][1:])
-        else:
-            master_ID = get_master_ID(attributes, ctx).replace('#' + attributes['version'], '')
+                master_ID = '{0}#{1}'.format(master_ID, attributes['version'][1:])
 
         # Retrieve size and modification time
         (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(file)
         # Make the file checksum (MD5)
-        if ctx.checksum:
-            csum = checksum(file, ctx)
+        if ctx.checksum_client:
+            csum = checksum(file, ctx.checksum_type, ctx.checksum_client)
         # Build mapfile name if one per dataset, or read the supplied name instead
         if ctx.dataset:
             outmap = '{0}{1}{2}'.format(master_ID.split('#')[0], '.', attributes['version'])
@@ -373,8 +414,8 @@ def file_process(inputs):
         lock = LockFile(outfile)
         try:
             lock.acquire(timeout=int(ctx.cfg.defaults()['lockfile_timeout']))
-            if ctx.checksum:
-                write(outfile, '{0} | {1} | {2} | mod_time={3} | checksum={4} | checksum_type={5}\n'.format(master_ID, file, size, str(mtime)+'.000000', csum, ctx.checksum))
+            if ctx.checksum_type:
+                write(outfile, '{0} | {1} | {2} | mod_time={3} | checksum={4} | checksum_type={5}\n'.format(master_ID, file, size, str(mtime)+'.000000', csum, ctx.checksum_type))
             else:
                 write(outfile, '{0} | {1} | {2} | mod_time={3}\n'.format(master_ID, file, size, str(mtime)+'.000000'))
             lock.release()
