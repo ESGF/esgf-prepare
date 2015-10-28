@@ -16,6 +16,7 @@ from functools import wraps
 from argparse import RawTextHelpFormatter
 from lockfile import LockFile, LockTimeout, LockFailed
 from tempfile import mkdtemp
+from datetime import datetime
 from shutil import copy2, rmtree
 
 # Program version
@@ -26,33 +27,41 @@ class ProcessingContext(object):
     """
     Encapsulates the following processing context/information for main process:
 
-    +---------------------+-------------+---------------------------------------+
-    | Attribute           | Type        | Description                           |
-    +=====================+=============+=======================================+
-    | *self*.directory    | *list*      | Paths to scan                         |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.latest       | *boolean*   | True if latest version                |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.outdir       | *str*       | Output directory                      |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.verbose      | *boolean*   | True if verbose mode                  |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.with_version | *boolean*   | True to include version in dataset ID |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.project      | *str*       | Project                               |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.dataset      | *boolean*   | True if one mapfile per dataset       |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.checksum     | *boolean*   | True if checksums into mapfile        |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.outmap       | *str*       | Mapfile output name                   |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.cfg          | *callable*  | Configuration file parser             |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.pattern      | *re object* | DRS regex pattern                     |
-    +---------------------+-------------+---------------------------------------+
-    | *self*.dtemp        | *str*       | Directory of temporary files          |
-    +---------------------+-------------+---------------------------------------+
+    +---------------------+-------------+-------------------------------------------+
+    | Attribute           | Type        | Description                               |
+    +=====================+=============+===========================================+
+    | *self*.directory    | *list*      | Paths to scan                             |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.latest       | *boolean*   | True if latest symlink                    |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.outdir       | *str*       | Output directory                          |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.notes_url    | *str*       | Dataset technical notes URL               |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.notes_title  | *str*       | Dataset technical notes title             |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.verbose      | *boolean*   | True if verbose mode                      |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.all_version  | *boolean*   | True to scan all versions                 |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.version      | *str*       | Version to scan                           |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.no_version   | *boolean*   | True to not include version in dataset ID |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.project      | *str*       | Project                                   |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.dataset      | *boolean*   | True if one mapfile per dataset           |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.checksum     | *boolean*   | True if checksums into mapfile            |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.outmap       | *str*       | Mapfile output name                       |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.cfg          | *callable*  | Configuration file parser                 |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.pattern      | *re object* | DRS regex pattern                         |
+    +---------------------+-------------+-------------------------------------------+
+    | *self*.dtemp        | *str*       | Directory of temporary files              |
+    +---------------------+-------------+-------------------------------------------+
 
     :param dict args: Parsed command-line arguments
     :returns: The processing context
@@ -67,22 +76,31 @@ class ProcessingContext(object):
         self.directory = args.directory
         self.outmap = args.mapfile
         self.verbose = args.verbose
-        self.latest = args.latest
+        self.latest = args.latest_symlink
         self.outdir = args.outdir
-        self.with_version = args.with_version
+        self.notes_title = args.tech_notes_title
+        self.notes_url = args.tech_notes_url
+        self.no_version = args.no_version
+        self.all = args.all_versions
+        if self.all:
+            self.no_version = False
+        self.version = args.version
         self.dataset = args.per_dataset
-        self.cfg = config_parse(args.config)
+        self.filter = args.filter
+        self.cfg = config_parse(args.init)
+
         self.project = args.project
         self.project_section = 'project:' + args.project
         if not self.project_section in self.cfg.sections():
             raise Exception('No section in configuration file corresponds to "{0}" project. Supported projects are {1}.'.format(args.project, self.cfg.sections()))
         
-        line = self.cfg.defaults()['checksum']
-        if line is not None:
-            self.checksum_client, self.checksum_type = split_line(line)
-        else:
+        if args.no_checksum:
             self.checksum_client, self.checksum_type = None
-        
+        elif self.cfg.has_option('DEFAULT', 'checksum'):
+            self.checksum_client, self.checksum_type = split_line(self.cfg.defaults()['checksum'])
+        else: # use SHA256 as default
+            self.checksum_client, self.checksum_type = 'sha256', 'SHA256'
+            
         # Pattern matching %(name)s from esg.ini
         self.ini_pat = re.compile(r'%\(([^()]*)\)s')
         
@@ -109,73 +127,92 @@ def get_args(job):
 
     """
     parser = argparse.ArgumentParser(
-        description="""Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory command-line.\n\n
-        Exit status:\n
-        [0]: Successful scanning of all files encountered,\n
-        [1]: No valid data files found and no mapfile produced and,\n
-        [2]: A mapfile was produced but some files were skipped.""",
+        description="""Generates ESG-F mapfiles upon local ESG-F datanode or not.\n\n
+            Exit status:\n
+            [0]: Successful scanning of all files encountered,\n
+            [1]: No valid data or files have been found and no mapfile was produced,\n
+            [2]: A mapfile was produced but some files were skipped.""",
         formatter_class=RawTextHelpFormatter,
         add_help=False,
-        epilog="""
-
-
-
-Developed by Levavasseur, G. (CNRS/IPSL)""")
+        epilog="""Developed by Levavasseur, G. (CNRS/IPSL)""")
     parser.add_argument(
         'directory',
         type=str,
         nargs='+',
-        help='One or more directories to recursively scan. Unix wildcards are allowed.')
-    parser.add_argument(
-        '-h', '--help',
-        action="help",
-        help="""Show this help message and exit.\n\n""")
+        help="""One or more directories to recursively scan. Unix wildcards are allowed.""")
     parser.add_argument(
         '-p', '--project',
         type=str,
         required=True,
         help="""Required project name corresponding to a section of the configuration file.\n\n""")
     parser.add_argument(
-        '-c', '--config',
+        '-i', '--init',
         type=str,
         default='{0}/config.ini'.format(os.path.dirname(os.path.abspath(__file__))),
         help="""Path of configuration INI file\n(default is {0}/config.ini).\n\n""".format(os.path.dirname(os.path.abspath(__file__))))
     parser.add_argument(
-        '-o', '--outdir',
+        '--mapfile',
+        type=str,
+        default='mapfile_{0}.txt'.format(datetime.now().strftime("%Y%m%d-%I%M%S-%p")),
+        help="""Output mapfile name. Only used without --per-dataset option\n(default is mapfile_YYYYDDMM-HHMMSS-[AP]M.txt).\n\n""")
+    parser.add_argument(
+        '--outdir',
         type=str,
         default=os.getcwd(),
         help="""Mapfile(s) output directory\n(default is working directory).\n\n""")
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument(
+        '--all-versions',
+        action='store_true',
+        default=False,
+        help="""Generates mapfile(s) with all versions found in the directory\nrecursively scanned (default is to pick up only the latest one).\nIt disables --no-version.\n\n""")
+    group.add_argument(
+        '--version',
+        type=str,
+        help="""Generates mapfile(s) scanning datasets\nwith the corresponding version number only (e.g., 20151023).\nIt takes priority over --all-versions.\n\n""")
+    group.add_argument(
+        '--latest-symlink',
+        action='store_true',
+        default=False,
+        help="""Generates mapfiles following latest symlinks only.\n\n""")
+    parser.add_argument(
+        '--per-dataset',
+        action='store_true',
+        default=False,
+        help="""Produces ONE mapfile PER dataset. It takes priority over --mapfile.\n\n""")
+    parser.add_argument(
+        '--no-version',
+        action='store_true',
+        default=False,
+        help="""Includes DRS version into dataset ID (ESGF 2.x compatibility).\n\n""")
+    parser.add_argument(
+        '--no-checksum',
+        action='store_true',
+        default=False,
+        help="""Does not include files checksums into the mapfile(s).\n\n""")
+    parser.add_argument(
+        '--filter',
+        type=str,
+        default=".*\.nc$",
+        help="""Filter files matching the regular expression (default is ".*\.nc$").\nRegular expression syntax is defined by the Python re module.\n\n""")
+    parser.add_argument(
+        '--tech-notes-url',
+        type=str,
+        help="""URL of the technical notes to be associated with each dataset.\n\n""")
+    parser.add_argument(
+        '--tech-notes-title',
+        type=str,
+        help="""Tech notes title for display..\n\n""")
+    parser.add_argument(
+        '-h', '--help',
+        action="help",
+        help="""Show this help message and exit.\n\n""")
     parser.add_argument(
         '-l', '--logdir',
         type=str,
         const=os.getcwd(),
         nargs='?',
         help="""Logfile directory (default is working directory).\nIf not, standard output is used.\n\n""")
-    parser.add_argument(
-        '-m', '--mapfile',
-        type=str,
-        default='mapfile.txt',
-        help="""Output mapfile name. Only used without --per-dataset option\n(default is 'mapfile.txt').\n\n""")
-    parser.add_argument(
-        '-d', '--per-dataset',
-        action='store_true',
-        default=False,
-        help="""Produces ONE mapfile PER dataset. It takes priority over --mapfile.\n\n""")
-    parser.add_argument(
-        '-L', '--latest',
-        action='store_true',
-        default=False,
-        help="""Generates mapfiles with latest versions only.\n\n""")
-    parser.add_argument(
-        '-w', '--with-version',
-        action='store_true',
-        default=False,
-        help="""Includes DRS version into dataset ID (ESGF 2.x compatibility).\n\n""")
-    parser.add_argument(
-        '-C', '--checksum',
-        action='store_true',
-        default=False,
-        help="""Includes file checksums into mapfiles (default is a SHA256 checksum).\n\n""")
     parser.add_argument(
         '-v', '--verbose',
         action='store_true',
@@ -190,8 +227,7 @@ Developed by Levavasseur, G. (CNRS/IPSL)""")
         return parser.parse_args()
     else:
         # SYNDA submits non-latest path to translate
-        return parser.parse_args([re.sub('v[0-9]*$', 'latest', os.path.normpath(job['full_path_variable'])), '-p', 'cmip5', '-c', '/home/esg-user/mapfile.ini',
-                                  '-o', '/home/esg-user/mapfiles/pending/', '-l', 'synda_logger', '-d', '-L', '-C', '-v'])
+        return parser.parse_args([re.sub('v[0-9]*$', 'latest', os.path.normpath(job['full_path_variable'])), '-p', 'cmip5', '-c', '/home/esg-user/mapfile.ini', '-o', '/home/esg-user/mapfiles/pending/', '-l', 'synda_logger', '--per-dataset', '--latest-symlink', '-v'])
 
 
 def get_master_ID(attributes, ctx):
@@ -210,7 +246,7 @@ def get_master_ID(attributes, ctx):
         if idfield not in attributes:
             attributes = get_attr_from_map(idfield, attributes, ctx)
     if 'projects' in attributes:
-        attributes['project'] = attributes['project'].lower()
+        attributes['project'] = attributes['project'].lower()  # Do the lower case need to be enforced? Waiting for esgf-devel decision.
     dataset_ID = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, attributes)
     return dataset_ID
 
@@ -297,8 +333,10 @@ def rmdtemp(ctx):
 
 def yield_inputs(ctx):
     """
-    Yields all files to process within tuples with the processing context.
-    The file walking through the DRS tree follows symbolic links and ignores the "files" directories and "latest" symbolic links if ``--latest`` is None.
+    Yields all files to process within tuples with the processing context. The file walking through the DRS tree follows the latest version of each dataset. This behavior is modifed using:
+     * ``--all-versions`` flag, to pick up all versions,
+     * ``--version <version_number>`` argument, to pick up a specified version,
+     * ``--latest-symlink`` flag, to pick up the version pointed by the latest symlink (if exists).
 
     :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :returns: Attach the processing context to a file to process as an iterator of tuples
@@ -307,14 +345,26 @@ def yield_inputs(ctx):
     """
     for directory in ctx.directory:
         for root, dirs, files in os.walk(directory, followlinks=True):
-            if '/files' not in root:
-                if not ctx.latest:
-                    if '/latest' not in root:
-                        for file in files:
+            if ctx.latest:
+                if '/latest/' in root:
+                    for file in files:
+                        if os.path.isfile(os.path.join(root, file)) and re.match(ctx.filter, file) is not None:
                             yield os.path.join(root, file), ctx
-                else:
-                    if not re.compile('/v[0-9]*').search(root):
-                        for file in files:
+            elif ctx.version:
+                if re.compile('/v' + ctx.version + '/').search(root):
+                    for file in files:
+                        if os.path.isfile(os.path.join(root, file)) and re.match(ctx.filter, file) is not None:
+                            yield os.path.join(root, file), ctx
+            elif ctx.all:
+                if re.compile('/v[0-9]*/').search(root):
+                    for file in files:
+                        if os.path.isfile(os.path.join(root, file)) and re.match(ctx.filter, file) is not None:
+                            yield os.path.join(root, file), ctx
+            elif re.compile('/v[0-9]*/').search(root):
+                versions = filter(lambda i: re.compile('v[0-9]').search(i), os.listdir(re.split('/v[0-9]*/', root)[0]))
+                if re.compile('/' + sorted(versions)[-1] + '/').search(root):
+                    for file in files:
+                        if os.path.isfile(os.path.join(root, file)) and re.match(ctx.filter, file) is not None:
                             yield os.path.join(root, file), ctx
 
 
@@ -408,7 +458,7 @@ def file_process(inputs):
         master_ID = get_master_ID(attributes, ctx)
         
         # add version number to master_ID
-        if ctx.with_version:
+        if not ctx.no_version:
             if ctx.latest:
                 master_ID = '{0}#{1}'.format(master_ID, os.path.basename(os.path.realpath(''.join(re.split(r'(latest)', file)[:-1])))[1:])
             else:
@@ -431,11 +481,18 @@ def file_process(inputs):
         # Each process adds one line to the appropriate mapfile
         lock = LockFile(outfile)
         try:
+            line = [master_ID]
+            line.append(file)
+            line.append('mod_time='+str(mtime)+'.000000')
+            if ctx.checksum:
+                line.append('checksum='+csum)
+                line.append('checksum_type='+ctx.checksum)
+            if ctx.notes_url:
+                line.append('dataset_tech_notes='+ctx.notes_url)
+            if ctx.notes_title:
+                line.append('dataset_tech_notes_title='+ctx.notes_title)
             lock.acquire(timeout=int(ctx.cfg.defaults()['lockfile_timeout']))
-            if ctx.checksum_type:
-                write(outfile, '{0} | {1} | {2} | mod_time={3} | checksum={4} | checksum_type={5}\n'.format(master_ID, file, size, str(mtime)+'.000000', csum, ctx.checksum_type))
-            else:
-                write(outfile, '{0} | {1} | {2} | mod_time={3}\n'.format(master_ID, file, size, str(mtime)+'.000000'))
+            write(outfile, ' | '.join(line) + '\n')
             lock.release()
         except LockFailed:
             raise Exception('Failed to lock file: {0}'.format(outfile))
