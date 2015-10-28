@@ -80,9 +80,11 @@ class ProcessingContext(object):
         self.outdir = args.outdir
         self.notes_title = args.tech_notes_title
         self.notes_url = args.tech_notes_url
-        self.all = args.all_versions
-        self.version = args.version
         self.no_version = args.no_version
+        self.all = args.all_versions
+        if self.all:
+            self.no_version = False
+        self.version = args.version
         self.dataset = args.per_dataset
         self.filter = args.filter
         self.cfg = config_parse(args.init)
@@ -142,7 +144,7 @@ def get_args(job):
         '--all-versions',
         action='store_true',
         default=False,
-        help="""Generates mapfile(s) with all versions found in the directory\nrecursively scanned (default is to pick up only the latest one).\n\n""")
+        help="""Generates mapfile(s) with all versions found in the directory\nrecursively scanned (default is to pick up only the latest one).\nIt disables --no-version.\n\n""")
     group.add_argument(
         '--version',
         type=str,
