@@ -72,6 +72,7 @@ class ProcessingContext(object):
         self.with_version = args.with_version
         self.dataset = args.per_dataset
         self.cfg = config_parse(args.config)
+        self.project = args.project
         self.project_section = 'project:' + args.project
         if not self.project_section in self.cfg.sections():
             raise Exception('No section in configuration file corresponds to "{0}" project. Supported projects are {1}.'.format(args.project, self.cfg.sections()))
@@ -83,7 +84,7 @@ class ProcessingContext(object):
             self.checksum_client, self.checksum_type = None
         
         # Pattern matching %(name)s from esg.ini
-        ini_pat = re.compile(r'%\(([^()]*)\)s')
+        self.ini_pat = re.compile(r'%\(([^()]*)\)s')
         
         # modify directory_format to python-re compatible version
         directory_format = self.cfg.get(self.project_section, 'directory_format', raw=True)
@@ -92,7 +93,7 @@ class ProcessingContext(object):
         pat2 = pat.replace('\.','__ESCAPE_DOT__')
         pat3 = pat2.replace('.', r'\.')
         pat4 = pat3.replace('__ESCAPE_DOT__', r'\.')
-        pat5 = re.sub(ini_pat, r'(?P<\1>[\w.-]+)', pat4)
+        pat5 = re.sub(self.ini_pat, r'(?P<\1>[\w.-]+)', pat4)
         pat_fin = pat5+'/(?P<filename>[\w.-]+\.nc)'
         self.pattern = re.compile(pat_fin)
         
@@ -203,13 +204,34 @@ def get_master_ID(attributes, ctx):
     :rtype: *str*
 
     """
+    dataset_id_templ = ctx.cfg.get(ctx.project_section, 'dataset_id', 1)
+    idfields = re.findall(ctx.ini_pat, dataset_id_templ)
+    for idfield in idfields:
+        if idfield not in attributes:
+            attributes = get_attr_from_map(idfield, attributes, ctx)
+    if 'projects' in attributes:
+        attributes['project'] = attributes['project'].lower()
     dataset_ID = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, attributes)
-    facets = re.split('\.|#', dataset_ID)
-    for facet in facets:
-        if facet == 'project':
-            dataset_ID = dataset_ID.replace(facet, attributes[facet].lower())
-        # dataset_ID = dataset_ID.replace(facet, attributes[facet])
     return dataset_ID
+
+
+def get_attr_from_map(idfield, attributes, ctx):
+    """
+    Get attribute value from esg.ini maptable and add to attributes dictionary.
+    
+    :param str idfield: The attribute to find the value for
+    :param dict attributes: The attributes auto-detected with DRS pattern
+    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
+    :returns: dict of attributes
+    
+    """
+    map_option = '{0}_map'.format(idfield)
+    if ctx.cfg.has_option(ctx.project_section, map_option):
+        from_keys, to_keys, value_map = split_map(ctx.cfg.get(ctx.project_section, map_option))
+        from_values = tuple(attributes[key] for key in from_keys)
+        to_values = value_map[from_values]
+        attributes.update(dict(zip(to_keys, to_values)))
+    return attributes
 
 
 def check_facets(attributes, ctx, file):
@@ -222,22 +244,16 @@ def check_facets(attributes, ctx, file):
     :raises Error: If an option of an attribute is not declared
 
     """
-    maps = ctx.cfg.get(ctx.project_section, 'maps').replace(" ", "").split(',')
+    # get all maps in configuration file
+    maps = None
+    if ctx.cfg.has_option(ctx.project_section, 'maps'):
+        maps = ctx.cfg.get(ctx.project_section, 'maps').replace(" ", "").split(',')
+        
     for facet in attributes.keys():
         if not facet in ['project', 'filename', 'variable', 'root', 'version', 'ensemble']:
-            if ctx.cfg.has_option(ctx.project_section, '{0}_map'.format(facet)) or ctx.cfg.has_option(ctx.project_section, '{0}_options'.format(facet)):
-                # options following the "map" format in the configuration file
-                if '{0}_map'.format(facet) in maps:
-                    from_keys, to_keys, value_map = split_map(ctx.cfg.get(ctx.project_section, '{0}_map'.format(facet)))
-                    if facet in to_keys:
-                        pos = to_keys.index(facet)
-                        options = set(zip(*value_map.values())[pos])
-                    else:
-                        msg = 'Option "{0}_map" is missing in the configuration file'.format(facet)
-                        logging.warning(msg)
-                        raise Exception(msg)
+            if ctx.cfg.has_option(ctx.project_section, '{0}_options'.format(facet)):
                 # experiment_options follows the form "<project> | <experiment> | <long_name>" => needs special treatment
-                elif facet == 'experiment':
+                if facet == 'experiment':
                     experiment_options = split_record(ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)))
                     options = zip(*experiment_options)[1]
                 else:
@@ -246,7 +262,7 @@ def check_facets(attributes, ctx, file):
                     msg = '"{0}" is missing in "{1}_options" of the "{2}" section from the configuration file to properly process {3}'.format(attributes[facet], facet, ctx.project_section, file)
                     logging.warning(msg)
                     raise Exception(msg)
-            else:  # TODO model_options not in esg.ini but in esgcet_models_table
+            elif '{0}_map' not in maps:  # TODO model_options not in esg.ini but in esgcet_models_table
                 msg = 'No option for facet "{0}" in the configuration file'.format(facet)
                 logging.warning(msg)                
 
@@ -374,6 +390,8 @@ def file_process(inputs):
     # Matching file full path with corresponding project pattern to get all attributes
     try:
         attributes = re.match(ctx.pattern, file).groupdict()
+        if not 'project' in attributes:
+            attributes['project'] = ctx.project
     except:
         # Fails can be due to:
         # -> Wrong project argument
@@ -385,7 +403,7 @@ def file_process(inputs):
     else:
         # Control vocabulary of each facet
         check_facets(attributes, ctx, file)
-            
+
         # Deduce master ID from full path and --latest option
         master_ID = get_master_ID(attributes, ctx)
         
