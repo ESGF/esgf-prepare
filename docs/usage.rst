@@ -146,6 +146,8 @@ Tutorials
 
 To generate a mapfile with verbosity using default parameters:
 
+.. warning:: Default behavior to pickup the latest version in the DRS is ensured with a date version format (e.g., v20151023).
+
 .. code-block:: bash
 
    $> esgscan_directory /path/to/scan -p PROJECT -v

@@ -26,8 +26,7 @@ def init_logging(logdir):
         # Logger initiates by SYNDA worker
         pass
     elif logdir:
-        name = 'esg_mapfiles'  # os.path.splitext(os.path.basename(os.path.abspath(__file__)))[0]
-        logfile = '{0}-{1}-{2}.log'.format(name, datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
+        logfile = 'esgscan-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
         if not os.path.exists(logdir):
             os.makedirs(logdir)
         logging.basicConfig(filename=os.path.join(logdir, logfile),

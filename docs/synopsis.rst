@@ -16,6 +16,11 @@ The publication process of the `ESG-F <http://pcmdi9.llnl.gov/>`_ nodes requires
 
 ``esgscan_directory`` is a flexible command-line tool allowing you to easily generate mapfiles. 
 
+Prerequisite
+************
+
+``esgscan_directory`` implies that the *Data Reference Syntax* (DRS) if the projects includes a version directory.
+
 Features
 ********
 

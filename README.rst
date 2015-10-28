@@ -2,4 +2,4 @@
 esg_mapfiles
 ************
 
-`See documentation here <http://esgf-mapfiles.readthedocs.org/en/latest/>`_
+`See documentation here <http://esgscan.readthedocs.org/en/latest/>`_

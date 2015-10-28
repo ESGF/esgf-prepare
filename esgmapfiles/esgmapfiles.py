@@ -27,41 +27,47 @@ class ProcessingContext(object):
     """
     Encapsulates the following processing context/information for main process:
 
-    +---------------------+-------------+-------------------------------------------+
-    | Attribute           | Type        | Description                               |
-    +=====================+=============+===========================================+
-    | *self*.directory    | *list*      | Paths to scan                             |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.latest       | *boolean*   | True if latest symlink                    |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.outdir       | *str*       | Output directory                          |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.notes_url    | *str*       | Dataset technical notes URL               |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.notes_title  | *str*       | Dataset technical notes title             |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.verbose      | *boolean*   | True if verbose mode                      |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.all_version  | *boolean*   | True to scan all versions                 |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.version      | *str*       | Version to scan                           |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.no_version   | *boolean*   | True to not include version in dataset ID |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.project      | *str*       | Project                                   |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.dataset      | *boolean*   | True if one mapfile per dataset           |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.checksum     | *boolean*   | True if checksums into mapfile            |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.outmap       | *str*       | Mapfile output name                       |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.cfg          | *callable*  | Configuration file parser                 |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.pattern      | *re object* | DRS regex pattern                         |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.dtemp        | *str*       | Directory of temporary files              |
-    +---------------------+-------------+-------------------------------------------+
+    +------------------------+-------------+-------------------------------------------+
+    | Attribute              | Type        | Description                               |
+    +========================+=============+===========================================+
+    | *self*.directory       | *list*      | Paths to scan                             |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.latest          | *boolean*   | True if latest symlink                    |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.outdir          | *str*       | Output directory                          |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.notes_url       | *str*       | Dataset technical notes URL               |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.notes_title     | *str*       | Dataset technical notes title             |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.verbose         | *boolean*   | True if verbose mode                      |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.all_version     | *boolean*   | True to scan all versions                 |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.version         | *str*       | Version to scan                           |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.no_version      | *boolean*   | True to not include version in dataset ID |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.project         | *str*       | Project                                   |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.project_section | *str*       | Project-Section (project:<project>)       |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.dataset         | *boolean*   | True if one mapfile per dataset           |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.checksum_type   | *str*       | Checksum Type, defaults: SHA256           |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.checksum_client | *str*       | Checksum Client, defaults: sha256sum      |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.outmap          | *str*       | Mapfile output name                       |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.cfg             | *callable*  | Configuration file parser                 |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.pattern         | *re object* | DRS regex pattern                         |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.ini_pat         | *re object* | Pattern matching %(name)s                 |
+    +------------------------+-------------+-------------------------------------------+
+    | *self*.dtemp           | *str*       | Directory of temporary files              |
+    +------------------------+-------------+-------------------------------------------+
 
     :param dict args: Parsed command-line arguments
     :returns: The processing context
@@ -88,7 +94,7 @@ class ProcessingContext(object):
         self.dataset = args.per_dataset
         self.filter = args.filter
         self.cfg = config_parse(args.init)
-
+        
         self.project = args.project
         self.project_section = 'project:' + args.project
         if not self.project_section in self.cfg.sections():
@@ -99,7 +105,7 @@ class ProcessingContext(object):
         elif self.cfg.has_option('DEFAULT', 'checksum'):
             self.checksum_client, self.checksum_type = split_line(self.cfg.defaults()['checksum'])
         else: # use SHA256 as default
-            self.checksum_client, self.checksum_type = 'sha256', 'SHA256'
+            self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
             
         # Pattern matching %(name)s from esg.ini
         self.ini_pat = re.compile(r'%\(([^()]*)\)s')
@@ -484,9 +490,9 @@ def file_process(inputs):
             line = [master_ID]
             line.append(file)
             line.append('mod_time='+str(mtime)+'.000000')
-            if ctx.checksum:
+            if ctx.checksum_type:
                 line.append('checksum='+csum)
-                line.append('checksum_type='+ctx.checksum)
+                line.append('checksum_type='+ctx.checksum_type)
             if ctx.notes_url:
                 line.append('dataset_tech_notes='+ctx.notes_url)
             if ctx.notes_title:
@@ -535,7 +541,10 @@ def run(job=None):
     # Raises exception when all processed files failed (filtered list empty)
     if not outmaps:
         rmdtemp(ctx)
-        raise Exception('All files have been ignored or have failed leading to no mapfile.')
+        if file_process.called == 0:
+            raise Exception('No files found leading to no mapfile.')
+        else:
+            raise Exception('All files have been ignored or have failed leading to no mapfile.')
     # Overwrite each existing mapfile in output directory
     for outmap in list(set(outmaps)):
         copy2(os.path.join(ctx.dtemp, outmap), ctx.outdir)
