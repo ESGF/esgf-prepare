@@ -489,6 +489,7 @@ def file_process(inputs):
         try:
             line = [master_ID]
             line.append(file)
+            line.append(str(size))
             line.append('mod_time='+str(mtime)+'.000000')
             if ctx.checksum_type:
                 line.append('checksum='+csum)
