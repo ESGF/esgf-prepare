@@ -249,8 +249,13 @@ def get_master_ID(attributes, ctx):
     dataset_id_templ = ctx.cfg.get(ctx.project_section, 'dataset_id', 1)
     idfields = re.findall(ctx.ini_pat, dataset_id_templ)
     for idfield in idfields:
+        # get attribute from maptable
         if idfield not in attributes:
             attributes = get_attr_from_map(idfield, attributes, ctx)
+        # check facet
+        else:
+            check_facets(idfield, attributes[idfield], ctx, file)
+
     if 'projects' in attributes:
         attributes['project'] = attributes['project'].lower()  # Do the lower case need to be enforced? Waiting for esgf-devel decision.
     dataset_ID = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, attributes)
@@ -276,38 +281,32 @@ def get_attr_from_map(idfield, attributes, ctx):
     return attributes
 
 
-def check_facets(attributes, ctx, file):
+def check_facets(facet, value, ctx, file):
     """
-    Checks all attributes from path.
-    Each attribute or facet is auto-detected using the DRS pattern (regex) and compared to its corresponding options declared into the configuration file.
+    Check a attribute for matching the controlled vocabulary.
 
-    :param dict attributes: The attributes auto-detected with DRS pattern
+    :param str facet: The attribute to check
+    :param str value: The attribute value
     :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :raises Error: If an option of an attribute is not declared
 
     """
-    # get all maps in configuration file
-    maps = None
-    if ctx.cfg.has_option(ctx.project_section, 'maps'):
-        maps = ctx.cfg.get(ctx.project_section, 'maps').replace(" ", "").split(',')
-        
-    for facet in attributes.keys():
-        if not facet in ['project', 'filename', 'variable', 'root', 'version', 'ensemble']:
-            if ctx.cfg.has_option(ctx.project_section, '{0}_options'.format(facet)):
-                # experiment_options follows the form "<project> | <experiment> | <long_name>" => needs special treatment
-                if facet == 'experiment':
-                    experiment_options = split_record(ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)))
-                    options = zip(*experiment_options)[1]
-                else:
-                    options = ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)).replace(" ", "").split(',')
-                if not attributes[facet] in options:
-                    msg = '"{0}" is missing in "{1}_options" of the "{2}" section from the configuration file to properly process {3}'.format(attributes[facet], facet, ctx.project_section, file)
-                    logging.warning(msg)
-                    raise Exception(msg)
-            elif '{0}_map' not in maps:  # TODO model_options not in esg.ini but in esgcet_models_table
-                msg = 'No option for facet "{0}" in the configuration file'.format(facet)
-                logging.warning(msg)                
-
+    if not facet == 'project':
+        if ctx.cfg.has_option(ctx.project_section, '{0}_options'.format(facet)):
+            # experiment_options follows the form "<project> | <experiment> | <long_name>" => needs special treatment
+            if facet == 'experiment':
+                experiment_options = split_record(ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)))
+                options = zip(*experiment_options)[1]
+            else:
+                options = ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)).replace(" ", "").split(',')
+            if value not in options:
+                msg = '"{0}" is missing in "{1}_options" of the "{2}" section from the configuration file to properly process {3}'.format(value, facet, ctx.project_section, file)
+                logging.warning(msg)
+                raise Exception(msg)
+        else:
+            msg = '"{0}_options" is missing in section {1} in the configuration file - skipping {2}'.format(facet, ctx.project_section, file)
+            logging.warning(msg)
+            raise Exception(msg)
 
 def checksum(file, checksum_type, checksum_client):
     """
@@ -350,6 +349,10 @@ def yield_inputs(ctx):
 
     """
     for directory in ctx.directory:
+        # if directly specified in positional argument, use version number from directory
+        if re.search('v[0-9]{8}', directory):
+            ctx.version = re.search('v[0-9]{8}', directory).group()[1:]
+
         for root, dirs, files in os.walk(directory, followlinks=True):
             if ctx.latest:
                 if '/latest/' in root:
@@ -457,9 +460,6 @@ def file_process(inputs):
         # -> Mistake in the DRS tree of your filesystem.
         raise Exception('The "directory_format" regex cannot match {0}'.format(file))
     else:
-        # Control vocabulary of each facet
-        check_facets(attributes, ctx, file)
-
         # Deduce master ID from full path and --latest option
         master_ID = get_master_ID(attributes, ctx)
         
