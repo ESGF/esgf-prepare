@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
    :platform: Unix
-   :synopsis: Generates ESGF mapfiles.
+   :synopsis: Generates ESGF mapfiles upon an local ESGF node or not.
 
 """
 
