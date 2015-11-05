@@ -112,6 +112,7 @@ def config_parse(config_dir, project):
     return cfg
 
 
+<<<<<<< HEAD
 def translate_directory_format(directory_format_raw):
     """
     Return a list of regular expression filters associated with the ``directory_format`` option
@@ -141,6 +142,16 @@ def split_line(line, sep='|'):
     :param str sep: Separator character
     :returns:  A list of string fields
 
+=======
+def split_line(line, sep='|'):
+    """
+    Split a line into fields.
+
+    :param str line: String line to split.
+    :param str sep: Separator character.
+    :returns:  A list of string fields.
+    
+>>>>>>> 9e80560972d454df8b1aa3a567c736a28d5ec27d
     """
     fields = map(string.strip, line.split(sep))
     return fields
@@ -149,10 +160,17 @@ def split_line(line, sep='|'):
 def split_record(option, sep='|'):
     """
     Split a multi-line record in a configuration file.
+<<<<<<< HEAD
 
     :param str option: Option in the configuration file.
     :param str sep: Separator character.
     :returns: A list of the form [[field1A, field2A, ...], [field1B, field2B, ...]]
+=======
+    
+    :param str option: Option in the configuration file.
+    :param str sep: Separator character.
+    :returns: A list of the form [[field, field, ...], [field, field, ...]]
+>>>>>>> 9e80560972d454df8b1aa3a567c736a28d5ec27d
 
     """
     result = []
@@ -164,6 +182,7 @@ def split_record(option, sep='|'):
     return result
 
 
+<<<<<<< HEAD
 def split_map_header(header):
     """
     Split header of a multi-line map in a configuration file.
@@ -177,6 +196,21 @@ def split_map_header(header):
     result = re.match(header_pattern, header).groupdict()
     from_keys = split_line(result['from_keys'], sep=',')
     to_keys = split_line(result['to_keys'], sep=',')
+=======
+def split_map_header(line):
+    """
+    Split header of a multi-line map in a configuration file.
+
+    :param str line: Header line of multi-line map.
+    :returns: 'from' and 'to' tuples representing the keys for the mapping.
+
+    """
+    header_pat = re.compile(r'map\s*\((?P<from_keys>[^(:)]*):(?P<to_keys>[^(:)]*)\)')
+    result = re.match(header_pat, line)
+    groupdict = result.groupdict()
+    from_keys = split_line(groupdict['from_keys'], sep=',')
+    to_keys = split_line(groupdict['to_keys'], sep=',')
+>>>>>>> 9e80560972d454df8b1aa3a567c736a28d5ec27d
     return from_keys, to_keys
 
 
@@ -184,6 +218,7 @@ def split_map(option, sep='|'):
     """
     Split a multi-line map in a configuration file.
 
+<<<<<<< HEAD
     :param str option: Option in the configuration file
     :param str sep: Separator character
     :returns: A dictionary mapping the 'from' tuples to the 'to' tuples
@@ -191,6 +226,16 @@ def split_map(option, sep='|'):
     """
     lines = option.split('\n')
     from_keys, to_keys = split_map_header(lines[0])
+=======
+    :param str option: Option in the configuration file.
+    :param str sep: Separator character.
+    :returns: A dictionary mapping the 'from' tuples to the 'to' tuples.
+    
+    """
+    lines = option.split('\n')
+    from_keys, to_keys = split_map_header(lines[0])
+
+>>>>>>> 9e80560972d454df8b1aa3a567c736a28d5ec27d
     n_from = len(from_keys)
     result = {}
     for record in lines[1:]:
@@ -199,8 +244,13 @@ def split_map(option, sep='|'):
         fields = map(string.strip, record.split(sep))
         from_values = tuple(fields[0:n_from])
         to_values = tuple(fields[n_from:])
+<<<<<<< HEAD
         if not from_values in result.keys():
             result[from_values] = to_values
         else:
             raise Exception('"{0}" maptable has duplicated lines'.format(lines[0]))
+=======
+        result[from_values] = to_values
+
+>>>>>>> 9e80560972d454df8b1aa3a567c736a28d5ec27d
     return from_keys, to_keys, result
