@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
    :platform: Unix
-   :synopsis: Build ESGF mapfiles without ``esgscan_directory`` upon local ESGF datanode.
+   :synopsis: Generates ESGF mapfiles.
 
 """
 
@@ -30,41 +30,49 @@ class ProcessingContext(object):
     """
     Encapsulates the following processing context/information for main process:
 
-    +---------------------+-------------+-------------------------------------------+
-    | Attribute           | Type        | Description                               |
-    +=====================+=============+===========================================+
-    | *self*.directory    | *list*      | Paths to scan                             |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.latest       | *boolean*   | True if latest symlink                    |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.outdir       | *str*       | Output directory                          |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.notes_url    | *str*       | Dataset technical notes URL               |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.notes_title  | *str*       | Dataset technical notes title             |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.verbose      | *boolean*   | True if verbose mode                      |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.all_version  | *boolean*   | True to scan all versions                 |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.version      | *str*       | Version to scan                           |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.no_version   | *boolean*   | True to not include version in dataset ID |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.project      | *str*       | Project                                   |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.dataset      | *boolean*   | True if one mapfile per dataset           |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.checksum     | *boolean*   | True if checksums into mapfile            |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.outmap       | *str*       | Mapfile output name                       |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.cfg          | *callable*  | Configuration file parser                 |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.pattern      | *re object* | DRS regex pattern                         |
-    +---------------------+-------------+-------------------------------------------+
-    | *self*.dtemp        | *str*       | Directory of temporary files              |
-    +---------------------+-------------+-------------------------------------------+
+    +------------------------+-------------+----------------------------------------------+
+    | Attribute              | Type        | Description                                  |
+    +========================+=============+==============================================+
+    | *self*.directory       | *list*      | Paths to scan                                |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.outmap          | *str*       | Mapfile name/pattern using tokens            |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.latest          | *boolean*   | True to follow latest symlink                |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.outdir          | *str*       | Output directory                             |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.notes_url       | *str*       | Dataset technical notes URL                  |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.notes_title     | *str*       | Dataset technical notes title                |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.verbose         | *boolean*   | True if verbose mode                         |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.all             | *boolean*   | True to scan all versions                    |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.version         | *str*       | Version to scan                              |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.filter          | *re object* | File filter as regex pattern                 |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.no_version      | *boolean*   | True to not include version in dataset ID    |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.project         | *str*       | Project                                      |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.project_section | *str*       | Project section name in configuration file   |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.dataset         | *str*       | Dataset ID name                              |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.checksum_client | *str*       | Checksum client as shell command-line to use |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.checksum_type   | *str*       | Checksum type                                |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.threads         | *int*       | Maximum threads number                       |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.cfg             | *callable*  | Configuration file parser                    |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.pattern         | *re object* | DRS regex pattern                            |
+    +------------------------+-------------+----------------------------------------------+
+    | *self*.dtemp           | *str*       | Directory of temporary files                 |
+    +------------------------+-------------+----------------------------------------------+
 
     :param dict args: Parsed command-line arguments
     :returns: The processing context
