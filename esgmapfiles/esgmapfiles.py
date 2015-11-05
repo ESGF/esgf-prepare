@@ -117,8 +117,9 @@ class ProcessingContext(object):
         pat2 = pat.replace('\.','__ESCAPE_DOT__')
         pat3 = pat2.replace('.', r'\.')
         pat4 = pat3.replace('__ESCAPE_DOT__', r'\.')
-        pat5 = re.sub(self.ini_pat, r'(?P<\1>[\w.-]+)', pat4)
-        pat_fin = pat5+'/(?P<filename>[\w.-]+\.nc)'
+        pat5 = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pat4) # for %(root)s
+        pat6 = re.sub(self.ini_pat, r'(?P<\1>[\w.-]+)', pat5)
+        pat_fin = pat6+'/(?P<filename>[\w.-]+\.nc)'
         self.pattern = re.compile(pat_fin)
         
         self.dtemp = mkdtemp()
@@ -292,7 +293,13 @@ def check_facets(facet, value, ctx, file):
 
     """
     if not facet == 'project':
-        if ctx.cfg.has_option(ctx.project_section, '{0}_options'.format(facet)):
+        if facet =='ensemble':
+            ensemble_pat = re.compile('r[0-9]+i[0-9]+p[0-9]+')
+            if not re.match(ensemble_pat, value):
+                msg = '"{0}" is not a valid value for ensemble. Skipping {3}'.format(value, file)
+                logging.warning(msg)
+                raise Exception(msg)                
+        elif ctx.cfg.has_option(ctx.project_section, '{0}_options'.format(facet)):
             # experiment_options follows the form "<project> | <experiment> | <long_name>" => needs special treatment
             if facet == 'experiment':
                 experiment_options = split_record(ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)))
