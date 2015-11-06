@@ -129,8 +129,9 @@ def translate_directory_format(directory_format_raw):
     pattern1 = pattern0.replace('\.', '__ESCAPE_DOT__')
     pattern2 = pattern1.replace('.', r'\.')
     pattern3 = pattern2.replace('__ESCAPE_DOT__', r'\.')
-    pattern4 = re.sub(esg_variable_pattern, r'(?P<\1>[\w.-]+)', pattern3)
-    return '{0}/(?P<filename>[\w.-]+\.nc)'.format(pattern4)
+    pattern4 = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern3) # for %(root)s
+    pattern5 = re.sub(esg_variable_pattern, r'(?P<\1>[\w.-]+)', pattern4)
+    return '{0}/(?P<filename>[\w.-]+\.nc)'.format(pattern5)
 
 
 def split_line(line, sep='|'):

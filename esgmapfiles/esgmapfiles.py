@@ -473,7 +473,7 @@ def yield_inputs(ctx):
         # Set --version flag if version number is included in the supplied directory path
         # to recursively scan
         if re.compile('/v[0-9]*/').search(directory):
-            ctx.version = re.compile('/v[0-9]*/').search(directory).group()[1:]
+            ctx.version = re.compile('/v[0-9]*/').search(directory).group()[2:-1]
         # Walk trought the DRS tree
         for root, dirs, files in os.walk(directory, followlinks=True):
             # Follow the latest symmlink only
