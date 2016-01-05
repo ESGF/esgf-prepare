@@ -3,7 +3,7 @@
 Usage
 =====
 
-esgscan_check_vocab 
+esgscan_check_vocab
 +++++++++++++++++++
 
 Here is the command-line help:
@@ -21,18 +21,18 @@ Here is the command-line help:
 
    optional arguments:
      -h, --help            Show this help message and exit.
-                           
+
      -p PROJECT, --project PROJECT
                            Required project name corresponding to a section of the configuration file.
-                           
+
      -c CONFIG, --config CONFIG
                            Path of the configuration INI file to check
                            (default is ~/lib/python2.7/site-packages/esgmapfiles-0.5-py2.7.egg/esgmapfiles/config.ini).
-                           
+
      -l [LOGDIR], --logdir [LOGDIR]
                            Logfile directory (default is working directory).
                            If not, standard output is used.
-                           
+
      -V, --Version         Program version.
 
    Developed by Iwi, A. (BADC) and Levavasseur, G. (CNRS/IPSL)
@@ -83,7 +83,7 @@ If a used option is missing:
    ensemble_options - Used values: r1i1p1, r0i0p0
    !!!!!!! THERE WERE UNDECLARED VALUES USED !!!!!!!!
 
-esgscan_directory 
+esgscan_directory
 +++++++++++++++++
 
 Here is the command-line help:
@@ -107,36 +107,36 @@ Here is the command-line help:
 
    optional arguments:
     -h, --help            Show this help message and exit.
-                          
+
     -p PROJECT, --project PROJECT
                           Required project name corresponding to a section of the configuration file.
-                          
+
     -c CONFIG, --config CONFIG
                           Path of configuration INI file
                           (default is ~/lib/python2.7/site-packages/esgmapfiles-0.5-py2.7.egg/esgmapfiles/config.ini).
-                          
+
     -o OUTDIR, --outdir OUTDIR
                           Mapfile(s) output directory
                           (default is working directory).
-                          
+
     -l [LOGDIR], --logdir [LOGDIR]
                           Logfile directory (default is working directory).
                           If not, standard output is used.
-                          
+
     -m MAPFILE, --mapfile MAPFILE
                           Output mapfile name. Only used without --per-dataset option
                           (default is 'mapfile.txt').
-                          
+
     -d, --per-dataset     Produces ONE mapfile PER dataset. It takes priority over --mapfile.
-                          
+
     -L, --latest          Generates mapfiles with latest versions only.
-                          
+
     -w, --with-version    Includes DRS version into dataset ID (ESGF 2.x compatibility).
-                          
+
     -C, --checksum        Includes file checksums into mapfiles (default is a SHA256 checksum).
-                          
+
     -v, --verbose         Verbose mode.
-                          
+
     -V, --Version         Program version.
 
    Developed by Levavasseur, G. (CNRS/IPSL)

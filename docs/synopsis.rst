@@ -1,9 +1,11 @@
+.. _ESGF: http://pcmdi9.llnl.gov/
+
 .. _synopsis:
 
 Synopsis
 ========
 
-The publication process of the `ESG-F <http://pcmdi9.llnl.gov/>`_ nodes requires *mapfiles*. Mapfiles are text files where each line describes a file to publish on the following format:
+The publication process of the `ESGF`_ nodes requires *mapfiles*. Mapfiles are text files where each line describes a file to publish on the following format:
 ::
 
    dataset_ID | absolute_path | size_bytes [ | option=value ]
@@ -13,13 +15,11 @@ The publication process of the `ESG-F <http://pcmdi9.llnl.gov/>`_ nodes requires
    i. All values have to be pipe-separated.
    ii. The dataset identifier, the absolute path and the size (in bytes) are required.
    iii. Adding the file checksum and the checksum type as optional values is strongly recommended.
+   iv. Adding the version number next to the dataset identifier is strongly recommended.
 
-``esgscan_directory`` is a flexible command-line tool allowing you to easily generate mapfiles. 
+``esgscan_directory`` is a flexible command-line tool allowing you to easily generate mapfiles upon local ESGF datanode or not.
 
-Prerequisite
-************
-
-``esgscan_directory`` implies that the *Data Reference Syntax* (DRS) if the projects includes a version directory.
+.. warning:: It implies that your directory structure strictly follows the tree fixed by the project's *Data Reference Syntax* (DRS) **including the version facet**.
 
 Features
 ********
@@ -27,45 +27,53 @@ Features
 **Directory as input**
   You only need to specifiy the directory to recursively scan. To include several data directories in one mapfile and to publish them at once, you can use all Unix wildcards in the path or submit several paths.
 
-**Multi-project**
-   ``time_axis`` is currently provided supporting `CMIP5 <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ and `CORDEX <https://www.medcordex.eu/cordex_archive_specifications_2.2_30sept2013.pdf>`_ *Data Reference Syntax* (DRS). Nevertheless, you can easily add a new "project" section in the configuration file to support yours. Please follow the `INI syntax <https://en.wikipedia.org/wiki/INI_file>`_.
+**Compatiblity with ESGF node configuration file(s)**
+  Each `ESGF`_ node:
+   * Declares all technical attributes (e.g., the checksum type) into the ``[default]`` of a configuration INI file called ``esg.ini``,
+   * Centralizes all projects definitions (DRS, facets) into the ``project:<project>`` sections of the same ``esg.ini`` or from independent files called ``esg.<project>.ini``.
 
-**Facets auto-detection**
-  The dataset facets will be automatically detect using the ``directory_format`` regular expression in the configuration file where all facet options have to be declared. This ensures an appropriated mapfile generation by preventing DRS mistakes and checking the controlled vocabulary.
+  To ensure a right facets auto-detection, ``esgscan_directory`` directly works from these INI files.
+
+**Dataset identifier template**
+  Each dataset to publish is defined by its identifier as a string of dot-separated facets. ``esgscan_directory`` reads the identifier template (i.e., the facets within) using the ``dataset_id`` regular expression from the corresponding project section in the ``esg.ini`` or the appropriate ``esg.<project>.ini``.
+
+**Facets values auto-detection**
+  The facets values are automatically detected from the full path of the file, using the ``directory_format`` regular expression in the configuration file. These DRS values are used to fill the dataset identifier template.
+
+**Facets values checkup**
+  Each facet value from the dataset identifier is assessed in the light of configuration file(s). If the facet has been deduced from the full path of the file, its value has to be declared in an ``facet_options`` list of the configuration file(s). If the facet is missing in the full path of the file, it has to be decuded from a required ``facet_map`` maptable in the configuration file(s). This ensures an appropriated mapfile generation by preventing DRS mistakes and checking the controlled vocabulary.
+
+**Vocabulary checkup**
+  ``esgscan_directory`` is accompanied by ``esgscan_check_vocab``. This module allows you to easily check the options lists and maptables declared in your configuration file(s) depending on the directory you want to recursively scan. ``esgscan_check_vocab`` walks trough the file system, gathers each facet value of encountered datasets and displays the report with used/unsued and undeclared facet values.
 
 **Multithreading**
   To compute the checksum of a lot of large files becomes time consuming. We implement multithreading at file level. Each file is processed by a thread that writes the resulting line in the corresponding mapfile. A lock file system orders the simultaneous access to mapfiles by the threads to avoid any conflicts.
 
 **Mapfile granularity control**
-  You can choose to produce one mapfile per dataset (i.e., to generate one mapfile per each version of each dataset). In this case your mapfiles automatically take the name of the dataset identifier with DRS version as suffix. Consequently, you can set your own "mapfile-granularity" and control your publications by concatenating several mapfiles. 
+  The mapfile name can be specifiy using a template with tokens. the available tokens are ``{dataset_id}``, ``{version}``, ``{date}`` or ``{job_id}``. These substrings will be substituted where found. If ``{dataset_id}`` token is not present in mapfile name, then all datasets will be written  to a single mapfile, overriding the default behavior of producing **ONE mapfile PER each version of each dataset**. Consequently, you can set your own "mapfile-granularity" through the template of the mapfile(s) name and control your publications.
 
 .. note:: A dataset is defined by one version of all upstream DRS tree.
 
-**Only latest version**
-   You can choose to only include the latest versions of the datasets in your mapfile. In this case, the walk through the filesystem is filtered. Only the folders pointed by a "latest" symbolic link are recursively scanned.
+**Version filtering**
+  The walk through the file system is filtered. The default behavior of ``esgscan_directory`` is to pick up only the latest version of a dataset scanned (as the greatest version number). You can change this behavior and choose to include (see :ref:`usage`):
+   * All versions found with the ``--all-versions`` flag (it disables ``--no-version`` flag),
+   * Only the version pointed by a "latest" symlink (if exists) with the ``--latest-symlink`` flag,
+   * Only a particular version with the ``--version <version_number>`` argument or by directly specifying the version number in the supplied directory (it takes priority over ``--all-versions`` flag).
 
 **Mapfile with DRS version**
-   You can choose to include the DRS version into each dataset ID. This is compatible with the `ESG-F <http://pcmdi9.llnl.gov/>`_ 2.0 release and leads to a full-slave behaviour of the `ESG-F publisher <https://github.com/ESGF/esg-publisher>`_. With this mapfile syntax the ``--new-version`` option of the publisher command-lines is deprecated.
+   You can choose to include the DRS version next to each dataset identifier. This is compatible with the ESGF 2.x. With this mapfile syntax the ``--new-version`` option of the publisher command-lines becomes deprecated.
 
 **Developer's entry point**
-  ``esgscan_directory`` can be imported and called in your own scripts. Just pass a dictionnary with your flags to the ``run(job={})`` function (see :ref:`autodoc`). 
+  ``esgscan_directory`` can be imported and called in your own scripts. Just pass a dictionnary with your flags to the ``run(job={})`` function (see :ref:`autodoc`).
 
 **Standalone**
-  Security policies of computing centres, that often host `ESG-F <http://pcmdi9.llnl.gov/>`_ data and datanodes, do not allow to easily access the node configuration. ``esgscan_directory`` is not part of `ESG-F <http://pcmdi9.llnl.gov/>`_ software stack and can be run as standalone tool outside any `ESG-F <http://pcmdi9.llnl.gov/>`_ node.
-
-**Compatible with ESG-F node configuration file**
-  Each `ESG-F <http://pcmdi9.llnl.gov/>`_ node centralizes all projects definitions (DRS, facets) one INI configuration file ``esg.ini`` file. To ensure a right facets auto-detection, ``esgscan_directory`` directly works from ``esg.ini``.
-
-**Vocabulary checkup**
-  ``esgscan_directory`` was accompanied by ``esgscan_check_vocab``. This module allows you to easily check the facet options declared in your configuration file depending on the direcotires you want to recursively scan.
+  Security policies of computing centres, that often host `ESGF`_ nodes, do not allow to use ``esgscan_directory`` within a node that is conventionally used to generate mapfiles.
 
 **Keep threads tracebacks**
-  The threads-processes do not shutdown the main process of ``esgscan_directory`` run. If an error occurs on a thread, the traceback of the child-process is not raised to the main process. To help you to have a fast debug, the tracebacks of each threads can be raised using the ``-v/--verbose`` option (see :ref:`usage`).
+  The threads-processes do not shutdown the main process of ``esgscan_directory`` run. If an error occurs on a thread, the traceback of the child-process is not raised to the main process. To help you to have a fast debug, the tracebacks of each threads can be raised using the ``-v`` option (see :ref:`usage`).
 
 **Output directory**
   An output directory can be defined to store and organized your mapfiles.
 
 **Use a logfile**
-  You can initiate a logger instead of the standard output. This could be useful for automatic workflows. The logfile name is automatically defined and unique (using the the job's name, the date and the job's PID). You can define an output directory for your logs too.
-
-
+  You can initiate a logger instead of the standard output. This could be useful for automatic workflows. The logfile name is automatically defined and unique (using the the job's name, the date and the job's ID). You can define an output directory for your logs too.

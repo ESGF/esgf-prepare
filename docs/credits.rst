@@ -6,7 +6,7 @@ Credits
 Developer/Author
 ****************
 
-`Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>`_ (`CNRS <http://www.cnrs.fr/>`_/`IPSL <https://www.ipsl.fr/>`_)
+`Guillaume LEVAVASSEUR <glipsl@ipsl.jussieu.fr>`_ (`CNRS <http://www.cnrs.fr/>`_/`IPSL <https://www.ipsl.fr/>`_)
 
 Contributors
 ************
@@ -18,4 +18,4 @@ Contributors
 Contacts
 ********
 
-To submit bugs, suggestions or ideas, please address your comments to `Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>`_ or post your issue on our `GitHub repository <https://github.com/IS-ENES-Data/esgf-mapfiles>`_.
+To submit bugs, suggestions or ideas, please address your comments to `Guillaume LEVAVASSEUR <glipsl@ipsl.jussieu.fr>`_ or post your issue on our `GitHub repository <https://github.com/IS-ENES-Data/esgf-mapfiles>`_.
