@@ -20,7 +20,7 @@ from datetime import datetime
 from shutil import copy2, rmtree
 
 # Program version
-__version__ = '{0} {1}'.format('v0.7', datetime.now().strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('0.7', datetime(year=2015, month=11, day=20).strftime("%Y-%d-%m"))
 
 # Lockfile timeout (in sec)
 __LOCK_TIMEOUT__ = 30
@@ -73,15 +73,24 @@ class ProcessingContext(object):
     +------------------------+-------------+----------------------------------------------+
     | *self*.dtemp           | *str*       | Directory of temporary files                 |
     +------------------------+-------------+----------------------------------------------+
+    | *self*.facets          | *list*      | List of the DRS facets                       |
+    +------------------------+-------------+----------------------------------------------+
 
     :param dict args: Parsed command-line arguments
     :returns: The processing context
     :rtype: *dict*
-    :raises Error: If the project name is inconsistent with the sections names from the configuration file
+    :raises Error: If no section name corresponds to the project name in the configuration file
 
     """
     def __init__(self, args):
-        init_logging(args.logdir)
+        """
+        Returns the processing context as a dictionary.
+
+        :param dict args: Parsed command-line arguments
+        :returns: The processing context
+        :rtype: *dict*
+        """
+        init_logging(args.log)
         for path in args.directory:
             check_directory(path)
         self.directory = args.directory
@@ -103,8 +112,8 @@ class ProcessingContext(object):
         self.cfg = config_parse(args.i, args.project)
         self.project_section = 'project:{0}'.format(args.project)
         if not self.cfg.has_section(self.project_section):
-            raise Exception('No section in configuration file corresponds to "{0}" project.\
-                             Supported projects are {1}.'.format(args.project,
+            raise Exception('No section in configuration file corresponds to "{0}". '
+                            'Available sections are {1}.'.format(self.project_section,
                                                                  self.cfg.sections()))
         if args.no_checksum:
             self.checksum_client, self.checksum_type = None, None
@@ -125,10 +134,10 @@ class ProcessingContext(object):
 
 def get_args(job):
     """
-    Returns parsed command-line arguments. See ``esg_mapfiles -h`` for full description.
-    A ``job`` dictionnary can be used as developper's entry point to overload the parser.
+    Returns parsed command-line arguments. See ``esgscan_directory -h`` for full description.
+    A ``job`` dictionary can be used as developer's entry point to overload the parser.
 
-    :param dict job: Optionnal dictionnary instead of command-line arguments
+    :param dict job: Optional dictionary instead of command-line arguments
     :returns: The corresponding ``argparse`` Namespace
 
     """
@@ -148,7 +157,7 @@ def get_args(job):
                     4. Adding the version number to the dataset identifier is useful to publish in
                     a in bulk.|n|n
 
-                    esgscan_directory allows you to easily generate ESG-F mapfiles upon local ESGF
+                    "esgscan_directory" allows you to easily generate ESGF mapfiles upon local ESGF
                     datanode or not. It implies that your directory structure strictly follows the
                     project DRS including the version facet.|n|n
 
@@ -162,8 +171,8 @@ def get_args(job):
                     The default values are displayed next to the corresponding flags.""",
         formatter_class=MultilineFormatter,
         add_help=False,
-        epilog="""Developped by:|n
-                  Levavasseur, G. (CNRS/IPSL - glipsl@ipsl.jussieu.fr)|n
+        epilog="""Developed by:|n
+                  Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.jussieu.fr)|n
                   Berger, K. (DKRZ - berger@dkrz.de)|n
                   Iwi, A. (STFC/BADC - alan.iwi@stfc.ac.uk)""")
     parser.add_argument(
@@ -190,19 +199,19 @@ def get_args(job):
         '--mapfile',
         metavar='{dataset_id}.{version}.map',
         type=str,
-        default='{dataset_id}.{version}.map',
+        default='{dataset_id}.{version}',
         help="""Specifies template for the output mapfile(s) name.|n
-                Substrings {dataset_id}, {version} or {date} (in YYYYDDMM)|n
-                will be substituted where found. If {dataset_id} is not|n
-                present in mapfile name, then all datasets will be written|n
-                to a single mapfile, overriding the default behavior of|n
-                producing ONE mapfile PER dataset.""")
+                Substrings {dataset_id}, {version}, {job_id} or {date} |n
+                (in YYYYDDMM) will be substituted where found. If |n
+                {dataset_id} is not present in mapfile name, then all |n
+                datasets will be written to a single mapfile, overriding |n
+                the default behavior of producing ONE mapfile PER dataset.""")
     parser.add_argument(
         '--outdir',
-        metavar='.../{0}/.'.format(os.getcwd().split('/')[-1]),
+        metavar='$PWD',
         type=str,
         default=os.getcwd(),
-        help="""Mapfile(s) output directory (default is working directory).""")
+        help="""Mapfile(s) output directory.""")
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--all-versions',
@@ -239,9 +248,9 @@ def get_args(job):
         help="""Does not include files checksums into the mapfile(s).""")
     parser.add_argument(
         '--filter',
-        metavar='".*\.nc$"',
+        metavar=r'".*\.nc$"',
         type=str,
-        default='.*\.nc$',
+        default=r'.*\.nc$',
         help="""Filter files matching the regular expression (default only|n
                 support NetCDF files). Regular expression syntax is defined|n
                 by the Python re module.""")
@@ -269,13 +278,12 @@ def get_args(job):
         default=4,
         help="""Number of maximal threads for checksum calculation.""")
     parser.add_argument(
-        '--logdir',
-        metavar='.../{0}/.'.format(os.getcwd().split('/')[-1]),
+        '--log',
+        metavar='$PWD',
         type=str,
         const=os.getcwd(),
         nargs='?',
-        help="""Logfile directory (default is working directory). If not,|n
-                standard output is used.""")
+        help="""Logfile directory. If not, standard output is used.""")
     parser.add_argument(
         '-h', '--help',
         action='help',
@@ -293,29 +301,35 @@ def get_args(job):
     if job is None:
         return parser.parse_args()
     else:
-        # SYNDA submits non-latest path to translate
-        return parser.parse_args([re.sub('v[0-9]*$',
-                                         'latest',
-                                         os.path.normpath(job['full_path_variable'])),
-                                 '--project', job['project'].lower(),
-                                 '--outdir', '/home/esg-user/mapfiles/pending/',
-                                 '-l', 'synda_logger',
-                                 '--latest-symlink',
-                                 '-v'])
+        # SYNDA submits dataset path
+        directory = os.path.dirname(os.path.normpath(job['args']['variable_path']))
+        project = job['args']['project']
+        model = job['args']['model']
+        outdir = '/prodigfs/esgf/mapfiles/{0}/pending/{1}/'.format(project, model)
+        return parser.parse_args([directory,
+                                  '--project', project.lower(),
+                                  '--mapfile', '{dataset_id}.latest.map',
+                                  '--no-version',
+                                  '--max-threads', 4,
+                                  '--outdir', outdir,
+                                  '--log', 'synda_logger',
+                                  '--latest-symlink',
+                                  '-v'])
 
 
-def get_dataset_ID(ctx, file):
+def get_dataset_id(ctx, ffp):
     """
     Builds the dataset identifier. The DRS attributes are deduced from the file full path using
     the directory_format regex pattern. The project facet is added in any case with lower case. If
     the version facet cannot be deduced from full path (e.g., with --latest-symlink flag), it
     follows the symlink to complete the DRS attributes. If the dataset name is not specified
     (i.e., --dataset flag is None), it:
+
      * Checks each facet value regarding the corresponding option list in the esg_<project>.ini,
-     * Gets missing attributes from the correponding maptable in the esg_<project>.ini,
+     * Gets missing attributes from the corresponding maptable in the esg_<project>.ini,
      * Builds the dataset identifier from the attributes,
 
-    :param str file: The file full path
+    :param str ffp: The file full path
     :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :returns: The dataset ID and the dataset version as a tuple
     :rtype: *tuple*
@@ -326,18 +340,18 @@ def get_dataset_ID(ctx, file):
     # attributes.keys() are facet names
     # attributes[facet] is the facet value.
     try:
-        attributes = re.match(ctx.pattern, file).groupdict()
+        attributes = re.match(ctx.pattern, ffp).groupdict()
         attributes['project'] = ctx.project.lower()
         # If file path is a symlink, deduce the version following the symlink
         if ctx.latest:
-            pointed_path = os.path.realpath(''.join(re.split(r'(latest)', file)[:-1]))
+            pointed_path = os.path.realpath(''.join(re.split(r'(latest)', ffp)[:-1]))
             attributes['version'] = os.path.basename(pointed_path)
     except:
-        raise Exception('Matching failed to deduce DRS attributes from {0}. Please check the\
-                        "directory_format" regex in esg.{1}.ini'.format(file,
-                                                                        ctx.project))
+        raise Exception('Matching failed to deduce DRS attributes from {0}. Please check '
+                        'the "directory_format" regex in esg.{1}.ini'.format(ffp,
+                                                                             ctx.project))
     # Check each facet required by the dataset_id template from esg.<project>.ini
-    # Available facet values have been deduced from file full-path
+    # Facet values to check are deduced from file full-path
     # If a DRS attribute is missing regarding the dataset_id template,
     # the DRS attributes are completed from esg.<project>.ini maptables.
     if not ctx.dataset:
@@ -348,10 +362,10 @@ def get_dataset_ID(ctx, file):
             # Get attribute from esg_<project>.ini maptables
             # All other facets have been checked before
             attributes = get_facet_from_map(facet, attributes, ctx)
-        dataset_ID = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, attributes)
+        dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, attributes)
     else:
-        dataset_ID = ctx.dataset
-    return dataset_ID, attributes['version']
+        dataset_id = ctx.dataset
+    return dataset_id, attributes['version']
 
 
 def check_facet(facet, attributes, ctx):
@@ -368,12 +382,12 @@ def check_facet(facet, attributes, ctx):
     :raises Error: If the ensemble facet has a wrong syntax
 
     """
-    if not facet in ['project', 'filename', 'variable', 'version']:
+    if facet not in ['project', 'filename', 'variable', 'version']:
         if ctx.cfg.has_option(ctx.project_section, '{0}_options'.format(facet)):
             options = split_line(ctx.cfg.get(ctx.project_section,
                                              '{0}_options'.format(facet)),
                                  sep=',')
-            if not attributes[facet] in options:
+            if attributes[facet] not in options:
                 raise Exception('"{0}" is missing in "{1}_options" of the section "{2}" from '
                                 'esg.{3}.ini'.format(attributes[facet],
                                                      facet,
@@ -408,7 +422,7 @@ def get_facet_from_map(facet, attributes, ctx):
     map_option = '{0}_map'.format(facet)
     if ctx.cfg.has_option(ctx.project_section, map_option):
         from_keys, to_keys, value_map = split_map(ctx.cfg.get(ctx.project_section, map_option))
-        if not facet in to_keys:
+        if facet not in to_keys:
             raise Exception('{0}_map is miss-declared in esg.{1}.ini. '
                             '"{0}" facet has to be in "destination facet"'.format(facet,
                                                                                   ctx.project))
@@ -417,35 +431,37 @@ def get_facet_from_map(facet, attributes, ctx):
         attributes[facet] = to_values[to_keys.index(facet)]
     elif facet == 'ensemble':
         if not re.compile(r'r[\d]+i[\d]+p[\d]+').search(attributes[facet]):
-                raise Exception('Wrong syntax for "ensemble" facet. '
-                                'Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".')
+            raise Exception('Wrong syntax for "ensemble" facet. '
+                            'Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".')
     else:
         raise Exception('{0}_map is required in esg.{1}.ini'.format(facet, ctx.project))
     return attributes
 
 
-def checksum(file, checksum_type, checksum_client):
+def checksum(ffp, checksum_type, checksum_client):
     """
     Does the checksum by the Shell avoiding Python memory limits.
 
-    :param str file: The full path of a file
-    :param str checksum_client: Shell commande line for checksum
+    :param str ffp: The file full path
+    :param str checksum_client: Shell command line for checksum
     :param str checksum_type: Checksum type
+    :returns: The checksum
+    :rtype: *str*
     :raises Error: If the checksum fails
 
     """
     try:
-        shell = os.popen("{0} {1} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, file), 'r')
+        shell = os.popen("{0} {1} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, ffp), 'r')
         return shell.readline()[:-1]
     except:
-        raise Exception('{0} checksum failed for {1}'.format(checksum_type, file))
+        raise Exception('{0} checksum failed for {1}'.format(checksum_type, ffp))
 
 
 def rmdtemp(ctx):
     """
     Removes the temporary directory and its content.
 
-    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
+    :param ProcessingContext ctx: The processing context (as a :func:`ProcessingContext` class instance)
 
     """
     if ctx.verbose:
@@ -458,13 +474,15 @@ def yield_inputs(ctx):
     Yields all files to process within tuples with the processing context. The file walking
     through the DRS tree follows the latest version of each dataset. This behavior is modifed
     using:
+
      * ``--all-versions`` flag, to pick up all versions,
      * ``--version <version_number>`` argument, to pick up a specified version,
      * ``--latest-symlink`` flag, to pick up the version pointed by the latest symlink (if exists).
+
     If the supplied directory to scan specifies the version into its path, only this version is
     picked up as with ``--version`` argument.
 
-    :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
+    :param ProcessingContext ctx: The processing context (as a :func:`ProcessingContext` class instance)
     :returns: Attach the processing context to a file to process as an iterator of tuples
     :rtype: *iter*
 
@@ -472,40 +490,40 @@ def yield_inputs(ctx):
     for directory in ctx.directory:
         # Set --version flag if version number is included in the supplied directory path
         # to recursively scan
-        if re.compile('/v[0-9]*/').search(directory):
-            ctx.version = re.compile('/v[0-9]*/').search(directory).group()[2:-1]
-        # Walk trought the DRS tree
-        for root, dirs, files in os.walk(directory, followlinks=True):
-            # Follow the latest symmlink only
+        if re.compile(r'/v[0-9]*/').search(directory):
+            ctx.version = re.compile(r'/v[0-9]*/').search(directory).group()[2:-1]
+        # Walk trough the DRS tree
+        for root, _, filenames in os.walk(directory, followlinks=True):
+            # Follow the latest symlink only
             if ctx.latest:
                 if '/latest/' in root:
-                    for file in files:
-                        if os.path.isfile(os.path.join(root, file)) and \
-                           re.match(ctx.filter, file) is not None:
-                            yield os.path.join(root, file), ctx
+                    for filename in filenames:
+                        if os.path.isfile(os.path.join(root, filename)) and \
+                           re.match(ctx.filter, filename) is not None:
+                            yield os.path.join(root, filename), ctx
             # Pick up the specified version only (from directory path or --version flag)
             elif ctx.version:
-                if re.compile('/v' + ctx.version + '/').search(root):
-                    for file in files:
-                        if os.path.isfile(os.path.join(root, file)) and \
-                           re.match(ctx.filter, file) is not None:
-                            yield os.path.join(root, file), ctx
+                if re.compile(r'/v' + ctx.version + r'/').search(root):
+                    for filename in filenames:
+                        if os.path.isfile(os.path.join(root, filename)) and \
+                           re.match(ctx.filter, filename) is not None:
+                            yield os.path.join(root, filename), ctx
             # Pick up all encountered versions
             elif ctx.all:
-                if re.compile('/v[0-9]*/').search(root):
-                    for file in files:
-                        if os.path.isfile(os.path.join(root, file)) and \
-                           re.match(ctx.filter, file) is not None:
-                            yield os.path.join(root, file), ctx
+                if re.compile(r'/v[0-9]*/').search(root):
+                    for filename in filenames:
+                        if os.path.isfile(os.path.join(root, filename)) and \
+                           re.match(ctx.filter, filename) is not None:
+                            yield os.path.join(root, filename), ctx
             # Pick up the latest version among encountered versions (default)
-            elif re.compile('/v[0-9]*/').search(root):
-                versions = filter(lambda i: re.compile('v[0-9]').search(i),
-                                  os.listdir(re.split('/v[0-9]*/', root)[0]))
-                if re.compile('/' + sorted(versions)[-1] + '/').search(root):
-                    for file in files:
-                        if os.path.isfile(os.path.join(root, file)) and \
-                           re.match(ctx.filter, file) is not None:
-                            yield os.path.join(root, file), ctx
+            elif re.compile(r'/v[0-9]*/').search(root):
+                versions = [v for v in os.listdir(re.split(r'/v[0-9]*/', root)[0])
+                            if re.compile(r'v[0-9]').search(v)]
+                if re.compile(r'/' + sorted(versions)[-1] + r'/').search(root):
+                    for filename in filenames:
+                        if os.path.isfile(os.path.join(root, filename)) and \
+                           re.match(ctx.filter, filename) is not None:
+                            yield os.path.join(root, filename), ctx
 
 
 def write(outfile, msg):
@@ -516,8 +534,8 @@ def write(outfile, msg):
     :param str msg: The line to write
 
     """
-    with open(outfile, 'a+') as f:
-        f.write(msg)
+    with open(outfile, 'a+') as mapfile:
+        mapfile.write(msg)
 
 
 def wrapper(inputs):
@@ -529,14 +547,14 @@ def wrapper(inputs):
     :rtype: *callable*
 
     """
-    # Extract inputs from tuple
-    file, ctx = inputs
+    # Extract file full path (ffp) and processing context (ctx) from inputs
+    ffp, ctx = inputs
     try:
         return file_process(inputs)
     except:
         # Use verbosity to raise threads traceback errors
         if not ctx.verbose:
-            logging.warning('{0} skipped'.format(inputs[0]))
+            logging.warning('{0} skipped'.format(ffp))
         else:
             logging.exception('A thread-process fails:')
         return None
@@ -553,12 +571,15 @@ def counted(fct):
     """
     # Convenience decorator to keep the file_process docstring
     @wraps(fct)
-    def wrapper(*args, **kwargs):
-        wrapper.called += 1
+    def wrap(*args, **kwargs):
+        """
+        Wrapper function for counting
+        """
+        wrap.called += 1
         return fct(*args, **kwargs)
-    wrapper.called = 0
-    wrapper.__name__ = fct.__name__
-    return wrapper
+    wrap.called = 0
+    wrap.__name__ = fct.__name__
+    return wrap
 
 
 @counted
@@ -566,11 +587,12 @@ def file_process(inputs):
     """
     file_process(inputs)
 
-    File process that\:
+    File process that:
+
      * Builds dataset ID,
      * Retrieves file size,
      * Does checksums,
-     * Deduce mapfile name,
+     * Deduces mapfile name,
      * Writes the corresponding line into it.
 
     :param tuple inputs: A tuple with the file path and the processing context
@@ -579,44 +601,47 @@ def file_process(inputs):
 
     """
     # Extract inputs from tuple
-    file, ctx = inputs
+    ffp, ctx = inputs
     # Deduce dataset identifier from DRS tree and esg_<project>.ini
-    dataset_ID, dataset_version = get_dataset_ID(ctx, file)
+    dataset_id, dataset_version = get_dataset_id(ctx, ffp)
     # Retrieve size and modification time
-    (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(file)
+    size = os.stat(ffp).st_size
+    mtime = os.stat(ffp).st_mtime
     # Make the file checksum (MD5)
+    csum = None
     if ctx.checksum_client:
-        csum = checksum(file, ctx.checksum_type, ctx.checksum_client)
+        csum = checksum(ffp, ctx.checksum_type, ctx.checksum_client)
     # Build mapfile name depending on the --mapfile flag and appropriate tokens
     outmap = ctx.outmap
-    if re.compile(r'{dataset_id}').search(outmap):
-        outmap = re.sub('{dataset_id}', dataset_ID, outmap)
-    if re.compile(r'{version}').search(outmap):
+    if re.compile(r'\{dataset_id\}').search(outmap):
+        outmap = re.sub(r'\{dataset_id\}', dataset_id, outmap)
+    if re.compile(r'\{version\}').search(outmap):
         if ctx.latest:
-            outmap = re.sub('{version}', 'latest', outmap)
+            outmap = re.sub(r'\{version\}', 'latest', outmap)
         else:
-            outmap = re.sub('{version}', dataset_version, outmap)
-    if re.compile(r'{date}').search(outmap):
-        outmap = re.sub('{date}', datetime.now().strftime("%Y%d%m"), outmap)
-    if re.compile(r'{pid}').search(outmap):
-        outmap = re.sub('{pid}', str(os.getpid()), outmap)
+            outmap = re.sub(r'\{version\}', dataset_version, outmap)
+    if re.compile(r'\{date\}').search(outmap):
+        outmap = re.sub(r'\{date\}', datetime.now().strftime("%Y%d%m"), outmap)
+    if re.compile(r'\{job_id\}').search(outmap):
+        outmap = re.sub(r'\{job_id\}', str(os.getpid()), outmap)
+    outmap += '.map'
     outfile = os.path.join(ctx.dtemp, outmap)
     # Mapfile line corresponding to processed file
     # Add version number to dataset identifier if --no-version flag is disabled
     if not ctx.no_version:
-        line = ['{0}#{1}'.format(dataset_ID, dataset_version[1:])]
+        line = ['{0}#{1}'.format(dataset_id, dataset_version[1:])]
     else:
-        line = [dataset_ID]
-    line.append(file)
+        line = [dataset_id]
+    line.append(ffp)
     line.append(str(size))
-    line.append('mod_time='+str(mtime)+'.000000')
+    line.append('mod_time={0}.000000'.format(str(mtime)))
     if ctx.checksum_client:
-        line.append('checksum='+csum)
-        line.append('checksum_type='+ctx.checksum_type)
+        line.append('checksum={0}'.format(csum))
+        line.append('checksum_type={0}'.format(ctx.checksum_type))
     if ctx.notes_url:
-        line.append('dataset_tech_notes='+ctx.notes_url)
+        line.append('dataset_tech_notes={0}'.format(ctx.notes_url))
     if ctx.notes_title:
-        line.append('dataset_tech_notes_title='+ctx.notes_title)
+        line.append('dataset_tech_notes_title={0}'.format(ctx.notes_title))
     # Generate a lockfile to avoid that several threads write on the same file at the same time
     # LockFile is acquired and released after writing.
     # Acquiring LockFile is timeouted if it's locked by other thread.
@@ -629,15 +654,16 @@ def file_process(inputs):
     except LockFailed:
         raise Exception('Failed to lock file: {0}'.format(outfile))
     except LockTimeout:
-        raise Exception('Timeout exceeded for {0}'.format(file))
-    logging.info('{0} <-- {1}'.format(outmap, file))
+        raise Exception('Timeout exceeded for {0}'.format(ffp))
+    logging.info('{0} <-- {1}'.format(outmap, ffp))
     # Return mapfile name
     return outmap
 
 
 def run(job=None):
     """
-    Main process that\:
+    Main process that:
+
      * Instantiates processing context,
      * Creates mapfiles output directory if necessary,
      * Instantiates threads pools,
@@ -648,7 +674,7 @@ def run(job=None):
     :param dict job: A job from SYNDA if supplied instead of classical command-line use.
 
     """
-    # Instanciate processing context from command-line arguments or SYNDA job dictionnary
+    # Instantiate processing context from command-line arguments or SYNDA job dictionnary
     ctx = ProcessingContext(get_args(job))
     logging.info('==> Scan started')
     # Create output directory if not exists
@@ -660,7 +686,7 @@ def run(job=None):
     pool = ThreadPool(int(ctx.threads))
     # Return the list of generated mapfiles in temporary directory
     outmaps_all = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
-    outmaps = filter(lambda m: m is not None, outmaps_all)
+    outmaps = [x for x in outmaps_all if x is not None]
     # Close threads pool
     pool.close()
     pool.join()

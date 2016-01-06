@@ -18,11 +18,13 @@ from datetime import datetime
 
 class MultilineFormatter(HelpFormatter):
     """
-    Curstom formatter class for argument parser to use with the Python `argparse <https://docs.python.org/2/library/argparse.html>`_ module.
+    Custom formatter class for argument parser to use with the Python
+    `argparse <https://docs.python.org/2/library/argparse.html>`_ module.
 
     """
+
     def __init__(self, prog):
-        # Overload the HelpFormatter class to increase the help text position and the total text width.
+        # Overload the HelpFormatter class.
         super(MultilineFormatter, self).__init__(prog, max_help_position=60, width=100)
 
     def _fill_text(self, text, width, indent):
@@ -33,9 +35,11 @@ class MultilineFormatter(HelpFormatter):
         for paragraph in paragraphs:
             lines = paragraph.split('|n ')
             for line in lines:
-                formatted_line = textwrap.fill(line, width, initial_indent=indent, subsequent_indent=indent) + '\n'
-                multiline_text = multiline_text + formatted_line
-            multiline_text = multiline_text + '\n'
+                formatted_line = textwrap.fill(line, width,
+                                               initial_indent=indent,
+                                               subsequent_indent=indent) + '\n'
+                multiline_text += formatted_line
+            multiline_text += '\n'
         return multiline_text
 
     def _split_lines(self, text, width):
@@ -45,16 +49,18 @@ class MultilineFormatter(HelpFormatter):
         multiline_text = []
         for line in lines:
             multiline_text.append(textwrap.fill(line, width))
-        multiline_text[-1] = multiline_text[-1] + '\n'
+        multiline_text[-1] += '\n'
         return multiline_text
 
 
 def init_logging(logdir):
     """
-    Initiates the logging configuration (output, message formatting). In the case of a logfile, the logfile name is unique and formatted as follows:
-    name-YYYYMMDD-HHMMSS-PID.log
+    Initiates the logging configuration (output, message formatting).
+    In the case of a logfile, the logfile name is unique and formatted as follows:
+    ``name-YYYYMMDD-HHMMSS-JOBID.log``
 
-    :param str logdir: The relative or absolute logfile directory. If ``None`` the standard output is used.
+    :param str logdir: The relative or absolute logfile directory. If ``None`` the standard \
+    output is used.
 
     """
     if logdir is 'synda_logger':
@@ -63,7 +69,7 @@ def init_logging(logdir):
     elif logdir:
         logfile = 'esgscan-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"),
                                                os.getpid())
-        if not os.path.exists(logdir):
+        if not os.path.isdir(logdir):
             os.makedirs(logdir)
         logging.basicConfig(filename=os.path.join(logdir, logfile),
                             level=logging.DEBUG,
@@ -78,7 +84,7 @@ def check_directory(path):
     """
     Checks if the supplied directory exists. The path is normalized before without trailing slash.
 
-    :param list paths: The path to check
+    :param list path: The path to check
     :returns: The same path if exists
     :rtype: *str*
     :raises Error: If the directory does not exist
@@ -94,7 +100,8 @@ def config_parse(config_dir, project):
     """
     Parses the configuration files if exist.
 
-    :param str config_path: The absolute or relative path of the configuration file directory
+    :param str config_dir: The absolute or relative path of the configuration file directory
+    :param str project: The project name to target esg.<project>.ini file
     :returns: The configuration file parser
     :rtype: *dict*
     :raises Error: If no configuration file exists
@@ -117,8 +124,7 @@ def translate_directory_format(directory_format_raw):
     Return a list of regular expression filters associated with the ``directory_format`` option
     in the configuration file. This can be passed to the Python ``re`` methods.
 
-    :param re Object job: Optionnal dictionnary instead of command-line arguments
- config The configuration file parser
+    :param str directory_format_raw: The raw ``directory_format`` string
     :returns: The corresponding ``re`` pattern
 
     """
@@ -129,7 +135,7 @@ def translate_directory_format(directory_format_raw):
     pattern1 = pattern0.replace('\.', '__ESCAPE_DOT__')
     pattern2 = pattern1.replace('.', r'\.')
     pattern3 = pattern2.replace('__ESCAPE_DOT__', r'\.')
-    pattern4 = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern3) # for %(root)s
+    pattern4 = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern3)
     pattern5 = re.sub(esg_variable_pattern, r'(?P<\1>[\w.-]+)', pattern4)
     return '{0}/(?P<filename>[\w.-]+\.nc)'.format(pattern5)
 
@@ -170,7 +176,7 @@ def split_map_header(header):
     Split header of a multi-line map in a configuration file.
     A map header defines the mapping between two sets of facets id.
 
-    :param str line: Header line of multi-line map
+    :param str header: Header line of multi-line map
     :returns: 'from' and 'to' tuples representing the keys for the mapping
 
     """
@@ -200,7 +206,7 @@ def split_map(option, sep='|'):
         fields = map(string.strip, record.split(sep))
         from_values = tuple(fields[0:n_from])
         to_values = tuple(fields[n_from:])
-        if not from_values in result.keys():
+        if from_values not in result.keys():
             result[from_values] = to_values
         else:
             raise Exception('"{0}" maptable has duplicated lines'.format(lines[0]))

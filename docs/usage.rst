@@ -11,31 +11,35 @@ Here is the command-line help:
 .. code-block:: bash
 
    $> esgscan_check_vocab -h
-   usage: esgscan_check_vocab [-h] -p PROJECT [-c CONFIG] [-l [LOGDIR]] [-V]
-                                   directory [directory ...]
+   usage: esgscan_check_vocab --project <project_id> [-i /esg/config/esgcet/.] [--log [$PWD]] [-h] [-V]
+                              directory [directory ...]
 
-   Check the configuration file to use with esgscan_directory command-line.
+   The mapfile generation relies on the ESGF node configuration files. These "esg.<project>.ini" files
+   declares the Data Reference Syntax (DRS) and the controlled vocabularies of each project.
+
+   "esgscan_check_vocab" allows you to easily check the configuration file. It implies that your
+   directory structure strictly follows the project DRS including the version facet.
 
    positional arguments:
-     directory             One or more directories to recursively scan. Unix wildcards are allowed.
+     directory                One or more directories to recursively scan. Unix wildcards
+                              are allowed.
 
    optional arguments:
-     -h, --help            Show this help message and exit.
+     --project <project_id>   Required lower-cased project name.
 
-     -p PROJECT, --project PROJECT
-                           Required project name corresponding to a section of the configuration file.
+     -i /esg/config/esgcet/.  Initialization/configuration directory containing "esg.ini"
+                              and "esg.<project>.ini" files. If not specified, the usual
+                              datanode directory is used.
 
-     -c CONFIG, --config CONFIG
-                           Path of the configuration INI file to check
-                           (default is ~/lib/python2.7/site-packages/esgmapfiles-0.5-py2.7.egg/esgmapfiles/config.ini).
+     --log [$PWD]             Logfile directory. If not, standard output is used.
 
-     -l [LOGDIR], --logdir [LOGDIR]
-                           Logfile directory (default is working directory).
-                           If not, standard output is used.
+     -h, --help               Show this help message and exit.
 
-     -V, --Version         Program version.
+     -V, --Version            Program version.
 
-   Developed by Iwi, A. (BADC) and Levavasseur, G. (CNRS/IPSL)
+   Developed by:
+   Levavasseur, G. (CNRS/IPSL - glipsl@ipsl.jussieu.fr)
+   Iwi, A. (STFC/BADC - alan.iwi@stfc.ac.uk)
 
 Tutorials
 ---------
@@ -44,7 +48,7 @@ To check the facet options declared in your configuration file:
 
 .. code-block:: bash
 
-   $> esgscan_check_vocab /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
+   $> esgscan_check_vocab /path/to/scan --project PROJECT -i /path/to/configfiles/
    project_options - No declared values
    project_options - Used values: CMIP5
    product_options - Declared values: output2, output, output1
@@ -91,55 +95,100 @@ Here is the command-line help:
 .. code-block:: bash
 
    $> esgscan_directory -h
-   usage: esgmapfiles.py [-h] -p PROJECT [-c CONFIG] [-o OUTDIR] [-l [LOGDIR]]
-                         [-m MAPFILE] [-d] [-L] [-w] [-C] [-v] [-V]
-                         directory [directory ...]
+   usage: esgscan_directory --project <project_id> [-i /esg/config/esgcet/.]
+                            [--mapfile {dataset_id}.{version}.map] [--outdir $PWD]
+                            [--all-versions | --version 20160601 | --latest-symlink] [--no-version]
+                            [--no-checksum] [--filter ".*\.nc$"] [--tech-notes-url <url>]
+                            [--tech-notes-title <title>] [--dataset <dataset_id>] [--max-threads 4]
+                            [--log [$PWD]] [-h] [-v] [-V]
+                            directory [directory ...]
 
-   Build ESGF mapfiles upon local ESGF datanode bypassing esgscan_directory command-line.
+   The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line
+   describes a file to publish on the following format:
+
+   dataset_ID | absolute_path | size_bytes [ | option=value ]
+
+   1. All values have to be pipe-separated,
+   2. The dataset identifier, the absolute path and the size (in bytes) are required,
+   3. Adding the file checksum and the checksum type as optional values is strongly recommended,
+   4. Adding the version number to the dataset identifier is useful to publish in a in bulk.
+
+   "esgscan_directory" allows you to easily generate ESGF mapfiles upon local ESGF datanode or not. It
+   implies that your directory structure strictly follows the project DRS including the version facet.
 
    Exit status:
    [0]: Successful scanning of all files encountered,
-   [1]: No valid data files found and no mapfile produced and,
+   [1]: No valid data or files have been found and no mapfile was produced,
    [2]: A mapfile was produced but some files were skipped.
 
+   See full documentation on http://esgscan.readthedocs.org/
+
+   The default values are displayed next to the corresponding flags.
+
    positional arguments:
-    directory             One or more directories to recursively scan. Unix wildcards are allowed.
+     directory                             One or more directories to recursively scan. Unix wildcards
+                                           are allowed.
 
    optional arguments:
-    -h, --help            Show this help message and exit.
+     --project <project_id>                Required lower-cased project name.
 
-    -p PROJECT, --project PROJECT
-                          Required project name corresponding to a section of the configuration file.
+     -i /esg/config/esgcet/.               Initialization/configuration directory containing "esg.ini"
+                                           and "esg.<project>.ini" files. If not specified, the usual
+                                           datanode directory is used.
 
-    -c CONFIG, --config CONFIG
-                          Path of configuration INI file
-                          (default is ~/lib/python2.7/site-packages/esgmapfiles-0.5-py2.7.egg/esgmapfiles/config.ini).
+     --mapfile {dataset_id}.{version}.map  Specifies template for the output mapfile(s) name.
+                                           Substrings {dataset_id}, {version}, {job_id} or {date}
+                                           (in YYYYDDMM) will be substituted where found. If
+                                           {dataset_id} is not present in mapfile name, then all
+                                           datasets will be written to a single mapfile, overriding
+                                           the default behavior of producing ONE mapfile PER dataset.
 
-    -o OUTDIR, --outdir OUTDIR
-                          Mapfile(s) output directory
-                          (default is working directory).
+     --outdir $PWD                         Mapfile(s) output directory.
 
-    -l [LOGDIR], --logdir [LOGDIR]
-                          Logfile directory (default is working directory).
-                          If not, standard output is used.
+     --all-versions                        Generates mapfile(s) with all versions found in the
+                                           directory recursively scanned (default is to pick up only
+                                           the latest one). It disables --no-version.
 
-    -m MAPFILE, --mapfile MAPFILE
-                          Output mapfile name. Only used without --per-dataset option
-                          (default is 'mapfile.txt').
+     --version 20160601                    Generates mapfile(s) scanning datasets with the
+                                           corresponding version number only. It takes priority over
+                                           --all-versions. If directly specified in positional
+                                           argument, use the version number from supplied directory.
 
-    -d, --per-dataset     Produces ONE mapfile PER dataset. It takes priority over --mapfile.
+     --latest-symlink                      Generates mapfile(s) following latest symlinks only. This
+                                           sets the {version} token to "latest" into the mapfile name,
+                                           but picked up the pointed version to build the dataset
+                                           identifier (if --no-version is disabled).
 
-    -L, --latest          Generates mapfiles with latest versions only.
+     --no-version                          Includes DRS version into the dataset identifier.
 
-    -w, --with-version    Includes DRS version into dataset ID (ESGF 2.x compatibility).
+     --no-checksum                         Does not include files checksums into the mapfile(s).
 
-    -C, --checksum        Includes file checksums into mapfiles (default is a SHA256 checksum).
+     --filter ".*\.nc$"                    Filter files matching the regular expression (default only
+                                           support NetCDF files). Regular expression syntax is defined
+                                           by the Python re module.
 
-    -v, --verbose         Verbose mode.
+     --tech-notes-url <url>                URL of the technical notes to be associated with each
+                                           dataset.
 
-    -V, --Version         Program version.
+     --tech-notes-title <title>            Technical notes title for display.
 
-   Developed by Levavasseur, G. (CNRS/IPSL)
+     --dataset <dataset_id>                String name of the dataset. If specified, all files will
+                                           belong to the specified dataset, regardless of the DRS.
+
+     --max-threads 4                       Number of maximal threads for checksum calculation.
+
+     --log [$PWD]                          Logfile directory. If not, standard output is used.
+
+     -h, --help                            Show this help message and exit.
+
+     -v                                    Verbose mode.
+
+     -V                                    Program version.
+
+   Developed by:
+   Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.jussieu.fr)
+   Berger, K. (DKRZ - berger@dkrz.de)
+   Iwi, A. (STFC/BADC - alan.iwi@stfc.ac.uk)
 
 Tutorials
 ---------
@@ -150,137 +199,195 @@ To generate a mapfile with verbosity using default parameters:
 
 .. code-block:: bash
 
-   $> esgscan_directory /path/to/scan -p PROJECT -v
+   $> esgscan_directory /path/to/scan --project PROJECT -v
    ==> Scan started
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 
-   $> cat mapfile.txt
-   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
-   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
-   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+   $> cat dataset_ID.v*.map
+   dataset_ID1.vYYYYMMDD.map
+   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
 
-To generate a mapfile with files checksums:
+   dataset_ID2.vYYYYMMDD.map
+   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
 
-.. note:: The ``-v/--verbose`` raises the tracebacks of thread-processes (default is the "silent" mode).
+   dataset_ID3.vYYYYMMDD.map
+   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
 
-.. warning:: The ``-p/--project`` is case-sensitive.
+To generate a mapfile without files checksums:
+
+.. note:: The ``-v`` raises the tracebacks of thread-processes (default is the "silent" mode).
+
+.. warning:: The ``--project`` is case-sensitive.
 
 .. code-block:: bash
 
-   $> esgscan_directory /path/to/scan -p PROJECT -C
+   $> esgscan_directory /path/to/scan --project PROJECT --no-checksum
    ==> Scan started
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 
-   $> cat mapfile.txt
-   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=MD5
-   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=MD5
-   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=MD5
+   $> cat dataset_ID.v*.map
+   dataset_ID1.vYYYYMMDD.map
+   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
 
-To generate a mapfile with DRS versions:
+   dataset_ID2.vYYYYMMDD.map
+   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+
+   dataset_ID3.vYYYYMMDD.map
+   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+
+To generate a mapfile without DRS versions:
 
 .. code-block:: bash
 
-   $> esgscan_directory /path/to/scan -p PROJECT -w
+   $> esgscan_directory /path/to/scan --p PROJECT --no-version
    ==> Scan started
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 
-   $> cat mapfile.txt
-   dataset_ID1#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=MD5
-   dataset_ID2#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=MD5
-   dataset_ID3#YYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=MD5
+   $> cat dataset_ID.v*.map
+   dataset_ID1.vYYYYMMDD.map
+   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
 
-To generate one mapfile per dataset:
+   dataset_ID2.vYYYYMMDD.map
+   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
+
+   dataset_ID3.vYYYYMMDD.map
+   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
+
+Define mapfile name using tokens:
+
+.. warning:: If ``{dataset_id}`` is not present in mapfile name, then all datasets will be written to a single mapfile, overriding the default behavior of producing ONE mapfile PER dataset.
 
 .. code-block:: bash
 
-   $> esgscan_directory /path/to/scan -p PROJECT -d
+   $> esgscan_directory /path/to/scan --project PROJECT --mapfile {dataset_id}.{job_id}
    ==> Scan started
-   dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.job_id.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.job_id.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.job_id.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    ==> Scan completed (3 files)
 
-   $> cat dataset_ID.v*
-   dataset_ID1.vYYYYMMDD
-   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
+   $> cat dataset_ID*.job_id.map
+   dataset_ID1.job_id.map
+   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
 
-   dataset_ID2.vYYYYMMDD
-   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
+   dataset_ID2.job_id.map
+   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
 
-   dataset_ID3.vYYYYMMDD
-   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+   dataset_ID3.job_id.map
+   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
 
-.. note:: The mapfile name corresponds to the dataset ID with the DRS version as suffix.
+   $> esgscan_directory /path/to/scan --project PROJECT --mapfile {date}
+   ==> Scan started
+   date.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   date.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   date.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   ==> Scan completed (3 files)
 
-To specify the configuration file:
+   $> cat date..map
+   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
+   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
+   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
+
+To specify the configuration directory:
 
 .. code-block:: bash
 
-   $> esgscan_directory /path/to/scan -p PROJECT -c /path/to/configfile/config.ini
+   $> esgscan_directory /path/to/scan --project PROJECT -i /path/to/configfiles/
 
-To use a logfile (the logfile directory is optionnal):
+To use a logfile (the logfile directory is optional):
 
 .. code-block:: bash
 
-   $> esgscan_directory /path/to/scan -p PROJECT -l /path/to/logfile -v
+   $> esgscan_directory /path/to/scan --project PROJECT -log /path/to/logdir -v
 
    $> cat /path/to/logfile/esgmapfiles-YYYYMMDD-HHMMSS-PID.log
    YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO mapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    YYYY/MM/DD HH:MM:SS WARNING Delete temporary directory /tmp/tmpzspsLH
    YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
 
-To generate a mapfile specifying filename and output directory:
+To specify an output directory:
 
 .. code-block:: bash
 
-   $> esgscan_directory /path/to/scan -p PROJECT -o /path/to/mapfile -m mymapfile.txt
+   $> esgscan_directory /path/to/scan --project PROJECT --outdir /path/to/mapfiles/
    ==> Scan started
-   mymapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   mymapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   mymapfile.txt <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 
-   $> cat /path/to/mapfile/mymapfile.txt
-   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
-   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
-   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+   $> cat /path/to/mapfiles/dataset_ID*.v*.map
+   dataset_ID1.vYYYYMMDD.map
+   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
 
-.. warning:: The ``--per-dataset`` option takes priority over ``--mapfile`` option.
+   dataset_ID2.vYYYYMMDD.map
+   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
+
+   dataset_ID3.vYYYYMMDD.map
+   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
 
 To generate a mapfile walking through *latest* directories only:
 
 .. code-block:: bash
 
-   $> esgscan_directory /path/to/scan -p PROJECT -L -d -w
+   $> esgscan_directory /path/to/scan --project PROJECT --latest-symlink
    ==> Scan started
-   dataset_ID1.latest <-- /path/to/scan/.../latest/.../file1.nc
-   dataset_ID2.latest <-- /path/to/scan/.../latest/.../file2.nc
-   dataset_ID3.latest <-- /path/to/scan/.../latest/.../file3.nc
+   dataset_ID1.latest.map <-- /path/to/scan/.../latest/.../file1.nc
+   dataset_ID2.latest.map <-- /path/to/scan/.../latest/.../file2.nc
+   dataset_ID3.latest.map <-- /path/to/scan/.../latest/.../file3.nc
+   Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 
-   $> cat dataset_ID*
-   dataset_ID1.latest
-   dataset_ID1#YYYYMMDD | /path/to/scan/.../latest/.../file1.nc | size1 | mod_time1
+   $> cat dataset_ID*.latest.map
+   dataset_ID1.latest.map
+   dataset_ID1.vYYYYMMDD | /path/to/scan/.../latest/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
 
-   dataset_ID2.latest
-   dataset_ID2#YYYYMMDD | /path/to/scan/.../latest/.../file2.nc | size2 | mod_time2
+   dataset_ID2.latest.map
+   dataset_ID2.vYYYYMMDD | /path/to/scan/.../latest/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
 
-   dataset_ID3.latest
-   dataset_ID3#YYYYMMDD | /path/to/scan/.../latest/.../file3.nc | size3 | mod_time3
+   dataset_ID3.latest.map
+   dataset_ID3.vYYYYMMDD | /path/to/scan/.../latest/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
 
-.. warning:: If the ``--with-version`` and ``--per-dataset`` options are set the versions pointed by the latest symlinks are kept within the dataset ID but the mapfile name suffix is "latest".
+To generate a mapfile walking through a particular version only:
+
+.. warning:: By default ``esgscan_directory`` pick up the latest version only.
+
+.. note:: Use the ``--all-versions`` flag to generate a mapfile walking through all versions.
+
+.. code-block:: bash
+
+   $> esgscan_directory /path/to/scan --project PROJECT --version 20151104
+   ==> Scan started
+   dataset_ID1.v20151104.map <-- /path/to/scan/.../v20151104/.../file1.nc
+   dataset_ID2.v20151104.map <-- /path/to/scan/.../v20151104/.../file2.nc
+   dataset_ID3.v20151104.map <-- /path/to/scan/.../v20151104/.../file3.nc
+   Delete temporary directory /tmp/tmpzspsLH
+   ==> Scan completed (3 files)
+
+   $> cat dataset_ID*.v20151104.map
+   dataset_ID1.v20151104.map
+   dataset_ID1.v20151104 | /path/to/scan/.../v20151104/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
+
+   dataset_ID2.v20151104.map
+   dataset_ID2.v20151104 | /path/to/scan/.../v20151104/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
+
+   dataset_ID3.v20151104.map
+   dataset_ID3.v20151104 | /path/to/scan/.../v20151104/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
 
 .. note:: All the previous examples can be combined safely.
