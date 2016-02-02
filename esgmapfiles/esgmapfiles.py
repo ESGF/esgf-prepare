@@ -347,9 +347,9 @@ def get_dataset_id(ctx, ffp):
             pointed_path = os.path.realpath(''.join(re.split(r'(latest)', ffp)[:-1]))
             attributes['version'] = os.path.basename(pointed_path)
     except:
-        raise Exception('Matching failed to deduce DRS attributes from {0}. Please check '
-                        'the "directory_format" regex in esg.{1}.ini'.format(ffp,
-                                                                             ctx.project))
+        msg = 'Matching failed to deduce DRS attributes from {0}. Please check the "directory_format" regex in esg.{1}.ini'.format(ffp, ctx.project)
+        logging.warning(msg)
+        raise Exception(msg)
     # Check each facet required by the dataset_id template from esg.<project>.ini
     # Facet values to check are deduced from file full-path
     # If a DRS attribute is missing regarding the dataset_id template,
@@ -365,7 +365,10 @@ def get_dataset_id(ctx, ffp):
         dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, attributes)
     else:
         dataset_id = ctx.dataset
-    return dataset_id, attributes['version']
+    if 'version' in attributes and not ctx.no_version:
+        return dataset_id, attributes['version']
+    else:
+       return dataset_id, None
 
 
 def check_facet(facet, attributes, ctx):
@@ -388,21 +391,18 @@ def check_facet(facet, attributes, ctx):
                                              '{0}_options'.format(facet)),
                                  sep=',')
             if attributes[facet] not in options:
-                raise Exception('"{0}" is missing in "{1}_options" of the section "{2}" from '
-                                'esg.{3}.ini'.format(attributes[facet],
-                                                     facet,
-                                                     ctx.project_section,
-                                                     ctx.project))
+                msg = '"{0}" is missing in "{1}_options" of the section "{2}" from esg.{3}.ini'.format(attributes[facet], facet, ctx.project_section, ctx.project)
+                logging.warning(msg)
+                raise Exception(msg)
         elif facet == 'ensemble':
             if not re.compile(r'r[\d]+i[\d]+p[\d]+').search(attributes[facet]):
-                raise Exception('Wrong syntax for "ensemble" facet. '
-                                'Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".')
+                msg = 'Wrong syntax for "ensemble" facet. Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".'
+                logging.warning(msg)
+                raise Exception(msg)
         else:
-            raise Exception('"{0}_options" is missing in section "{1}" '
-                            'from esg.{2}.ini'.format(facet,
-                                                      ctx.project_section,
-                                                      ctx.project))
-
+            msg = '"{0}_options" is missing in section "{1}" from esg.{2}.ini'.format(facet, ctx.project_section, ctx.project)
+            logging.warning(msg)
+            raise Exception(msg)
 
 def get_facet_from_map(facet, attributes, ctx):
     """
@@ -423,18 +423,21 @@ def get_facet_from_map(facet, attributes, ctx):
     if ctx.cfg.has_option(ctx.project_section, map_option):
         from_keys, to_keys, value_map = split_map(ctx.cfg.get(ctx.project_section, map_option))
         if facet not in to_keys:
-            raise Exception('{0}_map is miss-declared in esg.{1}.ini. '
-                            '"{0}" facet has to be in "destination facet"'.format(facet,
-                                                                                  ctx.project))
+            msg = '{0}_map is miss-declared in esg.{1}.ini. "{0}" facet has to be in "destination facet"'.format(facet, ctx.project)
+            logging.warning(msg)
+            raise Exception(msg)
         from_values = tuple(attributes[key] for key in from_keys)
         to_values = value_map[from_values]
         attributes[facet] = to_values[to_keys.index(facet)]
     elif facet == 'ensemble':
         if not re.compile(r'r[\d]+i[\d]+p[\d]+').search(attributes[facet]):
-            raise Exception('Wrong syntax for "ensemble" facet. '
-                            'Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".')
+            msg = 'Wrong syntax for "ensemble" facet. Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".'
+            logging.warning(msg)
+            raise Exception(msg)
     else:
-        raise Exception('{0}_map is required in esg.{1}.ini'.format(facet, ctx.project))
+        msg = '{0}_map is required in esg.{1}.ini'.format(facet, ctx.project)
+        logging.warning(msg)
+        raise Exception(msg)
     return attributes
 
 
@@ -454,7 +457,9 @@ def checksum(ffp, checksum_type, checksum_client):
         shell = os.popen("{0} {1} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, ffp), 'r')
         return shell.readline()[:-1]
     except:
-        raise Exception('{0} checksum failed for {1}'.format(checksum_type, ffp))
+        msg = '{0} checksum failed for {1}'.format(checksum_type, ffp)
+        logging.warning(msg)
+        raise Exception(msg)
 
 
 def rmdtemp(ctx):
@@ -524,6 +529,11 @@ def yield_inputs(ctx):
                         if os.path.isfile(os.path.join(root, filename)) and \
                            re.match(ctx.filter, filename) is not None:
                             yield os.path.join(root, filename), ctx
+            # No version directory in DRS
+            elif 'version' not in ctx.pattern:
+                for filename in filenames:
+                    if os.path.isfile(os.path.join(root, filename)) and re.match(ctx.filter, filename) is not None:
+                        yield os.path.join(root, filename), ctx
 
 
 def write(outfile, msg):
@@ -618,8 +628,10 @@ def file_process(inputs):
     if re.compile(r'\{version\}').search(outmap):
         if ctx.latest:
             outmap = re.sub(r'\{version\}', 'latest', outmap)
-        else:
+        elif dataset_version:
             outmap = re.sub(r'\{version\}', dataset_version, outmap)
+        else:
+            outmap = re.sub(r'.\{version\}', '', outmap)
     if re.compile(r'\{date\}').search(outmap):
         outmap = re.sub(r'\{date\}', datetime.now().strftime("%Y%d%m"), outmap)
     if re.compile(r'\{job_id\}').search(outmap):
@@ -628,7 +640,7 @@ def file_process(inputs):
     outfile = os.path.join(ctx.dtemp, outmap)
     # Mapfile line corresponding to processed file
     # Add version number to dataset identifier if --no-version flag is disabled
-    if not ctx.no_version:
+    if dataset_version:
         line = ['{0}#{1}'.format(dataset_id, dataset_version[1:])]
     else:
         line = [dataset_id]
