@@ -96,7 +96,7 @@ def check_directory(path):
     return directory
 
 
-def config_parse(config_dir, project):
+def config_parse(config_dir, project, project_section):
     """
     Parses the configuration files if exist.
 
@@ -109,11 +109,13 @@ def config_parse(config_dir, project):
     """
     if not os.path.isfile('{0}/esg.ini'.format(os.path.normpath(config_dir))):
         raise Exception('"esg.ini" file not found')
-    if not os.path.isfile('{0}/esg.{1}.ini'.format(os.path.normpath(config_dir), project)):
-        raise Exception('"esg.{0}.ini" file not found'.format(project))
     cfg = ConfigParser.ConfigParser()
     cfg.read('{0}/esg.ini'.format(os.path.normpath(config_dir)))
-    cfg.read('{0}/esg.{1}.ini'.format(os.path.normpath(config_dir), project))
+    default_sections = cfg.sections()
+    if project_section not in cfg.sections():
+        if not os.path.isfile('{0}/esg.{1}.ini'.format(os.path.normpath(config_dir), project)):
+            raise Exception('"esg.{0}.ini" file not found'.format(project))
+        cfg.read('{0}/esg.{1}.ini'.format(os.path.normpath(config_dir), project))
     if not cfg:
         raise Exception('Configuration file parsing failed')
     return cfg
