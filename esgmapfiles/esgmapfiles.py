@@ -387,7 +387,19 @@ def check_facet(facet, attributes, ctx):
     """
     if facet not in ['project', 'filename', 'variable', 'version']:
         if ctx.cfg.has_option(ctx.project_section, '{0}_options'.format(facet)):
-            options = split_line(ctx.cfg.get(ctx.project_section,
+            if facet == 'experiment':
+                experiment_option_lines = split_line(ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)), sep='\n')
+                if len(experiment_option_lines) > 1:
+                    try:
+                        options = [exp_option[1] for exp_option in map(lambda x: split_line(x), experiment_option_lines[1:])]
+                    except:
+                        msg = '"{0}_options" is misconfigured. Please follow the format "project | experiment | description"'.format(facet)
+                        logging.warning(msg)
+                        raise Exception(msg)
+                else:
+                    options = split_line(ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)), sep=',')
+            else:
+                options = split_line(ctx.cfg.get(ctx.project_section,
                                              '{0}_options'.format(facet)),
                                  sep=',')
             if attributes[facet] not in options:
