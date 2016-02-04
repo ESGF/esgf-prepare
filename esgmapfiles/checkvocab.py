@@ -16,7 +16,7 @@ from esgmapfilesutils import init_logging, check_directory, config_parse, Multil
 from esgmapfilesutils import translate_directory_format, split_line, split_map
 
 # Program version
-__version__ = 'v{0} {1}'.format('0.2', datetime(year=2016, month=01, day=05).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('1.0', datetime(year=2016, month=02, day=04).strftime("%Y-%d-%m"))
 
 
 class ProcessingContext(object):
