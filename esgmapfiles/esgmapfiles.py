@@ -20,7 +20,7 @@ from datetime import datetime
 from shutil import copy2, rmtree
 
 # Program version
-__version__ = 'v{0} {1}'.format('1.0', datetime(year=2016, month=02, day=04).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('1.1', datetime(year=2016, month=02, day=04).strftime("%Y-%d-%m"))
 
 # Lockfile timeout (in sec)
 __LOCK_TIMEOUT__ = 30
