@@ -500,7 +500,7 @@ def rmdtemp(ctx):
     """
     Removes the temporary directory and its content.
 
-    :param ProcessingContext ctx: The processing context (as a :func:`ProcessingContext` class instance)
+    :param esgmapfiles.ProcessingContext ctx: The processing context (as a :func:`esgmapfiles.ProcessingContext` class instance)
 
     """
     if ctx.verbose:
@@ -521,7 +521,7 @@ def yield_inputs(ctx):
     If the supplied directory to scan specifies the version into its path, only this version is
     picked up as with ``--version`` argument.
 
-    :param ProcessingContext ctx: The processing context (as a :func:`ProcessingContext` class instance)
+    :param esgmapfiles.ProcessingContext ctx: The processing context (as a :func:`esgmapfiles.ProcessingContext` class instance)
     :returns: Attach the processing context to a file to process as an iterator of tuples
     :rtype: *iter*
 

@@ -111,7 +111,6 @@ def config_parse(config_dir, project, project_section):
         raise Exception('"esg.ini" file not found')
     cfg = ConfigParser.ConfigParser()
     cfg.read('{0}/esg.ini'.format(os.path.normpath(config_dir)))
-    default_sections = cfg.sections()
     if project_section not in cfg.sections():
         if not os.path.isfile('{0}/esg.{1}.ini'.format(os.path.normpath(config_dir), project)):
             raise Exception('"esg.{0}.ini" file not found'.format(project))

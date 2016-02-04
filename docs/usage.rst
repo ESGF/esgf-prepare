@@ -20,11 +20,11 @@ Here is the command-line help:
    "esgscan_check_vocab" allows you to easily check the configuration file. It implies that your
    directory structure strictly follows the project DRS including the version facet.
 
-   positional arguments:
+   Positional arguments:
      directory                One or more directories to recursively scan. Unix wildcards
                               are allowed.
 
-   optional arguments:
+   Optional arguments:
      --project <project_id>   Required lower-cased project name.
 
      -i /esg/config/esgcet/.  Initialization/configuration directory containing "esg.ini"
@@ -125,11 +125,11 @@ Here is the command-line help:
 
    The default values are displayed next to the corresponding flags.
 
-   positional arguments:
+   Positional arguments:
      directory                             One or more directories to recursively scan. Unix wildcards
                                            are allowed.
 
-   optional arguments:
+   Optional arguments:
      --project <project_id>                Required lower-cased project name.
 
      -i /esg/config/esgcet/.               Initialization/configuration directory containing "esg.ini"

@@ -96,6 +96,8 @@ def get_args():
         epilog="""Developed by:|n
                   Levavasseur, G. (CNRS/IPSL - glipsl@ipsl.jussieu.fr)|n
                   Iwi, A. (STFC/BADC - alan.iwi@stfc.ac.uk)""")
+    parser._optionals.title = "Optional arguments"
+    parser._positionals.title = "Positional arguments"
     parser.add_argument(
         'directory',
         type=str,
@@ -225,7 +227,7 @@ def get_facet_values_from_config(ctx):
     """
     Returns all declared values of each facet from the configuration file, according to the project section.
 
-    :param ProcessingContext ctx: The processing context (as a :func:`ProcessingContext` class instance)
+    :param checkvocab.ProcessingContext ctx: The processing context (as a :func:`checkvocab.ProcessingContext` class instance)
     :returns: The declared values of each facet
     :rtype: *dict*
 
