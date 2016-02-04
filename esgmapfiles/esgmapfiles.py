@@ -349,7 +349,8 @@ def get_dataset_id(ctx, ffp):
             pointed_path = os.path.realpath(''.join(re.split(r'(latest)', ffp)[:-1]))
             attributes['version'] = os.path.basename(pointed_path)
     except:
-        msg = 'Matching failed to deduce DRS attributes from {0}. Please check the "directory_format" regex in esg.{1}.ini'.format(ffp, ctx.project)
+        msg = 'Matching failed to deduce DRS attributes from {0}. Please check the '\
+              '"directory_format" regex in esg.{1}.ini'.format(ffp, ctx.project)
         logging.warning(msg)
         raise Exception(msg)
     # Check each facet required by the dataset_id template from esg.<project>.ini
@@ -390,35 +391,51 @@ def check_facet(facet, attributes, ctx):
     if facet not in ['project', 'filename', 'variable', 'version']:
         if ctx.cfg.has_option(ctx.project_section, '{0}_options'.format(facet)):
             if facet == 'experiment':
-                experiment_option_lines = split_line(ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)), sep='\n')
+                experiment_option_lines = split_line(ctx.cfg.get(ctx.project_section,
+                                                     '{0}_options'.format(facet)),
+                                                     sep='\n')
                 if len(experiment_option_lines) > 1:
                     try:
-                        options = [exp_option[1] for exp_option in map(lambda x: split_line(x), experiment_option_lines[1:])]
+
+                        options = [exp_option[1] for exp_option in map(lambda x: split_line(x),
+                                                                       experiment_option_lines[1:])]
                     except:
-                        msg = '"{0}_options" is misconfigured. Please follow the format "project | experiment | description"'.format(facet)
+                        msg = '"{0}_options" is misconfigured. Please follow the format '\
+                            '"project | experiment | description"'.format(facet)
                         logging.warning(msg)
                         raise Exception(msg)
                 else:
-                    options = split_line(ctx.cfg.get(ctx.project_section, '{0}_options'.format(facet)), sep=',')
+                    options = split_line(ctx.cfg.get(ctx.project_section,
+                                                     '{0}_options'.format(facet)),
+                                         sep=',')
             else:
                 options = split_line(ctx.cfg.get(ctx.project_section,
-                                             '{0}_options'.format(facet)),
-                                 sep=',')
+                                                 '{0}_options'.format(facet)),
+                                     sep=',')
             if attributes[facet] not in options:
-                msg = '"{0}" is missing in "{1}_options" of the section "{2}" from esg.{3}.ini'.format(attributes[facet], facet, ctx.project_section, ctx.project)
+                msg = '"{0}" is missing in "{1}_options" of the section "{2}" from '\
+                      'esg.{3}.ini'.format(attributes[facet],
+                                           facet,
+                                           ctx.project_section,
+                                           ctx.project)
                 logging.warning(msg)
                 raise Exception(msg)
-      elif facet == 'ensemble':
+        elif facet == 'ensemble':
             if not re.compile(r'r[\d]+i[\d]+p[\d]+').search(attributes[facet]):
-                msg = 'Wrong syntax for "ensemble" facet. Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".'
+                msg = 'Wrong syntax for "ensemble" facet. '\
+                      'Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".'
                 logging.warning(msg)
                 raise Exception(msg)
         else:
-            msg = '"{0}_options" is missing in section "{1}" from esg.{2}.ini'.format(facet, ctx.project_section, ctx.project)
+            msg = '"{0}_options" is missing in section "{1}" '\
+                  'from esg.{2}.ini'.format(facet,
+                                            ctx.project_section,
+                                            ctx.project)
             logging.warning(msg)
             raise Exception(msg)
 
-d get_facet_from_map(facet, attributes, ctx):
+
+def get_facet_from_map(facet, attributes, ctx):
     """
     Get attribute value from the corresponding maptable in ``esg_<project>.ini`` and add
     to attributes dictionary.
@@ -437,7 +454,9 @@ d get_facet_from_map(facet, attributes, ctx):
     if ctx.cfg.has_option(ctx.project_section, map_option):
         from_keys, to_keys, value_map = split_map(ctx.cfg.get(ctx.project_section, map_option))
         if facet not in to_keys:
-            msg = '{0}_map is miss-declared in esg.{1}.ini. "{0}" facet has to be in "destination facet"'.format(facet, ctx.project)
+            msg = '{0}_map is miss-declared in esg.{1}.ini. '\
+                  '"{0}" facet has to be in "destination facet"'.format(facet,
+                                                                        ctx.project)
             logging.warning(msg)
             raise Exception(msg)
         from_values = tuple(attributes[key] for key in from_keys)
@@ -445,7 +464,8 @@ d get_facet_from_map(facet, attributes, ctx):
         attributes[facet] = to_values[to_keys.index(facet)]
     elif facet == 'ensemble':
         if not re.compile(r'r[\d]+i[\d]+p[\d]+').search(attributes[facet]):
-            msg = 'Wrong syntax for "ensemble" facet. Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".'
+            msg = 'Wrong syntax for "ensemble" facet. '\
+                  'Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".'
             logging.warning(msg)
             raise Exception(msg)
     else:
