@@ -175,6 +175,8 @@ def get_args(job):
                   Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.jussieu.fr)|n
                   Berger, K. (DKRZ - berger@dkrz.de)|n
                   Iwi, A. (STFC/BADC - alan.iwi@stfc.ac.uk)""")
+    parser._optionals.title = "Optional arguments"
+    parser._positionals.title = "Positional arguments"
     parser.add_argument(
         'directory',
         type=str,
@@ -368,7 +370,7 @@ def get_dataset_id(ctx, ffp):
     if 'version' in attributes and not ctx.no_version:
         return dataset_id, attributes['version']
     else:
-       return dataset_id, None
+        return dataset_id, None
 
 
 def check_facet(facet, attributes, ctx):
@@ -406,7 +408,7 @@ def check_facet(facet, attributes, ctx):
                 msg = '"{0}" is missing in "{1}_options" of the section "{2}" from esg.{3}.ini'.format(attributes[facet], facet, ctx.project_section, ctx.project)
                 logging.warning(msg)
                 raise Exception(msg)
-        elif facet == 'ensemble':
+      elif facet == 'ensemble':
             if not re.compile(r'r[\d]+i[\d]+p[\d]+').search(attributes[facet]):
                 msg = 'Wrong syntax for "ensemble" facet. Please follow the regex "r[0-9]*i[0-9]*p[0-9]*".'
                 logging.warning(msg)
@@ -416,7 +418,7 @@ def check_facet(facet, attributes, ctx):
             logging.warning(msg)
             raise Exception(msg)
 
-def get_facet_from_map(facet, attributes, ctx):
+d get_facet_from_map(facet, attributes, ctx):
     """
     Get attribute value from the corresponding maptable in ``esg_<project>.ini`` and add
     to attributes dictionary.
@@ -541,11 +543,6 @@ def yield_inputs(ctx):
                         if os.path.isfile(os.path.join(root, filename)) and \
                            re.match(ctx.filter, filename) is not None:
                             yield os.path.join(root, filename), ctx
-            # No version directory in DRS
-            elif 'version' not in ctx.pattern:
-                for filename in filenames:
-                    if os.path.isfile(os.path.join(root, filename)) and re.match(ctx.filter, filename) is not None:
-                        yield os.path.join(root, filename), ctx
 
 
 def write(outfile, msg):
