@@ -58,8 +58,8 @@ class ProcessingContext(object):
             check_directory(path)
         self.directory = args.directory
         self.project = args.project
-        self.cfg = config_parse(args.i, args.project)
         self.project_section = 'project:{0}'.format(args.project)
+        self.cfg = config_parse(args.i, args.project, self.project_section)        
         if not self.cfg.has_section(self.project_section):
             raise Exception('No section in configuration file corresponds to "{0}". '
                             'Available sections are {1}.'.format(self.project_section,
