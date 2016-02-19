@@ -150,6 +150,7 @@ def get_dsets_from_tree(ctx):
     for directory in ctx.directory:
         for root, _, _ in os.walk(directory):
             if re.compile(r'/v[0-9]*/').search(root):
+                print root
                 yield os.path.dirname(root)
 
 
