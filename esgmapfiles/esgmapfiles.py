@@ -680,7 +680,7 @@ def file_process(inputs):
         line = [dataset_id]
     line.append(ffp)
     line.append(str(size))
-    line.append('mod_time={0}.000000'.format(str(mtime)))
+    line.append('mod_time={0}'.format(str(mtime)))
     if ctx.checksum_client:
         line.append('checksum={0}'.format(csum))
         line.append('checksum_type={0}'.format(ctx.checksum_type))
