@@ -540,7 +540,7 @@ def yield_inputs(ctx):
         for root, _, filenames in os.walk(directory, followlinks=True):
             # Follow the latest symlink only
             if ctx.latest:
-                if '/latest/' in root:
+                if '/latest' in root:
                     for filename in filenames:
                         if os.path.isfile(os.path.join(root, filename)) and \
                            re.match(ctx.filter, filename) is not None:
