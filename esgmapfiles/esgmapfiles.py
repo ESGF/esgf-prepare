@@ -247,7 +247,7 @@ def get_args(job):
         '--no-version',
         action='store_true',
         default=False,
-        help="""Includes DRS version into the dataset identifier.""")
+        help="""Does not includes DRS version into the dataset identifier.""")
     parser.add_argument(
         '--no-checksum',
         action='store_true',
