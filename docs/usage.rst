@@ -97,7 +97,7 @@ Here is the command-line help:
    $> esgscan_directory -h
    usage: esgscan_directory --project <project_id> [-i /esg/config/esgcet/.]
                             [--mapfile {dataset_id}.{version}.map] [--outdir $PWD]
-                            [--all-versions | --version 20160601 | --latest-symlink] [--no-version]
+                            [--all-versions | --version 20162704 | --latest-symlink] [--no-version]
                             [--no-checksum] [--filter ".*\.nc$"] [--tech-notes-url <url>]
                             [--tech-notes-title <title>] [--dataset <dataset_id>] [--max-threads 4]
                             [--log [$PWD]] [-h] [-v] [-V]
@@ -143,13 +143,14 @@ Here is the command-line help:
                                            datasets will be written to a single mapfile, overriding
                                            the default behavior of producing ONE mapfile PER dataset.
 
-     --outdir $PWD                         Mapfile(s) output directory.
+     --outdir $PWD                         Mapfile(s) output directory. A "mapfile_drs" can be defined
+                                           in "esg.ini" and joined to build a mapfiles tree.
 
      --all-versions                        Generates mapfile(s) with all versions found in the
                                            directory recursively scanned (default is to pick up only
                                            the latest one). It disables --no-version.
 
-     --version 20160601                    Generates mapfile(s) scanning datasets with the
+     --version 20162704                    Generates mapfile(s) scanning datasets with the
                                            corresponding version number only. It takes priority over
                                            --all-versions. If directly specified in positional
                                            argument, use the version number from supplied directory.
@@ -159,7 +160,7 @@ Here is the command-line help:
                                            but picked up the pointed version to build the dataset
                                            identifier (if --no-version is disabled).
 
-     --no-version                          Includes DRS version into the dataset identifier.
+     --no-version                          Does not includes DRS version into the dataset identifier.
 
      --no-checksum                         Does not include files checksums into the mapfile(s).
 
@@ -201,14 +202,14 @@ To generate a mapfile with verbosity using default parameters:
 
    $> esgscan_directory /path/to/scan --project PROJECT -v
    ==> Scan started
-   dataset_ID1.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   dataset_ID2.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   dataset_ID3.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 
    $> cat dataset_ID.v*.map
-   dataset_ID1.vYYYYMMDD.map
+   dataset_ID1.vYYYYMMDD
    dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
 
    dataset_ID2.vYYYYMMDD.map
@@ -227,9 +228,9 @@ To generate a mapfile without files checksums:
 
    $> esgscan_directory /path/to/scan --project PROJECT --no-checksum
    ==> Scan started
-   dataset_ID1.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   dataset_ID2.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   dataset_ID3.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 
@@ -249,9 +250,9 @@ To generate a mapfile without DRS versions:
 
    $> esgscan_directory /path/to/scan --p PROJECT --no-version
    ==> Scan started
-   dataset_ID1.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   dataset_ID2.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   dataset_ID3.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 
@@ -273,9 +274,9 @@ Define mapfile name using tokens:
 
    $> esgscan_directory /path/to/scan --project PROJECT --mapfile {dataset_id}.{job_id}
    ==> Scan started
-   dataset_ID1.job_id.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   dataset_ID2.job_id.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   dataset_ID3.job_id.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.job_id <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.job_id <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.job_id <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    ==> Scan completed (3 files)
 
    $> cat dataset_ID*.job_id.map
@@ -290,12 +291,12 @@ Define mapfile name using tokens:
 
    $> esgscan_directory /path/to/scan --project PROJECT --mapfile {date}
    ==> Scan started
-   date.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   date.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   date.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   date <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   date <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   date <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    ==> Scan completed (3 files)
 
-   $> cat date..map
+   $> cat date.map
    dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
    dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
    dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
@@ -314,9 +315,9 @@ To use a logfile (the logfile directory is optional):
 
    $> cat /path/to/logfile/esgmapfiles-YYYYMMDD-HHMMSS-PID.log
    YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    YYYY/MM/DD HH:MM:SS WARNING Delete temporary directory /tmp/tmpzspsLH
    YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
 
@@ -326,9 +327,9 @@ To specify an output directory:
 
    $> esgscan_directory /path/to/scan --project PROJECT --outdir /path/to/mapfiles/
    ==> Scan started
-   dataset_ID1.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   dataset_ID2.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   dataset_ID3.vYYYYMMDD.map <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
    Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 
@@ -342,15 +343,36 @@ To specify an output directory:
    dataset_ID3.vYYYYMMDD.map
    dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
 
+To add a mapfile tree to an output directory (i.e., if a ``mapfile_drs`` has been defined):
+
+.. code-block:: bash
+
+   $> esgscan_directory /path/to/scan --project PROJECT --outdir /path/to/mapfiles/
+   ==> Scan started
+   dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+   dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+   dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+   ==> Scan completed (3 files)
+
+   $> cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID1.vYYYYMMDD.map
+   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
+
+   $> cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID2.vYYYYMMDD.map
+   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
+
+   $> cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID3.vYYYYMMDD.map
+   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
+
+
 To generate a mapfile walking through *latest* directories only:
 
 .. code-block:: bash
 
    $> esgscan_directory /path/to/scan --project PROJECT --latest-symlink
    ==> Scan started
-   dataset_ID1.latest.map <-- /path/to/scan/.../latest/.../file1.nc
-   dataset_ID2.latest.map <-- /path/to/scan/.../latest/.../file2.nc
-   dataset_ID3.latest.map <-- /path/to/scan/.../latest/.../file3.nc
+   dataset_ID1.latest <-- /path/to/scan/.../latest/.../file1.nc
+   dataset_ID2.latest <-- /path/to/scan/.../latest/.../file2.nc
+   dataset_ID3.latest <-- /path/to/scan/.../latest/.../file3.nc
    Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 
@@ -374,9 +396,9 @@ To generate a mapfile walking through a particular version only:
 
    $> esgscan_directory /path/to/scan --project PROJECT --version 20151104
    ==> Scan started
-   dataset_ID1.v20151104.map <-- /path/to/scan/.../v20151104/.../file1.nc
-   dataset_ID2.v20151104.map <-- /path/to/scan/.../v20151104/.../file2.nc
-   dataset_ID3.v20151104.map <-- /path/to/scan/.../v20151104/.../file3.nc
+   dataset_ID1.v20151104 <-- /path/to/scan/.../v20151104/.../file1.nc
+   dataset_ID2.v20151104 <-- /path/to/scan/.../v20151104/.../file2.nc
+   dataset_ID3.v20151104 <-- /path/to/scan/.../v20151104/.../file3.nc
    Delete temporary directory /tmp/tmpzspsLH
    ==> Scan completed (3 files)
 

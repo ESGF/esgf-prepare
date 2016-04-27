@@ -50,7 +50,7 @@ Add a new project
 
 .. warning:: A variable in the ESGF configuration file(s) is set with the regular expression ``%(...)s``.
 
-4. Define the DRS tree of your project on your file system. The ``directory_format`` is requiered for auto-detection and uses a regular expression to match with the full path of the files:
+4. Define the DRS tree of your project on your file system. The ``directory_format`` is required for auto-detection and uses a regular expression to match with the full path of the files:
 
 .. code-block:: ini
 
@@ -87,3 +87,14 @@ Add a new project
     * The missing facet has to be declared as a "destination" key (i.e., on the right of the colon).
     * Duplicated lines cannot occur in a maptable.
     * A facet has to have at least one options list or maptable.
+
+7. Define a mapfile DRS to easily manage your mapfiles. The ``mapfile_drs`` is required to build the corresponding tree as follows:
+
+.. code-block:: ini
+
+   [project:project_id]
+   mapfile_drs = %(project)/%(facet1)s/%(facet3)s/%(facet4)s/[...]
+
+.. note:: All the facets can be use as token to define the mapfile DRS.
+
+.. warning:: All the facets must have the same name as the ``dataset_id`` and/or the ``directory_format``.

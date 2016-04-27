@@ -75,5 +75,11 @@ Features
 **Output directory**
   An output directory can be defined to store and organized your mapfiles.
 
+**Mapfile management**
+  The output directory can be substituted or added by a mapfile tree depending on the files attributes. Just defined the mapfile DRS you want in the corresponding project section in the ``esg.ini`` or the appropriate ``esg.<project>.ini``. ``esgscan_directory`` will automatically deduce and create the corresponding tree to write mapfiles.
+
+**Processing progress**
+  A mapfile is created when its first file is proceed. The ``.part`` file extension seems the mapfile could be incomplete. When the process ends the ``.map`` extension seems the mapfile is complete and safely usable.
+
 **Use a logfile**
   You can initiate a logger instead of the standard output. This could be useful for automatic workflows. The logfile name is automatically defined and unique (using the the job's name, the date and the job's ID). You can define an output directory for your logs too.

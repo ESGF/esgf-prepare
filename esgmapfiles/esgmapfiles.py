@@ -17,13 +17,19 @@ from functools import wraps
 from lockfile import LockFile, LockTimeout, LockFailed
 from tempfile import mkdtemp
 from datetime import datetime
-from shutil import copy2, rmtree
+
 
 # Program version
-__version__ = 'v{0} {1}'.format('0.7', datetime(year=2015, month=11, day=20).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('0.8', datetime(year=2016, month=04, day=27).strftime("%Y-%d-%m"))
 
 # Lockfile timeout (in sec)
 __LOCK_TIMEOUT__ = 30
+
+# Mapfile extension during processing
+__WORKING_EXTENSION__ = '.part'
+
+# Mapfile final extension (mapfiles always are TXT files)
+__FINAL_EXTENSION__ = '.map'
 
 
 class ProcessingContext(object):
@@ -111,24 +117,15 @@ class ProcessingContext(object):
         self.project = args.project
         self.project_section = 'project:{0}'.format(args.project)
         self.cfg = config_parse(args.i, args.project, self.project_section)
-        if not self.cfg.has_section(self.project_section):
-            raise Exception('No section in configuration file corresponds to "{0}". '
-                            'Available sections are {1}.'.format(self.project_section,
-                                                                 self.cfg.sections()))
         if args.no_checksum:
             self.checksum_client, self.checksum_type = None, None
-        elif self.cfg.has_option('default', 'checksum'):
-            self.checksum_client, self.checksum_type = split_line(self.cfg.get('default',
-                                                                               'checksum'))
+        elif self.cfg.has_option('DEFAULT', 'checksum'):
+            self.checksum_client, self.checksum_type = split_line(self.cfg.get('DEFAULT', 'checksum'))
         else:  # Use SHA256 as default
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
         self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
-                                     self.cfg.get(self.project_section,
-                                                  'dataset_id',
-                                                  raw=True)))
-        self.pattern = translate_directory_format(self.cfg.get(self.project_section,
-                                                               'directory_format',
-                                                               raw=True))
+                                     self.cfg.get(self.project_section, 'dataset_id', raw=True)))
+        self.pattern = translate_directory_format(self.cfg.get(self.project_section, 'directory_format', raw=True))
         self.dtemp = mkdtemp()
 
 
@@ -213,7 +210,8 @@ def get_args(job):
         metavar='$PWD',
         type=str,
         default=os.getcwd(),
-        help="""Mapfile(s) output directory.""")
+        help="""Mapfile(s) output directory. A "mapfile_drs" can be defined |n
+                in "esg.ini" and joined to build a mapfiles tree.""")
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--all-versions',
@@ -329,11 +327,15 @@ def get_dataset_id(ctx, ffp):
 
      * Checks each facet value regarding the corresponding option list in the esg_<project>.ini,
      * Gets missing attributes from the corresponding maptable in the esg_<project>.ini,
-     * Builds the dataset identifier from the attributes,
+     * Builds the dataset identifier from the attributes.
+
+    Moreover, the output directory is deduced from file attributes in the case of a mapfile DRS.
+    The mapfile DRS defined into esg.ini file can joined or substituted to output directory (default
+    is the current working directory).
 
     :param str ffp: The file full path
     :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
-    :returns: The dataset ID and the dataset version as a tuple
+    :returns: The dataset ID, the dataset version and the output directory as a tuple
     :rtype: *tuple*
     :raises Error: If the file full path does not match the ``directory_format`` pattern/regex
 
@@ -368,10 +370,15 @@ def get_dataset_id(ctx, ffp):
         dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, attributes)
     else:
         dataset_id = ctx.dataset
+    # Deduce mapfile output directory from file attributes
+    outdir = os.path.realpath(ctx.outdir)
+    if ctx.cfg.has_option(ctx.project_section, 'mapfile_drs'):
+        outdir = '{0}/{1}'.format(os.path.realpath(ctx.outdir),
+                                  ctx.cfg.get(ctx.project_section, 'mapfile_drs', 0, attributes))
     if 'version' in attributes and not ctx.no_version:
-        return dataset_id, attributes['version']
+        return dataset_id, attributes['version'], outdir
     else:
-        return dataset_id, None
+        return dataset_id, None, outdir
 
 
 def check_facet(facet, attributes, ctx):
@@ -383,7 +390,7 @@ def check_facet(facet, attributes, ctx):
     :param str facet: The facet name to check with options list
     :param dict attributes: The attributes values auto-detected with DRS pattern
     :param dict ctx: The processing context (as a :func:`ProcessingContext` class instance)
-    :raises Error: If the options list is missiong
+    :raises Error: If the options list is missing
     :raises Error: If the attribute value is missing in the corresponding options list
     :raises Error: If the ensemble facet has a wrong syntax
 
@@ -496,18 +503,6 @@ def checksum(ffp, checksum_type, checksum_client):
         raise Exception(msg)
 
 
-def rmdtemp(ctx):
-    """
-    Removes the temporary directory and its content.
-
-    :param esgmapfiles.ProcessingContext ctx: The processing context (as a :func:`esgmapfiles.ProcessingContext` class instance)
-
-    """
-    if ctx.verbose:
-        logging.warning('Delete temporary directory {0}'.format(ctx.dtemp))
-    rmtree(ctx.dtemp)
-
-
 def yield_inputs(ctx):
     """
     Yields all files to process within tuples with the processing context. The file walking
@@ -521,7 +516,8 @@ def yield_inputs(ctx):
     If the supplied directory to scan specifies the version into its path, only this version is
     picked up as with ``--version`` argument.
 
-    :param esgmapfiles.ProcessingContext ctx: The processing context (as a :func:`esgmapfiles.ProcessingContext` class instance)
+    :param esgmapfiles.ProcessingContext ctx: The processing context
+    (as a :func:`esgmapfiles.ProcessingContext` class instance)
     :returns: Attach the processing context to a file to process as an iterator of tuples
     :rtype: *iter*
 
@@ -632,17 +628,24 @@ def file_process(inputs):
      * Retrieves file size,
      * Does checksums,
      * Deduces mapfile name,
+     * Makes output directory if not already exists,
      * Writes the corresponding line into it.
 
     :param tuple inputs: A tuple with the file path and the processing context
-    :return: The output mapfile name
+    :return: The output file full path
     :rtype: *str*
 
     """
     # Extract inputs from tuple
     ffp, ctx = inputs
     # Deduce dataset identifier from DRS tree and esg_<project>.ini
-    dataset_id, dataset_version = get_dataset_id(ctx, ffp)
+    dataset_id, dataset_version, outdir = get_dataset_id(ctx, ffp)
+    # Create output directory if not exists
+    # Catch OSError to continu if directory already exists
+    try:
+        os.makedirs(outdir)
+    except OSError:
+        pass
     # Retrieve size and modification time
     size = os.stat(ffp).st_size
     mtime = os.stat(ffp).st_mtime
@@ -665,8 +668,8 @@ def file_process(inputs):
         outmap = re.sub(r'\{date\}', datetime.now().strftime("%Y%d%m"), outmap)
     if re.compile(r'\{job_id\}').search(outmap):
         outmap = re.sub(r'\{job_id\}', str(os.getpid()), outmap)
-    outmap += '.map'
-    outfile = os.path.join(ctx.dtemp, outmap)
+    outmap += __WORKING_EXTENSION__
+    outfile = os.path.join(outdir, outmap)
     # Mapfile line corresponding to processed file
     # Add version number to dataset identifier if --no-version flag is disabled
     if dataset_version:
@@ -696,9 +699,9 @@ def file_process(inputs):
         raise Exception('Failed to lock file: {0}'.format(outfile))
     except LockTimeout:
         raise Exception('Timeout exceeded for {0}'.format(ffp))
-    logging.info('{0} <-- {1}'.format(outmap, ffp))
+    logging.info('{0} <-- {1}'.format(outmap.replace(__WORKING_EXTENSION__, ''), ffp))
     # Return mapfile name
-    return outmap
+    return outfile
 
 
 def run(job=None):
@@ -715,39 +718,31 @@ def run(job=None):
     :param dict job: A job from SYNDA if supplied instead of classical command-line use.
 
     """
-    # Instantiate processing context from command-line arguments or SYNDA job dictionnary
+    # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(get_args(job))
     logging.info('==> Scan started')
-    # Create output directory if not exists
-    if not os.path.isdir(ctx.outdir):
-        if ctx.verbose:
-            logging.warning('Create output directory: {0}'.format(ctx.outdir))
-        os.makedirs(ctx.outdir)
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.threads))
-    # Return the list of generated mapfiles in temporary directory
-    outmaps_all = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
-    outmaps = [x for x in outmaps_all if x is not None]
+    # Return the list of generated mapfiles full paths
+    outfiles_all = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
+    outfiles = [x for x in outfiles_all if x is not None]
     # Close threads pool
     pool.close()
     pool.join()
     # Raises exception when all processed files failed (i.e., filtered list empty)
-    if not outmaps:
-        rmdtemp(ctx)
+    if not outfiles:
         if file_process.called == 0:
             raise Exception('No files found leading to no mapfile.')
         else:
             raise Exception('All files have been ignored or have failed leading to no mapfile.')
-    # Overwrite each existing mapfile in output directory
-    for outmap in list(set(outmaps)):
-        copy2(os.path.join(ctx.dtemp, outmap), ctx.outdir)
-    # Remove temporary directory
-    rmdtemp(ctx)
+    # Replace mapfile working extension by final extension
+    for outfile in list(set(outfiles)):
+        os.rename(outfile, outfile.replace(__WORKING_EXTENSION__, __FINAL_EXTENSION__))
     logging.info('==> Scan completed ({0} file(s) scanned)'.format(file_process.called))
     # Non-zero exit status if any files got filtered
-    if None in outmaps_all:
+    if None in outfiles_all:
         logging.warning('==> Scan completed '
-                        '({0} file(s) skipped)'.format(len(outmaps_all) - len(outmaps)))
+                        '({0} file(s) skipped)'.format(len(outfiles_all) - len(outfiles)))
         sys.exit(2)
 
 
