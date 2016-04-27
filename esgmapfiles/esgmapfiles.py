@@ -15,7 +15,6 @@ from esgmapfilesutils import translate_directory_format, split_line, split_map
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import wraps
 from lockfile import LockFile, LockTimeout, LockFailed
-from tempfile import mkdtemp
 from datetime import datetime
 
 
@@ -77,8 +76,6 @@ class ProcessingContext(object):
     +------------------------+-------------+----------------------------------------------+
     | *self*.pattern         | *re object* | DRS regex pattern                            |
     +------------------------+-------------+----------------------------------------------+
-    | *self*.dtemp           | *str*       | Directory of temporary files                 |
-    +------------------------+-------------+----------------------------------------------+
     | *self*.facets          | *list*      | List of the DRS facets                       |
     +------------------------+-------------+----------------------------------------------+
 
@@ -131,7 +128,6 @@ class ProcessingContext(object):
         self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
                                      self.cfg.get(self.project_section, 'dataset_id', raw=True)))
         self.pattern = translate_directory_format(self.cfg.get(self.project_section, 'directory_format', raw=True))
-        self.dtemp = mkdtemp()
 
 
 def get_args(job):
