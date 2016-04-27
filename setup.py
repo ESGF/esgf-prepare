@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='esgmapfiles',
-      version='0.8',
+      version='1.2',
       description='Build ESGF mapfiles.',
       author='Levavasseur Guillaume',
       author_email='glipsl@ipsl.jussieu.fr',

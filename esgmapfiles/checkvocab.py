@@ -16,7 +16,7 @@ from esgmapfilesutils import init_logging, check_directory, config_parse, Multil
 from esgmapfilesutils import translate_directory_format, split_line, split_map
 
 # Program version
-__version__ = 'v{0} {1}'.format('0.2', datetime(year=2016, month=01, day=05).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('1.1', datetime(year=2016, month=02, day=04).strftime("%Y-%d-%m"))
 
 
 class ProcessingContext(object):
@@ -58,8 +58,8 @@ class ProcessingContext(object):
             check_directory(path)
         self.directory = args.directory
         self.project = args.project
-        self.cfg = config_parse(args.i, args.project)
         self.project_section = 'project:{0}'.format(args.project)
+        self.cfg = config_parse(args.i, args.project, self.project_section)        
         if not self.cfg.has_section(self.project_section):
             raise Exception('No section in configuration file corresponds to "{0}". '
                             'Available sections are {1}.'.format(self.project_section,
@@ -150,6 +150,7 @@ def get_dsets_from_tree(ctx):
     for directory in ctx.directory:
         for root, _, _ in os.walk(directory):
             if re.compile(r'/v[0-9]*/').search(root):
+                print root
                 yield os.path.dirname(root)
 
 

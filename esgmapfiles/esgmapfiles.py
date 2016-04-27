@@ -20,7 +20,7 @@ from datetime import datetime
 
 
 # Program version
-__version__ = 'v{0} {1}'.format('0.8', datetime(year=2016, month=04, day=27).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('1.2', datetime(year=2016, month=04, day=27).strftime("%Y-%d-%m"))
 
 # Lockfile timeout (in sec)
 __LOCK_TIMEOUT__ = 30
@@ -113,6 +113,11 @@ class ProcessingContext(object):
         if self.all:
             self.no_version = False
         self.version = args.version
+        if self.version:
+            try:
+                datetime.strptime(self.version, '%Y%m%d')
+            except:
+                raise Exception('Invalid version {0}. Available format is YYYYMMDD.'.format(self.version))
         self.filter = args.filter
         self.project = args.project
         self.project_section = 'project:{0}'.format(args.project)
@@ -352,7 +357,7 @@ def get_dataset_id(ctx, ffp):
             attributes['version'] = os.path.basename(pointed_path)
     except:
         msg = 'Matching failed to deduce DRS attributes from {0}. Please check the '\
-              '"directory_format" regex in esg.{1}.ini'.format(ffp, ctx.project)
+              '"directory_format" regex in the [project:{1}] section.'.format(ffp, ctx.project)
         logging.warning(msg)
         raise Exception(msg)
     # Check each facet required by the dataset_id template from esg.<project>.ini
@@ -525,40 +530,46 @@ def yield_inputs(ctx):
     for directory in ctx.directory:
         # Set --version flag if version number is included in the supplied directory path
         # to recursively scan
-        if re.compile(r'/v[0-9]*/').search(directory):
-            ctx.version = re.compile(r'/v[0-9]*/').search(directory).group()[2:-1]
+        if re.compile(r'/v[0-9]{8}').search(directory):
+            ctx.version = re.compile(r'/v[0-9]{8}').search(directory).group()[2:-1]
         # Walk trough the DRS tree
         for root, _, filenames in os.walk(directory, followlinks=True):
             # Follow the latest symlink only
             if ctx.latest:
-                if '/latest/' in root:
+                if '/latest' in root:
                     for filename in filenames:
                         if os.path.isfile(os.path.join(root, filename)) and \
                            re.match(ctx.filter, filename) is not None:
                             yield os.path.join(root, filename), ctx
             # Pick up the specified version only (from directory path or --version flag)
             elif ctx.version:
-                if re.compile(r'/v' + ctx.version + r'/').search(root):
+                if re.compile(r'/v' + ctx.version).search(root):
                     for filename in filenames:
                         if os.path.isfile(os.path.join(root, filename)) and \
                            re.match(ctx.filter, filename) is not None:
                             yield os.path.join(root, filename), ctx
             # Pick up all encountered versions
             elif ctx.all:
-                if re.compile(r'/v[0-9]*/').search(root):
+                if re.compile(r'/v[0-9]{8}').search(root):
                     for filename in filenames:
                         if os.path.isfile(os.path.join(root, filename)) and \
                            re.match(ctx.filter, filename) is not None:
                             yield os.path.join(root, filename), ctx
             # Pick up the latest version among encountered versions (default)
-            elif re.compile(r'/v[0-9]*/').search(root):
-                versions = [v for v in os.listdir(re.split(r'/v[0-9]*/', root)[0])
-                            if re.compile(r'v[0-9]').search(v)]
-                if re.compile(r'/' + sorted(versions)[-1] + r'/').search(root):
+            elif re.compile(r'/v[0-9]{8}').search(root):
+                versions = [v for v in os.listdir(re.split(r'/v[0-9]{8}', root)[0])
+                            if re.compile(r'v[0-9]{8}').search(v)]
+                if re.compile(r'/' + sorted(versions)[-1]).search(root):
                     for filename in filenames:
                         if os.path.isfile(os.path.join(root, filename)) and \
                            re.match(ctx.filter, filename) is not None:
                             yield os.path.join(root, filename), ctx
+            # No version directory in path
+            else:
+                for filename in filenames:
+                    if os.path.isfile(os.path.join(root, filename)) and \
+                        re.match(ctx.filter, filename) is not None:
+                        yield os.path.join(root, filename), ctx
 
 
 def write(outfile, msg):
@@ -678,7 +689,7 @@ def file_process(inputs):
         line = [dataset_id]
     line.append(ffp)
     line.append(str(size))
-    line.append('mod_time={0}.000000'.format(str(mtime)))
+    line.append('mod_time={0}'.format(str(mtime)))
     if ctx.checksum_client:
         line.append('checksum={0}'.format(csum))
         line.append('checksum_type={0}'.format(ctx.checksum_type))
