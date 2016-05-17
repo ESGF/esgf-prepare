@@ -68,12 +68,6 @@ def get_args():
     #######################################
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument(
-        '--project',
-        metavar='<project_id>',
-        type=str,
-        required=True,
-        help="""Required lower-cased project name.""")
-    parent.add_argument(
         '-i',
         metavar='/esg/config/esgcet/.',
         type=str,
@@ -118,7 +112,8 @@ def get_args():
         formatter_class=MultilineFormatter,
         help="""Fetch INI files from GitHub.|n
              See "esgprep fetch-ini -h" for full help.""",
-        add_help=False)
+        add_help=False,
+        parents=[parent])
     fetchini._optionals.title = "Optional arguments"
     fetchini._positionals.title = "Positional arguments"
     fetchini.add_argument(
@@ -126,18 +121,20 @@ def get_args():
         metavar='<project_id>',
         type=str,
         nargs='+',
-        help="""One or more lower-cased project name. If not, all|n
+        help="""One or more lower-cased project name(s). If not, all|n
              "esg.*.ini" are fetched.""")
     fetchini.add_argument(
         '--outdir',
-        metavar='$PWD',
+        metavar='/esg/config/esgcet/.',
         type=str,
-        default=os.getcwd(),
-        help="""Output directory.""")
+        default='/esg/config/esgcet/.',
+        help="""Output directory. If not specified, the usual|n
+             datanode directory is used.""")
     fetchini.add_argument(
-        '-h', '--help',
-        action='help',
-        help="""Show this help message and exit.""")
+        '-f',
+        action='store_true',
+        default=False,
+        help="""Ignore and overwrite existing file(s).""")
 
     #######################################
     # Subparser for "esgprep check-vocab" #
@@ -161,6 +158,12 @@ def get_args():
         parents=[parent])
     checkvocab._optionals.title = "Optional arguments"
     checkvocab._positionals.title = "Positional arguments"
+    checkvocab.add_argument(
+        '--project',
+        metavar='<project_id>',
+        type=str,
+        required=True,
+        help="""Required lower-cased project name.""")
     checkvocab.add_argument(
         'directory',
         type=str,
@@ -196,6 +199,12 @@ def get_args():
         nargs='+',
         help="""One or more directories to recursively scan. Unix wildcards|n
                 are allowed.""")
+    drs.add_argument(
+        '--project',
+        metavar='<project_id>',
+        type=str,
+        required=True,
+        help="""Required lower-cased project name.""")
     drs.add_argument(
         '--outdir',
         metavar='$PWD',
@@ -246,6 +255,12 @@ def get_args():
         nargs='+',
         help="""One or more directories to recursively scan. Unix wildcards|n
                 are allowed.""")
+    mapfile.add_argument(
+        '--project',
+        metavar='<project_id>',
+        type=str,
+        required=True,
+        help="""Required lower-cased project name.""")
     mapfile.add_argument(
         '--mapfile',
         metavar='{dataset_id}.{version}.map',
@@ -345,7 +360,8 @@ def run():
 
     # Run subcommand
     if args.cmd == 'fetch-ini':
-        pass
+        from fetchini import main
+        main.main(args)
     elif args.cmd == 'check-vocab':
         pass
     elif args.cmd == 'drs':

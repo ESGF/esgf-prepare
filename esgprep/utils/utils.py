@@ -9,6 +9,7 @@
 import os
 import re
 import string
+import requests
 import logging
 import ConfigParser
 import textwrap
@@ -53,33 +54,6 @@ class MultilineFormatter(HelpFormatter):
         return multiline_text
 
 
-def init_logging(logdir):
-    """
-    Initiates the logging configuration (output, message formatting).
-    In the case of a logfile, the logfile name is unique and formatted as follows:
-    ``name-YYYYMMDD-HHMMSS-JOBID.log``
-
-    :param str logdir: The relative or absolute logfile directory. If ``None`` the standard \
-    output is used.
-
-    """
-    if logdir is 'synda_logger':
-        # Logger initiates by SYNDA worker
-        pass
-    elif logdir:
-        logfile = 'esgscan-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"),
-                                               os.getpid())
-        if not os.path.isdir(logdir):
-            os.makedirs(logdir)
-        logging.basicConfig(filename=os.path.join(logdir, logfile),
-                            level=logging.DEBUG,
-                            format='%(asctime)s %(levelname)s %(message)s',
-                            datefmt='%Y/%m/%d %I:%M:%S %p')
-    else:
-        logging.basicConfig(level=logging.DEBUG,
-                            format='%(message)s')
-
-
 def init_logging(logdir, level='INFO'):
     """
     Initiates the logging configuration (output, message formatting).
@@ -114,9 +88,10 @@ def init_logging(logdir, level='INFO'):
                             format='%(asctime)s %(levelname)s %(message)s',
                             datefmt='%Y/%m/%d %I:%M:%S %p')
 
+
 def check_directory(path):
     """
-    Checks if the supplied directory exists. The path is normalized before without trailing slash.
+    Checks if the supplied directory exists. The path is normalized without trailing slash.
 
     :param list path: The path to check
     :returns: The same path if exists
