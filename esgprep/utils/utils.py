@@ -80,6 +80,40 @@ def init_logging(logdir):
                             format='%(message)s')
 
 
+def init_logging(logdir, level='INFO'):
+    """
+    Initiates the logging configuration (output, message formatting).
+    In the case of a logfile, the logfile name is unique and formatted as follows:
+    ``name-YYYYMMDD-HHMMSS-JOBID.log``
+
+    :param str logdir: The relative or absolute logfile directory. If ``None`` the standard output is used.
+    :param str level: The log level.
+
+    """
+    __LOG_LEVELS__ = {'CRITICAL': logging.CRITICAL,
+                      'ERROR': logging.ERROR,
+                      'WARNING': logging.WARNING,
+                      'INFO': logging.INFO,
+                      'DEBUG': logging.DEBUG,
+                      'NOTSET': logging.NOTSET}
+    logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
+    if logdir == 'synda_logger':
+        # Logger initiates by SYNDA worker
+        pass
+    elif logdir:
+        logfile = 'esgprep-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"),
+                                                os.getpid())
+        if not os.path.isdir(logdir):
+            os.makedirs(logdir)
+        logging.basicConfig(filename=os.path.join(logdir, logfile),
+                            level=__LOG_LEVELS__[level],
+                            format='%(asctime)s %(levelname)s %(message)s',
+                            datefmt='%Y/%m/%d %I:%M:%S %p')
+    else:
+        logging.basicConfig(level=__LOG_LEVELS__[level],
+                            format='%(asctime)s %(levelname)s %(message)s',
+                            datefmt='%Y/%m/%d %I:%M:%S %p')
+
 def check_directory(path):
     """
     Checks if the supplied directory exists. The path is normalized before without trailing slash.
@@ -102,6 +136,7 @@ def config_parse(config_dir, project, project_section):
 
     :param str config_dir: The absolute or relative path of the configuration file directory
     :param str project: The project name to target esg.<project>.ini file
+    :param str project_section: The project section
     :returns: The configuration file parser
     :rtype: *dict*
     :raises Error: If no configuration file exists

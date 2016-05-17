@@ -1,5 +1,5 @@
-************
-esg_mapfiles
-************
+*******
+esgprep
+*******
 
-`See documentation here <http://esgscan.readthedocs.org/en/latest/>`_
+`See documentation here <http://esgprep.readthedocs.org/en/latest/>`_
