@@ -75,7 +75,7 @@ def init_logging(logdir, level='INFO'):
         pass
     elif logdir:
         logfile = 'esgprep-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"),
-                                                os.getpid())
+                                               os.getpid())
         if not os.path.isdir(logdir):
             os.makedirs(logdir)
         logging.basicConfig(filename=os.path.join(logdir, logfile),

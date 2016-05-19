@@ -8,7 +8,7 @@
 import os
 import re
 import logging
-from utils import parser
+from esgprep.utils import parser
 
 
 class File(object):

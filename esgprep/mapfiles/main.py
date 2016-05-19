@@ -9,7 +9,7 @@ import sys
 import os
 import re
 import logging
-from utils import utils, parser
+from esgprep.utils import utils, parser
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import wraps
 from lockfile import LockFile, LockTimeout, LockFailed

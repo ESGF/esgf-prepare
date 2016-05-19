@@ -10,7 +10,7 @@ import re
 import os
 import sys
 import logging
-from utils import utils, parser
+from esgprep.utils import utils, parser
 
 
 class ProcessingContext(object):

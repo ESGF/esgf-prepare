@@ -81,7 +81,7 @@ def get_github_files_list():
     files = []
     try:
         # Get last commit SHA on the corresponding branch
-        r = requests.get('/'.join([__GITHUB_API__,'repos', __GITHUB_REPO__, 'commits', __GITHUB_BRANCH__]))
+        r = requests.get('/'.join([__GITHUB_API__, 'repos', __GITHUB_REPO__, 'commits', __GITHUB_BRANCH__]))
         commit = r.json()['sha']
         # Get GitHub tree SHA
         r = requests.get('/'.join([__GITHUB_API__, 'repos', __GITHUB_REPO__, 'git', 'commits', commit]))
