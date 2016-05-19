@@ -177,15 +177,7 @@ def get_args():
     drs = subparsers.add_parser(
         'drs',
         prog='esgprep drs',
-        description="""The data management/preparation" relies on the ESGF node configuration files.
-                    These "esg.<project>.ini" files declares the Data Reference Syntax (DRS) and
-                    the controlled vocabularies of each project.|n|n
-
-                    "esgprep checkvocab" allows you to easily check the configuration file. It
-                    implies that your directory structure strictly follows the project DRS
-                    including the version facet.|n|n
-
-                    The default values are displayed next to the corresponding flags.""",
+        description="""COMING SOON""",
         formatter_class=MultilineFormatter,
         help="""Manages the Data Reference Syntax on your filesystem.|n
              See "esgprep drs -h" for full help.""",
@@ -366,7 +358,8 @@ def run():
         from checkvocab import main
         main.main(args)
     elif args.cmd == 'drs':
-        pass
+        from drs import main
+        main.main(args)
     elif args.cmd == 'mapfile':
         from mapfiles import main
         main.main(args)
