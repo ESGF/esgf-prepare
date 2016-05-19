@@ -114,9 +114,9 @@ class ProcessingContext(object):
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
         self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
                                      self.cfg.get(self.project_section, 'dataset_id', raw=True)))
-        self.pattern = utils.translate_directory_format(self.cfg.get(self.project_section,
-                                                                     'directory_format',
-                                                                     raw=True))
+        self.pattern = parser.translate_directory_format(self.cfg.get(self.project_section,
+                                                                      'directory_format',
+                                                                      raw=True))
 
 
 def yield_inputs(ctx):
@@ -140,8 +140,8 @@ def yield_inputs(ctx):
     for directory in ctx.directory:
         # Set --version flag if version number is included in the supplied directory path
         # to recursively scan
-        if re.compile(r'/v[0-9]{8}').search(directory):
-            ctx.version = re.compile(r'/v[0-9]{8}').search(directory).group()[2:-1]
+        if re.compile(r'/v[0-9]+').search(directory):
+            ctx.version = re.compile(r'/v[0-9]+').search(directory).group()[2:]
         # Walk trough the DRS tree
         for root, _, filenames in os.walk(directory, followlinks=True):
             # Follow the latest symlink only
@@ -160,21 +160,21 @@ def yield_inputs(ctx):
                             yield os.path.join(root, filename), ctx
             # Pick up all encountered versions
             elif ctx.all:
-                if re.compile(r'/v[0-9]{8}').search(root):
+                if re.compile(r'/v[0-9]+').search(root):
                     for filename in filenames:
                         if os.path.isfile(os.path.join(root, filename)) and \
                            re.match(ctx.filter, filename) is not None:
                             yield os.path.join(root, filename), ctx
             # Pick up the latest version among encountered versions (default)
-            elif re.compile(r'/v[0-9]{8}').search(root):
-                versions = [v for v in os.listdir(re.split(r'/v[0-9]{8}', root)[0])
-                            if re.compile(r'v[0-9]{8}').search(v)]
+            elif re.compile(r'/v[0-9]+').search(root):
+                versions = [v for v in os.listdir(re.split(r'/v[0-9]+', root)[0])
+                            if re.compile(r'v[0-9]+').search(v)]
                 if re.compile(r'/' + sorted(versions)[-1]).search(root):
                     for filename in filenames:
                         if os.path.isfile(os.path.join(root, filename)) and \
                            re.match(ctx.filter, filename) is not None:
                             yield os.path.join(root, filename), ctx
-            # No version directory in path
+            # Pass if version number no included in the root
             else:
                 # Skip root. This ensures to only scan full DRS and avoids to scan "/files" directories.
                 pass

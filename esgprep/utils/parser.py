@@ -55,9 +55,9 @@ def translate_directory_format(directory_format_raw):
     # Translate %(root)s variable
     pattern = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern)
     # Constraint on %(ensemble)s variable
-    pattern = re.sub(re.compile(r'%\((ensemble)\)s'), r'(?P<ensemble>r[\d]+i[\d]+p[\d]+)', pattern)
+    pattern = re.sub(re.compile(r'%\((ensemble)\)s'), r'(?P<\1>r[\d]+i[\d]+p[\d]+)', pattern)
     # Constraint on %(version)s number
-    pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<version>v[\d]+|latest)', pattern)
+    pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
     # Translate all patterns matching %(name)s
     pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
     return '{0}/(?P<filename>[\w.-]+\.nc)'.format(pattern)
