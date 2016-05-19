@@ -5,12 +5,14 @@
 
 """
 
+import re
 import sys
 import os
 import logging
 import requests
 
 # GitHub configuration
+__GITHUB_API__ = 'https://api.github.com'
 __GITHUB_BASE__ = 'https://raw.github.com'
 __GITHUB_REPO__ = 'ESGF/config'
 __GITHUB_BRANCH__ = 'devel'
@@ -68,6 +70,33 @@ def query_yes_no(question, default='no'):
             pass
 
 
+def get_github_files_list():
+    """
+    Returns the list of esg.*.ini files from the GitHub repository.
+
+    :return: The filenames
+    :rtype: *list*
+
+    """
+    files = []
+    try:
+        # Get last commit SHA on the corresponding branch
+        r = requests.get('/'.join([__GITHUB_API__,'repos', __GITHUB_REPO__, 'commits', __GITHUB_BRANCH__]))
+        commit = r.json()['sha']
+        # Get GitHub tree SHA
+        r = requests.get('/'.join([__GITHUB_API__, 'repos', __GITHUB_REPO__, 'git', 'commits', commit]))
+        tree = r.json()['tree']['sha']
+        # Get tree elements recursively
+        r = requests.get('/'.join([__GITHUB_API__, 'repos', __GITHUB_REPO__, 'git', 'trees', tree + '?recursive=1']))
+        # Extract INI filenames from whole repository tree
+        for element in r.json()['tree']:
+            if element['type'] == 'blob' and re.search(r'/esg\..*\.ini$', element['path']):
+                files.append(os.path.basename(element['path']))
+        return files
+    except:
+        logging.exception('Cannot get filenames from GitHub repository')
+
+
 def fetch(url, outdir, project):
     """
     Downloads an esg.<project>.ini file from GitHub URL to local file system.
@@ -108,8 +137,14 @@ def main(args):
     if not os.path.isdir(outdir):
         os.makedirs(outdir)
         logging.warning('{0} created'.format(outdir))
+    # If not specified project name, get all files from repository
+    if not args.project:
+        logging.info('Get filenames for GitHub repository: {0}'.format(__GITHUB_REPO__))
+        projects = [re.search(r'esg\.(.+?)\.ini', f).group(1) for f in get_github_files_list()]
+    else:
+        projects = args.project
     # Loop over wanted projects
-    for project in args.project:
+    for project in projects:
         # Build the GitHub HTTP to request
         url = build_http(project)
         outfile = '{0}/esg.{1}.ini'.format(outdir, project)

@@ -363,7 +363,8 @@ def run():
         from fetchini import main
         main.main(args)
     elif args.cmd == 'check-vocab':
-        pass
+        from checkvocab import main
+        main.main(args)
     elif args.cmd == 'drs':
         pass
     elif args.cmd == 'mapfile':

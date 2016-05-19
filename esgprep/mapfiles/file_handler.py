@@ -74,8 +74,8 @@ class File(object):
         """
         Builds the dataset identifier. If the dataset name is not specified (i.e., --dataset flag is None), it:
 
-         * Checks each facet value regarding the corresponding option list in the esg.<project>.ini,
-         * Gets missing attributes from the corresponding maptable in the esg.<project>.ini,
+         * Checks each value which the facet is found in dataset_id AND attributes keys,
+         * Gets missing attributes from the maptables in the esg.<project>.ini,
          * Builds the dataset identifier from the attributes.
 
         :param ProcessingContext ctx: A :func:`main.ProcessingContext` class instance
@@ -89,12 +89,11 @@ class File(object):
         # the DRS attributes are completed from esg.<project>.ini maptables.
         if not ctx.dataset:
             for facet in ctx.facets.intersection(self.attributes.keys()):
-                # Check attribute value from facet_option list in esg.<project>.ini
-                parser.check_facet(facet, self.attributes, ctx)
+                parser.check_facet(ctx.cfg, ctx.project_section, {facet: self.attributes[facet]})
             for facet in ctx.facets.difference(self.attributes.keys()):
-                # Get attribute from esg_<project>.ini maptables
-                # All other facets have been checked before
-                parser.get_facet_from_map(facet, self.attributes, ctx)
+                self.attributes[facet] = parser.get_option_from_map(ctx.cfg,
+                                                                    ctx.project_section,
+                                                                    facet, self.attributes)
             dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, self.attributes)
         else:
             dataset_id = ctx.dataset

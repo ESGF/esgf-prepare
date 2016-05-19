@@ -105,7 +105,7 @@ class ProcessingContext(object):
         self.filter = args.filter
         self.project = args.project
         self.project_section = 'project:{0}'.format(args.project)
-        self.cfg = utils.config_parse(args.i, args.project, self.project_section)
+        self.cfg = parser.config_parse(args.i, args.project, self.project_section)
         if args.no_checksum:
             self.checksum_client, self.checksum_type = None, None
         elif self.cfg.has_option('DEFAULT', 'checksum'):
@@ -176,7 +176,7 @@ def yield_inputs(ctx):
                             yield os.path.join(root, filename), ctx
             # No version directory in path
             else:
-                # Skip root. This ensures to only scan full DRS and avoids to scan /files directories.
+                # Skip root. This ensures to only scan full DRS and avoids to scan "/files" directories.
                 pass
 
 
