@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
    :platform: Unix
-   :synopsis: Utility to check (and update) the configuration INI file used by esg_mapfiles.
+   :synopsis: Checks and updates the ESGF configuration files.
 
 """
 

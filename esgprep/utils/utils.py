@@ -9,7 +9,6 @@
 import os
 import re
 import string
-import requests
 import logging
 import ConfigParser
 import textwrap
