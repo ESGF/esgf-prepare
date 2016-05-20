@@ -174,10 +174,12 @@ def yield_inputs(ctx):
                         if os.path.isfile(os.path.join(root, filename)) and \
                            re.match(ctx.filter, filename) is not None:
                             yield os.path.join(root, filename), ctx
-            # Pass if version number no included in the root
+            # No version directory in path
             else:
-                # Skip root. This ensures to only scan full DRS and avoids to scan "/files" directories.
-                pass
+                for filename in filenames:
+                    if os.path.isfile(os.path.join(root, filename)) and \
+                        re.match(ctx.filter, filename) is not None:
+                        yield os.path.join(root, filename), ctx
 
 
 def wrapper(inputs):
