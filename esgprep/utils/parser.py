@@ -223,7 +223,7 @@ def get_options_from_list(cfg, section, facet):
                 logging.warning(msg)
                 raise Exception(msg)
         else:
-            options = split_line(cfg.get(section, option, sep=','))
+            options = split_line(cfg.get(section, option), sep=',')
     else:
         options = split_line(cfg.get(section, option), sep=',')
     return options
@@ -292,5 +292,5 @@ def get_project_options(cfg):
             logging.warning(msg)
             raise Exception(msg)
     else:
-        options = split_line(cfg.get('DEFAULT', 'project_options', sep=','))
+        options = split_line(cfg.get('DEFAULT', 'project_options'), sep=',')
     return options
