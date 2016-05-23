@@ -76,6 +76,19 @@ def split_line(line, sep='|'):
     return fields
 
 
+def build_line(fields, sep=' | '):
+    """
+    Build a line from fields adding trailing and leading characters.
+
+    :param tuple fields: Tuple of ordered fields
+    :param str sep: Separator character
+    :returns:  A string fields
+
+    """
+    line = '{0}'.format(sep).join(fields)
+    return line
+
+
 def split_record(option, sep='|'):
     """
     Split a multi-line record in a configuration file.
@@ -258,3 +271,26 @@ def get_option_from_map(cfg, section, facet, attributes):
     from_values = tuple(attributes[key] for key in from_keys)
     to_values = value_map[from_values]
     return to_values[to_keys.index(facet)]
+
+
+def get_project_options(cfg):
+    """
+    Returns the list of facet options from options list.
+    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :returns: The project options
+    :rtype: *tuple*
+    :raises Error: If the project list is misdeclared
+
+    """
+    project_option_lines = split_line(cfg.get('DEFAULT', 'project_options'), sep='\n')
+    if len(project_option_lines) > 1:
+        try:
+            options = [tuple(project_option) for project_option in map(lambda x: split_line(x),
+                                                                       project_option_lines[1:])]
+        except:
+            msg = '"project_options" is misdeclared. Please follow the format "id | project | description".'
+            logging.warning(msg)
+            raise Exception(msg)
+    else:
+        options = split_line(cfg.get('DEFAULT', 'project_options', sep=','))
+    return options

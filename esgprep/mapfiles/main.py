@@ -178,7 +178,7 @@ def yield_inputs(ctx):
             else:
                 for filename in filenames:
                     if os.path.isfile(os.path.join(root, filename)) and \
-                        re.match(ctx.filter, filename) is not None:
+                       re.match(ctx.filter, filename) is not None:
                         yield os.path.join(root, filename), ctx
 
 

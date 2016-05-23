@@ -7,10 +7,7 @@
 
 # Module imports
 import os
-import re
-import string
 import logging
-import ConfigParser
 import textwrap
 from argparse import HelpFormatter
 from datetime import datetime

@@ -9,7 +9,10 @@ import re
 import sys
 import os
 import logging
+import ConfigParser
 import requests
+from esgprep.utils import parser
+
 
 # GitHub configuration
 __GITHUB_API__ = 'https://api.github.com'
@@ -156,3 +159,23 @@ def main(args):
                 fetch(url, outdir, project)
         else:
             fetch(url, outdir, project)
+        # Test if esg.ini exists in output directory
+        if not os.path.isfile('{0}/esg.ini'.format(outdir)):
+            logging.warning('"esg.ini not found in {0}. Cannot append "{1}" to project options'.format(outdir, project))
+        else:
+            logging.info('Add "{0}" to "project_options" of {1}/esg.ini'.format(project, outdir))
+            # Get configuration parser
+            cfg = ConfigParser.ConfigParser()
+            cfg.read('{0}/esg.ini'.format(outdir))
+            # Get project options
+            project_options = parser.get_project_options(cfg)
+            # Build project id as last project
+            project_id = str(max([int(project_option[2]) for project_option in project_options]) + 1)
+            # Append new option
+            project_options.append((project, project.upper(), project_id))
+            new_project_options = tuple([parser.build_line(project_option) for project_option in project_options])
+            # Write the updated parser
+            cfg.set('DEFAULT', 'project_options', '\n' + parser.build_line(new_project_options, sep='\n'))
+            # Write new esg.ini file
+            with open('{0}/esg.ini'.format(outdir), 'wb') as f:
+                cfg.write(f)
