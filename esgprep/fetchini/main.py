@@ -135,7 +135,7 @@ def main(args):
     :param ArgumentParser args: Parsed command-line arguments (as a :func:`argparse.ArgumentParser` class instance)
 
     """
-    outdir = os.path.normpath(os.path.abspath(args.outdir))
+    outdir = os.path.normpath(os.path.abspath(args.i))
     # If output directory doesn't exist, create it.
     if not os.path.isdir(outdir):
         os.makedirs(outdir)

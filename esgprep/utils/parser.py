@@ -5,7 +5,6 @@
 
 """
 
-# Module imports
 import os
 import re
 import string

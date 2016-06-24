@@ -19,6 +19,7 @@ def get_args():
     Returns parsed command-line arguments. See ``esgprep -h`` for full description.
 
     :returns: The corresponding ``argparse`` Namespace
+    :rtype: *ArgumentParser*
 
     """
     #############################
@@ -123,13 +124,6 @@ def get_args():
         nargs='+',
         help="""One or more lower-cased project name(s). If not, all|n
              "esg.*.ini" are fetched.""")
-    fetchini.add_argument(
-        '--outdir',
-        metavar='/esg/config/esgcet/.',
-        type=str,
-        default='/esg/config/esgcet/.',
-        help="""Output directory. If not specified, the usual|n
-             datanode directory is used.""")
     fetchini.add_argument(
         '-f',
         action='store_true',

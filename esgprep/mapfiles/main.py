@@ -403,6 +403,7 @@ def main(args):
         else:
             raise Exception('All files have been ignored or have failed leading to no mapfile.')
     # Replace mapfile working extension by final extension
+    # A final mapfile is silently overwritten if already exists
     for outfile in list(set(outfiles)):
         os.rename(outfile, outfile.replace(__WORKING_EXTENSION__, __FINAL_EXTENSION__))
     logging.info('==> Scan completed ({0} file(s) scanned)'.format(process.called))

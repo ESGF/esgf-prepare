@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
    :platform: Unix
-   :synopsis: Useful functions to use with esgscan_directory or esgscan_check_vocab modules.
+   :synopsis: Useful functions to use with esgprep modules.
 
 """
 
@@ -67,10 +67,7 @@ def init_logging(logdir, level='INFO'):
                       'DEBUG': logging.DEBUG,
                       'NOTSET': logging.NOTSET}
     logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
-    if logdir == 'synda_logger':
-        # Logger initiates by SYNDA worker
-        pass
-    elif logdir:
+    if logdir:
         logfile = 'esgprep-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"),
                                                os.getpid())
         if not os.path.isdir(logdir):
