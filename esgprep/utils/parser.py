@@ -81,10 +81,10 @@ def build_line(fields, sep=' | '):
 
     :param tuple fields: Tuple of ordered fields
     :param str sep: Separator character
-    :returns:  A string fields
+    :returns: A string fields
 
     """
-    line = '{0}'.format(sep).join(fields)
+    line = sep.join(fields)
     return line
 
 
@@ -281,8 +281,8 @@ def get_project_options(cfg):
     :raises Error: If the project list is misdeclared
 
     """
-    project_option_lines = split_line(cfg.get('DEFAULT', 'project_options'), sep='\n')
-    if len(project_option_lines) > 1:
+    if cfg.has_option('DEFAULT', 'project_options'):
+        project_option_lines = split_line(cfg.get('DEFAULT', 'project_options'), sep='\n')
         try:
             options = [tuple(project_option) for project_option in map(lambda x: split_line(x),
                                                                        project_option_lines[1:])]
@@ -291,5 +291,5 @@ def get_project_options(cfg):
             logging.warning(msg)
             raise Exception(msg)
     else:
-        options = split_line(cfg.get('DEFAULT', 'project_options'), sep=',')
+        options = list()
     return options

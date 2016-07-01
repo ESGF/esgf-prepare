@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-"""
-   :platform: Unix
-   :synopsis: File handler for mapfile generation.
-
-"""
 
 import os
 import re
@@ -53,7 +48,7 @@ class File(object):
          * attributes.keys() are facet names
          * attributes[facet] is the facet value.
 
-        :param ProcessingContext ctx: A :func:`main.ProcessingContext` class instance
+        :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
         :raises Error: If the file full path does not match the ``directory_format`` pattern/regex
 
         """
@@ -78,7 +73,7 @@ class File(object):
          * Gets missing attributes from the maptables in the esg.<project>.ini,
          * Builds the dataset identifier from the attributes.
 
-        :param ProcessingContext ctx: A :func:`main.ProcessingContext` class instance
+        :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
         :returns: The dataset identifier
         :rtype: *str*
 
@@ -104,7 +99,7 @@ class File(object):
         Retrieve the dataset version. If the version facet cannot be deduced from full path
         (e.g., with --latest-symlink flag), it follows the symlink to complete the DRS attributes.
 
-        :param ProcessingContext ctx: A :func:`main.ProcessingContext` class instance
+        :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
         :returns: The dataset version
         :rtype: *str*
 

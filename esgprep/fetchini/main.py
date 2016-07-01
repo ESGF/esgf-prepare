@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-"""
-   :platform: Unix
-   :synopsis: Downloads ESGF configuration files from GitHub repository.
-
-"""
 
 import re
 import sys
@@ -44,7 +39,7 @@ def query_yes_no(question, default='no'):
 
     :param str question: The question string that is presented to the user
     :param str default: The default answer is the string if the user just hits the carriage return.
-    If None an answer is required.
+        If None an answer is required.
     :returns: The answer True or False
     :rtype: *boolean*
 
@@ -132,7 +127,7 @@ def main(args):
      * Gets the GitHub URL,
      * Writes response into INI file.
 
-    :param ArgumentParser args: Parsed command-line arguments (as a :func:`argparse.ArgumentParser` class instance)
+    :param argparse.ArgumentParser args: Parsed command-line arguments
 
     """
     outdir = os.path.normpath(os.path.abspath(args.i))
@@ -142,7 +137,8 @@ def main(args):
         logging.warning('{0} created'.format(outdir))
     # If not specified project name, get all files from repository
     if not args.project:
-        logging.info('Get filenames for GitHub repository: {0}'.format(__GITHUB_REPO__))
+        if args.v:
+            logging.info('Get filenames from GitHub repository: {0}'.format(__GITHUB_REPO__))
         projects = [re.search(r'esg\.(.+?)\.ini', f).group(1) for f in get_github_files_list()]
     else:
         projects = args.project
@@ -163,19 +159,22 @@ def main(args):
         if not os.path.isfile('{0}/esg.ini'.format(outdir)):
             logging.warning('"esg.ini not found in {0}. Cannot append "{1}" to project options'.format(outdir, project))
         else:
-            logging.info('Add "{0}" to "project_options" of {1}/esg.ini'.format(project, outdir))
             # Get configuration parser
             cfg = ConfigParser.ConfigParser()
             cfg.read('{0}/esg.ini'.format(outdir))
             # Get project options
             project_options = parser.get_project_options(cfg)
-            # Build project id as last project
-            project_id = str(max([int(project_option[2]) for project_option in project_options]) + 1)
-            # Append new option
-            project_options.append((project, project.upper(), project_id))
-            new_project_options = tuple([parser.build_line(project_option) for project_option in project_options])
-            # Write the updated parser
-            cfg.set('DEFAULT', 'project_options', '\n' + parser.build_line(new_project_options, sep='\n'))
-            # Write new esg.ini file
-            with open('{0}/esg.ini'.format(outdir), 'wb') as f:
-                cfg.write(f)
+            if project not in [project_option[0] for project_option in project_options]:
+                # Build project id as last project of the project_options
+                project_id = str(1)
+                if len(project_options) != 0:
+                    project_id = str(max([int(project_option[2]) for project_option in project_options]) + 1)
+                # Append new option
+                project_options.append((project, project.upper(), project_id))
+                new_project_options = tuple([parser.build_line(project_option) for project_option in project_options])
+                # Write the updated parser
+                cfg.set('DEFAULT', 'project_options', '\n' + parser.build_line(new_project_options, sep='\n'))
+                # Write new esg.ini file
+                with open('{0}/esg.ini'.format(outdir), 'wb') as f:
+                    cfg.write(f)
+                logging.info('"{0}" added to "project_options" of {1}/esg.ini'.format(project, outdir))

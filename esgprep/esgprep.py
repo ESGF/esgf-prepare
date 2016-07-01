@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-"""
-   :platform: Unix
-   :synopsis: Toolbox to prepare ESGF data for publication upon a local ESGF node or not.
-
-"""
 
 import os
 import argparse
@@ -28,16 +23,19 @@ def get_args():
     main = argparse.ArgumentParser(
         prog='esgprep',
         description="""The ESGF publication process requires a strong and effective data management. "esgprep" allows
-                    data providers to easily prepare its data before publishing to an ESGF node.|n|n
+                    data providers to easily prepare their data before publishing to an ESGF node.|n|n
 
-                    "esgprep" gathers python command-lines covering several steps of ESGF publication workflow
-                    as  Data Reference Syntax management, mapfiles generation, etc.|n|n
+                    "esgprep" gathers python command-lines covering several steps of ESGF publication workflow:|n
+                    i. Fetch proper configuration files from ESGF GitHub repository,|n
+                    ii. Data Reference Syntax management,|n
+                    iii. Check DRS vocable against configuration files,|n
+                    iv. Generate mapfiles.|n|n
 
-                    The "esgprep" toolbox is based on the ESGF datanode configuration file called "esg.ini". It
+                    The "esgprep" toolbox is based on the ESGF datanode configuration files called "esg.ini". It
                     implies those configuration files are correctly build and declares all required attributes
                     following recommended best practices.|n|n
 
-                    See full documentation and references on http://esgscan.readthedocs.org/.|n|n
+                    See full documentation and references on http://esgprep.readthedocs.org/.|n|n
 
                     The default values are displayed next to the corresponding flags.""",
         formatter_class=MultilineFormatter,
@@ -73,9 +71,9 @@ def get_args():
         metavar='/esg/config/esgcet/.',
         type=str,
         default='/esg/config/esgcet/.',
-        help="""Initialization/configuration directory containing "esg.ini"|n
-            and "esg.<project>.ini" files. If not specified, the usual|n
-            datanode directory is used.""")
+        help="""Initialization/configuration directory containing|n
+             esg.ini" and "esg.<project>.ini" files. If not|n
+             specified, the usual datanode directory is used.""")
     parent.add_argument(
         '--log',
         metavar='$PWD',
@@ -99,15 +97,23 @@ def get_args():
     fetchini = subparsers.add_parser(
         'fetch-ini',
         prog='esgprep fetch-ini',
-        description="""The data management/preparation" relies on the ESGF node configuration files.
-                    These "esg.<project>.ini" files declares the Data Reference Syntax (DRS) and
-                    the controlled vocabularies of each project.|n|n
+        description="""The ESGF publishing client and most of other ESGF tool rely on configuration files. These
+                    ".ini" files are the primary means of configuring the ESGF publisher.|n|n
 
-                    "esgprep" allows you to prepare your data outside of an ESGF node as a full standalone toolbox.
-                    In that context, you need to get ESGF node configuration files locally. "esgprep fetch-ini" allows
-                    you to fetch one or more configuration file from GitHub.|n|n
+                    The "esg.ini`` file gathers all required information to configure the datanode regarding to data
+                    publication (e.g., PostgreSQL access, THREDDS configuration, etc.).|n|n
 
-                    Keep in mind that the fetched INI has to be reviewed to ensure a correct configuration.|n|n
+                    The "esg.<project_id>.ini" files declare all facets and allowed values according to the Data
+                    Reference Syntax (DRS) and the controlled vocabularies of the corresponding project.|n|n
+
+                    "esgprep fetch-ini" allows you to download proper ".ini" files hosted on a GotHub repository. If
+                    you prepare your data outside of an ESGF node using "esgprep" as a full standalone toolbox,
+                    this step is mandatory.|n|n
+
+                    Keep in mind that the fetched ".ini" files have to be reviewed to ensure a correct configuration
+                    of your projects.|n|n
+
+                    The supply configuration directory is used to write the files retrieved from GitHub.|n|n
 
                     The default values are displayed next to the corresponding flags.""",
         formatter_class=MultilineFormatter,
@@ -136,13 +142,17 @@ def get_args():
     checkvocab = subparsers.add_parser(
         'check-vocab',
         prog='esgprep check-vocab',
-        description="""The data management/preparation" relies on the ESGF node configuration files.
-                    These "esg.<project>.ini" files declares the Data Reference Syntax (DRS) and
-                    the controlled vocabularies of each project.|n|n
+        description="""The data management/preparation" relies on the ESGF node configuration files. These
+                    "esg.<project>.ini" files declares the Data Reference Syntax (DRS) and the controlled
+                    vocabularies of each project.|n|n
 
-                    "esgprep checkvocab" allows you to easily check the configuration file. It
-                    implies that your directory structure strictly follows the project DRS
-                    including the version facet.|n|n
+                    In the case of your data already follow the appropriate directory structure, you may want to
+                    check that all values of each facet are correctly declared into "esg.<project_id>.ini"
+                    sections.|n|n
+
+                    "esgprep check-vocab" allows you to easily check the configuration file attributes by scanning
+                    your data tree. It implies that your directory structure strictly follows the
+                    project DRS including the version facet.|n|n
 
                     The default values are displayed next to the corresponding flags.""",
         formatter_class=MultilineFormatter,
@@ -171,7 +181,12 @@ def get_args():
     drs = subparsers.add_parser(
         'drs',
         prog='esgprep drs',
-        description="""COMING SOON""",
+        description="""The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem.
+                    This allows a proper publication on ESGF node. "esgprep drs" command is designed to help ESGF
+                    datanode managers to prepare incoming data for publication, placing files in the DRS directory
+                    structure, and manage multiple versions of publication-level datasets to minimise disk usage.|n|n
+
+                    This feature is coming soon !""",
         formatter_class=MultilineFormatter,
         help="""Manages the Data Reference Syntax on your filesystem.|n
              See "esgprep drs -h" for full help.""",
@@ -210,15 +225,21 @@ def get_args():
 
                     dataset_ID | absolute_path | size_bytes [ | option=value ]|n|n
 
-                    1. All values have to be pipe-separated,|n
+                    1. All values have to be pipe-separated.|n
                     2. The dataset identifier, the absolute path and the size (in bytes) are
-                    required,|n
-                    3. Adding the file checksum and the checksum type as optional values is
-                    strongly recommended,|n
-                    4. Adding the version number to the dataset identifier is useful to publish in
-                    a in bulk.|n|n
+                    required.|n
+                    3. Adding the version number to the dataset identifier is strongly recommended to publish in
+                    a in bulk.|n
+                    4. Strongly recommended optional values are:|n
+                     - mod_time: last modification date of the file (since Unix EPOCH time, i.e., seconds since
+                     January, 1st, 1970),|n
+                     - checksum: file checksum,|n
+                     - checksum_type: checksum type (MD5 or the default SHA256).|n
+                    5. Your directory structure has to strictly follows the tree fixed by the DRS including the
+                    version facet.|n
+                    6. To store ONE mapfile PER dataset is strongly recommended.|n|n
 
-                    "esgscan_directory" allows you to easily generate ESGF mapfiles upon local ESGF
+                    "esgprep mapfile" allows you to easily generate ESGF mapfiles upon local ESGF
                     datanode or not. It implies that your directory structure strictly follows the
                     project DRS including the version facet.|n|n
 
@@ -230,7 +251,7 @@ def get_args():
                     The default values are displayed next to the corresponding flags.""",
         formatter_class=MultilineFormatter,
         help="""Generates ESGF mapfiles.|n
-             See "esgprep mapfiles -h" for full help.""",
+             See "esgprep mapfile -h" for full help.""",
         add_help=False,
         parents=[parent])
     mapfile._optionals.title = "Optional arguments"
@@ -264,7 +285,8 @@ def get_args():
         type=str,
         default=os.getcwd(),
         help="""Mapfile(s) output directory. A "mapfile_drs" can be defined |n
-                in "esg.ini" and joined to build a mapfiles tree.""")
+                per each project section in INI files and joined to build a |n
+                mapfiles tree.""")
     group = mapfile.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--all-versions',
@@ -306,7 +328,7 @@ def get_args():
         default=r'.*\.nc$',
         help="""Filter files matching the regular expression (default only|n
                 support NetCDF files). Regular expression syntax is defined|n
-                by the Python re module.""")
+                by the Python "re" module.""")
     mapfile.add_argument(
         '--tech-notes-url',
         metavar='<url>',
@@ -329,7 +351,9 @@ def get_args():
         metavar=4,
         type=int,
         default=4,
-        help="""Number of maximal threads for checksum calculation.""")
+        help="""Number of maximal threads to simultaneously process several|n
+             files (useful if checksum calculation is enabled). Set to|n
+             one seems sequential processing.""")
 
     return main.parse_args()
 
@@ -355,7 +379,7 @@ def run():
         from drs import main
         main.main(args)
     elif args.cmd == 'mapfile':
-        from mapfiles import main
+        from mapfile import main
         main.main(args)
 
 

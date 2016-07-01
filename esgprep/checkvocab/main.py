@@ -1,11 +1,5 @@
 #!/usr/bin/env python
-"""
-   :platform: Unix
-   :synopsis: Checks and updates the ESGF configuration files.
 
-"""
-
-# Module imports
 import re
 import os
 import sys
@@ -33,7 +27,7 @@ class ProcessingContext(object):
     | *self*.facets          | *list*      | List of the DRS facets                     |
     +------------------------+-------------+--------------------------------------------+
 
-    :param ArgumentParser args: Parsed command-line arguments (as a :func:`argparse.ArgumentParser` class instance)
+    :param argparse.ArgumentParser args: Parsed command-line arguments
     :returns: The processing context
     :rtype: *ProcessingContext*
     :raises Error: If no section corresponds to the project name in the configuration file
@@ -44,6 +38,7 @@ class ProcessingContext(object):
             utils.check_directory(path)
         self.directory = args.directory
         self.project = args.project
+        self.verbosity = args.v
         self.project_section = 'project:{0}'.format(args.project)
         self.cfg = parser.config_parse(args.i, args.project, self.project_section)
         self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
@@ -58,7 +53,7 @@ def get_dsets_from_tree(ctx):
     Yields datasets to process. Only the "dataset part" of the DRS tree is returned
     (i.e., from "root" to before the "version" facet).
 
-    :param ProcessingContext ctx: A :func:`ProcessingContext` class instance
+    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context
     :returns: The dataset as a part of the DRS tree
     :rtype: *iter*
 
@@ -73,7 +68,7 @@ def get_facet_values_from_tree(ctx, dsets, facets):
     """
     Returns all used values of each facet from the DRS tree, according to the supplied directories.
 
-    :param ProcessingContext ctx: A :func:`ProcessingContext` class instance
+    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context
     :param iter dsets: The dataset part of the DRS tree
     :param list facets: The facets list
     :returns: The declared values of each facet
@@ -100,7 +95,7 @@ def get_facet_values_from_config(ctx):
     """
     Returns all declared values of each facet from the configuration file, according to the project section.
 
-    :param ProcessingContext ctx: A :func:`ProcessingContext` class instance
+    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context
     :returns: The declared values of each facet
     :rtype: *dict*
 
@@ -116,7 +111,7 @@ def get_facet_values_from_config(ctx):
     return declared_values
 
 
-def compare_values(facets, used_values, declared_values):
+def compare_values(facets, used_values, declared_values, verbosity=False):
     """
     Compares used values from DRS tree with all declared values in configuration file for each facet.
 
@@ -129,12 +124,13 @@ def compare_values(facets, used_values, declared_values):
     """
     any_undeclared = False
     for facet in facets:
-        if not declared_values[facet]:
-            logging.warning('{0} facet - No declared values'.format(facet))
-            logging.info('{0} facet - Used values: {1}'.format(facet, ', '.join(used_values[facet])))
-        else:
-            logging.info('{0} facet - Declared values: {1}'.format(facet, ', '.join(declared_values[facet])))
-            logging.info('{0} facet - Used values: {1}'.format(facet, ', '.join(used_values[facet])))
+        if verbosity:
+            if not declared_values[facet]:
+                logging.warning('{0} facet - No declared values'.format(facet))
+                logging.info('{0} facet - Used values: {1}'.format(facet, ', '.join(used_values[facet])))
+            else:
+                logging.info('{0} facet - Declared values: {1}'.format(facet, ', '.join(declared_values[facet])))
+                logging.info('{0} facet - Used values: {1}'.format(facet, ', '.join(used_values[facet])))
         undeclared_values = used_values[facet].difference(declared_values[facet])
         unused_values = declared_values[facet].difference(used_values[facet])
         updated_values = used_values[facet].union(declared_values[facet])
@@ -142,7 +138,7 @@ def compare_values(facets, used_values, declared_values):
             logging.info('{0} facet - UNDECLARED values: {1}'.format(facet, ', '.join(undeclared_values)))
             any_undeclared = True
             logging.info('{0} facet - UPDATED values to declare: {1}'.format(facet, ', '.join(updated_values)))
-        if unused_values:
+        if unused_values and verbosity:
             logging.info('{0} facet - Unused values: {1}'.format(facet, ', '.join(unused_values)))
     if any_undeclared:
         logging.error('Result: THERE WERE UNDECLARED VALUES USED.')
@@ -161,7 +157,7 @@ def main(args):
      * Compares the values of each facet between both,
      * Print or log the checking.
 
-    :param ArgumentParser args: Parsed command-line arguments (as a :func:`argparse.ArgumentParser` class instance)
+    :param argparse.ArgumentParser args: Parsed command-line arguments
 
     """
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
@@ -172,6 +168,6 @@ def main(args):
     dsets = get_dsets_from_tree(ctx)
     # Get facets values used by DRS tree
     facet_values_tree = get_facet_values_from_tree(ctx, dsets, list(ctx.facets))
-    any_disallowed = compare_values(list(ctx.facets), facet_values_tree, facet_values_config)
+    any_disallowed = compare_values(list(ctx.facets), facet_values_tree, facet_values_config, ctx.verbosity)
     if any_disallowed:
         sys.exit(1)

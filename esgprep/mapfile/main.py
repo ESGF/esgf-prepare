@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-"""
-   :platform: Unix
-   :synopsis: Generates ESGF mapfiles upon an local ESGF node or not.
-
-"""
 
 import sys
 import os
@@ -74,7 +69,7 @@ class ProcessingContext(object):
     | *self*.facets          | *list*      | List of the DRS facets                       |
     +------------------------+-------------+----------------------------------------------+
 
-    :param ArgumentParser args: Parsed command-line arguments (as a :func:`argparse.ArgumentParser` class instance)
+    :param argparse.ArgumentParser args: Parsed command-line arguments
     :returns: The processing context
     :rtype: *ProcessingContext*
     :raises Error: If no section corresponds to the project name in the configuration file
@@ -132,7 +127,7 @@ def yield_inputs(ctx):
     If the supplied directory to scan specifies the version into its path, only this version is
     picked up as with ``--version`` argument.
 
-    :param ProcessingContext ctx: A :func:`ProcessingContext` class instance
+    :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
     :returns: Attach the processing context to a file to process as an iterator of tuples
     :rtype: *iter*
 
@@ -229,8 +224,10 @@ def counted(fct):
 def get_output_mapfile(attributes, dataset_id, dataset_version, ctx):
     """
     Builds the mapfile full path depending on:
+
      * the --mapfile name using tokens,
      * the --outdir output directory.
+
     The output directory can be deduced from file attributes in the case of a mapfile DRS.
     The ``mapfile_drs`` defined into esg.<project>.ini file can joined or substituted to output directory (default
     is the current working directory).
@@ -238,7 +235,7 @@ def get_output_mapfile(attributes, dataset_id, dataset_version, ctx):
     :param dict attributes: The facets values deduces from file full path
     :param str dataset_id: The corresponding dataset id
     :param str dataset_version: The corresponding dataset version
-    :param ProcessingContext ctx: A :func:`ProcessingContext` class instance
+    :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
     :returns: The mapfile full path
     :rtype: *str*
 
@@ -281,7 +278,7 @@ def generate_mapfile_entry(dataset_id, dataset_version, ffp, size, mtime, csum, 
     :param str size: The file size
     :param str mtime: The last modification time
     :param str csum: The file checksum
-    :param ProcessingContext ctx: A :func:`ProcessingContext` class instance
+    :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
     :returns: THe mapfile line/entry
     :rtype: *str*
 
@@ -343,7 +340,7 @@ def process(ffp, ctx):
      * Writes the corresponding line into it.
 
     :param str ffp: The file full path
-    :param ProcessingContext ctx: A :func:`ProcessingContext` class instance
+    :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
     :return: The output file full path
     :rtype: *str*
 
@@ -382,7 +379,7 @@ def main(args):
      * Removes the temporary directory and its content,
      * Implements exit status values.
 
-    :param ArgumentParser args: Parsed command-line arguments (as a :func:`argparse.ArgumentParser` class instance)
+    :param argparse.ArgumentParser args: Parsed command-line arguments
 
     """
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
