@@ -3,25 +3,31 @@
 Code documentation
 ==================
 
-esgmapfiles.py
-**************
+esgprep
+*******
+.. automodule:: esgprep.esgprep
 
-.. automodule:: esgmapfiles
+fetch-ini
+---------
+.. automodule:: esgprep.fetchini.main
 
-.. moduleauthor:: Levavasseur Guillaume (CNRS/IPSL) <glipsl@ipsl.jussieu.fr>
+drs
+---
+.. automodule:: esgprep.drs.main
 
-checkvocab.py
-*************
+check-vocab
+-----------
+.. automodule:: esgprep.checkvocab.main
 
-.. automodule:: checkvocab
+mapfile
+-------
+.. automodule:: esgprep.mapfile.main
+.. automodule:: esgprep.mapfile.file_handler
 
-.. moduleauthor:: Levavasseur Guillaume (CNRS/IPSL) <glipsl@ipsl.jussieu.fr>
+utils
+*****
+.. automodule:: esgprep.utils.parser
+.. automodule:: esgprep.utils.utils
 
-.. codeauthor:: Iwi Alan (BADC) <alan.iwi@stfc.ac.uk>
-
-esgmapfilesutils.py
-*******************
-
-.. automodule:: esgmapfilesutils
 
 .. moduleauthor:: Levavasseur Guillaume (CNRS/IPSL) <glipsl@ipsl.jussieu.fr>

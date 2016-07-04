@@ -1,79 +1,99 @@
-.. _ESGF: http://pcmdi9.llnl.gov/
+.. _ESGF: http://pcmdi.llnl.gov/
 
 .. _synopsis:
 
 Synopsis
 ========
 
-The publication process of the `ESGF`_ nodes requires *mapfiles*. Mapfiles are text files where each line describes a file to publish on the following format:
+The Earth System Grid Federation (ESGF) publication process requires a strong and effective data management that
+could also be a burden. ``esgprep`` allows the ESGF data providers to easily prepare their data for publishing to an
+ESGF node.
+
+.. note:: ``esgprep`` is designed to follow all requirements from the `ESGF Best Practices document <https://acme-climate.atlassian.net/wiki/x/JADm>`_.
+
+``esgprep`` gathers Python command-lines covering several steps of `ESGF publication workflow <https://drive.google
+.com/open?id=0B7Kis5A3U5SKTUdFbjYwRnFhQ0E>`_.
+
+``esgprep fetch-ini``
+*********************
+
+The ESGF publishing client and most of ESGF tools rely on configuration files. These ``.ini`` files are the
+primary means of configuring the ESGF publisher.
+
+The ``esg.ini`` file gathers all required information to configure the datanode regarding to data publication (e
+.g., PostgreSQL access, THREDDS configuration, etc.).
+
+The ``esg.<project_id>.ini`` files declare all facets and allowed values according to the *Data Reference Syntax*
+(DRS) and the controlled vocabularies of the corresponding project.
+
+The ``fetch-ini`` command allows you to download preset ``.ini`` files hosted on `a GitHub repository
+<https://github.com/ESGF/config/>`_.
+
+If you prepare your data outside of an ESGF node using ``esgprep`` as a full standalone toolbox, this step
+is mandatory. Keep in mind that the fetched ``.ini`` files have to be reviewed to ensure a correct configuration
+of your projects.
+
+``esgprep drs``
+***************
+
+The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper
+publication on ESGF node. The ``drs`` command is designed to help ESGF datanode managers to prepare incoming
+data for publication, placing files in the DRS directory structure, and manage multiple versions of
+publication-level datasets to minimise disk usage.
+
+**This feature is coming soon !**
+
+``esgprep check-vocab``
+***********************
+
+In the case of your data already follow the appropriate directory structure, you may want to check that all
+values of each facet are correctly declared into ``esg.<project_id>.ini`` sections. The ``check-vocab`` command
+allows you to easily check the configuration file attributes by scanning your data tree.
+
+``esgprep mapfile``
+*******************
+
+The publication process of the ESGF nodes requires *mapfiles*. Mapfiles are text files where each line
+describes a file to publish on the following format:
 ::
 
    dataset_ID | absolute_path | size_bytes [ | option=value ]
 
-.. warning::
+``mapfile`` is a flexible command-line allowing you to easily generate mapfiles upon local ESGF datanode or not.
 
-   i. All values have to be pipe-separated.
-   ii. The dataset identifier, the absolute path and the size (in bytes) are required.
-   iii. Adding the file checksum and the checksum type as optional values is strongly recommended.
-   iv. Adding the version number next to the dataset identifier is strongly recommended.
+.. warning:: ``esgprep`` implies that your directory structure strictly follows the tree fixed by the project's *Data
+ Reference Syntax* (DRS) **including the version facet**.
 
-``esgscan_directory`` is a flexible command-line tool allowing you to easily generate mapfiles upon local ESGF datanode or not.
+Key features
+************
 
-.. warning:: It implies that your directory structure strictly follows the tree fixed by the project's *Data Reference Syntax* (DRS) **including the version facet**.
+Directory as input
+    You only need to specify the directory to recursively scan. To include several data directories, you can use all
+    Unix wildcards in the path or submit several paths.
 
-Features
-********
+Compatibility with ESGF node configuration file(s)
+    To ensure a right facets auto-detection, ``esgprep`` directly works from the usual ESGF configuration files.
 
-**Directory as input**
-  You only need to specifiy the directory to recursively scan. To include several data directories in one mapfile and to publish them at once, you can use all Unix wildcards in the path or submit several paths.
+Facets values auto-detection
+    The facets values are automatically detected from the full path of the file, using the ``directory_format``
+    regular expression in the configuration files. These DRS values are used to fill the dataset identifier template.
+    Each facet value from the dataset identifier is assessed in the light of configuration file(s) options or maps.
 
-**Compatiblity with ESGF node configuration file(s)**
-  Each `ESGF`_ node:
-   * Declares all technical attributes (e.g., the checksum type) into the ``[default]`` of a configuration INI file called ``esg.ini``,
-   * Centralizes all projects definitions (DRS, facets) into the ``project:<project>`` sections of the same ``esg.ini`` or from independent files called ``esg.<project>.ini``.
+Multi-threading
+    To compute the checksum of a lot of large files becomes time consuming. We implement multi-threading at file level.
 
-  To ensure a right facets auto-detection, ``esgscan_directory`` directly works from these INI files.
+Standalone
+    Security policies of computing centres, that often host `ESGF`_ nodes, do not allow to use ``esgprep`` within a
+    node that is conventionally used to generate mapfiles.
 
-**Dataset identifier template**
-  Each dataset to publish is defined by its identifier as a string of dot-separated facets. ``esgscan_directory`` reads the identifier template (i.e., the facets within) using the ``dataset_id`` regular expression from the corresponding project section in the ``esg.ini`` or the appropriate ``esg.<project>.ini``.
+Tracebacks
+    The threads-processes do not shutdown the main process of ``esgprep`` run. If an error occurs on a thread, the
+    traceback of the child-process is not raised to the main process. To help you to have a fast debug, the
+    tracebacks of each threads can be raised using the ``-v`` option (see :ref:`usage`).
 
-**Facets values auto-detection**
-  The facets values are automatically detected from the full path of the file, using the ``directory_format`` regular expression in the configuration file. These DRS values are used to fill the dataset identifier template.
+Use a logfile
+    You can initiate a logger instead of the standard output. This could be useful for automatic workflows. The
+    logfile name is automatically defined and unique (using the the job's name, the date and the job's ID). You can
+    define an output directory for your logs too.
 
-**Facets values checkup**
-  Each facet value from the dataset identifier is assessed in the light of configuration file(s). If the facet has been deduced from the full path of the file, its value has to be declared in an ``facet_options`` list of the configuration file(s). If the facet is missing in the full path of the file, it has to be decuded from a required ``facet_map`` maptable in the configuration file(s). This ensures an appropriated mapfile generation by preventing DRS mistakes and checking the controlled vocabulary.
-
-**Vocabulary checkup**
-  ``esgscan_directory`` is accompanied by ``esgscan_check_vocab``. This module allows you to easily check the options lists and maptables declared in your configuration file(s) depending on the directory you want to recursively scan. ``esgscan_check_vocab`` walks trough the file system, gathers each facet value of encountered datasets and displays the report with used/unsued and undeclared facet values.
-
-**Multithreading**
-  To compute the checksum of a lot of large files becomes time consuming. We implement multithreading at file level. Each file is processed by a thread that writes the resulting line in the corresponding mapfile. A lock file system orders the simultaneous access to mapfiles by the threads to avoid any conflicts.
-
-**Mapfile granularity control**
-  The mapfile name can be specifiy using a template with tokens. the available tokens are ``{dataset_id}``, ``{version}``, ``{date}`` or ``{job_id}``. These substrings will be substituted where found. If ``{dataset_id}`` token is not present in mapfile name, then all datasets will be written  to a single mapfile, overriding the default behavior of producing **ONE mapfile PER each version of each dataset**. Consequently, you can set your own "mapfile-granularity" through the template of the mapfile(s) name and control your publications.
-
-.. note:: A dataset is defined by one version of all upstream DRS tree.
-
-**Version filtering**
-  The walk through the file system is filtered. The default behavior of ``esgscan_directory`` is to pick up only the latest version of a dataset scanned (as the greatest version number). You can change this behavior and choose to include (see :ref:`usage`):
-   * All versions found with the ``--all-versions`` flag (it disables ``--no-version`` flag),
-   * Only the version pointed by a "latest" symlink (if exists) with the ``--latest-symlink`` flag,
-   * Only a particular version with the ``--version <version_number>`` argument or by directly specifying the version number in the supplied directory (it takes priority over ``--all-versions`` flag).
-
-**Mapfile with DRS version**
-   You can choose to include the DRS version next to each dataset identifier. This is compatible with the ESGF 2.x. With this mapfile syntax the ``--new-version`` option of the publisher command-lines becomes deprecated.
-
-**Developer's entry point**
-  ``esgscan_directory`` can be imported and called in your own scripts. Just pass a dictionnary with your flags to the ``run(job={})`` function (see :ref:`autodoc`).
-
-**Standalone**
-  Security policies of computing centres, that often host `ESGF`_ nodes, do not allow to use ``esgscan_directory`` within a node that is conventionally used to generate mapfiles.
-
-**Keep threads tracebacks**
-  The threads-processes do not shutdown the main process of ``esgscan_directory`` run. If an error occurs on a thread, the traceback of the child-process is not raised to the main process. To help you to have a fast debug, the tracebacks of each threads can be raised using the ``-v`` option (see :ref:`usage`).
-
-**Output directory**
-  An output directory can be defined to store and organized your mapfiles.
-
-**Use a logfile**
-  You can initiate a logger instead of the standard output. This could be useful for automatic workflows. The logfile name is automatically defined and unique (using the the job's name, the date and the job's ID). You can define an output directory for your logs too.
+.. note:: For all detailed features see the help message of each ``esgprep`` sub-command.
