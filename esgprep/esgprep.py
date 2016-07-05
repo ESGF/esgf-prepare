@@ -6,7 +6,7 @@ from utils.utils import MultilineFormatter, init_logging
 from datetime import datetime
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.0', datetime(year=2016, month=05, day=12).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('2.1', datetime(year=2016, month=07, day=05).strftime("%Y-%d-%m"))
 
 
 def get_args():
