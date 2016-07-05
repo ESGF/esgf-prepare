@@ -7,7 +7,7 @@ import logging
 from esgprep.utils import utils, parser
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import wraps
-from lockfile import LockFile, LockTimeout, LockFailed
+from lockfile import LockFile
 from datetime import datetime
 from file_handler import File
 
@@ -69,7 +69,7 @@ class ProcessingContext(object):
     | *self*.facets          | *list*      | List of the DRS facets                       |
     +------------------------+-------------+----------------------------------------------+
 
-    :param argparse.ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: Parsed command-line arguments
     :returns: The processing context
     :rtype: *ProcessingContext*
     :raises Error: If no section corresponds to the project name in the configuration file
@@ -313,15 +313,9 @@ def insert_mapfile_entry(outfile, entry, ffp):
 
     """
     lock = LockFile(outfile)
-    try:
-        lock.acquire(timeout=int(__LOCK_TIMEOUT__))
+    with lock:
         with open(outfile, 'a+') as mapfile:
             mapfile.write(entry)
-        lock.release()
-    except LockFailed:
-        raise Exception('Failed to lock file: {0}'.format(outfile))
-    except LockTimeout:
-        raise Exception('Timeout exceeded for {0}'.format(ffp))
     logging.info('{0} <-- {1}'.format(os.path.splitext(os.path.basename(outfile))[0], ffp))
 
 
