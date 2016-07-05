@@ -379,7 +379,7 @@ def main(args):
      * Removes the temporary directory and its content,
      * Implements exit status values.
 
-    :param argparse.ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: Parsed command-line arguments
 
     """
     # Instantiate processing context from command-line arguments or SYNDA job dictionary

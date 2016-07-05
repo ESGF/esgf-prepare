@@ -157,7 +157,7 @@ def main(args):
      * Compares the values of each facet between both,
      * Print or log the checking.
 
-    :param argparse.ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: Parsed command-line arguments
 
     """
     # Instantiate processing context from command-line arguments or SYNDA job dictionary

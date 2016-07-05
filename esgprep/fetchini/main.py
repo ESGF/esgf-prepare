@@ -127,7 +127,7 @@ def main(args):
      * Gets the GitHub URL,
      * Writes response into INI file.
 
-    :param argparse.ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: Parsed command-line arguments
 
     """
     outdir = os.path.normpath(os.path.abspath(args.i))
@@ -149,10 +149,14 @@ def main(args):
         outfile = '{0}/esg.{1}.ini'.format(outdir, project)
         # Check if file already exists
         if os.path.isfile(outfile):
-            sys.stdout.write('"esg.{0}.ini" already exists in {1}\n'.format(project, outdir))
-            # Ignore if force mode or ask to user instead
-            if args.f or query_yes_no("Overwrite existing file?"):
-                fetch(url, outdir, project)
+            logging.warning('"esg.{0}.ini" already exists in {1}'.format(project, outdir))
+            # If not force mode = keep existing file
+            if not args.k:
+                # If force mode = overwrite existing file
+                # '-f' can be set to True only if '-k' is set to False.
+                # If not ask to user instead
+                if args.o or query_yes_no('\nOverwrite existing "esg.{0}.ini"?'.format(project)):
+                    fetch(url, outdir, project)
         else:
             fetch(url, outdir, project)
         # Test if esg.ini exists in output directory
