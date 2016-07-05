@@ -69,20 +69,31 @@ If a esg.<project_id> already exists you are prompted to confirm overwriting (de
 .. code-block:: bash
 
     $> esgprep fetch-ini --project <project_id>
-    "esg.<project_id>.ini" already exists in ~/config
-    Overwrite existing file? [y/N] y
+    YYYY/MM/DD HH:MM:SS WARNING "esg.<project_id>.ini" already exists in ~/config
+
+    Overwrite existing "esg.<project_id>.ini"? [y/N] y
     YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/master/publisher-configs/ini/esg.<project_id>.ini...
     YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
 
-Force overwriting from the command-line
----------------------------------------
+Keep existing file(s) without prompt
+------------------------------------
 
 .. code-block:: bash
 
-    $> esgprep fetch-ini --project <project_id> -f
-    "esg.<project_id>.ini" already exists in ~/config
+    $> esgprep fetch-ini --project <project_id> -k
+    YYYY/MM/DD HH:MM:SS WARNING "esg.<project_id>.ini" already exists in ~/config
+
+Overwrite existing file(s) without prompt
+-----------------------------------------
+
+.. code-block:: bash
+
+    $> esgprep fetch-ini --project <project_id> -o
+    YYYY/MM/DD HH:MM:SS WARNING "esg.<project_id>.ini" already exists in ~/config
     YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/devel/publisher-configs/ini/esg.<project_id>.ini...
     YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
+
+.. warning:: ``-o`` and ``-k`` cannot be used simultaneously.
 
 Download all esg.<project_id>.ini from GitHub
 ---------------------------------------------

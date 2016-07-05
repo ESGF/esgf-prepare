@@ -13,7 +13,7 @@ def main(args):
      * Compares the values of each facet between both,
      * Print or log the checking.
 
-    :param argparse.ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: Parsed command-line arguments
 
     """
     logging.info('This tool is not available at the moment. Coming soon.')

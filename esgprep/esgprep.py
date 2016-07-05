@@ -130,11 +130,17 @@ def get_args():
         nargs='+',
         help="""One or more lower-cased project name(s). If not, all|n
              "esg.*.ini" are fetched.""")
-    fetchini.add_argument(
-        '-f',
+    group = fetchini.add_mutually_exclusive_group(required=False)
+    group.add_argument(
+        '-k',
         action='store_true',
         default=False,
-        help="""Ignore and overwrite existing file(s).""")
+        help="""Ignore and keep existing file(s) without prompt.""")
+    group.add_argument(
+        '-o',
+        action='store_true',
+        default=False,
+        help="""Ignore and overwrite existing file(s) without prompt.""")
 
     #######################################
     # Subparser for "esgprep check-vocab" #
