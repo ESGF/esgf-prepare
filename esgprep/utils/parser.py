@@ -25,7 +25,8 @@ def config_parse(config_dir, project, project_section):
 
     """
     if not os.path.isfile('{0}/esg.ini'.format(os.path.normpath(config_dir))):
-        raise Exception('"esg.ini" file not found')
+        msg = '"esg.ini" file not found'
+        logging.warning(msg)
     cfg = ConfigParser.ConfigParser()
     cfg.read('{0}/esg.ini'.format(os.path.normpath(config_dir)))
     if project_section not in cfg.sections():
