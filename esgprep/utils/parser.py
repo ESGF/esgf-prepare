@@ -60,7 +60,7 @@ def translate_directory_format(directory_format_raw):
     pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
     # Translate all patterns matching %(name)s
     pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
-    return '{0}/(?P<filename>[\w.-]+\.nc)'.format(pattern)
+    return '^{0}/(?P<filename>[\w.-]+\.nc)$'.format(pattern)
 
 
 def split_line(line, sep='|'):

@@ -7,9 +7,10 @@
 
 # Module imports
 import os
+import re
 import logging
 import textwrap
-from argparse import HelpFormatter
+from argparse import HelpFormatter, ArgumentTypeError
 from datetime import datetime
 
 
@@ -86,13 +87,37 @@ def check_directory(path):
     """
     Checks if the supplied directory exists. The path is normalized without trailing slash.
 
-    :param list path: The path to check
-    :returns: The same path if exists
+    :param str path: The path list to check
+    :returns: The same path list
     :rtype: *str*
-    :raises Error: If the directory does not exist
+    :raises Error: If one of the directory does not exist
 
     """
-    directory = os.path.normpath(path)
+    directory = os.path.normpath(str(path))
     if not os.path.isdir(directory):
-        raise Exception('No such directory: {0}'.format(directory))
+        msg = 'No such directory: {0}'.format(directory)
+        raise ArgumentTypeError(msg)
     return directory
+
+
+def version_checker(version):
+    """
+    Checks the version format from command-line.
+
+    :type version: The version string from command-line
+    :returns: The version if allowed
+    :rtype: *str*
+    :raises Error: If invalid version format
+
+    """
+    if re.compile(r'^[\d]{1,8}$').search(str(version)):
+        if len(version) == 8:
+            try:
+                datetime.strptime(version, '%Y%m%d')
+            except ValueError:
+                msg = 'Invalid version date: {0}.'.format(str(version))
+                raise ArgumentTypeError(msg)
+        return version
+    else:
+        msg = 'Invalid version type: {0}.\nAvailable format is YYYYMMDD or an integer.'.format(str(version))
+        raise ArgumentTypeError(msg)

@@ -91,12 +91,9 @@ class ProcessingContext(object):
         self.all = args.all_versions
         if self.all:
             self.no_version = False
-        self.version = args.version
-        if self.version:
-            try:
-                datetime.strptime(self.version, '%Y%m%d')
-            except:
-                raise Exception('Invalid version {0}. Available format is YYYYMMDD.'.format(self.version))
+        self.version = None
+        if args.version:
+            self.version = 'v{0}'.format(args.version)
         self.filter = args.filter
         self.project = args.project
         self.project_section = 'project:{0}'.format(args.project)
@@ -133,48 +130,64 @@ def yield_inputs(ctx):
 
     """
     for directory in ctx.directory:
+        # Compile directory_format regex without <filename> part
+        regex = _regex = re.compile('/'.join(ctx.pattern.split('/')[:-1]))
         # Set --version flag if version number is included in the supplied directory path
-        # to recursively scan
-        if re.compile(r'/v[0-9]+').search(directory):
-            ctx.version = re.compile(r'/v[0-9]+').search(directory).group()[2:]
+        while 'version' in _regex.groupindex.keys() and ctx.version is None:
+            if _regex.search(directory):
+                ctx.version = _regex.search(directory).groupdict()['version']
+                # If supplied directory has the version number, disable other flags
+                ctx.latest = ctx.all = None
+            else:
+                _regex = re.compile('/'.join(_regex.pattern.split('/')[:-1]))
         # Walk trough the DRS tree
         for root, _, filenames in os.walk(directory, followlinks=True):
-            # Follow the latest symlink only
-            if ctx.latest:
-                if '/latest' in root:
-                    for filename in filenames:
-                        if os.path.isfile(os.path.join(root, filename)) and \
-                           re.match(ctx.filter, filename) is not None:
-                            yield os.path.join(root, filename), ctx
-            # Pick up the specified version only (from directory path or --version flag)
-            elif ctx.version:
-                if re.compile(r'/v' + ctx.version).search(root):
-                    for filename in filenames:
-                        if os.path.isfile(os.path.join(root, filename)) and \
-                           re.match(ctx.filter, filename) is not None:
-                            yield os.path.join(root, filename), ctx
-            # Pick up all encountered versions
-            elif ctx.all:
-                if re.compile(r'/v[0-9]+').search(root):
-                    for filename in filenames:
-                        if os.path.isfile(os.path.join(root, filename)) and \
-                           re.match(ctx.filter, filename) is not None:
-                            yield os.path.join(root, filename), ctx
-            # Pick up the latest version among encountered versions (default)
-            elif re.compile(r'/v[0-9]+').search(root):
-                versions = [v for v in os.listdir(re.split(r'/v[0-9]+', root)[0])
-                            if re.compile(r'v[0-9]+').search(v)]
-                if re.compile(r'/' + sorted(versions)[-1]).search(root):
-                    for filename in filenames:
-                        if os.path.isfile(os.path.join(root, filename)) and \
-                           re.match(ctx.filter, filename) is not None:
-                            yield os.path.join(root, filename), ctx
-            # No version directory in path
-            else:
+            # Each encountered root matching the regex are directory containing the files
+            # So if a root does not match the regex skip it
+            try:
+                facets = regex.search(root).groupdict()
+            except AttributeError:
+                continue
+            # If version not included into the directory structure
+            if 'version' not in facets.keys():
                 for filename in filenames:
-                    if os.path.isfile(os.path.join(root, filename)) and \
-                       re.match(ctx.filter, filename) is not None:
-                        yield os.path.join(root, filename), ctx
+                    ffp = os.path.join(root, filename)
+                    if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
+                        yield ffp, ctx
+            else:
+                # Find latest version
+                version_dir = [facets[facet_name] for (facet_name, _) in sorted(regex.groupindex.items(),
+                                                                                key=lambda tup: tup[1])]
+                del version_dir[version_dir.index(facets['version']):]
+                versions = [v for v in os.listdir('/'.join(version_dir)) if re.compile(r'v[\d]+').search(v)]
+                latest_version = sorted(versions)[-1]
+                # If follow the latest symlink only, ensure that version facet is 'latest'
+                if ctx.latest:
+                    if facets['version'] == 'latest':
+                        for filename in filenames:
+                            ffp = os.path.join(root, filename)
+                            if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
+                                yield ffp, ctx
+                # Pick up the specified version only (from directory path or --version flag)
+                elif ctx.version:
+                    if facets['version'] == ctx.version:
+                        for filename in filenames:
+                            ffp = os.path.join(root, filename)
+                            if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
+                                yield ffp, ctx
+                # Pick up all encountered versions
+                elif ctx.all:
+                    if facets['version'] != 'latest':
+                        for filename in filenames:
+                            ffp = os.path.join(root, filename)
+                            if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
+                                yield ffp, ctx
+                # Pick up the latest version among encountered versions (default)
+                elif facets['version'] == latest_version:
+                    for filename in filenames:
+                        ffp = os.path.join(root, filename)
+                        if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
+                            yield ffp, ctx
 
 
 def wrapper(inputs):

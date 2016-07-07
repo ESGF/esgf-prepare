@@ -2,7 +2,7 @@
 
 import os
 import argparse
-from utils.utils import MultilineFormatter, init_logging
+from utils.utils import MultilineFormatter, init_logging, version_checker, check_directory
 from datetime import datetime
 
 # Program version
@@ -176,7 +176,7 @@ def get_args():
         help="""Required lower-cased project name.""")
     checkvocab.add_argument(
         'directory',
-        type=str,
+        type=check_directory,
         nargs='+',
         help="""One or more directories to recursively scan. Unix wildcards|n
                 are allowed.""")
@@ -264,7 +264,7 @@ def get_args():
     mapfile._positionals.title = "Positional arguments"
     mapfile.add_argument(
         'directory',
-        type=str,
+        type=check_directory,
         nargs='+',
         help="""One or more directories to recursively scan. Unix wildcards|n
                 are allowed.""")
@@ -304,11 +304,12 @@ def get_args():
     group.add_argument(
         '--version',
         metavar=datetime.now().strftime("%Y%d%m"),
-        type=str,
+        type=version_checker,
         help="""Generates mapfile(s) scanning datasets with the|n
                 corresponding version number only. It takes priority over|n
                 --all-versions. If directly specified in positional|n
-                argument, use the version number from supplied directory.""")
+                argument, use the version number from supplied directory and|n
+                disables --all-version and --latest-symlinks. """)
     group.add_argument(
         '--latest-symlink',
         action='store_true',
