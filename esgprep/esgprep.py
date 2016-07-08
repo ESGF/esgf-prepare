@@ -309,7 +309,7 @@ def get_args():
                 corresponding version number only. It takes priority over|n
                 --all-versions. If directly specified in positional|n
                 argument, use the version number from supplied directory and|n
-                disables --all-version and --latest-symlinks. """)
+                disables --all-versions and --latest-symlink. """)
     group.add_argument(
         '--latest-symlink',
         action='store_true',

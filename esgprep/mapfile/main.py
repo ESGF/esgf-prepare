@@ -1,24 +1,29 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import sys
+"""
+.. module:: esgprep.mapfile.main.py
+    :platform: Unix
+    :synopsis: Generates ESGF mapfiles upon an local ESGF node or not.
+
+.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
+
+"""
+
+import logging
 import os
 import re
-import logging
-from esgprep.utils import utils, parser
-from multiprocessing.dummy import Pool as ThreadPool
-from functools import wraps
-from lockfile import LockFile
+import sys
 from datetime import datetime
+from functools import wraps
+from multiprocessing.dummy import Pool as ThreadPool
+
+from lockfile import LockFile
+
+from esgprep.utils import utils, parser
+from exceptions import *
+from constants import WORKING_EXTENSION, FINAL_EXTENSION
 from file_handler import File
-
-# Lockfile timeout (in sec)
-__LOCK_TIMEOUT__ = 30
-
-# Mapfile extension during processing
-__WORKING_EXTENSION__ = '.part'
-
-# Mapfile final extension (mapfiles always are TXT files)
-__FINAL_EXTENSION__ = '.map'
 
 
 class ProcessingContext(object):
@@ -108,7 +113,8 @@ class ProcessingContext(object):
                                      self.cfg.get(self.project_section, 'dataset_id', raw=True)))
         self.pattern = parser.translate_directory_format(self.cfg.get(self.project_section,
                                                                       'directory_format',
-                                                                      raw=True))
+                                                                      raw=True),
+                                                         self.project)
 
 
 def yield_inputs(ctx):
@@ -409,7 +415,7 @@ def main(args):
     # Replace mapfile working extension by final extension
     # A final mapfile is silently overwritten if already exists
     for outfile in list(set(outfiles)):
-        os.rename(outfile, outfile.replace(__WORKING_EXTENSION__, __FINAL_EXTENSION__))
+        os.rename(outfile, outfile.replace(WORKING_EXTENSION, FINAL_EXTENSION))
     logging.info('==> Scan completed ({0} file(s) scanned)'.format(process.called))
     # Non-zero exit status if any files got filtered
     if None in outfiles_all:

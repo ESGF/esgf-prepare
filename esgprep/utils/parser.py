@@ -38,11 +38,12 @@ def config_parse(config_dir, project, project_section):
     return cfg
 
 
-def translate_directory_format(directory_format_raw):
+def translate_directory_format(directory_format_raw, project):
     """
     Return a list of regular expression filters associated with the ``directory_format`` option
     in the configuration file. This can be passed to the Python ``re`` methods.
 
+    :param project: The project id as a DRS component
     :param str directory_format_raw: The raw ``directory_format`` string
     :returns: The corresponding ``re`` pattern
 
@@ -52,8 +53,14 @@ def translate_directory_format(directory_format_raw):
     pattern = pattern.replace('\.', '__ESCAPE_DOT__')
     pattern = pattern.replace('.', r'\.')
     pattern = pattern.replace('__ESCAPE_DOT__', r'\.')
-    # Translate %(root)s variable
-    pattern = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern)
+    # Build %(project)s variable if not exists
+    if not re.compile(r'%\((project)\)s').search(pattern):
+        pattern = re.sub(project.lower(), r'(?P<project>[\\w.-]+)', pattern)
+    # Build %(root)s variable if not exists or translate it
+    if not re.compile(r'%\((root)\)s').search(pattern):
+        pattern = re.sub(re.compile(r'^[\w./-]+'), r'(?P<root>[\w./-]+)/', pattern)
+    else:
+        pattern = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern)
     # Constraint on %(ensemble)s variable
     pattern = re.sub(re.compile(r'%\((ensemble)\)s'), r'(?P<\1>r[\d]+i[\d]+p[\d]+)', pattern)
     # Constraint on %(version)s number
