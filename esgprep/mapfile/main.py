@@ -284,7 +284,7 @@ def get_output_mapfile(attributes, dataset_id, dataset_version, ctx):
         outmap = re.sub(r'\{date\}', datetime.now().strftime("%Y%d%m"), outmap)
     if re.compile(r'\{job_id\}').search(outmap):
         outmap = re.sub(r'\{job_id\}', str(os.getpid()), outmap)
-    return os.path.join(outdir, outmap) + __WORKING_EXTENSION__
+    return os.path.join(outdir, outmap) + WORKING_EXTENSION
 
 
 def generate_mapfile_entry(dataset_id, dataset_version, ffp, size, mtime, csum, ctx):
