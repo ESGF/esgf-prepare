@@ -83,7 +83,7 @@ def init_logging(logdir, level='INFO'):
                             datefmt='%Y/%m/%d %I:%M:%S %p')
 
 
-def check_directory(path):
+def directory_checker(path):
     """
     Checks if the supplied directory exists. The path is normalized without trailing slash.
 

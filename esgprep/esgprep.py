@@ -2,11 +2,11 @@
 
 import os
 import argparse
-from utils.utils import MultilineFormatter, init_logging, version_checker, check_directory
+from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker
 from datetime import datetime
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.3', datetime(year=2016, month=07, day=06).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('2.4', datetime(year=2016, month=7, day=8).strftime("%Y-%d-%m"))
 
 
 def get_args():
@@ -176,7 +176,7 @@ def get_args():
         help="""Required lower-cased project name.""")
     checkvocab.add_argument(
         'directory',
-        type=check_directory,
+        type=directory_checker,
         nargs='+',
         help="""One or more directories to recursively scan. Unix wildcards|n
                 are allowed.""")
@@ -264,7 +264,7 @@ def get_args():
     mapfile._positionals.title = "Positional arguments"
     mapfile.add_argument(
         'directory',
-        type=check_directory,
+        type=directory_checker,
         nargs='+',
         help="""One or more directories to recursively scan. Unix wildcards|n
                 are allowed.""")

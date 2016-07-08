@@ -21,7 +21,6 @@ from multiprocessing.dummy import Pool as ThreadPool
 from lockfile import LockFile
 
 from esgprep.utils import utils, parser
-from exceptions import *
 from constants import WORKING_EXTENSION, FINAL_EXTENSION
 from file_handler import File
 
@@ -81,8 +80,6 @@ class ProcessingContext(object):
 
     """
     def __init__(self, args):
-        for path in args.directory:
-            utils.check_directory(path)
         self.directory = args.directory
         self.outmap = args.mapfile
         self.verbose = args.v
@@ -409,16 +406,21 @@ def main(args):
     # Raises exception when all processed files failed (i.e., filtered list empty)
     if not outfiles:
         if process.called == 0:
-            raise Exception('No files found leading to no mapfile.')
+            logging.warning('==> No files founds')
+            sys.exit(2)
         else:
-            raise Exception('All files have been ignored or have failed leading to no mapfile.')
+            logging.warning('==> All files have been ignored or have failed leading to no mapfile.')
+            sys.exit(3)
     # Replace mapfile working extension by final extension
     # A final mapfile is silently overwritten if already exists
     for outfile in list(set(outfiles)):
         os.rename(outfile, outfile.replace(WORKING_EXTENSION, FINAL_EXTENSION))
-    logging.info('==> Scan completed ({0} file(s) scanned)'.format(process.called))
     # Non-zero exit status if any files got filtered
+    msg = '==> Scan completed ({0}/{1} file(s) skipped/scanned)'.format(len(outfiles_all) - len(outfiles),
+                                                                        process.called)
     if None in outfiles_all:
-        logging.warning('==> Scan completed '
-                        '({0} file(s) skipped)'.format(len(outfiles_all) - len(outfiles)))
-        sys.exit(2)
+        logging.warning(msg)
+        sys.exit(1)
+    else:
+        logging.info(msg)
+        sys.exit(0)

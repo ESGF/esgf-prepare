@@ -8,11 +8,11 @@
 """
 
 
-# class UnresolvedAggregationLevel(Exception):
+# class NoFilesFound(Exception):
 #     """
-#     To be raised if the aggregation level found is neither DATASET or FILE.
+#     To be raised if no files found into directories to scan.
 #     """
 #     def __init__(self, **args):
 #         # Default message
-#         self.msg = 'UNRESOLVABLE AGGREGATION LEVEL RECEIVED FROM HANDLE SERVER'
+#         self.msg = 'NO FILES FOUND'
 #         super(self.__class__, self).__init__(self.msg)
