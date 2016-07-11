@@ -13,7 +13,7 @@ from esgprep.utils import parser
 __GITHUB_API__ = 'https://api.github.com'
 __GITHUB_BASE__ = 'https://raw.github.com'
 __GITHUB_REPO__ = 'ESGF/config'
-__GITHUB_BRANCH__ = 'devel'
+__GITHUB_BRANCH__ = 'master'
 __GITHUB_DIRECTORY__ = 'publisher-configs/ini'
 
 
