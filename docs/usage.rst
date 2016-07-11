@@ -333,6 +333,9 @@ Organize your mapfiles
 Walking through *latest* directories only
 -----------------------------------------
 
+.. warning:: If the version is directly specified in positional argument, the version number from supplied directory
+    is used.
+
 .. code-block:: bash
 
     $> esgprep mapfile /path/to/scan --project <project_id> --latest-symlink
@@ -357,6 +360,9 @@ Walking through a particular version only
 
 .. warning:: By default ``esgprep mapfile`` pick up the latest version only.
 
+.. warning:: If the version is directly specified in positional argument, the version number from supplied directory
+    is used.
+
 .. code-block:: bash
 
     $> esgprep mapfile /path/to/scan --project <project_id> --version <version>
@@ -380,6 +386,9 @@ Walking through all versions
 ----------------------------
 
 .. warning:: This disables ``--no-version``.
+
+.. warning:: If the version is directly specified in positional argument, the version number from supplied directory
+    is used.
 
 .. code-block:: bash
 

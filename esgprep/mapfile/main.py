@@ -14,13 +14,14 @@ import logging
 import os
 import re
 import sys
+from fnmatch import filter
 from datetime import datetime
 from functools import wraps
 from multiprocessing.dummy import Pool as ThreadPool
 
 from lockfile import LockFile
 
-from esgprep.utils import utils, parser
+from esgprep.utils import parser
 from constants import WORKING_EXTENSION, FINAL_EXTENSION
 from file_handler import File
 
@@ -136,11 +137,16 @@ def yield_inputs(ctx):
         # Compile directory_format regex without <filename> part
         regex = _regex = re.compile('/'.join(ctx.pattern.split('/')[:-1]))
         # Set --version flag if version number is included in the supplied directory path
-        while 'version' in _regex.groupindex.keys() and ctx.version is None:
+        while 'version' in _regex.groupindex.keys():
             if _regex.search(directory):
-                ctx.version = _regex.search(directory).groupdict()['version']
+                version = _regex.search(directory).groupdict()['version']
                 # If supplied directory has the version number, disable other flags
-                ctx.latest = ctx.all = None
+                ctx.all = None
+                if version == 'latest':
+                    ctx.latest, ctx.version = True, None
+                else:
+                    ctx.latest, ctx.version = False, version
+                break
             else:
                 _regex = re.compile('/'.join(_regex.pattern.split('/')[:-1]))
         # Walk trough the DRS tree
@@ -295,7 +301,7 @@ def generate_mapfile_entry(dataset_id, dataset_version, ffp, size, mtime, csum, 
     :param str mtime: The last modification time
     :param str csum: The file checksum
     :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
-    :returns: THe mapfile line/entry
+    :returns: The mapfile line/entry
     :rtype: *str*
 
     """
@@ -395,6 +401,10 @@ def main(args):
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
     logging.info('==> Scan started')
+    # All incomplete mapfiles from a previous run are silently removed
+    for root, _, filenames in os.walk(ctx.outdir):
+        for filename in filter(filenames, '*{0}'.format(WORKING_EXTENSION)):
+            os.remove(os.path.join(root, filename))
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.threads))
     # Return the list of generated mapfiles full paths
