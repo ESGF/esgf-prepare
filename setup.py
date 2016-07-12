@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='esgprep',
-      version='2.4.2',
+      version='2.4.3',
       description='Toolbox to prepare data for ESGF publication',
       author='Levavasseur Guillaume',
       author_email='glipsl@ipsl.jussieu.fr',
