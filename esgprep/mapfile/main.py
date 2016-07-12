@@ -425,12 +425,10 @@ def main(args):
     # A final mapfile is silently overwritten if already exists
     for outfile in list(set(outfiles)):
         os.rename(outfile, outfile.replace(WORKING_EXTENSION, FINAL_EXTENSION))
+    # Display summary
+    logging.info('==> Scan completed ({0} file(s) scanned)'.format(process.called))
     # Non-zero exit status if any files got filtered
-    msg = '==> Scan completed ({0}/{1} file(s) skipped/scanned)'.format(len(outfiles_all) - len(outfiles),
-                                                                        process.called)
     if None in outfiles_all:
-        logging.warning(msg)
+        logging.warning('{0} file(s) have been skipped'.format(len(outfiles_all) - len(outfiles)))
         sys.exit(1)
-    else:
-        logging.info(msg)
-        sys.exit(0)
+    sys.exit(0)
