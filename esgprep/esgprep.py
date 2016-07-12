@@ -6,7 +6,7 @@ from utils.utils import MultilineFormatter, init_logging, version_checker, direc
 from datetime import datetime
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.4.3', datetime(year=2016, month=7, day=8).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('2.4.4', datetime(year=2016, month=7, day=8).strftime("%Y-%d-%m"))
 
 
 def get_args():
