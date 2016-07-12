@@ -48,6 +48,7 @@ Dependencies and requirements
  * `re <https://docs.python.org/2/library/re.html>`_
  * `sys <https://docs.python.org/2/library/sys.html>`_
  * `string <https://docs.python.org/2/library/string.html>`_
+ * `fnmatch <https://docs.python.org/2/library/fnmatch.html>`_
  * `logging <https://docs.python.org/2/library/logging.html>`_
  * `argparse <https://docs.python.org/2/library/argparse.html>`_
  * `datetime <https://docs.python.org/2/library/datetime.html>`_
