@@ -64,9 +64,7 @@ def translate_directory_format(cfg, project, project_section):
         pattern = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern)
     # Include specific facet patterns
     for facet, facet_pattern in get_patterns(cfg, project_section).iteritems():
-        pattern = re.sub(re.compile(r'%\(({0})\)s'.format(facet)), facet_pattern.pattern, pattern)
-    # Constraint on %(ensemble)s variable    
-    # pattern = re.sub(re.compile(r'%\((ensemble)\)s'), r'(?P<\1>r[\d]+i[\d]+p[\d]+)', pattern)
+        pattern = re.sub(re.compile(r'%\(({0})\)s'.format(facet)), facet_pattern, pattern)
     # Constraint on %(version)s number
     pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
     # Translate all patterns matching %(name)s
@@ -84,12 +82,12 @@ def get_patterns(cfg, section):
     """
     patterns = dict()
     for option in cfg.options(section):
-        if re.compile(r'_pattern').search(option) and option != 'version_pattern':
+        if '_pattern' in option and option != 'version_pattern':
             facet = option.split('_')[0]
             pattern = cfg.get(section, option, raw=True)
             pattern = re.sub(re.compile(r'%\((digit)\)s'), r'[\d]+', pattern)
             pattern = re.sub(re.compile(r'%\((string)\)s'), r'[\w]+', pattern)
-            patterns[facet] = re.compile(r'(?P<{0}>{1})'.format(facet, pattern))
+            patterns[facet] = '(?P<{0}>{1})'.format(facet, pattern)
     return patterns
 
 
