@@ -38,18 +38,19 @@ def config_parse(config_dir, project, project_section):
     return cfg
 
 
-def translate_directory_format(directory_format_raw, project):
+def translate_directory_format(cfg, project, project_section):
     """
     Return a list of regular expression filters associated with the ``directory_format`` option
     in the configuration file. This can be passed to the Python ``re`` methods.
 
+    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
     :param project: The project id as a DRS component
-    :param str directory_format_raw: The raw ``directory_format`` string
+    :param str project_section: The project section name to parse
     :returns: The corresponding ``re`` pattern
 
     """
     # Translation
-    pattern = directory_format_raw.strip()
+    pattern = cfg.get(project_section, 'directory_format', raw=True).strip()
     pattern = pattern.replace('\.', '__ESCAPE_DOT__')
     pattern = pattern.replace('.', r'\.')
     pattern = pattern.replace('__ESCAPE_DOT__', r'\.')
@@ -61,13 +62,35 @@ def translate_directory_format(directory_format_raw, project):
         pattern = re.sub(re.compile(r'^[\w./-]+'), r'(?P<root>[\w./-]+)/', pattern)
     else:
         pattern = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern)
-    # Constraint on %(ensemble)s variable
-    pattern = re.sub(re.compile(r'%\((ensemble)\)s'), r'(?P<\1>r[\d]+i[\d]+p[\d]+)', pattern)
+    # Include specific facet patterns
+    for facet, facet_pattern in get_patterns(cfg, project_section).iteritems():
+        pattern = re.sub(re.compile(r'%\(({0})\)s'.format(facet)), facet_pattern.pattern, pattern)
+    # Constraint on %(ensemble)s variable    
+    # pattern = re.sub(re.compile(r'%\((ensemble)\)s'), r'(?P<\1>r[\d]+i[\d]+p[\d]+)', pattern)
     # Constraint on %(version)s number
     pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
     # Translate all patterns matching %(name)s
     pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
     return '^{0}/(?P<filename>[\w.-]+\.nc)$'.format(pattern)
+
+
+def get_patterns(cfg, section):
+    """
+    Get all ``facet_patterns`` attributes declared into the project section.
+
+    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param str section: The section name to parse
+    :returns: A dictionary of {facet: pattern}
+    """
+    patterns = dict()
+    for option in cfg.options(section):
+        if re.compile(r'_pattern').search(option) and option != 'version_pattern':
+            facet = option.split('_')[0]
+            pattern = cfg.get(section, option, raw=True)
+            pattern = re.sub(re.compile(r'%\((digit)\)s'), r'[\d]+', pattern)
+            pattern = re.sub(re.compile(r'%\((string)\)s'), r'[\w]+', pattern)
+            patterns[facet] = re.compile(r'(?P<{0}>{1})'.format(facet, pattern))
+    return patterns
 
 
 def split_line(line, sep='|'):
@@ -173,7 +196,7 @@ def check_facet(cfg, section, attributes):
 
     """
     for facet in attributes:
-        if facet not in ['project', 'filename', 'variable', 'version']:
+        if facet not in get_patterns(cfg, section).keys() + ['project', 'filename', 'variable', 'version']:
             options = get_facet_options(cfg, section, facet)
             if attributes[facet] not in options:
                 msg = '"{0}" is missing in "{1}_options" or "{1}_map" of the section "{2}"'.format(attributes[facet],
@@ -202,7 +225,7 @@ def get_facet_options(cfg, section, facet):
     elif cfg.has_option(section, '{0}_map'.format(facet)):
         return get_options_from_map(cfg, section, facet)
     else:
-        msg = '"{0}_options" or "{0}_map" is required in section "{1}"'.format(facet, section)
+        msg = '"{0}_options", "{0}_map" or "{0}_pattern" is required in section "{1}"'.format(facet, section)
         logging.warning(msg)
         raise Exception(msg)
 

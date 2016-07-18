@@ -109,11 +109,8 @@ class ProcessingContext(object):
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
         self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
                                      self.cfg.get(self.project_section, 'dataset_id', raw=True)))
-        self.pattern = parser.translate_directory_format(self.cfg.get(self.project_section,
-                                                                      'directory_format',
-                                                                      raw=True),
-                                                         self.project)
-
+        self.pattern = parser.translate_directory_format(self.cfg, self.project, self.project_section)
+        print self.pattern
 
 def yield_inputs(ctx):
     """
