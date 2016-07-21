@@ -21,7 +21,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 from lockfile import LockFile
 
-from esgprep.utils import parser
+from esgprep.utils import parser, utils
 from constants import WORKING_EXTENSION, FINAL_EXTENSION
 from file_handler import File
 
@@ -110,7 +110,7 @@ class ProcessingContext(object):
         self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
                                      self.cfg.get(self.project_section, 'dataset_id', raw=True)))
         self.pattern = parser.translate_directory_format(self.cfg, self.project, self.project_section)
-        print self.pattern
+
 
 def yield_inputs(ctx):
     """
@@ -132,7 +132,7 @@ def yield_inputs(ctx):
     """
     for directory in ctx.directory:
         # Compile directory_format regex without <filename> part
-        regex = _regex = re.compile('/'.join(ctx.pattern.split('/')[:-1]))
+        regex = _regex = re.compile(ctx.pattern.split('/(?P<filename>')[0]+'$')
         # Set --version flag if version number is included in the supplied directory path
         while 'version' in _regex.groupindex.keys():
             if _regex.search(directory):
@@ -147,7 +147,7 @@ def yield_inputs(ctx):
             else:
                 _regex = re.compile('/'.join(_regex.pattern.split('/')[:-1]))
         # Walk trough the DRS tree
-        for root, _, filenames in os.walk(directory, followlinks=True):
+        for root, _, filenames in utils.walk(directory, downstream=True, followlinks=True):
             # Each encountered root matching the regex are directory containing the files
             # So if a root does not match the regex skip it
             try:
@@ -162,10 +162,7 @@ def yield_inputs(ctx):
                         yield ffp, ctx
             else:
                 # Find latest version
-                version_dir = [facets[facet_name] for (facet_name, _) in sorted(regex.groupindex.items(),
-                                                                                key=lambda tup: tup[1])]
-                del version_dir[version_dir.index(facets['version']):]
-                versions = [v for v in os.listdir('/'.join(version_dir)) if re.compile(r'v[\d]+').search(v)]
+                versions = [v for v in os.listdir(root.split(facets['version'])[0]) if re.compile(r'v[\d]+').search(v)]
                 latest_version = sorted(versions)[-1]
                 # If follow the latest symlink only, ensure that version facet is 'latest'
                 if ctx.latest:
@@ -413,7 +410,7 @@ def main(args):
     # Raises exception when all processed files failed (i.e., filtered list empty)
     if not outfiles:
         if process.called == 0:
-            logging.warning('==> No files founds')
+            logging.warning('==> No files found')
             sys.exit(2)
         else:
             logging.warning('==> All files have been ignored or have failed leading to no mapfile.')

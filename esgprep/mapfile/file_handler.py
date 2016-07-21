@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
+import logging
 import os
 import re
-import logging
+
 from esgprep.utils import parser
 
 
@@ -11,6 +12,7 @@ class File(object):
     Handler providing methods to deal with file processing.
 
     """
+
     def __init__(self, ffp):
         # Retrieve file full path
         self.ffp = ffp

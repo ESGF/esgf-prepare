@@ -1,10 +1,22 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import re
-import os
-import sys
+"""
+.. module:: esgprep.checkvocab.main.py
+    :platform: Unix
+    :synopsis: Check DRS vocabulary against configuration files.
+
+.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
+
+"""
+
 import logging
-from esgprep.utils import utils, parser
+import os
+import re
+import sys
+
+from esgprep.utils import parser, utils
+from esgprep.utils.constants import *
 
 
 class ProcessingContext(object):
@@ -27,25 +39,24 @@ class ProcessingContext(object):
     | *self*.facets          | *list*      | List of the DRS facets                     |
     +------------------------+-------------+--------------------------------------------+
 
-    :param argparse.ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: Parsed command-line arguments
     :returns: The processing context
     :rtype: *ProcessingContext*
     :raises Error: If no section corresponds to the project name in the configuration file
 
     """
+
     def __init__(self, args):
-        for path in args.directory:
-            utils.check_directory(path)
         self.directory = args.directory
         self.project = args.project
         self.verbosity = args.v
         self.project_section = 'project:{0}'.format(args.project)
         self.cfg = parser.config_parse(args.i, args.project, self.project_section)
-        self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
-                                     self.cfg.get(self.project_section, 'dataset_id', raw=True)))
-        self.pattern = parser.translate_directory_format(self.cfg.get(self.project_section,
-                                                                      'directory_format',
-                                                                      raw=True)).split('/(?P<version>')[0]
+        #self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
+         #                            self.cfg.get(self.project_section, 'dataset_id', raw=True)))
+        self.pattern = parser.translate_directory_format(self.cfg, self.project, self.project_section)
+        self.pattern = self.pattern.split('/(?P<version>')[0] + '$'
+        self.facets = list(set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_FACETS)))
 
 
 def get_dsets_from_tree(ctx):
@@ -59,9 +70,16 @@ def get_dsets_from_tree(ctx):
 
     """
     for directory in ctx.directory:
-        for root, _, _ in os.walk(directory):
-            if re.compile(r'/v[0-9]{8}/').search(root):
-                yield os.path.dirname(root)
+        # Compile directory_format regex from start to the facet before <version> part
+        regex = re.compile(ctx.pattern)
+        # If the supplied directory is deeper than the version level, walk up the tree
+        for root, _, _ in utils.walk(directory, downstream=False, followlinks=True):
+            if regex.search(root):
+                yield root
+        # Or walk down.
+        for root, _, _ in utils.walk(directory, downstream=True, followlinks=True):
+            if regex.search(root):
+                yield root
 
 
 def get_facet_values_from_tree(ctx, dsets, facets):
@@ -81,13 +99,23 @@ def get_facet_values_from_tree(ctx, dsets, facets):
         try:
             attributes = re.match(ctx.pattern, os.path.realpath(dset)).groupdict()
         except:
-            msg = 'Matching failed to deduce DRS attributes from {0}. Please check the ' \
-                  '"directory_format" regex in the [project:{1}] section.'.format(os.path.realpath(dset), ctx.project)
+            msg = 'DRS attributes cannot be deduce from matching.\n' \
+                  'Please check the "directory_format" regex in the [project:{0}] section.\n' \
+                  'path  -> {1}\n' \
+                  'regex -> {2}'.format(ctx.project, os.path.realpath(dset), ctx.pattern)
             logging.warning(msg)
             raise Exception(msg)
         del attributes['root']
-        for key in attributes.keys():
-            used_values[key].add(attributes[key])
+        for facet in ctx.facets.intersection(attributes.keys()):
+            used_values[facet].add(attributes[facet])
+            # for facet in ctx.facets.difference(attributes.keys()):
+        #        for key in used_values.keys():
+        #           if key in attributes.keys():
+        #              used_values[key].add(attributes[key])
+        #         elif ctx.cfg.has_option(ctx.project_section, '{0}_map'.format(key)):
+        #            used_values[key] = parser.get_option_from_map(ctx.cfg, ctx.project_section, key, attributes)
+        #       else:
+        #          logging.warning('No {0} value can be found for {1}'.format(key, os.path.realpath(dset)))
     return used_values
 
 
@@ -106,8 +134,14 @@ def get_facet_values_from_config(ctx):
         try:
             declared_values[facet] = set(parser.get_facet_options(ctx.cfg, ctx.project_section, facet))
         except:
-            # Catch the exception to keep empty set()
-            declared_values[facet] = set()
+            for m in parser.get_maps(ctx.cfg, ctx.project_section):
+                maptable = ctx.cfg.get(ctx.project_section, m)
+                from_keys, to_keys = parser.split_map_header(maptable.split('\n')[0])
+                if facet in from_keys:
+                    declared_values[facet] = set(parser.get_options_from_map_in_sources(ctx.cfg,
+                                                                                        ctx.project_section,
+                                                                                        maptable,
+                                                                                        facet))
     return declared_values
 
 
@@ -118,6 +152,7 @@ def compare_values(facets, used_values, declared_values, verbosity=False):
     :param list facets: The facets list
     :param dict used_values: Dictionary of sets of used values from DRS tree
     :param dict declared_values: Dictionary of sets of  declared values from the configuration file
+    :param boolean verbosity: Display declared/undeclared and used/unused values if True
     :returns: True if undeclared values in configuration file are used in DRS tree
     :rtype: *boolean*
 
@@ -160,6 +195,8 @@ def main(args):
     :param ArgumentParser args: Parsed command-line arguments
 
     """
+    logging.info('This tool is not available at the moment. Coming soon.')
+    exit()
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
     # Get facets values declared into configuration file

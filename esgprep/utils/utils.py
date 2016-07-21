@@ -121,3 +121,38 @@ def version_checker(version):
     else:
         msg = 'Invalid version type: {0}.\nAvailable format is YYYYMMDD or an integer.'.format(str(version))
         raise ArgumentTypeError(msg)
+
+
+def walk(root, downstream=True, followlinks=False):
+    """
+    A wrapper from ``os.walk`` able to handle "downstream" and "upstream" tree parsing.
+    If "down" argument is True calls usual ``os.walk``.
+    :param string root: The directory to start walking
+    :param boolean downstream: Walking the downstream tree if True
+    :param boolean followlinks: If True to visit directories pointed to by symlinks (only if down is True)
+    :returns: The current directory, its sub-directories and files list as a generator of tuple.
+    :rtype: *iter*
+    :raises Error: If the tree walking fails
+
+    """
+    if downstream:
+        for root, dirs, files in os.walk(root, followlinks=followlinks):
+            yield root, dirs, files
+    else:
+        root = os.path.realpath(root)
+        try:
+            items = os.listdir(root)
+        except Exception as e:
+            raise Exception(e)
+        dirs, files = [], []
+        for item in items:
+            if os.path.isdir(os.path.join(root, item)):
+                dirs.append(item)
+            elif os.path.isfile(os.path.join(root, item)):
+                files.append(item)
+        yield root, dirs, files
+        new_path = os.path.realpath(os.path.join(root, '..'))
+        if new_path == root:
+            return
+        for x in walk(new_path, downstream=False):
+            yield x
