@@ -15,8 +15,6 @@ import os
 import re
 import sys
 
-#from sortedcontainers import SortedSet as Set
-
 from esgprep.utils import parser, utils
 from esgprep.utils.constants import *
 
