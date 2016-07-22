@@ -15,6 +15,8 @@ import os
 import re
 import sys
 
+#from sortedcontainers import SortedSet as Set
+
 from esgprep.utils import parser, utils
 from esgprep.utils.constants import *
 
@@ -52,11 +54,9 @@ class ProcessingContext(object):
         self.verbosity = args.v
         self.project_section = 'project:{0}'.format(args.project)
         self.cfg = parser.config_parse(args.i, args.project, self.project_section)
-        #self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
-         #                            self.cfg.get(self.project_section, 'dataset_id', raw=True)))
         self.pattern = parser.translate_directory_format(self.cfg, self.project, self.project_section)
         self.pattern = self.pattern.split('/(?P<version>')[0] + '$'
-        self.facets = list(set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_FACETS)))
+        self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_FACETS))
 
 
 def get_dsets_from_tree(ctx):
@@ -103,45 +103,41 @@ def get_facet_values_from_tree(ctx, dsets, facets):
                   'Please check the "directory_format" regex in the [project:{0}] section.\n' \
                   'path  -> {1}\n' \
                   'regex -> {2}'.format(ctx.project, os.path.realpath(dset), ctx.pattern)
-            logging.warning(msg)
             raise Exception(msg)
-        del attributes['root']
-        for facet in ctx.facets.intersection(attributes.keys()):
+        # Each facet is ensured to be included into "attributes" from matching
+        for facet in facets:
             used_values[facet].add(attributes[facet])
-            # for facet in ctx.facets.difference(attributes.keys()):
-        #        for key in used_values.keys():
-        #           if key in attributes.keys():
-        #              used_values[key].add(attributes[key])
-        #         elif ctx.cfg.has_option(ctx.project_section, '{0}_map'.format(key)):
-        #            used_values[key] = parser.get_option_from_map(ctx.cfg, ctx.project_section, key, attributes)
-        #       else:
-        #          logging.warning('No {0} value can be found for {1}'.format(key, os.path.realpath(dset)))
     return used_values
 
 
-def get_facet_values_from_config(ctx):
+def get_facet_values_from_config(cfg, section, facets):
     """
     Returns all declared values of each facet from the configuration file, according to the project section.
 
-    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context
+    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param str section: The section name to parse
+    :param set facets: The set of facets to check
     :returns: The declared values of each facet
     :rtype: *dict*
 
     """
     declared_values = {}
-    for facet in ctx.facets:
+    for facet in facets:
         logging.info('Collecting values from INI file(s) for "{0}" facet...'.format(facet))
         try:
-            declared_values[facet] = set(parser.get_facet_options(ctx.cfg, ctx.project_section, facet))
+            declared_values[facet] = parser.get_facet_options(cfg, section, facet)
+            if not isinstance(declared_values[facet], re._pattern_type):
+                declared_values[facet] = set(declared_values[facet])
         except:
-            for m in parser.get_maps(ctx.cfg, ctx.project_section):
-                maptable = ctx.cfg.get(ctx.project_section, m)
-                from_keys, to_keys = parser.split_map_header(maptable.split('\n')[0])
+            for m in parser.get_maps(cfg, section):
+                maptable = cfg.get(section, m)
+                from_keys, _ = parser.split_map_header(maptable.split('\n')[0])
                 if facet in from_keys:
-                    declared_values[facet] = set(parser.get_options_from_map_in_sources(ctx.cfg,
-                                                                                        ctx.project_section,
-                                                                                        maptable,
-                                                                                        facet))
+                    declared_values[facet] = set(parser.get_options_from_map_in_sources(cfg, section, m, facet))
+        finally:
+            if facet not in declared_values.keys():
+                msg = '"{0}" is not declared in section "{1}"'.format(facet, section)
+                raise Exception(msg)
     return declared_values
 
 
@@ -159,22 +155,30 @@ def compare_values(facets, used_values, declared_values, verbosity=False):
     """
     any_undeclared = False
     for facet in facets:
+        if isinstance(declared_values[facet], type(re.compile("", 0))):
+            declared_values[facet] = set([v for v in used_values[facet] if declared_values[facet].search(v)])
         if verbosity:
             if not declared_values[facet]:
                 logging.warning('{0} facet - No declared values'.format(facet))
-                logging.info('{0} facet - Used values: {1}'.format(facet, ', '.join(used_values[facet])))
+                values = ', '.join(sorted(used_values[facet]))
+                logging.info('{0} facet - Used values: {1}'.format(facet, values))
             else:
-                logging.info('{0} facet - Declared values: {1}'.format(facet, ', '.join(declared_values[facet])))
-                logging.info('{0} facet - Used values: {1}'.format(facet, ', '.join(used_values[facet])))
+                values = ', '.join(sorted(declared_values[facet]))
+                logging.info('{0} facet - Declared values: {1}'.format(facet, values))
+                values = ', '.join(sorted(used_values[facet]))
+                logging.info('{0} facet - Used values: {1}'.format(facet, values))
         undeclared_values = used_values[facet].difference(declared_values[facet])
         unused_values = declared_values[facet].difference(used_values[facet])
         updated_values = used_values[facet].union(declared_values[facet])
         if undeclared_values:
-            logging.info('{0} facet - UNDECLARED values: {1}'.format(facet, ', '.join(undeclared_values)))
+            values = ', '.join(sorted(undeclared_values))
+            logging.info('{0} facet - UNDECLARED values: {1}'.format(facet, values))
             any_undeclared = True
-            logging.info('{0} facet - UPDATED values to declare: {1}'.format(facet, ', '.join(updated_values)))
+            values = ', '.join(sorted(updated_values))
+            logging.info('{0} facet - UPDATED values to declare: {1}'.format(facet, values))
         if unused_values and verbosity:
-            logging.info('{0} facet - Unused values: {1}'.format(facet, ', '.join(unused_values)))
+            values = ', '.join(sorted(unused_values))
+            logging.info('{0} facet - Unused values: {1}'.format(facet, values))
     if any_undeclared:
         logging.error('Result: THERE WERE UNDECLARED VALUES USED.')
     else:
@@ -195,16 +199,15 @@ def main(args):
     :param ArgumentParser args: Parsed command-line arguments
 
     """
-    logging.info('This tool is not available at the moment. Coming soon.')
-    exit()
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
     # Get facets values declared into configuration file
-    facet_values_config = get_facet_values_from_config(ctx)
+    facet_values_config = get_facet_values_from_config(ctx.cfg, ctx.project_section, ctx.facets)
     # Walk trough DRS to get all dataset roots
     dsets = get_dsets_from_tree(ctx)
     # Get facets values used by DRS tree
     facet_values_tree = get_facet_values_from_tree(ctx, dsets, list(ctx.facets))
+    # Compare values from tree against values from configuration file
     any_disallowed = compare_values(list(ctx.facets), facet_values_tree, facet_values_config, ctx.verbosity)
     if any_disallowed:
         sys.exit(1)

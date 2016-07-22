@@ -14,6 +14,23 @@ import string
 from constants import *
 
 
+class CfgParser(ConfigParser.ConfigParser):
+    """
+    Custom ConfigParser class can get options() with/without defaults
+
+    """
+    def options(self, section, defaults=True, **kwargs):
+        try:
+            opts = self._sections[section].copy()
+        except KeyError:
+            raise ConfigParser.NoSectionError(section)
+        if defaults:
+            opts.update(self._defaults)
+        if '__name__' in opts:
+            del opts['__name__']
+        return opts.keys()
+
+
 def config_parse(config_dir, project, project_section):
     """
     Parses the configuration files if exist.
@@ -29,7 +46,7 @@ def config_parse(config_dir, project, project_section):
     if not os.path.isfile('{0}/esg.ini'.format(os.path.normpath(config_dir))):
         msg = '"esg.ini" file not found'
         logging.warning(msg)
-    cfg = ConfigParser.ConfigParser()
+    cfg = CfgParser()
     cfg.read('{0}/esg.ini'.format(os.path.normpath(config_dir)))
     if project_section not in cfg.sections():
         if not os.path.isfile('{0}/esg.{1}.ini'.format(os.path.normpath(config_dir), project)):
@@ -71,32 +88,13 @@ def translate_directory_format(cfg, project, project_section):
     else:
         pattern = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern)
     # Include specific facet patterns
-    for facet, facet_pattern in get_patterns(cfg, project_section).iteritems():
-        pattern = re.sub(re.compile(r'%\(({0})\)s'.format(facet)), facet_pattern, pattern)
+    for facet, facet_regex in get_options_from_patterns(cfg, project_section).iteritems():
+        pattern = re.sub(re.compile(r'%\(({0})\)s'.format(facet)), facet_regex.pattern, pattern)
     # Constraint on %(version)s number
     pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
     # Translate all patterns matching %(name)s
     pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
     return '^{0}/(?P<filename>[\w.-]+)$'.format(pattern)
-
-
-def get_patterns(cfg, section):
-    """
-    Get all ``facet_patterns`` attributes declared into the project section.
-
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
-    :param str section: The section name to parse
-    :returns: A dictionary of {facet: pattern}
-    """
-    patterns = dict()
-    for option in cfg.options(section):
-        if '_pattern' in option and option != 'version_pattern':
-            facet = option.split('_')[0]
-            pattern = cfg.get(section, option, raw=True)
-            pattern = re.sub(re.compile(r'%\((digit)\)s'), r'[\d]+', pattern)
-            pattern = re.sub(re.compile(r'%\((string)\)s'), r'[\w]+', pattern)
-            patterns[facet] = '(?P<{0}>{1})'.format(facet, pattern)
-    return patterns
 
 
 def split_line(line, sep='|'):
@@ -202,13 +200,12 @@ def check_facet(cfg, section, attributes):
 
     """
     for facet in attributes:
-        if facet not in get_patterns(cfg, section).keys() + IGNORED_FACETS:
+        if facet not in get_options_from_patterns(cfg, section).keys() + IGNORED_FACETS:
             options = get_facet_options(cfg, section, facet)
             if attributes[facet] not in options:
                 msg = '"{0}" is missing in "{1}_options" or "{1}_map" of the section "{2}"'.format(attributes[facet],
                                                                                                    facet,
                                                                                                    section)
-                logging.warning(msg)
                 raise Exception(msg)
         else:
             pass
@@ -231,10 +228,9 @@ def get_facet_options(cfg, section, facet):
     elif cfg.has_option(section, '{0}_map'.format(facet)):
         return get_options_from_map(cfg, section, facet)
     elif cfg.has_option(section, '{0}_pattern'.format(facet)):
-        pass  # TODO: returns the re.compile(facet_pattern)
+        return get_options_from_pattern(cfg, section, facet)
     else:
         msg = '"{0}_options", "{0}_map" or "{0}_pattern" is required in section "{1}"'.format(facet, section)
-        logging.warning(msg)
         raise Exception(msg)
 
 
@@ -258,7 +254,6 @@ def get_options_from_list(cfg, section, facet):
             except:
                 msg = '"{0}" is misdeclared. Please follow the format ' \
                       '"project | experiment | description"'.format(option)
-                logging.warning(msg)
                 raise Exception(msg)
         else:
             options = split_line(cfg.get(section, option), sep=',')
@@ -282,9 +277,26 @@ def get_options_from_map(cfg, section, facet):
     from_keys, to_keys, value_map = split_map(cfg.get(section, option))
     if facet not in to_keys:
         msg = '{0} is misdeclared. {1} facet has to be in "destination facets"'.format(option, facet)
-        logging.warning(msg)
         raise Exception(msg)
     return list(set([value[to_keys.index(facet)] for value in value_map.values()]))
+
+
+def get_options_from_pattern(cfg, section, facet):
+    """
+    Get all ``facet_patterns`` attributes declared into the project section.
+
+    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param str section: The section name to parse
+    :param str facet: The facet to get available values
+    :returns: The facet regex
+    :rtype: *re.RegexObject*
+    """
+    option = '{0}_pattern'.format(facet)
+    pattern = cfg.get(section, option, raw=True)
+    pattern = re.sub(re.compile(r'%\((digit)\)s'), r'[\d]+', pattern)
+    pattern = re.sub(re.compile(r'%\((string)\)s'), r'[\w]+', pattern)
+    # TODO: Add the %(facet)s sub-pattern to combine several facets
+    return re.compile('(?P<{0}>{1})'.format(facet, pattern))
 
 
 def get_options_from_map_in_sources(cfg, section, option, facet):
@@ -302,10 +314,8 @@ def get_options_from_map_in_sources(cfg, section, option, facet):
     from_keys, to_keys, value_map = split_map(cfg.get(section, option))
     if facet not in from_keys:
         msg = '{0} is misdeclared. {1} facet has to be in "source facets"'.format(option, facet)
-        logging.warning(msg)
         raise Exception(msg)
-    return list(set([value[from_keys.index(facet)] for value in value_map.values()]))
-
+    return list(set([value[from_keys.index(facet)] for value in value_map.keys()]))
 
 
 def get_option_from_map(cfg, section, facet, attributes):
@@ -324,11 +334,26 @@ def get_option_from_map(cfg, section, facet, attributes):
     from_keys, to_keys, value_map = split_map(cfg.get(section, option))
     if facet not in to_keys:
         msg = '{0} is misdeclared. {1} facet has to be in "destination facet"'.format(option, facet)
-        logging.warning(msg)
         raise Exception(msg)
     from_values = tuple(attributes[key] for key in from_keys)
     to_values = value_map[from_values]
     return to_values[to_keys.index(facet)]
+
+
+def get_options_from_patterns(cfg, section):
+    """
+    Get all ``facet_patterns`` attributes declared into the project section.
+
+    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param str section: The section name to parse
+    :returns: A dictionary of {facet: pattern}
+    """
+    patterns = dict()
+    for option in cfg.options(section, defaults=False):
+        if '_pattern' in option and option != 'version_pattern':
+            facet = option.split('_')[0]
+            patterns[facet] = get_options_from_pattern(cfg, section, facet)
+    return patterns
 
 
 def get_default_value(cfg, section, facet):
@@ -344,14 +369,12 @@ def get_default_value(cfg, section, facet):
     """
     if not cfg.has_option(section, 'category_defaults'):
         msg = '"category_defaults" attribute is missing'
-        logging.warning(msg)
         raise Exception(msg)
     category_default = split_line(cfg.get(section, 'category_defaults'), sep='\n')
     try:
         default_values = {k: v for (k, v) in map(lambda x: split_line(x), category_default[1:])}
     except:
         msg = '"category_defaults" is misdeclared. Please follow the format "facet | default_value"'
-        logging.warning(msg)
         raise Exception(msg)
     return default_values[facet]
 
@@ -368,9 +391,9 @@ def get_maps(cfg, section):
     """
     if not cfg.has_option(section, 'maps'):
         msg = '"maps" attribute is missing'
-        logging.warning(msg)
         raise Exception(msg)
     return split_line(cfg.get(section, 'maps'), sep=',')
+
 
 def get_project_options(cfg):
     """
@@ -388,7 +411,6 @@ def get_project_options(cfg):
                                                                        project_option_lines[1:])]
         except:
             msg = '"project_options" is misdeclared. Please follow the format "id | project | description".'
-            logging.warning(msg)
             raise Exception(msg)
     else:
         options = list()
