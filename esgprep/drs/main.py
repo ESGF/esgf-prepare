@@ -1,4 +1,14 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+.. module:: esgprep.drs.main.py
+    :platform: Unix
+    :synopsis: Manages the filesystem tree according to the project DRS and versioning.
+
+.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
+
+"""
 
 import logging
 

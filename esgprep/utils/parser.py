@@ -1,25 +1,37 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
    :platform: Unix
-   :synopsis: Methods used to parser ESGF ini files.
+   :synopsis: Methods used to parse ESGF ini files.
 
 """
 
+import os
 import ConfigParser
 import logging
-import os
 import re
 import string
 
 from constants import *
+from exceptions import *
 
 
 class CfgParser(ConfigParser.ConfigParser):
     """
-    Custom ConfigParser class can get options() with/without defaults
+    Custom ConfigParser class
 
     """
+
+    def __init__(self):
+        ConfigParser.ConfigParser.__init__(self)
+        self.read_paths = list()
+
     def options(self, section, defaults=True, **kwargs):
+        """
+        Can get options() with/without defaults.
+
+        """
         try:
             opts = self._sections[section].copy()
         except KeyError:
@@ -30,45 +42,65 @@ class CfgParser(ConfigParser.ConfigParser):
             del opts['__name__']
         return opts.keys()
 
+    def read(self, filenames):
+        """
+        Read and parse a filename or a list of filenames, and records there paths.
+        """
+        if isinstance(filenames, basestring):
+            filenames = [filenames]
+        for filename in filenames:
+            try:
+                fp = open(filename)
+            except IOError:
+                continue
+            self._read(fp, filename)
+            fp.close()
+            self.read_paths.append(filename)
 
-def config_parse(config_dir, project, project_section):
+
+def config_parse(path, section):
     """
     Parses the configuration files if exist.
 
-    :param str config_dir: The absolute or relative path of the configuration file directory
-    :param str project: The project name to target esg.<project>.ini file
-    :param str project_section: The project section
+    :param str path: The absolute or relative path of the configuration file directory
+    :param str section: The project section
     :returns: The configuration file parser
     :rtype: *ConfigParser*
     :raises Error: If no configuration file exists
+    :raises Error: If the configuration file parsing fails
 
     """
-    if not os.path.isfile('{0}/esg.ini'.format(os.path.normpath(config_dir))):
-        msg = '"esg.ini" file not found'
+    path = os.path.abspath(os.path.normpath(path))
+    project = section.split('project:')[1]
+    if not os.path.isfile('{0}/esg.ini'.format(path)):
+        msg = "'{0}/esg.ini' not found in ".format(path)
         logging.warning(msg)
     cfg = CfgParser()
-    cfg.read('{0}/esg.ini'.format(os.path.normpath(config_dir)))
-    if project_section not in cfg.sections():
-        if not os.path.isfile('{0}/esg.{1}.ini'.format(os.path.normpath(config_dir), project)):
-            raise Exception('"esg.{0}.ini" file not found'.format(project))
-        cfg.read('{0}/esg.{1}.ini'.format(os.path.normpath(config_dir), project))
+    cfg.read('{0}/esg.ini'.format(path))
+    if section not in cfg.sections():
+        if not os.path.isfile('{0}/esg.{1}.ini'.format(path, project)):
+            raise NoConfigFile('{0}/esg.{1}.ini'.format(path, project))
+        cfg.read('{0}/esg.{1}.ini'.format(path, project))
+    if section not in cfg.sections():
+        raise NoConfigSection(section, cfg.read_paths)
     if not cfg:
-        raise Exception('Configuration file parsing failed')
+        raise EmptyConfigFile(cfg.read_paths)
     return cfg
 
 
-def translate_directory_format(cfg, project, project_section):
+def translate_directory_format(cfg, project_section):
     """
     Return a list of regular expression filters associated with the ``directory_format`` option
     in the configuration file. This can be passed to the Python ``re`` methods.
 
     :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
-    :param project: The project id as a DRS component
     :param str project_section: The project section name to parse
     :returns: The corresponding ``re`` pattern
 
     """
-    # Translation
+    # Pick up project name
+    project = project_section.split('project:')[1]
+    # Start translation
     pattern = cfg.get(project_section, 'directory_format', raw=True).strip()
     pattern = pattern.replace('\.', '__ESCAPE_DOT__')
     pattern = pattern.replace('.', r'\.')
@@ -153,7 +185,7 @@ def split_map_header(header):
     header_pattern = re.compile(r'map\s*\((?P<from_keys>[^(:)]*):(?P<to_keys>[^(:)]*)\)')
     result = re.match(header_pattern, header).groupdict()
     if result is None:
-        raise Exception('Invalid map header: {0}'.format(header))
+        raise InvalidMapHeader(header_pattern, header)
     from_keys = split_line(result['from_keys'], sep=',')
     to_keys = split_line(result['to_keys'], sep=',')
     return from_keys, to_keys
@@ -181,9 +213,9 @@ def split_map(option, sep='|'):
         if from_values not in result.keys():
             result[from_values] = to_values
         else:
-            raise Exception('"{0}" maptable has duplicated lines'.format(lines[0]))
+            raise DuplicatedMapEntry(fields)
         if len(from_values) != n_from:
-            raise Exception("Map entry does not match header: {0}".format(record))
+            raise InvalidMapEntry(fields)
     return from_keys, to_keys, result
 
 
@@ -201,12 +233,9 @@ def check_facet(cfg, section, attributes):
     """
     for facet in attributes:
         if facet not in get_options_from_patterns(cfg, section).keys() + IGNORED_FACETS:
-            options = get_facet_options(cfg, section, facet)
+            options, option = get_facet_options(cfg, section, facet)
             if attributes[facet] not in options:
-                msg = '"{0}" is missing in "{1}_options" or "{1}_map" of the section "{2}"'.format(attributes[facet],
-                                                                                                   facet,
-                                                                                                   section)
-                raise Exception(msg)
+                raise NoConfigValue(attributes[facet], option, section, cfg.read_paths)
         else:
             pass
 
@@ -224,14 +253,13 @@ def get_facet_options(cfg, section, facet):
 
     """
     if cfg.has_option(section, '{0}_options'.format(facet)):
-        return get_options_from_list(cfg, section, facet)
+        return get_options_from_list(cfg, section, facet), '{0}_options'.format(facet)
     elif cfg.has_option(section, '{0}_map'.format(facet)):
-        return get_options_from_map(cfg, section, facet)
+        return get_options_from_map(cfg, section, facet), '{0}_map'.format(facet)
     elif cfg.has_option(section, '{0}_pattern'.format(facet)):
-        return get_options_from_pattern(cfg, section, facet)
+        return get_options_from_pattern(cfg, section, facet), '{0}_pattern'.format(facet)
     else:
-        msg = '"{0}_options", "{0}_map" or "{0}_pattern" is required in section "{1}"'.format(facet, section)
-        raise Exception(msg)
+        raise NoConfigOptions(facet, section, cfg.read_paths)
 
 
 def get_options_from_list(cfg, section, facet):

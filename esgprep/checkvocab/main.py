@@ -4,7 +4,7 @@
 """
 .. module:: esgprep.checkvocab.main.py
     :platform: Unix
-    :synopsis: Check DRS vocabulary against configuration files.
+    :synopsis: Checks DRS vocabulary against configuration files.
 
 .. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
 
@@ -42,7 +42,6 @@ class ProcessingContext(object):
     :param ArgumentParser args: Parsed command-line arguments
     :returns: The processing context
     :rtype: *ProcessingContext*
-    :raises Error: If no section corresponds to the project name in the configuration file
 
     """
 
@@ -51,8 +50,8 @@ class ProcessingContext(object):
         self.project = args.project
         self.verbosity = args.v
         self.project_section = 'project:{0}'.format(args.project)
-        self.cfg = parser.config_parse(args.i, args.project, self.project_section)
-        self.pattern = parser.translate_directory_format(self.cfg, self.project, self.project_section)
+        self.cfg = parser.config_parse(args.i, self.project_section)
+        self.pattern = parser.translate_directory_format(self.cfg, self.project_section)
         self.pattern = self.pattern.split('/(?P<version>')[0] + '$'
         self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_FACETS))
 

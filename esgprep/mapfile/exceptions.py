@@ -1,9 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
-.. module:: esgprep.mapfile.exceptions.py
     :platform: Unix
     :synopsis: Custom exceptions used in this module for better readability of code.
-
-.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
 
 """
 

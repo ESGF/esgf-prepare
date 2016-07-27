@@ -14,16 +14,16 @@ import logging
 import os
 import re
 import sys
-from fnmatch import filter
 from datetime import datetime
+from fnmatch import filter
 from functools import wraps
 from multiprocessing.dummy import Pool as ThreadPool
 
 from lockfile import LockFile
 
+from constants import *
 from esgprep.utils import parser, utils
-from constants import WORKING_EXTENSION, FINAL_EXTENSION
-from file_handler import File
+from handler import File
 
 
 class ProcessingContext(object):
@@ -77,9 +77,9 @@ class ProcessingContext(object):
     :param ArgumentParser args: Parsed command-line arguments
     :returns: The processing context
     :rtype: *ProcessingContext*
-    :raises Error: If no section corresponds to the project name in the configuration file
 
     """
+
     def __init__(self, args):
         self.directory = args.directory
         self.outmap = args.mapfile
@@ -100,7 +100,7 @@ class ProcessingContext(object):
         self.filter = args.filter
         self.project = args.project
         self.project_section = 'project:{0}'.format(args.project)
-        self.cfg = parser.config_parse(args.i, args.project, self.project_section)
+        self.cfg = parser.config_parse(args.i, self.project_section)
         if args.no_checksum:
             self.checksum_client, self.checksum_type = None, None
         elif self.cfg.has_option('DEFAULT', 'checksum'):
@@ -109,7 +109,7 @@ class ProcessingContext(object):
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
         self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
                                      self.cfg.get(self.project_section, 'dataset_id', raw=True)))
-        self.pattern = parser.translate_directory_format(self.cfg, self.project, self.project_section)
+        self.pattern = parser.translate_directory_format(self.cfg, self.project_section)
 
 
 def yield_inputs(ctx):
@@ -132,7 +132,7 @@ def yield_inputs(ctx):
     """
     for directory in ctx.directory:
         # Compile directory_format regex without <filename> part
-        regex = _regex = re.compile(ctx.pattern.split('/(?P<filename>')[0]+'$')
+        regex = _regex = re.compile(ctx.pattern.split('/(?P<filename>')[0] + '$')
         # Set --version flag if version number is included in the supplied directory path
         while 'version' in _regex.groupindex.keys():
             if _regex.search(directory):
@@ -224,6 +224,7 @@ def counted(fct):
     :rtype: *callable*
 
     """
+
     # Convenience decorator to keep the file_process docstring
     @wraps(fct)
     def wrap(*args, **kwargs):
@@ -232,6 +233,7 @@ def counted(fct):
         """
         wrap.called += 1
         return fct(*args, **kwargs)
+
     wrap.called = 0
     wrap.__name__ = fct.__name__
     return wrap

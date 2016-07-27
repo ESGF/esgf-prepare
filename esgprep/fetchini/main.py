@@ -1,13 +1,24 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
+"""
+.. module:: esgprep.fetchini.main.py
+    :platform: Unix
+    :synopsis: Fetches ESGF configuration files from GitHub repository.
+
+.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
+
+"""
+
+import ConfigParser
+import logging
+import os
 import re
 import sys
-import os
-import logging
-import ConfigParser
-import requests
-from esgprep.utils import parser
 
+import requests
+
+from esgprep.utils import parser
 
 # GitHub configuration
 __GITHUB_API__ = 'https://api.github.com'
@@ -46,7 +57,7 @@ def query_yes_no(question, default='no'):
     """
     # Dictionary of valid answers
     valid = {'yes': True, 'y': True, 'YES': True, 'Y': True, 'Yes': True,
-             'no': False, 'n': False, 'NO': False, 'N': False, 'No': False}
+             'no':  False, 'n': False, 'NO': False, 'N': False, 'No': False}
     # Modify prompt depending on the default value
     if default is None:
         prompt = '[y/n]'

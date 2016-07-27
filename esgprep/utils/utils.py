@@ -1,14 +1,16 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
    :platform: Unix
-   :synopsis: Useful functions to use with esgprep modules.
+   :synopsis: Useful functions to use with this package.
 
 """
 
 # Module imports
+import logging
 import os
 import re
-import logging
 import textwrap
 from argparse import HelpFormatter, ArgumentTypeError
 from datetime import datetime
@@ -93,11 +95,11 @@ def directory_checker(path):
     :raises Error: If one of the directory does not exist
 
     """
-    directory = os.path.normpath(str(path))
-    if not os.path.isdir(directory):
-        msg = 'No such directory: {0}'.format(directory)
+    path = os.path.abspath(os.path.normpath(path))
+    if not os.path.isdir(path):
+        msg = 'No such directory: {0}'.format(path)
         raise ArgumentTypeError(msg)
-    return directory
+    return path
 
 
 def version_checker(version):

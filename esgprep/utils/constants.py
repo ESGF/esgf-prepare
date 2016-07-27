@@ -1,9 +1,9 @@
-"""
-.. module:: esgprep.utils.constants.py
-    :platform: Unix
-    :synopsis: Constants used in this module for better readability of code.
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
+"""
+    :platform: Unix
+    :synopsis: Constants used in this module.
 
 """
 
