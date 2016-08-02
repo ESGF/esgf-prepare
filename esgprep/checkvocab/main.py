@@ -17,6 +17,7 @@ import sys
 
 from esgprep.utils import parser, utils
 from esgprep.utils.constants import *
+from esgprep.utils.exceptions import *
 
 
 class ProcessingContext(object):
@@ -96,11 +97,7 @@ def get_facet_values_from_tree(ctx, dsets, facets):
         try:
             attributes = re.match(ctx.pattern, os.path.realpath(dset)).groupdict()
         except:
-            msg = 'DRS attributes cannot be deduce from matching.\n' \
-                  'Please check the "directory_format" regex in the [project:{0}] section.\n' \
-                  'path  -> {1}\n' \
-                  'regex -> {2}'.format(ctx.project, os.path.realpath(dset), ctx.pattern)
-            raise Exception(msg)
+            raise DirectoryNotMatch(os.path.realpath(dset), ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
         # Each facet is ensured to be included into "attributes" from matching
         for facet in facets:
             used_values[facet].add(attributes[facet])
@@ -122,19 +119,18 @@ def get_facet_values_from_config(cfg, section, facets):
     for facet in facets:
         logging.info('Collecting values from INI file(s) for "{0}" facet...'.format(facet))
         try:
-            declared_values[facet] = parser.get_facet_options(cfg, section, facet)
-            if not isinstance(declared_values[facet], re._pattern_type):
+            declared_values[facet], _ = parser.get_facet_options(cfg, section, facet)
+            if not isinstance(declared_values[facet], type(re.compile("", 0))):
                 declared_values[facet] = set(declared_values[facet])
         except:
             for m in parser.get_maps(cfg, section):
                 maptable = cfg.get(section, m)
                 from_keys, _ = parser.split_map_header(maptable.split('\n')[0])
                 if facet in from_keys:
-                    declared_values[facet] = set(parser.get_options_from_map_in_sources(cfg, section, m, facet))
+                    declared_values[facet] = set(parser.get_options_from_map(cfg, section, facet, in_sources=True))
         finally:
             if facet not in declared_values.keys():
-                msg = '"{0}" is not declared in section "{1}"'.format(facet, section)
-                raise Exception(msg)
+                raise NoConfigOptions(facet, section, cfg.read_paths)
     return declared_values
 
 

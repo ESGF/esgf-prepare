@@ -23,6 +23,7 @@ from lockfile import LockFile
 
 from constants import *
 from esgprep.utils import parser, utils
+from exceptions import *
 from handler import File
 
 
@@ -132,65 +133,26 @@ def yield_inputs(ctx):
     """
     for directory in ctx.directory:
         # Compile directory_format regex without <filename> part
-        regex = _regex = re.compile(ctx.pattern.split('/(?P<filename>')[0] + '$')
+        regex = re.compile(ctx.pattern.split('/(?P<filename>')[0] + '$')
         # Set --version flag if version number is included in the supplied directory path
-        while 'version' in _regex.groupindex.keys():
-            if _regex.search(directory):
-                version = _regex.search(directory).groupdict()['version']
+        while 'version' in regex.groupindex.keys():
+            if regex.search(directory):
+                version = regex.search(directory).groupdict()['version']
                 # If supplied directory has the version number, disable other flags
-                ctx.all = None
                 if version == 'latest':
-                    ctx.latest, ctx.version = True, None
+                    ctx.all, ctx.latest, ctx.version = None, True, None
                 else:
-                    ctx.latest, ctx.version = False, version
+                    ctx.all, ctx.latest, ctx.version = None, False, version
                 break
             else:
-                _regex = re.compile('/'.join(_regex.pattern.split('/')[:-1]))
+                regex = re.compile('/'.join(regex.pattern.split('/')[:-1]))
         # Walk trough the DRS tree
         for root, _, filenames in utils.walk(directory, downstream=True, followlinks=True):
-            # Each encountered root matching the regex are directory containing the files
-            # So if a root does not match the regex skip it
-            try:
-                facets = regex.search(root).groupdict()
-            except AttributeError:
-                continue
-            # If version not included into the directory structure
-            if 'version' not in facets.keys():
+            if '/files/' not in root:
                 for filename in filenames:
                     ffp = os.path.join(root, filename)
                     if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
                         yield ffp, ctx
-            else:
-                # Find latest version
-                versions = [v for v in os.listdir(root.split(facets['version'])[0]) if re.compile(r'v[\d]+').search(v)]
-                latest_version = sorted(versions)[-1]
-                # If follow the latest symlink only, ensure that version facet is 'latest'
-                if ctx.latest:
-                    if facets['version'] == 'latest':
-                        for filename in filenames:
-                            ffp = os.path.join(root, filename)
-                            if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
-                                yield ffp, ctx
-                # Pick up the specified version only (from directory path or --version flag)
-                elif ctx.version:
-                    if facets['version'] == ctx.version:
-                        for filename in filenames:
-                            ffp = os.path.join(root, filename)
-                            if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
-                                yield ffp, ctx
-                # Pick up all encountered versions
-                elif ctx.all:
-                    if facets['version'] != 'latest':
-                        for filename in filenames:
-                            ffp = os.path.join(root, filename)
-                            if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
-                                yield ffp, ctx
-                # Pick up the latest version among encountered versions (default)
-                elif facets['version'] == latest_version:
-                    for filename in filenames:
-                        ffp = os.path.join(root, filename)
-                        if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
-                            yield ffp, ctx
 
 
 def wrapper(inputs):
@@ -206,12 +168,12 @@ def wrapper(inputs):
     ffp, ctx = inputs
     try:
         return process(ffp, ctx)
-    except:
-        # Use verbosity to raise threads traceback errors
+    except Exception as e:
+        # Use verbosity to raise the whole threads traceback errors
         if not ctx.verbose:
-            logging.warning('{0} skipped'.format(ffp))
+            logging.error('{0} skipped\n{1}: {2}'.format(ffp, e.__class__.__name__, e.message))
         else:
-            logging.exception('A thread-process fails:')
+            logging.exception('{0} failed'.format(ffp))
         return None
 
 
@@ -337,6 +299,38 @@ def insert_mapfile_entry(outfile, entry, ffp):
     logging.info('{0} <-- {1}'.format(os.path.splitext(os.path.basename(outfile))[0], ffp))
 
 
+def in_version_scope(fh, ctx):
+    # Get the version number from DRS tree
+    try:
+        path_version = fh.get('version')
+    except KeyNotFound:
+        # If version not included into the directory structure
+        return True
+    else:
+        # Find latest version
+        versions = [v for v in os.listdir(fh.ffp.split(path_version)[0]) if re.compile(r'v[\d]+').search(v)]
+        latest_version = sorted(versions)[-1]
+        # If follow the latest symlink only, ensure that version facet is 'latest'
+        if ctx.latest:
+            if path_version == 'latest':
+                pointed_path = os.path.realpath(''.join(re.split(r'(latest)', fh.ffp)[:-1]))
+                fh.attributes['version'] = os.path.basename(pointed_path)
+                return True
+        # Pick up the specified version only (--version flag)
+        elif ctx.version:
+            if path_version == ctx.version:
+                return True
+        # Pick up all encountered versions
+        elif ctx.all:
+            if path_version != 'latest':
+                return True
+        # Pick up the latest version among encountered versions (default)
+        elif path_version == latest_version:
+            return True
+        else:
+            return False
+
+
 @counted
 def process(ffp, ctx):
     """
@@ -361,6 +355,9 @@ def process(ffp, ctx):
     fh = File(ffp)
     # Matching between directory_format and file full path
     fh.load_attributes(ctx)
+    # Silently stop process if not in desired version scope
+    if not in_version_scope(fh, ctx):
+        return False
     # Deduce dataset_id
     dataset_id = fh.get_dataset_id(ctx)
     # Deduce dataset_version
@@ -405,7 +402,7 @@ def main(args):
     pool = ThreadPool(int(ctx.threads))
     # Return the list of generated mapfiles full paths
     outfiles_all = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
-    outfiles = [x for x in outfiles_all if x is not None]
+    outfiles = [x for x in outfiles_all if x is not None and not False]
     # Close threads pool
     pool.close()
     pool.join()
@@ -422,9 +419,9 @@ def main(args):
     for outfile in list(set(outfiles)):
         os.rename(outfile, outfile.replace(WORKING_EXTENSION, FINAL_EXTENSION))
     # Display summary
-    logging.info('==> Scan completed ({0} file(s) scanned)'.format(process.called))
+    logging.info('==> Scan completed ({0} file(s) scanned)'.format(len(outfiles)))
     # Non-zero exit status if any files got filtered
     if None in outfiles_all:
-        logging.warning('{0} file(s) have been skipped'.format(len(outfiles_all) - len(outfiles)))
+        logging.warning('{0} file(s) have been skipped'.format(outfiles_all.count(None)))
         sys.exit(1)
     sys.exit(0)

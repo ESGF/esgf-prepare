@@ -7,9 +7,9 @@
 
 """
 
-import os
 import ConfigParser
 import logging
+import os
 import re
 import string
 
@@ -73,7 +73,7 @@ def config_parse(path, section):
     path = os.path.abspath(os.path.normpath(path))
     project = section.split('project:')[1]
     if not os.path.isfile('{0}/esg.ini'.format(path)):
-        msg = "'{0}/esg.ini' not found in ".format(path)
+        msg = "'esg.ini' not found in '{0}'".format(path)
         logging.warning(msg)
     cfg = CfgParser()
     cfg.read('{0}/esg.ini'.format(path))
@@ -98,26 +98,13 @@ def translate_directory_format(cfg, project_section):
     :returns: The corresponding ``re`` pattern
 
     """
-    # Pick up project name
-    project = project_section.split('project:')[1]
     # Start translation
     pattern = cfg.get(project_section, 'directory_format', raw=True).strip()
     pattern = pattern.replace('\.', '__ESCAPE_DOT__')
     pattern = pattern.replace('.', r'\.')
     pattern = pattern.replace('__ESCAPE_DOT__', r'\.')
-    # Build %(project)s variable if not exists or replace it by default value
-    if not re.compile(r'%\((project)\)s').search(pattern):
-        pattern = re.sub(project.lower(), r'(?P<project>[\\w.-]+)', pattern)
-        logging.warning('%(project)s pattern added to "directory_format')
-    else:
-        project_default = get_default_value(cfg, project_section, 'project')
-        pattern = re.sub(re.compile(r'%\((project)\)s'), project_default, pattern)
-        logging.warning('%(project)s pattern replaced by default value: {0}'.format(project_default))
-    # Build %(root)s variable if not exists or translate it
-    if not re.compile(r'%\((root)\)s').search(pattern):
-        pattern = re.sub(re.compile(r'^[\w./-]+'), r'(?P<root>[\w./-]+)/', pattern)
-        logging.warning('%(root)s pattern added to "directory_format')
-    else:
+    # Translate %(root)s variable if exists but not required. Can include the project name.
+    if re.compile(r'%\((root)\)s').search(pattern):
         pattern = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern)
     # Include specific facet patterns
     for facet, facet_regex in get_options_from_patterns(cfg, project_section).iteritems():
@@ -126,7 +113,7 @@ def translate_directory_format(cfg, project_section):
     pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
     # Translate all patterns matching %(name)s
     pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
-    return '^{0}/(?P<filename>[\w.-]+)$'.format(pattern)
+    return '{0}/(?P<filename>[\w.-]+)$'.format(pattern)
 
 
 def split_line(line, sep='|'):
@@ -280,9 +267,8 @@ def get_options_from_list(cfg, section, facet):
             try:
                 options = [exp_option[1] for exp_option in map(lambda x: split_line(x), experiment_option_lines[1:])]
             except:
-                msg = '"{0}" is misdeclared. Please follow the format ' \
-                      '"project | experiment | description"'.format(option)
-                raise Exception(msg)
+                raise MisdeclaredOption(option, section, cfg.read_paths,
+                                        reason="Please follow the format: 'project | experiment | description'")
         else:
             options = split_line(cfg.get(section, option), sep=',')
     else:
@@ -290,23 +276,30 @@ def get_options_from_list(cfg, section, facet):
     return options
 
 
-def get_options_from_map(cfg, section, facet):
+def get_options_from_map(cfg, section, facet, in_sources=False):
     """
     Returns the list of facet options from maptable.
     :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
     :param str section: The section name to parse
     :param str facet: The facet to get available values
+    :param boolean in_sources: True if facet is in "source keys" (default is False)
     :returns: The facet options
     :rtype: *list*
-    :raises Error: If the facet key is not in the destination keys of the maptable
+    :raises Error: If the facet key is not in the source/destination keys of the maptable
 
     """
     option = '{0}_map'.format(facet)
     from_keys, to_keys, value_map = split_map(cfg.get(section, option))
-    if facet not in to_keys:
-        msg = '{0} is misdeclared. {1} facet has to be in "destination facets"'.format(option, facet)
-        raise Exception(msg)
-    return list(set([value[to_keys.index(facet)] for value in value_map.values()]))
+    if in_sources:
+        if facet not in from_keys:
+            raise MisdeclaredOption(option, section, cfg.read_paths,
+                                    reason="'{0}' has to be in 'source facets'".format(facet))
+        return list(set([value[from_keys.index(facet)] for value in value_map.keys()]))
+    else:
+        if facet not in to_keys:
+            raise MisdeclaredOption(option, section, cfg.read_paths,
+                                    reason="'{0}' has to be in 'destination facets'".format(facet))
+        return list(set([value[to_keys.index(facet)] for value in value_map.values()]))
 
 
 def get_options_from_pattern(cfg, section, facet):
@@ -327,25 +320,6 @@ def get_options_from_pattern(cfg, section, facet):
     return re.compile('(?P<{0}>{1})'.format(facet, pattern))
 
 
-def get_options_from_map_in_sources(cfg, section, option, facet):
-    """
-    Returns the list of facet options from maptable.
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
-    :param str section: The section name to parse
-    :param str option: The maptable to parse
-    :param str facet: The facet to get available values
-    :returns: The facet options
-    :rtype: *list*
-    :raises Error: If the facet key is not in the destination keys of the maptable
-
-    """
-    from_keys, to_keys, value_map = split_map(cfg.get(section, option))
-    if facet not in from_keys:
-        msg = '{0} is misdeclared. {1} facet has to be in "source facets"'.format(option, facet)
-        raise Exception(msg)
-    return list(set([value[from_keys.index(facet)] for value in value_map.keys()]))
-
-
 def get_option_from_map(cfg, section, facet, attributes):
     """
     Returns the corresponding facet option from maptable.
@@ -361,8 +335,8 @@ def get_option_from_map(cfg, section, facet, attributes):
     option = '{0}_map'.format(facet)
     from_keys, to_keys, value_map = split_map(cfg.get(section, option))
     if facet not in to_keys:
-        msg = '{0} is misdeclared. {1} facet has to be in "destination facet"'.format(option, facet)
-        raise Exception(msg)
+        raise MisdeclaredOption(option, section, cfg.read_paths,
+                                reason="'{0}' has to be in 'destination facets'".format(facet))
     from_values = tuple(attributes[key] for key in from_keys)
     to_values = value_map[from_values]
     return to_values[to_keys.index(facet)]
@@ -396,14 +370,13 @@ def get_default_value(cfg, section, facet):
 
     """
     if not cfg.has_option(section, 'category_defaults'):
-        msg = '"category_defaults" attribute is missing'
-        raise Exception(msg)
+        raise NoConfigOption('category_defaults', section, cfg.read_paths)
     category_default = split_line(cfg.get(section, 'category_defaults'), sep='\n')
     try:
         default_values = {k: v for (k, v) in map(lambda x: split_line(x), category_default[1:])}
     except:
-        msg = '"category_defaults" is misdeclared. Please follow the format "facet | default_value"'
-        raise Exception(msg)
+        raise MisdeclaredOption('category_defaults', section, cfg.read_paths,
+                                reason="Please follow the format: 'facet | default_value'")
     return default_values[facet]
 
 
@@ -418,8 +391,7 @@ def get_maps(cfg, section):
 
     """
     if not cfg.has_option(section, 'maps'):
-        msg = '"maps" attribute is missing'
-        raise Exception(msg)
+        raise NoConfigOption('maps', section, cfg.read_paths)
     return split_line(cfg.get(section, 'maps'), sep=',')
 
 
@@ -438,8 +410,8 @@ def get_project_options(cfg):
             options = [tuple(project_option) for project_option in map(lambda x: split_line(x),
                                                                        project_option_lines[1:])]
         except:
-            msg = '"project_options" is misdeclared. Please follow the format "id | project | description".'
-            raise Exception(msg)
+            raise MisdeclaredOption('project_options', 'DEFAULT', cfg.read_paths,
+                                    reason="Please follow the format: 'id | project | description'")
     else:
         options = list()
     return options

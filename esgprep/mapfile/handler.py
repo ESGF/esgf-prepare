@@ -7,11 +7,12 @@
 
 """
 
-import logging
 import os
 import re
 
+from esgprep.mapfile.exceptions import *
 from esgprep.utils import parser
+from esgprep.utils.exceptions import *
 
 
 class File(object):
@@ -45,8 +46,7 @@ class File(object):
         elif key in self.__dict__.keys():
             return self.__dict__[key]
         else:
-            raise Exception('{0} not found. Available keys '
-                            'are {1}'.format(key, self.attributes.keys() + self.__dict__.keys()))
+            raise KeyNotFound(key, self.attributes.keys() + self.__dict__.keys())
 
     def load_attributes(self, ctx):
         """
@@ -55,24 +55,20 @@ class File(object):
 
          * Matches file full path with corresponding project pattern to get DRS attributes values
          * attributes.keys() are facet names
-         * attributes[facet] is the facet value.
+         * attributes[facet] is the facet values.
 
         :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
         :raises Error: If the file full path does not match the ``directory_format`` pattern/regex
 
         """
         try:
-            self.attributes = re.match(ctx.pattern, self.ffp).groupdict()
+            # re.search() method is required to search through the entire string.
+            # In our case we aims to match the regex starting from the filename (i.e., the end of the string)
+            self.attributes = re.search(ctx.pattern, self.ffp).groupdict()
+            # Only required to build proper dataset_id
             self.attributes['project'] = ctx.project.lower()
-            # If file path is a symlink, deduce the version following the symlink
-            if ctx.latest:
-                pointed_path = os.path.realpath(''.join(re.split(r'(latest)', self.ffp)[:-1]))
-                self.attributes['version'] = os.path.basename(pointed_path)
         except:
-            msg = 'Matching failed to deduce DRS attributes from {0}. Please check the ' \
-                  '"directory_format" regex in the [project:{1}] section.'.format(self.ffp, ctx.project)
-            logging.warning(msg)
-            raise Exception(msg)
+            raise DirectoryNotMatch(self.ffp, ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
 
     def get_dataset_id(self, ctx):
         """
@@ -95,9 +91,16 @@ class File(object):
             for facet in ctx.facets.intersection(self.attributes.keys()):
                 parser.check_facet(ctx.cfg, ctx.project_section, {facet: self.attributes[facet]})
             for facet in ctx.facets.difference(self.attributes.keys()):
-                self.attributes[facet] = parser.get_option_from_map(ctx.cfg,
-                                                                    ctx.project_section,
-                                                                    facet, self.attributes)
+                try:
+                    self.attributes[facet] = parser.get_option_from_map(ctx.cfg,
+                                                                        ctx.project_section,
+                                                                        facet,
+                                                                        self.attributes)
+                except:
+                    raise NoConfigVariable(facet,
+                                           ctx.cfg.get(ctx.project_section, 'directory_format', raw=True).strip(),
+                                           ctx.project_section,
+                                           ctx.cfg.read_paths)
             dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, self.attributes)
         else:
             dataset_id = ctx.dataset
@@ -135,6 +138,4 @@ class File(object):
             shell = os.popen("{0} {1} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, self.ffp), 'r')
             return shell.readline()[:-1]
         except:
-            msg = '{0} checksum failed for {1}'.format(checksum_type, self.ffp)
-            logging.warning(msg)
-            raise Exception(msg)
+            raise ChecksumFail(self.ffp, checksum_type)

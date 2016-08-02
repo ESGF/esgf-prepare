@@ -75,7 +75,7 @@ def query_yes_no(question, default='no'):
         elif choice in valid:
             return valid[choice]
         else:
-            # Print again the question
+            # Ask again
             pass
 
 
