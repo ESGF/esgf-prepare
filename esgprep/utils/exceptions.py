@@ -81,7 +81,7 @@ class NoConfigValue(Exception):
     """
 
     def __init__(self, value, option, section, paths):
-        self.msg = "No value: '{0}''".format(value)
+        self.msg = "No value: '{0}'".format(value)
         self.msg += "\n<option: '{0}'>".format(option)
         self.msg += "\n<section: '{0}'>".format(section)
         for path in paths:
@@ -111,7 +111,7 @@ class MisdeclaredOption(Exception):
     """
 
     def __init__(self, option, section, paths, reason=None):
-        self.msg = "Inappropriately formulated option: '{0}''".format(option)
+        self.msg = "Inappropriately formulated option: '{0}'".format(option)
         if reason:
             self.msg += "\n{0}".format(reason)
         self.msg += "\n<section: '{0}'>".format(section)
