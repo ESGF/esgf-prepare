@@ -1,5 +1,5 @@
-esg_mapfiles
-============
+``esgprep`` toolbox
+===================
 
 .. toctree::
    :maxdepth: 1
