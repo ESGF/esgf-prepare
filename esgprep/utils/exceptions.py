@@ -3,7 +3,7 @@
 
 """
     :platform: Unix
-    :synopsis: Custom exceptions used in this module.
+    :synopsis: Custom exceptions used in this package.
 
 """
 

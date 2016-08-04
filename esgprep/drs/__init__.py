@@ -1,4 +1,5 @@
 """
-   :synopsis: Builds the ESGF tree following the Data Reference Syntax.
+.. module:: esgprep.drs
+.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
 
 """

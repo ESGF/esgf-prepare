@@ -1,4 +1,5 @@
 """
-   :synopsis: Downloads ESGF configuration files from GitHub repository.
+.. module:: esgprep.fetchini
+.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
 
 """

@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: esgprep.drs.main.py
     :platform: Unix
-    :synopsis: Manages the filesystem tree according to the project DRS and versioning.
-
-.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
+    :synopsis: Manages the filesystem tree according to the project the Data Reference Syntax and versioning.
 
 """
 

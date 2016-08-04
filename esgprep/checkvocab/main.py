@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: esgprep.checkvocab.main.py
     :platform: Unix
     :synopsis: Checks DRS vocabulary against configuration files.
-
-.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
 
 """
 

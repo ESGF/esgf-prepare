@@ -1,4 +1,5 @@
 """
-   :synopsis: Checks and updates the ESGF configuration files.
+.. module:: esgprep.checkvocab
+.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
 
 """

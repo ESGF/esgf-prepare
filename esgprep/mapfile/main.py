@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: esgprep.mapfile.main.py
     :platform: Unix
-    :synopsis: Generates ESGF mapfiles upon an local ESGF node or not.
-
-.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
+    :synopsis: Generates ESGF mapfiles upon a local ESGF node or not.
 
 """
 

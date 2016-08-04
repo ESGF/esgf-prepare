@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: esgprep.fetchini.main.py
     :platform: Unix
     :synopsis: Fetches ESGF configuration files from GitHub repository.
-
-.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
 
 """
 

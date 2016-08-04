@@ -27,8 +27,7 @@ The directory gathering all ``.ini`` files has to be submitted using the ``-i`` 
    accordingly.
 
 If no ``esg.<project_id>.ini`` corresponds to your project you can made your own following `the ESGF Best Practices
-document
-<https://acme-climate.atlassian.net/wiki/x/JADm>`_.
+document <https://acme-climate.atlassian.net/wiki/x/JADm>`_.
 
 .. note:: To build your own project section:
 

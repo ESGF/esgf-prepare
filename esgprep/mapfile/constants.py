@@ -3,7 +3,7 @@
 
 """
     :platform: Unix
-    :synopsis: Constants used in this module for better readability of code.
+    :synopsis: Constants used in this module.
 
 """
 
