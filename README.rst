@@ -2,4 +2,4 @@
 esgprep
 *******
 
-`See documentation here <http://esgf-prepare.readthedocs.io/>`_
+`See documentation here <http://is-enes-data.github.io/esgf-prepare/>`_
