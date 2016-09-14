@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Synopsis &mdash; esgprep 2.5.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="esgprep 2.5.2 documentation" href="index.html"/>
+        <link rel="next" title="Installation" href="installation.html"/>
+        <link rel="prev" title="esgprep toolbox" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> esgprep
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Synopsis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#esgprep-fetch-ini"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#esgprep-drs"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#esgprep-check-vocab"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">check-vocab</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#esgprep-mapfile"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-features">Key features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage and tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">esgprep</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Synopsis</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/synopsis.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="synopsis">
+<span id="id1"></span><h1>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h1>
+<p>The Earth System Grid Federation (ESGF) publication process requires a strong and effective data management that
+could also be a burden. <code class="docutils literal"><span class="pre">esgprep</span></code> allows the ESGF data providers to easily prepare their data for publishing to an
+ESGF node.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">esgprep</span></code> is designed to follow all requirements from the <a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/JADm">ESGF Best Practices document</a>.</p>
+</div>
+<p><code class="docutils literal"><span class="pre">esgprep</span></code> gathers Python command-lines covering several steps of <a class="reference external" href="https://drive.google.com/open?id=0B7Kis5A3U5SKTUdFbjYwRnFhQ0E">ESGF publication workflow</a>.</p>
+<div class="section" id="esgprep-fetch-ini">
+<h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code><a class="headerlink" href="#esgprep-fetch-ini" title="Permalink to this headline">¶</a></h2>
+<p>The ESGF publishing client and most of ESGF tools rely on configuration files. These <code class="docutils literal"><span class="pre">.ini</span></code> files are the
+primary means of configuring the ESGF publisher.</p>
+<p>The <code class="docutils literal"><span class="pre">esg.ini</span></code> file gathers all required information to configure the datanode regarding to data publication (e
+.g., PostgreSQL access, THREDDS configuration, etc.).</p>
+<p>The <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> files declare all facets and allowed values according to the <em>Data Reference Syntax</em>
+(DRS) and the controlled vocabularies of the corresponding project.</p>
+<p>The <code class="docutils literal"><span class="pre">fetch-ini</span></code> command allows you to download preset <code class="docutils literal"><span class="pre">.ini</span></code> files hosted on <a class="reference external" href="https://github.com/ESGF/config/">a GitHub repository</a>.</p>
+<p>If you prepare your data outside of an ESGF node using <code class="docutils literal"><span class="pre">esgprep</span></code> as a full standalone toolbox, this step
+is mandatory. Keep in mind that the fetched <code class="docutils literal"><span class="pre">.ini</span></code> files have to be reviewed to ensure a correct configuration
+of your projects.</p>
+</div>
+<div class="section" id="esgprep-drs">
+<h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code><a class="headerlink" href="#esgprep-drs" title="Permalink to this headline">¶</a></h2>
+<p>The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper
+publication on ESGF node. The <code class="docutils literal"><span class="pre">drs</span></code> command is designed to help ESGF datanode managers to prepare incoming
+data for publication, placing files in the DRS directory structure, and manage multiple versions of
+publication-level datasets to minimise disk usage.</p>
+<p><strong>This feature is coming soon !</strong></p>
+</div>
+<div class="section" id="esgprep-check-vocab">
+<h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">check-vocab</span></code><a class="headerlink" href="#esgprep-check-vocab" title="Permalink to this headline">¶</a></h2>
+<p>In the case of your data already follow the appropriate directory structure, you may want to check that all
+values of each facet are correctly declared into <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> sections. The <code class="docutils literal"><span class="pre">check-vocab</span></code> command
+allows you to easily check the configuration file attributes by scanning your data tree.</p>
+</div>
+<div class="section" id="esgprep-mapfile">
+<h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code><a class="headerlink" href="#esgprep-mapfile" title="Permalink to this headline">¶</a></h2>
+<p>The publication process of the ESGF nodes requires <em>mapfiles</em>. Mapfiles are text files where each line
+describes a file to publish on the following format:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">dataset_ID</span> <span class="o">|</span> <span class="n">absolute_path</span> <span class="o">|</span> <span class="n">size_bytes</span> <span class="p">[</span> <span class="o">|</span> <span class="n">option</span><span class="o">=</span><span class="n">value</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">mapfile</span></code> is a flexible command-line allowing you to easily generate mapfiles upon local ESGF datanode or not.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><code class="docutils literal"><span class="pre">esgprep</span></code> implies that your directory structure strictly follows the tree fixed by the project&#8217;s <em>Data
+Reference Syntax</em> (DRS) <strong>including the version facet</strong>.</p>
+</div>
+</div>
+<div class="section" id="key-features">
+<h2>Key features<a class="headerlink" href="#key-features" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Directory as input</dt>
+<dd>You only need to specify the directory to recursively scan. To include several data directories, you can use all
+Unix wildcards in the path or submit several paths.</dd>
+<dt>Compatibility with ESGF node configuration file(s)</dt>
+<dd>To ensure a right facets auto-detection, <code class="docutils literal"><span class="pre">esgprep</span></code> directly works from the usual ESGF configuration files.</dd>
+<dt>Facets values auto-detection</dt>
+<dd>The facets values are automatically detected from the full path of the file, using the <code class="docutils literal"><span class="pre">directory_format</span></code>
+regular expression in the configuration files. These DRS values are used to fill the dataset identifier template.
+Each facet value from the dataset identifier is assessed in the light of configuration file(s) options or maps.</dd>
+<dt>Multi-threading</dt>
+<dd>To compute the checksum of a lot of large files becomes time consuming. We implement multi-threading at file level.</dd>
+<dt>Standalone</dt>
+<dd>Security policies of computing centres, that often host <a class="reference external" href="http://pcmdi.llnl.gov/">ESGF</a> nodes, do not allow to use <code class="docutils literal"><span class="pre">esgprep</span></code> within a
+node that is conventionally used to generate mapfiles.</dd>
+<dt>Tracebacks</dt>
+<dd>The threads-processes do not shutdown the main process of <code class="docutils literal"><span class="pre">esgprep</span></code> run. If an error occurs on a thread, the
+traceback of the child-process is not raised to the main process. To help you to have a fast debug, the
+tracebacks of each threads can be raised using the <code class="docutils literal"><span class="pre">-v</span></code> option (see <a class="reference internal" href="usage.html#usage"><span class="std std-ref">Usage and tutorials</span></a>).</dd>
+<dt>Use a logfile</dt>
+<dd>You can initiate a logger instead of the standard output. This could be useful for automatic workflows. The
+logfile name is automatically defined and unique (using the the job&#8217;s name, the date and the job&#8217;s ID). You can
+define an output directory for your logs too.</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For all detailed features see the help message of each <code class="docutils literal"><span class="pre">esgprep</span></code> sub-command.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="esgprep toolbox" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Levavasseur, G..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.5.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

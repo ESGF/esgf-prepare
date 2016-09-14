@@ -1,0 +1,712 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Usage and tutorials &mdash; esgprep 2.5.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="esgprep 2.5.2 documentation" href="index.html"/>
+        <link rel="next" title="Frequently asked questions" href="faq.html"/>
+        <link rel="prev" title="Configuration" href="configuration.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> esgprep
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="synopsis.html">Synopsis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage and tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#common-usage">Common usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#specify-the-project">Specify the project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#specify-a-configuration-directory">Specify a configuration directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-verbosity">Add verbosity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#show-help-message-and-exit">Show help message and exit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-a-logfile">Use a logfile</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#esgprep-fetch-ini"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#download-a-particular-esg-project-id-ini-from-github">Download a particular esg.&lt;project_id&gt;.ini from GitHub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#keep-existing-file-s-without-prompt">Keep existing file(s) without prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overwrite-existing-file-s-without-prompt">Overwrite existing file(s) without prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#download-all-esg-project-id-ini-from-github">Download all esg.&lt;project_id&gt;.ini from GitHub</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#esgprep-drs"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#esgprep-check-vocab"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">check-vocab</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#check-the-facet-options">Check the facet options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#esgprep-mapfile"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#default-mapfile-generation">Default mapfile generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mapfile-without-files-checksums">Mapfile without files checksums</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mapfile-without-drs-versions">Mapfile without DRS versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mapfile-name-using-tokens">Mapfile name using tokens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#to-an-output-directory">To an output directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#organize-your-mapfiles">Organize your mapfiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#walking-through-latest-directories-only">Walking through <em>latest</em> directories only</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#walking-through-a-particular-version-only">Walking through a particular version only</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#walking-through-all-versions">Walking through all versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-technical-notes">Add technical notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#change-the-number-of-threads">Change the number of threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overwrite-the-dataset-identifier">Overwrite the dataset identifier</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">esgprep</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Usage and tutorials</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/usage.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="usage-and-tutorials">
+<span id="usage"></span><h1>Usage and tutorials<a class="headerlink" href="#usage-and-tutorials" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="common-usage">
+<h2>Common usage<a class="headerlink" href="#common-usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="specify-the-project">
+<h3>Specify the project<a class="headerlink" href="#specify-the-project" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep &lt;command&gt; --project &lt;project_id&gt;
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This <code class="docutils literal"><span class="pre">--project</span></code> argument is always required.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This <code class="docutils literal"><span class="pre">--project</span></code> name has to correspond to a section of the configuration file.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The <code class="docutils literal"><span class="pre">--project</span></code> is case-sensitive.</p>
+</div>
+</div>
+<div class="section" id="specify-a-configuration-directory">
+<h3>Specify a configuration directory<a class="headerlink" href="#specify-a-configuration-directory" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep &lt;command&gt; -i /path/to/config/
+</pre></div>
+</div>
+</div>
+<div class="section" id="add-verbosity">
+<h3>Add verbosity<a class="headerlink" href="#add-verbosity" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep &lt;command&gt; -v
+</pre></div>
+</div>
+</div>
+<div class="section" id="show-help-message-and-exit">
+<h3>Show help message and exit<a class="headerlink" href="#show-help-message-and-exit" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep &lt;command&gt; -h
+</pre></div>
+</div>
+</div>
+<div class="section" id="use-a-logfile">
+<h3>Use a logfile<a class="headerlink" href="#use-a-logfile" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep &lt;command&gt; --log /path/to/logdir
+<span class="o">[</span>...<span class="o">]</span>
+$&gt; cat /path/to/logdir/esgprep-YYYYMMDD-HHMMSS-PID.log
+<span class="o">[</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The logfile directory is optional.</p>
+</div>
+</div>
+</div>
+<div class="section" id="esgprep-fetch-ini">
+<h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code><a class="headerlink" href="#esgprep-fetch-ini" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="download-a-particular-esg-project-id-ini-from-github">
+<h3>Download a particular esg.&lt;project_id&gt;.ini from GitHub<a class="headerlink" href="#download-a-particular-esg-project-id-ini-from-github" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep fetch-ini --project &lt;project_id&gt;
+YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/master/publisher-configs/ini/esg.&lt;project_id&gt;.ini...
+YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
+YYYY/MM/DD HH:MM:SS INFO &lt;project_id&gt; added to <span class="s2">&quot;project_options&quot;</span> of ~/config/esg.ini
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If a esg.&lt;project_id&gt; already exists you are prompted to confirm overwriting (default is &#8220;no&#8221;):</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep fetch-ini --project &lt;project_id&gt;
+YYYY/MM/DD HH:MM:SS WARNING <span class="s2">&quot;esg.&lt;project_id&gt;.ini&quot;</span> already exists in ~/config
+
+Overwrite existing <span class="s2">&quot;esg.&lt;project_id&gt;.ini&quot;</span>? <span class="o">[</span>y/N<span class="o">]</span> y
+YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/master/publisher-configs/ini/esg.&lt;project_id&gt;.ini...
+YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
+</pre></div>
+</div>
+</div>
+<div class="section" id="keep-existing-file-s-without-prompt">
+<h3>Keep existing file(s) without prompt<a class="headerlink" href="#keep-existing-file-s-without-prompt" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep fetch-ini --project &lt;project_id&gt; -k
+YYYY/MM/DD HH:MM:SS WARNING <span class="s2">&quot;esg.&lt;project_id&gt;.ini&quot;</span> already exists in ~/config
+</pre></div>
+</div>
+</div>
+<div class="section" id="overwrite-existing-file-s-without-prompt">
+<h3>Overwrite existing file(s) without prompt<a class="headerlink" href="#overwrite-existing-file-s-without-prompt" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep fetch-ini --project &lt;project_id&gt; -o
+YYYY/MM/DD HH:MM:SS WARNING <span class="s2">&quot;esg.&lt;project_id&gt;.ini&quot;</span> already exists in ~/config
+YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/devel/publisher-configs/ini/esg.&lt;project_id&gt;.ini...
+YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><code class="docutils literal"><span class="pre">-o</span></code> and <code class="docutils literal"><span class="pre">-k</span></code> cannot be used simultaneously.</p>
+</div>
+</div>
+<div class="section" id="download-all-esg-project-id-ini-from-github">
+<h3>Download all esg.&lt;project_id&gt;.ini from GitHub<a class="headerlink" href="#download-all-esg-project-id-ini-from-github" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep fetch-ini -v
+YYYY/MM/DD HH:MM:SS INFO Get filenames from GitHub repository: ESGF/config
+YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/master/publisher-configs/ini/esg.projectA.ini...
+YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
+YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/master/publisher-configs/ini/esg.projectB.ini...
+YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
+YYYY/MM/DD HH:MM:SS INFO projectB added to <span class="s2">&quot;project_options&quot;</span> of ~/config/esg.ini
+<span class="s2">&quot;esg.projectC.ini&quot;</span> already exists in ~/config
+Overwrite existing file? <span class="o">[</span>y/N<span class="o">]</span> N
+<span class="o">[</span>...<span class="o">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="esgprep-drs">
+<h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code><a class="headerlink" href="#esgprep-drs" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><strong>Coming soon !</strong></p>
+</div>
+</div>
+<div class="section" id="esgprep-check-vocab">
+<h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">check-vocab</span></code><a class="headerlink" href="#esgprep-check-vocab" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="check-the-facet-options">
+<h3>Check the facet options<a class="headerlink" href="#check-the-facet-options" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep check-vocab /path/to/scan --project &lt;project_id&gt;
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;product&quot;</span> facet...
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;realm&quot;</span> facet...
+<span class="o">[</span>...<span class="o">]</span>
+YYYY/MM/DD HH:MM:SS INFO Harvesting facets values from DRS tree...
+YYYY/MM/DD HH:MM:SS INFO Result: ALL USED VALUES ARE PROPERLY DECLARED.
+</pre></div>
+</div>
+<p>If a used option is missing:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep check-vocab /path/to/scan --project &lt;project_id&gt;
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;product&quot;</span> facet...
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;realm&quot;</span> facet...
+<span class="o">[</span>...<span class="o">]</span>
+YYYY/MM/DD HH:MM:SS INFO Harvesting facets values from DRS tree...
+YYYY/MM/DD HH:MM:SS INFO institute facet - UNDECLARED values: INPE
+YYYY/MM/DD HH:MM:SS INFO institute facet - UPDATED values to declare: ICHEC, CCCma, LASG, INPE, BNU, BCC, MIROC, CNRM-CERFACS, NASA-GMAO, MOHC, CAWCR, IPSL, CSIRO, MRI, CMCC, FIO, INM, NASA-GISS, NSF-DOE-NCAR, NOAA-GFDL, DOE-COLA-CMMAP-GMU, NCAR, NCC, NIMR-KMA, NICAM
+YYYY/MM/DD HH:MM:SS INFO ensemble facet - UNDECLARED values: r5i1p1
+YYYY/MM/DD HH:MM:SS INFO ensemble facet - UPDATED values to declare: r1i1p1, r5i1p1, r0i0p0
+YYYY/MM/DD HH:MM:SS ERROR Result: THERE WERE UNDECLARED VALUES USED.
+</pre></div>
+</div>
+<p>Verbose output:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep check-vocab /path/to/scan --project &lt;project_id&gt; -v
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;product&quot;</span> facet...
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;realm&quot;</span> facet...
+<span class="o">[</span>...<span class="o">]</span>
+YYYY/MM/DD HH:MM:SS INFO Harvesting facets values from DRS tree...
+YYYY/MM/DD HH:MM:SS INFO product facet - Declared values: output2, output1
+YYYY/MM/DD HH:MM:SS INFO product facet - Used values: output1
+YYYY/MM/DD HH:MM:SS INFO product facet - Unused values: output2
+YYYY/MM/DD HH:MM:SS INFO realm facet - Declared values: seaIce, land, landIce, atmosChem, ocean, atmos, aerosol, ocnBgchem
+YYYY/MM/DD HH:MM:SS INFO realm facet - Used values: seaIce, land, landIce, ocean, atmos, ocnBgchem
+YYYY/MM/DD HH:MM:SS INFO realm facet - Unused values: atmosChem, aerosol
+YYYY/MM/DD HH:MM:SS INFO Result: ALL USED VALUES ARE PROPERLY DECLARED.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="esgprep-mapfile">
+<h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code><a class="headerlink" href="#esgprep-mapfile" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All the following examples can be combined safely.</p>
+</div>
+<div class="section" id="default-mapfile-generation">
+<h3>Default mapfile generation<a class="headerlink" href="#default-mapfile-generation" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The default behavior is to pickup the latest version in the DRS.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This required a date version format (e.g., v20151023).</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; -v
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat dataset_ID.v*.map
+dataset_ID1.vYYYYMMDD
+dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID2.vYYYYMMDD.map
+dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID3.vYYYYMMDD.map
+dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+</pre></div>
+</div>
+</div>
+<div class="section" id="mapfile-without-files-checksums">
+<h3>Mapfile without files checksums<a class="headerlink" href="#mapfile-without-files-checksums" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal"><span class="pre">-v</span></code> raises the tracebacks of thread-processes (default is the &#8220;silent&#8221; mode).</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --no-checksum
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat dataset_ID.v*.map
+dataset_ID1.vYYYYMMDD.map
+dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1
+
+dataset_ID2.vYYYYMMDD.map
+dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2
+
+dataset_ID3.vYYYYMMDD.map
+dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3
+</pre></div>
+</div>
+</div>
+<div class="section" id="mapfile-without-drs-versions">
+<h3>Mapfile without DRS versions<a class="headerlink" href="#mapfile-without-drs-versions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --no-version
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat dataset_ID.v*.map
+dataset_ID1.vYYYYMMDD.map
+dataset_ID1 <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID2.vYYYYMMDD.map
+dataset_ID2 <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID3.vYYYYMMDD.map
+dataset_ID3 <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+</pre></div>
+</div>
+</div>
+<div class="section" id="mapfile-name-using-tokens">
+<h3>Mapfile name using tokens<a class="headerlink" href="#mapfile-name-using-tokens" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If <code class="docutils literal"><span class="pre">{dataset_id}</span></code> is not present in the mapfile name, then all datasets will be written to a single
+mapfile, overriding the default behavior of producing ONE mapfile PER dataset.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The extension <code class="docutils literal"><span class="pre">.map</span></code> is added in any case.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --mapfile <span class="o">{</span>dataset_id<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.job_id &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.job_id &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID3.job_id &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat dataset_ID*.job_id.map
+dataset_ID1.job_id.map
+dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID2.job_id.map
+dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID3.job_id.map
+dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --mapfile <span class="o">{</span>date<span class="o">}</span>
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO &lt;date&gt; &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO &lt;date&gt; &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO &lt;date&gt; &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat &lt;date&gt;.map
+dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+</pre></div>
+</div>
+</div>
+<div class="section" id="to-an-output-directory">
+<h3>To an output directory<a class="headerlink" href="#to-an-output-directory" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --outdir /path/to/mapfiles/
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat /path/to/mapfiles/dataset_ID*.v*.map
+dataset_ID1.vYYYYMMDD.map
+dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID2.vYYYYMMDD.map
+dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID3.vYYYYMMDD.map
+dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+</pre></div>
+</div>
+</div>
+<div class="section" id="organize-your-mapfiles">
+<h3>Organize your mapfiles<a class="headerlink" href="#organize-your-mapfiles" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A <code class="docutils literal"><span class="pre">mapfile_drs</span></code> attribute can be added into the corresponding project section of the configuration files.
+In the same way as the <code class="docutils literal"><span class="pre">directory_format</span></code> it defines a tree depending on the facets. Each mapfile is then
+written into the corresponding output directory.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The <code class="docutils literal"><span class="pre">mapfile_drs</span></code> directory structure is added to the root output directory submitted by the flag
+<code class="docutils literal"><span class="pre">--outdir</span></code>.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --outdir /path/to/mapfiles/
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID1.vYYYYMMDD.map
+dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+$&gt; cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID2.vYYYYMMDD.map
+dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+$&gt; cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID3.vYYYYMMDD.map
+dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+</pre></div>
+</div>
+</div>
+<div class="section" id="walking-through-latest-directories-only">
+<h3>Walking through <em>latest</em> directories only<a class="headerlink" href="#walking-through-latest-directories-only" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If the version is directly specified in positional argument, the version number from supplied directory
+is used.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --latest-symlink
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.latest &lt;-- /path/to/scan/.../latest/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.latest &lt;-- /path/to/scan/.../latest/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID3.latest &lt;-- /path/to/scan/.../latest/.../file3.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat dataset_ID*.latest.map
+dataset_ID1.latest.map
+dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../latest/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID2.latest.map
+dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../latest/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID3.latest.map
+dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../latest/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+</pre></div>
+</div>
+</div>
+<div class="section" id="walking-through-a-particular-version-only">
+<h3>Walking through a particular version only<a class="headerlink" href="#walking-through-a-particular-version-only" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">By default <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code> pick up the latest version only.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If the version is directly specified in positional argument, the version number from supplied directory
+is used.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --version &lt;version&gt;
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.v&lt;version&gt; &lt;-- /path/to/scan/.../v&lt;version&gt;/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.v&lt;version&gt; &lt;-- /path/to/scan/.../v&lt;version&gt;/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID3.v&lt;version&gt; &lt;-- /path/to/scan/.../v&lt;version&gt;/.../file3.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat dataset_ID*.v&lt;version&gt;.map
+dataset_ID1.v&lt;version&gt;.map
+dataset_ID1.v&lt;version&gt; <span class="p">|</span> /path/to/scan/.../v&lt;version&gt;/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID2.v&lt;version&gt;.map
+dataset_ID2.v&lt;version&gt; <span class="p">|</span> /path/to/scan/.../v&lt;version&gt;/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID3.v&lt;version&gt;.map
+dataset_ID3.v&lt;version&gt; <span class="p">|</span> /path/to/scan/.../v&lt;version&gt;/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+</pre></div>
+</div>
+</div>
+<div class="section" id="walking-through-all-versions">
+<h3>Walking through all versions<a class="headerlink" href="#walking-through-all-versions" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This disables <code class="docutils literal"><span class="pre">--no-version</span></code>.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If the version is directly specified in positional argument, the version number from supplied directory
+is used.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --all-versions
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID.v1 &lt;-- /path/to/scan/.../v1/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID.v1 &lt;-- /path/to/scan/.../v1/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID.v2 &lt;-- /path/to/scan/.../v2/.../file1.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat dataset_ID*.v<span class="se">\*</span>.map
+dataset_ID.v1.map
+dataset_ID.v1 <span class="p">|</span> /path/to/scan/.../v1/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+dataset_ID.v1 <span class="p">|</span> /path/to/scan/.../v1/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+
+dataset_ID.v2.map
+dataset_ID.v2 <span class="p">|</span> /path/to/scan/.../v2/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+</pre></div>
+</div>
+</div>
+<div class="section" id="add-technical-notes">
+<h3>Add technical notes<a class="headerlink" href="#add-technical-notes" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --tech-notes-url &lt;url&gt; --tech-notes-title &lt;title&gt;
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat dataset_ID*.vYYYYMMDD.map
+dataset_ID.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256 <span class="p">|</span> <span class="nv">dataset_tech_notes</span><span class="o">=</span>&lt;url&gt; <span class="p">|</span> <span class="nv">dataset_tech_notes_title</span><span class="o">=</span>&lt;title&gt;
+dataset_ID.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256 <span class="p">|</span> <span class="nv">dataset_tech_notes</span><span class="o">=</span>&lt;url&gt; <span class="p">|</span> <span class="nv">dataset_tech_notes_title</span><span class="o">=</span>&lt;title&gt;
+dataset_ID.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256 <span class="p">|</span> <span class="nv">dataset_tech_notes</span><span class="o">=</span>&lt;url&gt; <span class="p">|</span> <span class="nv">dataset_tech_notes_title</span><span class="o">=</span>&lt;title&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="change-the-number-of-threads">
+<h3>Change the number of threads<a class="headerlink" href="#change-the-number-of-threads" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">--max-threads</span></code> set to one corresponds to a sequential file processing.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --max-threads &lt;integer&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="overwrite-the-dataset-identifier">
+<h3>Overwrite the dataset identifier<a class="headerlink" href="#overwrite-the-dataset-identifier" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All files will belong to the specified dataset, regardless of the DRS.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --dataset &lt;dataset_ID_test&gt;
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID_test &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID_test &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID_test &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
+YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
+
+$&gt; cat dataset_ID_test.map
+dataset_ID_test <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+dataset_ID_test <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+dataset_ID_test <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="faq.html" class="btn btn-neutral float-right" title="Frequently asked questions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="configuration.html" class="btn btn-neutral" title="Configuration" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Levavasseur, G..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.5.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

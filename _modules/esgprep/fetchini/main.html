@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>esgprep.fetchini.main &mdash; esgprep 2.5.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="esgprep 2.5.2 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> esgprep
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../synopsis.html">Synopsis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage and tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">esgprep</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>esgprep.fetchini.main</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for esgprep.fetchini.main</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :platform: Unix</span>
+<span class="sd">    :synopsis: Fetches ESGF configuration files from GitHub repository.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">ConfigParser</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">from</span> <span class="nn">esgprep.utils</span> <span class="k">import</span> <span class="n">parser</span>
+
+<span class="c1"># GitHub configuration</span>
+<span class="n">__GITHUB_API__</span> <span class="o">=</span> <span class="s1">&#39;https://api.github.com&#39;</span>
+<span class="n">__GITHUB_BASE__</span> <span class="o">=</span> <span class="s1">&#39;https://raw.github.com&#39;</span>
+<span class="n">__GITHUB_REPO__</span> <span class="o">=</span> <span class="s1">&#39;ESGF/config&#39;</span>
+<span class="n">__GITHUB_BRANCH__</span> <span class="o">=</span> <span class="s1">&#39;master&#39;</span>
+<span class="n">__GITHUB_DIRECTORY__</span> <span class="o">=</span> <span class="s1">&#39;publisher-configs/ini&#39;</span>
+
+
+<div class="viewcode-block" id="build_http"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.build_http">[docs]</a><span class="k">def</span> <span class="nf">build_http</span><span class="p">(</span><span class="n">project</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds the HTTP URL to get esg.&lt;project&gt;.ini file</span>
+
+<span class="sd">    :param str project: The lower-cased project name</span>
+<span class="sd">    :returns: The HTTP URL to request</span>
+<span class="sd">    :rtype: *str*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">__GITHUB_BASE__</span><span class="p">,</span>
+                     <span class="n">__GITHUB_REPO__</span><span class="p">,</span>
+                     <span class="n">__GITHUB_BRANCH__</span><span class="p">,</span>
+                     <span class="n">__GITHUB_DIRECTORY__</span><span class="p">,</span>
+                     <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">)])</span></div>
+
+
+<div class="viewcode-block" id="query_yes_no"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.query_yes_no">[docs]</a><span class="k">def</span> <span class="nf">query_yes_no</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;no&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Asks a yes/no question via raw_input() and return their answer.</span>
+
+<span class="sd">    :param str question: The question string that is presented to the user</span>
+<span class="sd">    :param str default: The default answer is the string if the user just hits the carriage return.</span>
+<span class="sd">        If None an answer is required.</span>
+<span class="sd">    :returns: The answer True or False</span>
+<span class="sd">    :rtype: *boolean*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Dictionary of valid answers</span>
+    <span class="n">valid</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;yes&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;YES&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;Yes&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s1">&#39;no&#39;</span><span class="p">:</span>  <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;NO&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;No&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+    <span class="c1"># Modify prompt depending on the default value</span>
+    <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="s1">&#39;[y/n]&#39;</span>
+    <span class="k">elif</span> <span class="n">default</span> <span class="o">==</span> <span class="s1">&#39;yes&#39;</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="s1">&#39;[Y/n]&#39;</span>
+    <span class="k">elif</span> <span class="n">default</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="s1">&#39;[y/N]&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid default answer: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">default</span><span class="p">))</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">prompt</span><span class="p">))</span>
+        <span class="n">choice</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">choice</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">valid</span><span class="p">[</span><span class="n">default</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">valid</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">valid</span><span class="p">[</span><span class="n">choice</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Ask again</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="get_github_files_list"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.get_github_files_list">[docs]</a><span class="k">def</span> <span class="nf">get_github_files_list</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the list of esg.*.ini files from the GitHub repository.</span>
+
+<span class="sd">    :return: The filenames</span>
+<span class="sd">    :rtype: *list*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get last commit SHA on the corresponding branch</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">__GITHUB_API__</span><span class="p">,</span> <span class="s1">&#39;repos&#39;</span><span class="p">,</span> <span class="n">__GITHUB_REPO__</span><span class="p">,</span> <span class="s1">&#39;commits&#39;</span><span class="p">,</span> <span class="n">__GITHUB_BRANCH__</span><span class="p">]))</span>
+        <span class="n">commit</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;sha&#39;</span><span class="p">]</span>
+        <span class="c1"># Get GitHub tree SHA</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">__GITHUB_API__</span><span class="p">,</span> <span class="s1">&#39;repos&#39;</span><span class="p">,</span> <span class="n">__GITHUB_REPO__</span><span class="p">,</span> <span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;commits&#39;</span><span class="p">,</span> <span class="n">commit</span><span class="p">]))</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;tree&#39;</span><span class="p">][</span><span class="s1">&#39;sha&#39;</span><span class="p">]</span>
+        <span class="c1"># Get tree elements recursively</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">__GITHUB_API__</span><span class="p">,</span> <span class="s1">&#39;repos&#39;</span><span class="p">,</span> <span class="n">__GITHUB_REPO__</span><span class="p">,</span> <span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;trees&#39;</span><span class="p">,</span> <span class="n">tree</span> <span class="o">+</span> <span class="s1">&#39;?recursive=1&#39;</span><span class="p">]))</span>
+        <span class="c1"># Extract INI filenames from whole repository tree</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;tree&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">element</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;blob&#39;</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">r&#39;/esg\..*\.ini$&#39;</span><span class="p">,</span> <span class="n">element</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]):</span>
+                <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">element</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">files</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Cannot get filenames from GitHub repository&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fetch"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.fetch">[docs]</a><span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads an esg.&lt;project&gt;.ini file from GitHub URL to local file system.</span>
+
+<span class="sd">    :param str url: The URL to fetch</span>
+<span class="sd">    :param outdir: The output directory to write</span>
+<span class="sd">    :param project: The lower-cased project name</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Fetching </span><span class="si">{0}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+        <span class="c1"># Get GitHub URL response</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="c1"># Write response to file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/esg.</span><span class="si">{1}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">project</span><span class="p">),</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Result: SUCCESSFUL&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Result: FAILED&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main process that:</span>
+
+<span class="sd">     * Checks if output directory exists,</span>
+<span class="sd">     * Checks if configuration already exists in output directory,</span>
+<span class="sd">     * Asks confirmation if necessary,</span>
+<span class="sd">     * Tests the corresponding GitHub URL,</span>
+<span class="sd">     * Gets the GitHub URL,</span>
+<span class="sd">     * Writes response into INI file.</span>
+
+<span class="sd">    :param ArgumentParser args: Parsed command-line arguments</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">i</span><span class="p">))</span>
+    <span class="c1"># If output directory doesn&#39;t exist, create it.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">outdir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> created&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span>
+    <span class="c1"># If not specified project name, get all files from repository</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">v</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Get filenames from GitHub repository: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__GITHUB_REPO__</span><span class="p">))</span>
+        <span class="n">projects</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">r&#39;esg\.(.+?)\.ini&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">get_github_files_list</span><span class="p">()]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">projects</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span>
+    <span class="c1"># Loop over wanted projects</span>
+    <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
+        <span class="c1"># Build the GitHub HTTP to request</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">build_http</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/esg.</span><span class="si">{1}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+        <span class="c1"># Check if file already exists</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;&quot;esg.</span><span class="si">{0}</span><span class="s1">.ini&quot; already exists in </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">outdir</span><span class="p">))</span>
+            <span class="c1"># If not force mode = keep existing file</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">:</span>
+                <span class="c1"># If force mode = overwrite existing file</span>
+                <span class="c1"># &#39;-f&#39; can be set to True only if &#39;-k&#39; is set to False.</span>
+                <span class="c1"># If not ask to user instead</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span> <span class="ow">or</span> <span class="n">query_yes_no</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Overwrite existing &quot;esg.</span><span class="si">{0}</span><span class="s1">.ini&quot;?&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">)):</span>
+                    <span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+        <span class="c1"># Test if esg.ini exists in output directory</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/esg.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">)):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;&quot;esg.ini not found in </span><span class="si">{0}</span><span class="s1">. Cannot append &quot;</span><span class="si">{1}</span><span class="s1">&quot; to project options&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">project</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Get configuration parser</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/esg.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span>
+            <span class="c1"># Get project options</span>
+            <span class="n">project_options</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get_project_options</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">project</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">project_option</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">project_option</span> <span class="ow">in</span> <span class="n">project_options</span><span class="p">]:</span>
+                <span class="c1"># Build project id as last project of the project_options</span>
+                <span class="n">project_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">project_options</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">project_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">max</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">project_option</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">project_option</span> <span class="ow">in</span> <span class="n">project_options</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># Append new option</span>
+                <span class="n">project_options</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">project</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">project_id</span><span class="p">))</span>
+                <span class="n">new_project_options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">parser</span><span class="o">.</span><span class="n">build_line</span><span class="p">(</span><span class="n">project_option</span><span class="p">)</span> <span class="k">for</span> <span class="n">project_option</span> <span class="ow">in</span> <span class="n">project_options</span><span class="p">])</span>
+                <span class="c1"># Write the updated parser</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;project_options&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">parser</span><span class="o">.</span><span class="n">build_line</span><span class="p">(</span><span class="n">new_project_options</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
+                <span class="c1"># Write new esg.ini file</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/esg.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">),</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{0}</span><span class="s1">&quot; added to &quot;project_options&quot; of </span><span class="si">{1}</span><span class="s1">/esg.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">outdir</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Levavasseur, G..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'2.5.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
