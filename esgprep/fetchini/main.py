@@ -15,6 +15,7 @@ import sys
 
 import requests
 
+from github3 import GitHub
 from esgprep.utils import parser
 
 # GitHub configuration
@@ -76,6 +77,27 @@ def query_yes_no(question, default='no'):
             pass
 
 
+def github_connector(repository, username=None, password=None, team=None):
+    """
+    Instantiates the GitHub repository connector if granted for user.
+    :param username: The GitHub login (optional)
+    :param password: The GitHub password (optional)
+    :param team: The GitHub team to connect (optional)
+    :param repository: The GitHub repository to reach
+    :returns: The GitHub repository connector and the GitHub user login
+    :rtype: *tuple* of (*str*, *github3.repos.repo*)
+    :raises Error: If the GitHub connection fails because of invalid inputs
+    """
+    logging.info('Connection to the GitHub repository "{0}"'.format(repository.lower()))
+    try:
+        gh_user = GitHub(username, password)
+        gh_repo = gh_user.repository(team, repository.lower())
+        return username, gh_repo
+    except:
+        raise GitHubConnectError(repository, username, password, team)
+        sys.exit(1)
+
+
 def get_github_files_list():
     """
     Returns the list of esg.*.ini files from the GitHub repository.
@@ -84,6 +106,8 @@ def get_github_files_list():
     :rtype: *list*
 
     """
+    GitHub().repository('ESGF','config')
+
     files = []
     try:
         # Get last commit SHA on the corresponding branch
