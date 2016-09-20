@@ -45,6 +45,7 @@ class CfgParser(ConfigParser.ConfigParser):
     def read(self, filenames):
         """
         Read and parse a filename or a list of filenames, and records there paths.
+
         """
         if isinstance(filenames, basestring):
             filenames = [filenames]
@@ -65,16 +66,13 @@ def config_parse(path, section):
     :param str path: The absolute or relative path of the configuration file directory
     :param str section: The project section
     :returns: The configuration file parser
-    :rtype: *ConfigParser*
+    :rtype: *CfgParser*
     :raises Error: If no configuration file exists
     :raises Error: If the configuration file parsing fails
 
     """
     path = os.path.abspath(os.path.normpath(path))
     project = section.split('project:')[1]
-    if not os.path.isfile('{0}/esg.ini'.format(path)):
-        msg = "'esg.ini' not found in '{0}'".format(path)
-        logging.warning(msg)
     cfg = CfgParser()
     cfg.read('{0}/esg.ini'.format(path))
     if section not in cfg.sections():
@@ -93,7 +91,7 @@ def translate_directory_format(cfg, project_section):
     Return a list of regular expression filters associated with the ``directory_format`` option
     in the configuration file. This can be passed to the Python ``re`` methods.
 
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str project_section: The project section name to parse
     :returns: The corresponding ``re`` pattern
 
@@ -212,7 +210,7 @@ def check_facet(cfg, section, attributes):
     using the DRS pattern (regex) and compared to its corresponding options declared into the configuration file, if
     exists.
 
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str section: The section name to parse
     :param dict attributes: A dictionary of {facet: value} to check
     :raises Error: If the attribute value is missing in the corresponding options list
@@ -231,7 +229,7 @@ def get_facet_options(cfg, section, facet):
     """
     Returns the list of facet options.
 
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str section: The section name to parse
     :param str facet: The facet to get available values
     :return: The facet options
@@ -252,7 +250,7 @@ def get_facet_options(cfg, section, facet):
 def get_options_from_list(cfg, section, facet):
     """
     Returns the list of facet options from options list.
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str section: The section name to parse
     :param str facet: The facet to get available values
     :returns: The facet options
@@ -268,7 +266,7 @@ def get_options_from_list(cfg, section, facet):
                 options = [exp_option[1] for exp_option in map(lambda x: split_line(x), experiment_option_lines[1:])]
             except:
                 raise MisdeclaredOption(option, section, cfg.read_paths,
-                                        reason="Please follow the format: 'project | experiment | description'")
+                                        reason="Please follow the format: '<project> | <experiment> | <description>'")
         else:
             options = split_line(cfg.get(section, option), sep=',')
     else:
@@ -279,7 +277,7 @@ def get_options_from_list(cfg, section, facet):
 def get_options_from_map(cfg, section, facet, in_sources=False):
     """
     Returns the list of facet options from maptable.
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str section: The section name to parse
     :param str facet: The facet to get available values
     :param boolean in_sources: True if facet is in "source keys" (default is False)
@@ -306,7 +304,7 @@ def get_options_from_pattern(cfg, section, facet):
     """
     Get all ``facet_patterns`` attributes declared into the project section.
 
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str section: The section name to parse
     :param str facet: The facet to get available values
     :returns: The facet regex
@@ -323,7 +321,7 @@ def get_options_from_pattern(cfg, section, facet):
 def get_option_from_map(cfg, section, facet, attributes):
     """
     Returns the corresponding facet option from maptable.
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str section: The section name to parse
     :param str facet: The facet to get the value
     :param dict attributes: A dictionary of {facet: value} to input the maptable
@@ -346,7 +344,7 @@ def get_options_from_patterns(cfg, section):
     """
     Get all ``facet_patterns`` attributes declared into the project section.
 
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str section: The section name to parse
     :returns: A dictionary of {facet: pattern}
     """
@@ -361,7 +359,7 @@ def get_options_from_patterns(cfg, section):
 def get_default_value(cfg, section, facet):
     """
     Returns the list of facet options from options list.
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str section: The section name to parse
     :param str facet: The facet to get default value
     :returns: The facet options
@@ -376,14 +374,14 @@ def get_default_value(cfg, section, facet):
         default_values = {k: v for (k, v) in map(lambda x: split_line(x), category_default[1:])}
     except:
         raise MisdeclaredOption('category_defaults', section, cfg.read_paths,
-                                reason="Please follow the format: 'facet | default_value'")
+                                reason="Please follow the format: '<facet> | <default_value>'")
     return default_values[facet]
 
 
 def get_maps(cfg, section):
     """
     Returns the list of maptables.
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str section: The section name to parse
     :returns: The maptables list
     :rtype: *list*
@@ -398,7 +396,7 @@ def get_maps(cfg, section):
 def get_project_options(cfg):
     """
     Returns the list of facet options from options list.
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :returns: The project options
     :rtype: *tuple*
     :raises Error: If the project list is misdeclared
@@ -411,7 +409,29 @@ def get_project_options(cfg):
                                                                        project_option_lines[1:])]
         except:
             raise MisdeclaredOption('project_options', 'DEFAULT', cfg.read_paths,
-                                    reason="Please follow the format: 'id | project | description'")
+                                    reason="Please follow the format: '<id> | <project> | <description>'")
+    else:
+        options = list()
+    return options
+
+
+def get_thredds_roots(cfg):
+    """
+    Returns the list of THREDDS dataset roots options.
+    :param CfgParser cfg: The configuration file parser
+    :returns: The THREDDS dataset roots options
+    :rtype: *tuple*
+    :raises Error: If the roots list is misdeclared
+
+    """
+    if cfg.has_option('DEFAULT', 'thredds_dataset_roots'):
+        thredds_option_lines = split_line(cfg.get('DEFAULT', 'thredds_dataset_roots'), sep='\n')
+        try:
+            options = [tuple(thredds_option) for thredds_option in map(lambda x: split_line(x),
+                                                                       thredds_option_lines[1:])]
+        except:
+            raise MisdeclaredOption('thredds_dataset_roots', 'DEFAULT', cfg.read_paths,
+                                    reason="Please follow the format: '<project> | <data_root_path>/<project_name>'")
     else:
         options = list()
     return options

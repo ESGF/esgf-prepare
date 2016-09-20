@@ -16,10 +16,10 @@ from fnmatch import filter
 from functools import wraps
 from multiprocessing.dummy import Pool as ThreadPool
 
+from esgprep.utils import parser, utils
 from lockfile import LockFile
 
 from constants import *
-from esgprep.utils import parser, utils
 from exceptions import *
 from handler import File
 
@@ -399,7 +399,7 @@ def main(args):
     pool = ThreadPool(int(ctx.threads))
     # Return the list of generated mapfiles full paths
     outfiles_all = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
-    outfiles = [x for x in outfiles_all if x is not None and not False]
+    outfiles = [x for x in outfiles_all if x is not (None or False]
     # Close threads pool
     pool.close()
     pool.join()

@@ -105,7 +105,7 @@ def get_facet_values_from_config(cfg, section, facets):
     """
     Returns all declared values of each facet from the configuration file, according to the project section.
 
-    :param RawConfigParser cfg: The configuration file parser (as a :func:`ConfigParser.RawConfigParser` class instance)
+    :param CfgParser cfg: The configuration file parser
     :param str section: The section name to parse
     :param set facets: The set of facets to check
     :returns: The declared values of each facet
@@ -119,7 +119,7 @@ def get_facet_values_from_config(cfg, section, facets):
             declared_values[facet], _ = parser.get_facet_options(cfg, section, facet)
             if not isinstance(declared_values[facet], type(re.compile("", 0))):
                 declared_values[facet] = set(declared_values[facet])
-        except:
+        except NoConfigOptions:
             for m in parser.get_maps(cfg, section):
                 maptable = cfg.get(section, m)
                 from_keys, _ = parser.split_map_header(maptable.split('\n')[0])

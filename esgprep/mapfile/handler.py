@@ -10,7 +10,7 @@
 import os
 import re
 
-from esgprep.esgprep.mapfile.exceptions import *
+from esgprep.mapfile.exceptions import *
 from esgprep.utils import parser
 from esgprep.utils.exceptions import *
 

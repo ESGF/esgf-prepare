@@ -146,10 +146,26 @@ def get_args():
         metavar='<project_id>',
         type=str,
         nargs='+',
+        default='.*',
         help="""
         One or more lower-cased project name(s).|n
         If not, all "esg.*.ini" are fetched.
         """)
+    fetchini.add_argument(
+        '--db-password',
+        metavar='<password>',
+        type=str,
+        help="""Database password.""")
+    fetchini.add_argument(
+        '--tds-password',
+        metavar='<password>',
+        type=str,
+        help="""THREDDS password.""")
+    fetchini.add_argument(
+        '--data-root-path',
+        metavar='<path>',
+        type=str,
+        help="""Data root path.""")
     group = fetchini.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '-k',
