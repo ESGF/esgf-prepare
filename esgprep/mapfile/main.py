@@ -399,7 +399,7 @@ def main(args):
     pool = ThreadPool(int(ctx.threads))
     # Return the list of generated mapfiles full paths
     outfiles_all = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
-    outfiles = [x for x in outfiles_all if x is not (None or False)]
+    outfiles = [x for x in outfiles_all if isinstance(x, str)]
     # Close threads pool
     pool.close()
     pool.join()
