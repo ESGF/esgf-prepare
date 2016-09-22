@@ -1,3 +1,4 @@
 requests
 lockfile
 github3.py
+uritemplate.py
