@@ -191,17 +191,17 @@ def get_args():
         Required to configure "esg.ini".
         """)
     fetchini.add_argument(
-        '--idx-host',
+        '--esgf-index-peer',
         metavar='<hostname>',
         type=str,
         help="""Index peer hostname.""")
     fetchini.add_argument(
-        '--data-host',
+        '--esgf-host',
         metavar='<hostname>',
         type=str,
         help="""Datanode hostname.""")
     fetchini.add_argument(
-        '--institute',
+        '--esg-root-id',
         metavar='<institute>',
         type=str,
         help="""Institute root id.""")

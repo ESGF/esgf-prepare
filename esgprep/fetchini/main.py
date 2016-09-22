@@ -312,12 +312,16 @@ def main(args):
     # Fetch and deploy project_handler.py #
     #######################################
 
+    handler_outdir = HANDLERS_OUTDIR
+    if not os.path.exists(HANDLERS_OUTDIR):
+        logging.warning('"{0}" does not exist. Use "{1}" instead.'.format(HANDLERS_OUTDIR, outdir))
+        handler_outdir = outdir
     for project in projects:
         project_section = 'project:{0}'.format(project)
         project_cfg = parser.config_parse(outdir, project_section)
         if project_cfg.has_option(project_section, 'handler'):
             filename = '{0}.py'.format(re.search('.*\.(.+?):.*', project_cfg.get(project_section, 'handler')).group(1))
-            outfile = os.path.join(os.path.normpath(os.path.abspath(HANDLERS_OUTDIR)), filename)
+            outfile = os.path.join(os.path.normpath(os.path.abspath(handler_outdir)), filename)
             if fetch(outfile, args.k, args.o):
                 # Get file content
                 content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'handlers', filename))
