@@ -127,15 +127,18 @@ def split_line(line, sep='|'):
     return fields
 
 
-def build_line(fields, sep=' | '):
+def build_line(fields, sep=' | ', length=None):
     """
     Build a line from fields adding trailing and leading characters.
 
+    :param length:
     :param tuple fields: Tuple of ordered fields
     :param str sep: Separator character
     :returns: A string fields
 
     """
+    if length:
+        fields = [format(fields[i], str(length[i])) for i in range(len(fields))]
     line = sep.join(fields)
     return line
 

@@ -7,7 +7,6 @@
 
 """
 
-import ConfigParser
 import logging
 import os
 import re
@@ -17,7 +16,6 @@ from datetime import datetime
 from esgprep.utils import parser
 from github3 import GitHub
 from github3.models import GitHubError
-from esgprep.utils.exceptions import *
 from constants import *
 from exceptions import *
 
@@ -68,40 +66,47 @@ def github_connector(repository, username=None, password=None, team=None):
     :returns: The GitHub repository connector
     :rtype: *github3.repos*
     :raises Error: If the GitHub connection fails because of invalid inputs
+    :raises Error: If the GitHub connection fails because of API rate limit exceeded
 
     """
 
     try:
-        # TODO: uncomment
-        return GitHub('glevava', '4{B3,3GJ2>8$hF').repository(team, repository.lower())
-#        return GitHub(username, password).repository(team, repository.lower())
+        return GitHub(username, password).repository(team, repository.lower())
     except GitHubError, e:
-        raise GitHubConnectionError(e, repository, username, password, team)
+        raise GitHubConnectionError(e.msg, repository, username, password, team)
 
 
-def backup(filename, srcdir):
+def backup(f, mode=None):
     """
-    Backup a local file by copying the file into a child directory of the source directory.
-    The filename of the backup file includes a timestamp.
+    Backup a local file following different modes:
 
-    :param str filename: The filename to backup
-    :param str srcdir: The source directory
+     * "one_version" renames the existing file in its source directory adding a ".bkp" extension to the filename.
+     * "keep_versions" moves the existing file in a child directory called "bkp" and add a timestamp to the filename.
+
+    :param str f: The file to backup
+    :param str mode: The backup mode to follow
 
     """
-    bkpdir = '{0}/bkp'.format(srcdir)
-    src = '{0}/{1}'.format(srcdir, filename)
-    dst = '{0}/{1}.{2}'.format(bkpdir, datetime.now().strftime('%Y%m%d-%H%M%S'), filename)
-    if os.path.isfile(src):
-        try:
-            os.makedirs(bkpdir)
-        except OSError:
+    if os.path.isfile(f):
+        if mode == 'one_version':
+            dst = '{0}.bkp'.format(f)
+            os.rename(f, dst)
+        elif mode == 'keep_versions':
+            bkpdir = os.path.join(os.path.dirname(f), 'bkp')
+            dst = os.path.join(bkpdir, '{0}.{1}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'), os.path.basename(f)))
+            try:
+                os.makedirs(bkpdir)
+            except OSError:
+                pass
+            finally:
+                # Overwritten silently if destination file already exists
+                os.rename(f, dst)
+        else:
+            # No backup = default
             pass
-        finally:
-            # Overwritten silently if destination file already exists
-            os.rename(src, dst)
 
 
-def get_content(gh, path):
+def gh_content(gh, path):
     """
     Gets the GitHub content of a file or a directory.
 
@@ -112,20 +117,42 @@ def get_content(gh, path):
     :raises Error: If the GitHub request returns empty content
 
     """
-    content = gh.contents(path)
-    if not content:
-        raise GitHubNoContent(gh.contents_urlt.expand(path=path))
+    try:
+        content = gh.contents(path)
+        if not content:
+            raise GitHubNoContent(gh.contents_urlt.expand(path=path))
+    except GitHubError, e:
+        raise GitHubConnectionError(e.msg, repository=gh.name, team=os.path.dirname(gh.full_name))
     return content
 
 
-def get_property(key, path='esgf.properties'):
-# TODO: uncomment
-#def get_property(key, path='/esg/config/esgf.properties'):
+def target_projects(gh, projects=None):
+    """
+    Gets the available projects id from GitHub esg.*.ini files.
+
+    :param github3.GitHub.repository gh: A :func:`github_connector` instance
+    :param list projects: Desired project ids
+    :returns: The target projects
+    :rtype: *list*
+
+    """
+    pattern = 'esg\.(.+?)\.ini'
+    files = gh_content(gh, path='{0}/{1}'.format(GITHUB_DIRECTORY, 'ini'))
+    p_avail = set([re.search(pattern, x).group(1) for x in files.keys() if re.search(pattern, x)])
+    if projects:
+        p = set(projects)
+        logging.warning("Following project ids are unavailable: {0}".format(p_avail.difference(p)))
+        return list(p_avail.intersection(p))
+    else:
+        return list(p_avail)
+
+
+def get_property(key, path):
     """
     Gets value corresponding to key from a key: value pairs file.
 
     :param str key: The requested key
-    :param str path: The file path
+    :param str path: The file path to parse
     :returns: The value
     :rtype: *str*
     :raises Error: If the key doesn't exist
@@ -137,6 +164,29 @@ def get_property(key, path='esgf.properties'):
             k, v = line.partition('=')[::2]
             values[str(k).strip()] = str(v).strip()
     return values[key]
+
+
+def fetch(f, keep, overwrite):
+    """
+    Returns True if
+
+    - the file doesn't exists
+
+    OR
+
+    - if the file exists AND 'keep mode' is set disable
+                         AND 'overwrite mode' is enable OR the prompt answer is YES.
+
+    :param str f: The file to test
+    :param boolean overwrite: True if overwrite existing files
+    :param boolean keep: True if keep existing files
+    :return: True depending on the conditions
+    :rtype: *boolean*
+
+    """
+    return True if (not os.path.isfile(f) or
+                    (os.path.isfile(f) and not keep and
+                     (overwrite or query_yes_no('Overwrite existing "{0}"?'.format(os.path.basename(f)))))) else False
 
 
 def main(args):
@@ -159,171 +209,123 @@ def main(args):
         os.makedirs(outdir)
         logging.warning('{0} created'.format(outdir))
     # Instantiate Github session
-    gh = github_connector(repository=GITHUB_REPO, team=GITHUB_TEAM)
+    gh = github_connector(repository=GITHUB_REPO, team=GITHUB_TEAM, username=args.gh_user, password=args.gh_password)
     if args.v:
         logging.info('Connected to "{0}" GitHub repository '.format(GITHUB_REPO.lower()))
+    # Target projects
+    projects = target_projects(gh, args.project)
 
     ####################################
     # Fetch and deploy esg.project.ini #
     ####################################
 
-    # If not specified, get all files from GitHub repository
-    if isinstance(args.project, list):
-        args.project = '|'.join(args.project)
-    projects = list()
-    files = get_content(gh, path='{0}/{1}'.format(GITHUB_DIRECTORY, 'ini'))
-    # Loop over esg.*.ini files
-    for filename in files.keys():
-        if re.search(r'esg\.(:?{0})\.ini'.format(args.project), filename):
-            projects.append(re.search(r'esg\.(.+?)\.ini', filename).group(1))
-            outfile = '{0}/{1}'.format(outdir, filename)
-            # Fetch file only:
-            # If the file doesn't exists or
-            # If the file exists and '-k' is set to False and if '-f' is set to True or prompt answer is Yes
-            # '-f' can be set to True only if '-k' is set to False.
-            # If not ask to user instead
-            if (not os.path.isfile(outfile) or
-               (os.path.isfile(outfile) and not args.k and
-               (args.o or query_yes_no('Overwrite existing "{0}"?'.format(filename))))):
-                # Get file content
-                content = get_content(gh, path=files[filename].path)
-                # Backup old file if exists
-                backup(filename, outdir)
-                # Write the file
-                with open('{0}/{1}'.format(outdir, filename), 'w+') as f:
-                    f.write(content.decoded)
-                logging.info('{0} --> {1}/{2} '.format(content.html_url, outdir, filename))
+    for project in projects:
+        outfile = os.path.join(outdir, 'esg.{0}.ini'.format(project))
+        if fetch(outfile, args.k, args.o):
+            # Get file content
+            content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project)))
+            # Backup old file if exists
+            backup(outfile, mode=args.b)
+            # Write new file
+            with open(outfile, 'w+') as f:
+                f.write(content.decoded)
+            logging.info('{0} --> {1}'.format(content.html_url, outfile))
 
     ############################
     # Fetch and deploy esg.ini #
     ############################
 
-    filename = 'esg.ini'
-    outfile = '{0}/{1}'.format(outdir, filename)
-    # Fetch file only:
-    # If the file doesn't exists or
-    # If the file exists but '-k' is set to False and whether '-f' is set to True or prompt answer is Yes
-    # '-f' can be set to True only if '-k' is set to False.
-    # If not ask to user instead
-    if (not os.path.isfile(outfile) or
-       (os.path.isfile(outfile) and not args.k and
-       (args.o or query_yes_no('Overwrite existing "esg.ini"?')))):
+    outfile = os.path.join(outdir, 'esg.ini')
+    if fetch(outfile, args.k, args.o):
         # Get file content
-        content = get_content(gh, path=files[filename].path)
+        content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.ini'))
         # Configure ESGF properties
-        if not args.db_password:
-            raise MissingArgument('--db-password')
-        content.decoded = re.sub('<DB_PASSWORD>', args.db_password, content.decoded)
-        if not args.tds_password:
-            raise MissingArgument('--tds-password')
-        content.decoded = re.sub('<TDS_PASSWORD>', args.tds_password, content.decoded)
-        if not args.data_root_path:
-            raise MissingArgument('--data-root-path')
-        content.decoded = re.sub('<DATA_ROOT_PATH>', args.data_root_path, content.decoded)
-        content.decoded = re.sub('<DB_HOST>', get_property('db.host'), content.decoded)
-        content.decoded = re.sub('<DB_PORT>', get_property('db.port'), content.decoded)
-        content.decoded = re.sub('<INDEX_NODE_HOSTNAME>', get_property('esgf.index.peer'), content.decoded)
-        content.decoded = re.sub('<DATA_NODE_HOSTNAME>', get_property('esgf.host'), content.decoded)
-        content.decoded = re.sub('<INSTITUTE>', get_property('esg.root.id'), content.decoded)
+        for key in list(set(re.findall(r'<(?!PROJECT.*)(.+?)>', content.decoded))):
+            try:
+                value = get_property(key.replace('_', '.').lower(), path=ESGF_PROPERTIES)
+            except (KeyError, IOError):
+                value = vars(args)[key.lower()]
+                if value is None:
+                    raise MissingArgument('--{0}'.format(key.replace('_', '-').lower()))
+            content.decoded = re.sub('<{0}>'.format(key), value, content.decoded)
         # Backup old file if exists
-        backup(filename, outdir)
-        # Write esg.ini file
-        with open('{0}/{1}'.format(outdir, filename), 'w+') as f:
+        backup(outfile)
+        # Write new file
+        with open(outfile, 'w+') as f:
             f.write(content.decoded)
-        logging.info('{0} --> {1}/{2} '.format(content.html_url, outdir, filename))
+        logging.info('{0} --> {1}'.format(content.html_url, outfile))
+
         # Update thredds dataset roots
-        # Get configuration parser
-        cfg = ConfigParser.ConfigParser()
-        cfg.read('{0}/esg.ini'.format(outdir))
-        # Get project options
+        cfg = parser.CfgParser()
+        cfg.read(outfile)
         thredds_options = parser.get_thredds_roots(cfg)
-        # Build project id as last project of the project_options
         for project in projects:
             project_section = 'project:{0}'.format(project)
             project_cfg = parser.config_parse(outdir, project_section)
             project_name = parser.get_default_value(project_cfg, project_section, 'project')
-            if project not in [thredds_option[0] for thredds_option in thredds_options]:
-                thredds_options.append((project.lower(), '{0}/{1}'.format(args.data_root_path, project_name)))
-                new_thredds_options = tuple([parser.build_line(thredds_option) for thredds_option in thredds_options])
-                cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + parser.build_line(new_thredds_options, sep='\n'))
-        # Write new esg.ini file
-        with open('{0}/esg.ini'.format(outdir), 'wb') as f:
+            if project not in [t[0] for t in thredds_options]:
+                thredds_options.append((project.lower(), os.path.join(args.data_root_path, project_name)))
+        new_thredds_options = tuple([parser.build_line(t, length=(15, 50)) for t in thredds_options])
+        cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + parser.build_line(new_thredds_options, sep='\n'))
+        # Write new file
+        with open(outfile, 'wb') as f:
             cfg.write(f)
+
     # Update esg.ini project options in any case
-    # Get configuration parser
-    cfg = ConfigParser.ConfigParser()
-    cfg.read('{0}/esg.ini'.format(outdir))
-    # Get project options
+    cfg = parser.CfgParser()
+    cfg.read(outfile)
     project_options = parser.get_project_options(cfg)
     # Build project id as last project of the project_options
-    project_id = str(1)
+    project_id = 1
     if len(project_options) != 0:
-        project_id = str(max([int(project_option[2]) for project_option in project_options]) + 1)
+        project_id = max([int(p[2]) for p in project_options]) + 1
     for project in projects:
         project_section = 'project:{0}'.format(project)
         project_cfg = parser.config_parse(outdir, project_section)
         project_name = parser.get_default_value(project_cfg, project_section, 'project')
-        if project not in [project_option[0] for project_option in project_options]:
-            project_options.append((project.lower(), project_name, project_id))
-            new_project_options = tuple([parser.build_line(project_option) for project_option in project_options])
-            cfg.set('DEFAULT', 'project_options', '\n' + parser.build_line(new_project_options, sep='\n'))
-    # Write new esg.ini file
-    with open('{0}/esg.ini'.format(outdir), 'wb') as f:
+        if project not in [p[0] for p in project_options]:
+            project_options.append((project.lower(), project_name, str(project_id)))
+        project_id += 1
+    new_project_options = tuple([parser.build_line(p, length=(15, 15, 2)) for p in project_options])
+    cfg.set('DEFAULT', 'project_options', '\n' + parser.build_line(new_project_options, sep='\n'))
+    # Write new file
+    with open(outfile, 'wb') as f:
         cfg.write(f)
-    logging.info('"{0}/esg.ini" updated'.format(outdir))
+    logging.info('"{0}" successfully configured'.format(outfile))
 
     #############################################
     # Fetch and deploy esgcet_models_tables.txt #
     #############################################
 
-    files = get_content(gh, path=GITHUB_DIRECTORY)
-    filename = 'esgcet_models_tables.txt'
-    outfile = '{0}/{1}'.format(outdir, filename)
-    # Fetch file only:
-    # If the file doesn't exists or
-    # If the file exists and '-k' is set to False and if '-f' is set to True or prompt answer is Yes
-    # '-f' can be set to True only if '-k' is set to False.
-    # If not ask to user instead
-    if (not os.path.isfile(outfile) or
-       (os.path.isfile(outfile) and not args.k and
-       (args.o or query_yes_no('Overwrite existing "{0}"?'.format(filename))))):
+    outfile = os.path.join(outdir, 'esgcet_models_tables.txt')
+    if fetch(outfile, args.k, args.o):
         # Get file content
-        content = get_content(gh, path=files[filename].path)
+        content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'esgcet_models_tables.txt'))
         # Backup old file if exists
-        backup(filename, outdir)
-        # Write the file
-        with open('{0}/{1}'.format(outdir, filename), 'w+') as f:
+        backup(outfile)
+        # Write new file
+        with open(outfile, 'w+') as f:
             f.write(content.decoded)
-        logging.info('{0} --> {1}/{2} '.format(content.html_url, outdir, filename))
+        logging.info('{0} --> {1}'.format(content.html_url, outfile))
 
     #######################################
     # Fetch and deploy project_handler.py #
     #######################################
 
-    h_outdir = os.path.normpath(os.path.abspath(HANDLERS_OUTDIR))
-    # If not specified, get all files from GitHub repository
-    files = get_content(gh, path='{0}/{1}'.format(GITHUB_DIRECTORY, 'handlers'))
     for project in projects:
         project_section = 'project:{0}'.format(project)
         project_cfg = parser.config_parse(outdir, project_section)
         if project_cfg.has_option(project_section, 'handler'):
             filename = '{0}.py'.format(re.search('.*\.(.+?):.*', project_cfg.get(project_section, 'handler')).group(1))
-            outfile = '{0}/{1}'.format(outdir, filename)
-            # Fetch file only:
-            # If the file doesn't exists or
-            # If the file exists and '-k' is set to False and if '-f' is set to True or prompt answer is Yes
-            # '-f' can be set to True only if '-k' is set to False.
-            # If not ask to user instead
-            if (not os.path.isfile(outfile) or
-               (os.path.isfile(outfile) and not args.k and
-               (args.o or query_yes_no('Overwrite existing "{0}"?'.format(filename))))):
+            outfile = os.path.join(os.path.normpath(os.path.abspath(HANDLERS_OUTDIR)), filename)
+            if fetch(outfile, args.k, args.o):
                 # Get file content
-                content = get_content(gh, path=files[filename].path)
+                content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'handlers', filename))
                 # Backup old file if exists
-                backup(filename, h_outdir)
-                # Write the file
-                with open('{0}/{1}'.format(h_outdir, filename), 'w+') as f:
+                backup(outfile)
+                # Write new file
+                with open(outfile, 'w+') as f:
                     f.write(content.decoded)
-                logging.info('{0} --> {1}/{2} '.format(content.html_url, h_outdir, filename))
+                logging.info('{0} --> {1}'.format(content.html_url, outfile))
         else:
             logging.warning('No "handler" option found into "esg.{0}.ini"'.format(project))

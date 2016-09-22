@@ -15,6 +15,9 @@ class GitHubConnectionError(Exception):
     """
 
     def __init__(self, error_msg, repository, username=None, password=None, team=None):
+        print type(error_msg)
+        if "API rate limit exceeded" in error_msg:
+            error_msg = "API rate limit exceeded. Please try again in 60 minutes or submit GitHub user/password."
         self.msg = "GitHub access denied: {0}".format(error_msg)
         self.msg += "\n<username: '{0}'>".format(username)
         self.msg += "\n<password: '{0}'>".format(password)

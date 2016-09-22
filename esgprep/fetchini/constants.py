@@ -10,9 +10,12 @@
 # GitHub configuration
 GITHUB_TEAM = 'ESGF'
 GITHUB_REPO = 'config'
-GITHUB_API = 'https://api.github.com'
-GITHUB_BASE = 'https://raw.github.com'
 GITHUB_DIRECTORY = 'publisher-configs'
 
 # Handlers output directory
-HANDLERS_OUTDIR = '.'
+#HANDLERS_OUTDIR = '.'
+HANDLERS_OUTDIR = '/usr/local/uvcdat/2.2.0/lib/python2.7/site-packages/esgcet-2.14.6-py2.7.egg/esgcet/config'
+
+# esgf.properties default path
+#ESGF_PROPERTIES = 'esgf.properties'
+ESGF_PROPERTIES = '/esg/config/esgf.properties'

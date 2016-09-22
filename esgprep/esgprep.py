@@ -86,7 +86,7 @@ def get_args():
         default='/esg/config/esgcet/.',
         help="""
         Initialization/configuration directory containing|n
-        esg.ini" and "esg.<project>.ini" files.|n
+        "esg.ini" and "esg.<project>.ini" files.|n
         If not specified, the usual datanode directory is used.
         """)
     parent.add_argument(
@@ -113,20 +113,24 @@ def get_args():
         'fetch-ini',
         prog='esgprep fetch-ini',
         description="""
-        The ESGF publishing client and most of other ESGF tool rely on configuration files. These ".ini" files are the
-        primary means of configuring the ESGF publisher.|n|n
+        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that are
+        the primary means of configuring the ESGF publisher.|n|n
 
-        The "esg.ini`` file gathers all required information to configure the datanode regarding to data publication
-        (e.g., PostgreSQL access, THREDDS configuration, etc.).|n|n
+        - The "esg.ini" file gathers all required information to configure the datanode regarding to data publication
+        (e.g., PostgreSQL access, THREDDS configuration, etc.).|n
+        - The "esg.<project_id>.ini" files declare all facets and allowed values according to the Data Reference Syntax
+        (DRS) and the controlled vocabularies of the corresponding project.|n
+        - The "esgcet_models_table.txt" declares the models and their descriptions among the projects.|n
+        - The "<project_id>_handler.py" are Python methods to guide the publisher in metadata harvesting.
 
-        The "esg.<project_id>.ini" files declare all facets and allowed values according to the Data Reference Syntax
-        (DRS) and the controlled vocabularies of the corresponding project.|n|n
+        "esgprep fetch-ini" allows you to properly download, configure and deploy these configuration files hosted
+        on a GitHub repository.|n|n
 
-        "esgprep fetch-ini" allows you to download proper ".ini" files hosted on a GotHub repository. If you prepare
-        your data outside of an ESGF node using "esgprep" as a full standalone toolbox, this step is mandatory.|n|n
+        WARNING: If you prepare your data outside of an ESGF node using "esgprep" as a full standalone toolbox,
+        this step is could fail to deploy some files requiring specific hard-coded paths.|n|n
 
-        Keep in mind that the fetched ".ini" files have to be reviewed to ensure a correct configuration of your
-        projects.|n|n
+        Keep in mind that the fetched files have to be reviewed to ensure a correct configuration of your
+        publication.|n|n
 
         The supply configuration directory is used to write the files retrieved from GitHub.|n|n
 
@@ -143,10 +147,9 @@ def get_args():
     fetchini._positionals.title = "Positional arguments"
     fetchini.add_argument(
         '--project',
-        metavar='<project_id>',
+        metavar='<project>',
         type=str,
         nargs='+',
-        default='.*',
         help="""
         One or more lower-cased project name(s).|n
         If not, all "esg.*.ini" are fetched.
@@ -155,17 +158,53 @@ def get_args():
         '--db-password',
         metavar='<password>',
         type=str,
-        help="""Database password.""")
+        help="""
+        Database password.|n
+        Required to configure "esg.ini".
+        """)
+    fetchini.add_argument(
+        '--db-host',
+        metavar='localhost',
+        type=str,
+        default='localhost',
+        help="""Database hostname.""")
+    fetchini.add_argument(
+        '--db-port',
+        metavar='5432',
+        type=str,
+        default='5432',
+        help="""Database port.""")
     fetchini.add_argument(
         '--tds-password',
         metavar='<password>',
         type=str,
-        help="""THREDDS password.""")
+        help="""
+        THREDDS password.|n
+        Required to configure "esg.ini".
+        """)
     fetchini.add_argument(
         '--data-root-path',
         metavar='<path>',
         type=str,
-        help="""Data root path.""")
+        help="""
+        Data root path.|n
+        Required to configure "esg.ini".
+        """)
+    fetchini.add_argument(
+        '--idx-host',
+        metavar='<hostname>',
+        type=str,
+        help="""Index peer hostname.""")
+    fetchini.add_argument(
+        '--data-host',
+        metavar='<hostname>',
+        type=str,
+        help="""Datanode hostname.""")
+    fetchini.add_argument(
+        '--institute',
+        metavar='<institute>',
+        type=str,
+        help="""Institute root id.""")
     group = fetchini.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '-k',
@@ -177,6 +216,31 @@ def get_args():
         action='store_true',
         default=False,
         help="""Ignore and overwrite existing file(s) without prompt.""")
+    fetchini.add_argument(
+        '-b',
+        choices=['one_version', 'keep_versions'],
+        type=str,
+        nargs='?',
+        const='one_version',
+        help="""
+        Backup mode of existing files.|n
+        "one_version" renames an existing file in its source|n
+        directory adding a ".bkp" extension to the filename.|n
+        "keep_versions" moves an existing file to a child|n
+        directory called "bkp" and add a timestamp to the filename.|n
+        If no mode specified, "one_version" is the default.|n
+        If not specified, no backup.
+        """)
+    fetchini.add_argument(
+        '--gh-user',
+        metavar='<username>',
+        type=str,
+        help="""GitHub username.""")
+    fetchini.add_argument(
+        '--gh-password',
+        metavar='<password>',
+        type=str,
+        help="""GitHub password.""")
 
     #######################################
     # Subparser for "esgprep check-vocab" #
@@ -310,7 +374,8 @@ def get_args():
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
-        Unix wildcards are allowed.""")
+        Unix wildcards are allowed.
+        """)
     mapfile.add_argument(
         '--project',
         metavar='<project_id>',
