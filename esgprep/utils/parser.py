@@ -378,7 +378,10 @@ def get_default_value(cfg, section, facet):
     except:
         raise MisdeclaredOption('category_defaults', section, cfg.read_paths,
                                 reason="Please follow the format: '<facet> | <default_value>'")
-    return default_values[facet]
+    try:
+        return default_values[facet]
+    except KeyError:
+        raise NoConfigKey(facet, 'category_defaults', section, cfg.read_paths)
 
 
 def get_maps(cfg, section):

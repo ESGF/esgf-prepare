@@ -89,6 +89,21 @@ class NoConfigValue(Exception):
         super(self.__class__, self).__init__(self.msg)
 
 
+class NoConfigKey(Exception):
+    """
+    Raised when no corresponding value found in option of a section from the configuration file.
+
+    """
+
+    def __init__(self, key, option, section, paths):
+        self.msg = "No key: '{0}'".format(key)
+        self.msg += "\n<option: '{0}'>".format(option)
+        self.msg += "\n<section: '{0}'>".format(section)
+        for path in paths:
+            self.msg += "\n<config file: '{0}'>".format(path)
+        super(self.__class__, self).__init__(self.msg)
+
+
 class NoConfigVariable(Exception):
     """
     Raised when a ``%(facet)s`` pattern is missing into ``directory_format`` regex.

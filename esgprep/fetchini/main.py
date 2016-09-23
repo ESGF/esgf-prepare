@@ -265,8 +265,8 @@ def main(args):
             project_name = parser.get_default_value(project_cfg, project_section, 'project')
             if project not in [t[0] for t in thredds_options]:
                 thredds_options.append((project.lower(), os.path.join(args.data_root_path, project_name)))
-        new_thredds_options = tuple([parser.build_line(t, length=(15, 50)) for t in thredds_options])
-        cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + parser.build_line(new_thredds_options, sep='\n'))
+                new_thredds_options = tuple([parser.build_line(t, length=(15, 50)) for t in thredds_options])
+                cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + parser.build_line(new_thredds_options, sep='\n'))
         # Write new file
         with open(outfile, 'wb') as f:
             cfg.write(f)
@@ -285,9 +285,9 @@ def main(args):
         project_name = parser.get_default_value(project_cfg, project_section, 'project')
         if project not in [p[0] for p in project_options]:
             project_options.append((project.lower(), project_name, str(project_id)))
-        project_id += 1
-    new_project_options = tuple([parser.build_line(p, length=(15, 15, 2)) for p in project_options])
-    cfg.set('DEFAULT', 'project_options', '\n' + parser.build_line(new_project_options, sep='\n'))
+            project_id += 1
+            new_project_options = tuple([parser.build_line(p, length=(15, 15, 2)) for p in project_options])
+            cfg.set('DEFAULT', 'project_options', '\n' + parser.build_line(new_project_options, sep='\n'))
     # Write new file
     with open(outfile, 'wb') as f:
         cfg.write(f)
