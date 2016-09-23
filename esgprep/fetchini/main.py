@@ -166,6 +166,20 @@ def get_property(key, path):
     return values[key]
 
 
+def get_project_name(project, path):
+    """
+    Gets the project name from the configuration file defaults option
+    :param str project: The project id
+    :param str path: Directory path of configuration files
+    :return: The project name
+    :rtype: *str*
+
+    """
+    project_section = 'project:{0}'.format(project)
+    project_cfg = parser.config_parse(path, project_section)
+    return parser.get_default_value(project_cfg, project_section, 'project')
+
+
 def fetch(f, keep, overwrite):
     """
     Returns True if
@@ -260,10 +274,8 @@ def main(args):
         cfg.read(outfile)
         thredds_options = parser.get_thredds_roots(cfg)
         for project in projects:
-            project_section = 'project:{0}'.format(project)
-            project_cfg = parser.config_parse(outdir, project_section)
-            project_name = parser.get_default_value(project_cfg, project_section, 'project')
             if project not in [t[0] for t in thredds_options]:
+                project_name = get_project_name(project, outdir)
                 thredds_options.append((project.lower(), os.path.join(args.data_root_path, project_name)))
                 new_thredds_options = tuple([parser.build_line(t, length=(15, 50)) for t in thredds_options])
                 cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + parser.build_line(new_thredds_options, sep='\n'))
@@ -280,10 +292,8 @@ def main(args):
     if len(project_options) != 0:
         project_id = max([int(p[2]) for p in project_options]) + 1
     for project in projects:
-        project_section = 'project:{0}'.format(project)
-        project_cfg = parser.config_parse(outdir, project_section)
-        project_name = parser.get_default_value(project_cfg, project_section, 'project')
         if project not in [p[0] for p in project_options]:
+            project_name = get_project_name(project, outdir)
             project_options.append((project.lower(), project_name, str(project_id)))
             project_id += 1
             new_project_options = tuple([parser.build_line(p, length=(15, 15, 2)) for p in project_options])
@@ -297,10 +307,10 @@ def main(args):
     # Fetch and deploy esgcet_models_tables.txt #
     #############################################
 
-    outfile = os.path.join(outdir, 'esgcet_models_tables.txt')
+    outfile = os.path.join(outdir, 'esgcet_models_table.txt')
     if fetch(outfile, args.k, args.o):
         # Get file content
-        content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'esgcet_models_tables.txt'))
+        content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt'))
         # Backup old file if exists
         backup(outfile)
         # Write new file
