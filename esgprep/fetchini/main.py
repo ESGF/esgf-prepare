@@ -18,6 +18,7 @@ from github3 import GitHub
 from github3.models import GitHubError
 from constants import *
 from exceptions import *
+from esgprep.utils.exceptions import *
 
 
 def query_yes_no(question, default='no'):
@@ -177,7 +178,10 @@ def get_project_name(project, path):
     """
     project_section = 'project:{0}'.format(project)
     project_cfg = parser.config_parse(path, project_section)
-    return parser.get_default_value(project_cfg, project_section, 'project')
+    try:
+        return parser.get_default_value(project_cfg, project_section, 'project')
+    except NoConfigKey:
+        return project
 
 
 def fetch(f, keep, overwrite):
@@ -322,9 +326,13 @@ def main(args):
     # Fetch and deploy project_handler.py #
     #######################################
 
-    handler_outdir = HANDLERS_OUTDIR
-    if not os.path.exists(HANDLERS_OUTDIR):
-        logging.warning('"{0}" does not exist. Use "{1}" instead.'.format(HANDLERS_OUTDIR, outdir))
+    try:
+        import esgcet
+        handler_outdir = os.path.join(os.path.dirname(esgcet.__file__), 'config')
+        if not os.path.exists(handler_outdir):
+            logging.warning('"{0}" does not exist. Use "{1}" instead.'.format(handler_outdir, outdir))
+            handler_outdir = outdir
+    except ImportError:
         handler_outdir = outdir
     for project in projects:
         project_section = 'project:{0}'.format(project)
@@ -342,4 +350,4 @@ def main(args):
                     f.write(content.decoded)
                 logging.info('{0} --> {1}'.format(content.html_url, outfile))
         else:
-            logging.warning('No "handler" option found into "esg.{0}.ini"'.format(project))
+            logging.info('No "handler" option found into "esg.{0}.ini"'.format(project))
