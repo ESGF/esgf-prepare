@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.5.2 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.5.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.5.2 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.5.6 documentation" href="index.html"/>
         <link rel="prev" title="Changelog" href="log.html"/> 
 
   
@@ -177,24 +177,6 @@
 </tbody>
 </table>
 <dl class="function">
-<dt id="esgprep.fetchini.main.build_http">
-<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">build_http</code><span class="sig-paren">(</span><em>project</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#build_http"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.build_http" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds the HTTP URL to get esg.&lt;project&gt;.ini file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>project</strong> (<em>str</em>) &#8211; The lower-cased project name</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The HTTP URL to request</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
 <dt id="esgprep.fetchini.main.query_yes_no">
 <code class="descclassname">esgprep.fetchini.main.</code><code class="descname">query_yes_no</code><span class="sig-paren">(</span><em>question</em>, <em>default='no'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#query_yes_no"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.query_yes_no" title="Permalink to this definition">¶</a></dt>
 <dd><p>Asks a yes/no question via raw_input() and return their answer.</p>
@@ -212,7 +194,10 @@ If None an answer is required.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The answer True or False</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>boolean</em></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>boolean</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If invalid default answer</p>
 </td>
 </tr>
 </tbody>
@@ -220,34 +205,199 @@ If None an answer is required.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="esgprep.fetchini.main.get_github_files_list">
-<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">get_github_files_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#get_github_files_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.get_github_files_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the list of esg.*.ini files from the GitHub repository.</p>
+<dt id="esgprep.fetchini.main.query_thredds_root">
+<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">query_thredds_root</code><span class="sig-paren">(</span><em>project</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#query_thredds_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.query_thredds_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asks project data root path via raw_input() and return their answer.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The filenames</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>project</strong> (<em>str</em>) &#8211; The project name</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>list</em></td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The data root path</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="function">
-<dt id="esgprep.fetchini.main.fetch">
-<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">fetch</code><span class="sig-paren">(</span><em>url</em>, <em>outdir</em>, <em>project</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.fetch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Downloads an esg.&lt;project&gt;.ini file from GitHub URL to local file system.</p>
+<dt id="esgprep.fetchini.main.github_connector">
+<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">github_connector</code><span class="sig-paren">(</span><em>repository</em>, <em>username=None</em>, <em>password=None</em>, <em>team=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#github_connector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.github_connector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiates the GitHub repository connector if granted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>username</strong> &#8211; The GitHub login (optional)</li>
+<li><strong>password</strong> &#8211; The GitHub password (optional)</li>
+<li><strong>team</strong> &#8211; The GitHub team to connect (optional)</li>
+<li><strong>repository</strong> &#8211; The GitHub repository to reach</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The GitHub repository connector</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>github3.repos</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Error</strong> &#8211; If the GitHub connection fails because of invalid inputs</li>
+<li><strong>Error</strong> &#8211; If the GitHub connection fails because of API rate limit exceeded</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.fetchini.main.backup">
+<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">backup</code><span class="sig-paren">(</span><em>f</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#backup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.backup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Backup a local file following different modes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>&#8220;one_version&#8221; renames the existing file in its source directory adding a &#8221;.bkp&#8221; extension to the filename.</li>
+<li>&#8220;keep_versions&#8221; moves the existing file in a child directory called &#8220;bkp&#8221; and add a timestamp to the filename.</li>
+</ul>
+</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>url</strong> (<em>str</em>) &#8211; The URL to fetch</li>
-<li><strong>outdir</strong> &#8211; The output directory to write</li>
-<li><strong>project</strong> &#8211; The lower-cased project name</li>
+<li><strong>f</strong> (<em>str</em>) &#8211; The file to backup</li>
+<li><strong>mode</strong> (<em>str</em>) &#8211; The backup mode to follow</li>
 </ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.fetchini.main.gh_content">
+<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">gh_content</code><span class="sig-paren">(</span><em>gh</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#gh_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.gh_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the GitHub content of a file or a directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>gh</strong> (<em>github3.GitHub.repository</em>) &#8211; A <a class="reference internal" href="#esgprep.fetchini.main.github_connector" title="esgprep.fetchini.main.github_connector"><code class="xref py py-func docutils literal"><span class="pre">github_connector()</span></code></a> instance</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; The remote file or directory path</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The remote file or directory content</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>github3.GitHub.repository.contents</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the GitHub request returns empty content</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.fetchini.main.target_projects">
+<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">target_projects</code><span class="sig-paren">(</span><em>gh</em>, <em>projects=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#target_projects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.target_projects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the available projects id from GitHub esg.*.ini files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>gh</strong> (<em>github3.GitHub.repository</em>) &#8211; A <a class="reference internal" href="#esgprep.fetchini.main.github_connector" title="esgprep.fetchini.main.github_connector"><code class="xref py py-func docutils literal"><span class="pre">github_connector()</span></code></a> instance</li>
+<li><strong>projects</strong> (<em>list</em>) &#8211; Desired project ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The target projects</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>list</em></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.fetchini.main.get_property">
+<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">get_property</code><span class="sig-paren">(</span><em>key</em>, <em>path</em>, <em>sep='='</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#get_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.get_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets value corresponding to key from a key: value pairs file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key</strong> (<em>str</em>) &#8211; The requested key</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; The file path to parse</li>
+<li><strong>sep</strong> (<em>str</em>) &#8211; The fields separator</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The value</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>str</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the key doesn&#8217;t exist</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.fetchini.main.get_project_name">
+<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">get_project_name</code><span class="sig-paren">(</span><em>project</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#get_project_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.get_project_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the project name from the configuration file defaults option
+:param str project: The project id
+:param str path: Directory path of configuration files
+:return: The project name
+:rtype: <em>str</em></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.fetchini.main.fetch">
+<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">fetch</code><span class="sig-paren">(</span><em>f</em>, <em>keep</em>, <em>overwrite</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if</p>
+<ul class="simple">
+<li>the file doesn&#8217;t exists</li>
+</ul>
+<p>OR</p>
+<ul>
+<li><dl class="first docutils">
+<dt>if the file exists AND &#8216;keep mode&#8217; is set disable</dt>
+<dd><p class="first last">AND &#8216;overwrite mode&#8217; is enable OR the prompt answer is YES.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>f</strong> (<em>str</em>) &#8211; The file to test</li>
+<li><strong>overwrite</strong> (<em>boolean</em>) &#8211; True if overwrite existing files</li>
+<li><strong>keep</strong> (<em>boolean</em>) &#8211; True if keep existing files</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True depending on the conditions</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>boolean</em></p>
 </td>
 </tr>
 </tbody>
@@ -288,6 +438,24 @@ If None an answer is required.</li>
 </tr>
 </tbody>
 </table>
+<dl class="exception">
+<dt id="esgprep.fetchini.exceptions.GitHubConnectionError">
+<em class="property">exception </em><code class="descclassname">esgprep.fetchini.exceptions.</code><code class="descname">GitHubConnectionError</code><span class="sig-paren">(</span><em>error_msg</em>, <em>repository</em>, <em>username=None</em>, <em>password=None</em>, <em>team=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/exceptions.html#GitHubConnectionError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.exceptions.GitHubConnectionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when the GitHub connection fails.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.fetchini.exceptions.GitHubNoContent">
+<em class="property">exception </em><code class="descclassname">esgprep.fetchini.exceptions.</code><code class="descname">GitHubNoContent</code><span class="sig-paren">(</span><em>uri</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/exceptions.html#GitHubNoContent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.exceptions.GitHubNoContent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when the GitHub request returns empty content.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.fetchini.exceptions.MissingArgument">
+<em class="property">exception </em><code class="descclassname">esgprep.fetchini.exceptions.</code><code class="descname">MissingArgument</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/exceptions.html#MissingArgument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.exceptions.MissingArgument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a command-line argument is missing.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-esgprep.drs.main">
 <span id="drs"></span><h3>drs<a class="headerlink" href="#module-esgprep.drs.main" title="Permalink to this headline">¶</a></h3>
@@ -380,11 +548,15 @@ If None an answer is required.</li>
 <td><em>str</em></td>
 <td>Project section name in configuration file</td>
 </tr>
-<tr class="row-even"><td><em>self</em>.pattern</td>
+<tr class="row-even"><td><em>self</em>.filter</td>
+<td><em>re object</em></td>
+<td>File filter as regex pattern</td>
+</tr>
+<tr class="row-odd"><td><em>self</em>.pattern</td>
 <td><em>re object</em></td>
 <td>DRS regex pattern without version</td>
 </tr>
-<tr class="row-odd"><td><em>self</em>.facets</td>
+<tr class="row-even"><td><em>self</em>.facets</td>
 <td><em>list</em></td>
 <td>List of the DRS facets</td>
 </tr>
@@ -405,10 +577,10 @@ If None an answer is required.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="esgprep.checkvocab.main.get_dsets_from_tree">
-<code class="descclassname">esgprep.checkvocab.main.</code><code class="descname">get_dsets_from_tree</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/checkvocab/main.html#get_dsets_from_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.checkvocab.main.get_dsets_from_tree" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.checkvocab.main.yield_files_from_tree">
+<code class="descclassname">esgprep.checkvocab.main.</code><code class="descname">yield_files_from_tree</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/checkvocab/main.html#yield_files_from_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.checkvocab.main.yield_files_from_tree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Yields datasets to process. Only the &#8220;dataset part&#8221; of the DRS tree is returned
-(i.e., from &#8220;root&#8221; to before the &#8220;version&#8221; facet).</p>
+(i.e., from &#8220;root&#8221; to the facet before the &#8220;version&#8221; facet).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -457,7 +629,7 @@ If None an answer is required.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cfg</strong> (<em>RawConfigParser</em>) &#8211; The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)</li>
+<li><strong>cfg</strong> (<a class="reference internal" href="#esgprep.utils.parser.CfgParser" title="esgprep.utils.parser.CfgParser"><em>CfgParser</em></a>) &#8211; The configuration file parser</li>
 <li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
 <li><strong>facets</strong> (<em>set</em>) &#8211; The set of facets to check</li>
 </ul>
@@ -1036,8 +1208,8 @@ Print list of available keys if submitted.</p>
 </table>
 <dl class="class">
 <dt id="esgprep.utils.parser.CfgParser">
-<em class="property">class </em><code class="descclassname">esgprep.utils.parser.</code><code class="descname">CfgParser</code><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Custom ConfigParser class</p>
+<em class="property">class </em><code class="descclassname">esgprep.utils.parser.</code><code class="descname">CfgParser</code><span class="sig-paren">(</span><em>directory</em>, <em>section=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom ConfigParser class to parse ESGF .ini files from a source directory.</p>
 <dl class="method">
 <dt id="esgprep.utils.parser.CfgParser.options">
 <code class="descname">options</code><span class="sig-paren">(</span><em>section</em>, <em>defaults=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.options" title="Permalink to this definition">¶</a></dt>
@@ -1050,26 +1222,30 @@ Print list of available keys if submitted.</p>
 <dd><p>Read and parse a filename or a list of filenames, and records there paths.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.sections">
+<code class="descname">sections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.sections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.sections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of section names, including [DEFAULT]</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="esgprep.utils.parser.config_parse">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">config_parse</code><span class="sig-paren">(</span><em>path</em>, <em>section</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#config_parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.config_parse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parses the configuration files if exist.</p>
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.parse">
+<code class="descname">parse</code><span class="sig-paren">(</span><em>path</em>, <em>section</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses the configuration files. If no section is submitted, all INI files are read.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>str</em>) &#8211; The absolute or relative path of the configuration file directory</li>
-<li><strong>section</strong> (<em>str</em>) &#8211; The project section</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; The directory path of configuration files</li>
+<li><strong>section</strong> (<em>str</em>) &#8211; The section to parse (if not all ini files are read)</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The configuration file parser</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>ConfigParser</em></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>CfgParser</em></p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
@@ -1082,26 +1258,278 @@ Print list of available keys if submitted.</p>
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="esgprep.utils.parser.translate_directory_format">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">translate_directory_format</code><span class="sig-paren">(</span><em>cfg</em>, <em>project_section</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#translate_directory_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.translate_directory_format" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.translate_directory_format">
+<code class="descname">translate_directory_format</code><span class="sig-paren">(</span><em>section</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.translate_directory_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.translate_directory_format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of regular expression filters associated with the <code class="docutils literal"><span class="pre">directory_format</span></code> option
 in the configuration file. This can be passed to the Python <code class="docutils literal"><span class="pre">re</span></code> methods.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding <code class="docutils literal"><span class="pre">re</span></code> pattern</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.check_options">
+<code class="descname">check_options</code><span class="sig-paren">(</span><em>section</em>, <em>pairs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.check_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.check_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks a {key: value} pairs against the corresponding options from the configuration file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cfg</strong> (<em>RawConfigParser</em>) &#8211; The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)</li>
-<li><strong>project_section</strong> (<em>str</em>) &#8211; The project section name to parse</li>
+<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
+<li><strong>pairs</strong> (<em>dict</em>) &#8211; A dictionary of {key: value} to check</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The corresponding <code class="docutils literal"><span class="pre">re</span></code> pattern</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the value is missing in the corresponding options list</p>
 </td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.get_options">
+<code class="descname">get_options</code><span class="sig-paren">(</span><em>section</em>, <em>option</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of attribute options.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The option values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>list</em> or <em>re.RegexObject</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the option is missing</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.get_options_from_list">
+<code class="descname">get_options_from_list</code><span class="sig-paren">(</span><em>section</em>, <em>option</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_options_from_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_options_from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of option values from options list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The option values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>list</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Error</strong> &#8211; If the section does not exist</li>
+<li><strong>Error</strong> &#8211; If the option does not exist</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.get_options_from_table">
+<code class="descname">get_options_from_table</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>field_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_options_from_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_options_from_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of options from options table (i.e., &lt;field1&gt; | &lt;field2&gt; | &lt;field3&gt; | etc.).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
+<li><strong>field_id</strong> (<em>int</em>) &#8211; The field number starting from 1 (if not return the tuple)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The option values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>list</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Error</strong> &#8211; If the section does not exist</li>
+<li><strong>Error</strong> &#8211; If the option does not exist</li>
+<li><strong>Error</strong> &#8211; If the options table is misdeclared</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.get_options_from_pairs">
+<code class="descname">get_options_from_pairs</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>key</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_options_from_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_options_from_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of option values from pairs table (i.e., &lt;key&gt; | &lt;value&gt;).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
+<li><strong>key</strong> (<em>str</em>) &#8211; The key to get the value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The key value</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>str</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Error</strong> &#8211; If the section does not exist</li>
+<li><strong>Error</strong> &#8211; If the option does not exist</li>
+<li><strong>Error</strong> &#8211; If the key does not exist</li>
+<li><strong>Error</strong> &#8211; If the options table is misdeclared</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.get_options_from_map">
+<code class="descname">get_options_from_map</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>in_sources=False</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_options_from_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_options_from_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of option values from maptable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
+<li><strong>in_sources</strong> (<em>boolean</em>) &#8211; True if the related key is in &#8220;source keys&#8221; (default is False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The option values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>list</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Error</strong> &#8211; If the section does not exist</li>
+<li><strong>Error</strong> &#8211; If the option does not exist</li>
+<li><strong>Error</strong> &#8211; If the related key is not in the source/destination keys of the maptable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.get_option_from_map">
+<code class="descname">get_option_from_map</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>pairs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_option_from_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_option_from_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the destination values corresponding to key values from maptable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) &#8211; The option to get the value</li>
+<li><strong>pairs</strong> (<em>dict</em>) &#8211; A dictionary of {key: value} to input the maptable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The corresponding option value</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>list</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Error</strong> &#8211; If the section does not exist</li>
+<li><strong>Error</strong> &#8211; If the option does not exist</li>
+<li><strong>Error</strong> &#8211; If the key values are not in the destination keys of the maptable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.get_options_from_pattern">
+<code class="descname">get_options_from_pattern</code><span class="sig-paren">(</span><em>section</em>, <em>option</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_options_from_pattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_options_from_pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the expanded regex from <code class="docutils literal"><span class="pre">key_pattern</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The expanded regex</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>re.RegexObject</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Error</strong> &#8211; If the section does not exist</li>
+<li><strong>Error</strong> &#8211; If the option does not exist</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="esgprep.utils.parser.CfgParser.get_patterns">
+<code class="descname">get_patterns</code><span class="sig-paren">(</span><em>section</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_patterns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_patterns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all <code class="docutils literal"><span class="pre">key_patterns</span></code> options declared into the project section.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dictionary of {option: pattern}</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>dict</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="function">
@@ -1127,7 +1555,7 @@ in the configuration file. This can be passed to the Python <code class="docutil
 
 <dl class="function">
 <dt id="esgprep.utils.parser.build_line">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">build_line</code><span class="sig-paren">(</span><em>fields</em>, <em>sep=' | '</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#build_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.build_line" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.utils.parser.</code><code class="descname">build_line</code><span class="sig-paren">(</span><em>fields</em>, <em>sep=' | '</em>, <em>length=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#build_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.build_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build a line from fields adding trailing and leading characters.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1136,6 +1564,7 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>fields</strong> (<em>tuple</em>) &#8211; Tuple of ordered fields</li>
 <li><strong>sep</strong> (<em>str</em>) &#8211; Separator character</li>
+<li><strong>length</strong> (<em>tuple</em>) &#8211; The fields length</li>
 </ul>
 </td>
 </tr>
@@ -1144,6 +1573,15 @@ in the configuration file. This can be passed to the Python <code class="docutil
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.utils.parser.align">
+<code class="descclassname">esgprep.utils.parser.</code><code class="descname">align</code><span class="sig-paren">(</span><em>fields</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#align"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.align" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum length among items of a list of tuples.
+:param list fields:
+:returns: The fields lengths
+:rtype: <em>tuple</em></p>
 </dd></dl>
 
 <dl class="function">
@@ -1203,175 +1641,6 @@ A map header defines the mapping between two sets of facets id.</p>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.parser.check_facet">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">check_facet</code><span class="sig-paren">(</span><em>cfg</em>, <em>section</em>, <em>attributes</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#check_facet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.check_facet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks a facet value against the corresponding options. Each attribute or facet is auto-detected
-using the DRS pattern (regex) and compared to its corresponding options declared into the configuration file, if
-exists.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cfg</strong> (<em>RawConfigParser</em>) &#8211; The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)</li>
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>attributes</strong> (<em>dict</em>) &#8211; A dictionary of {facet: value} to check</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the attribute value is missing in the corresponding options list</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.parser.get_facet_options">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">get_facet_options</code><span class="sig-paren">(</span><em>cfg</em>, <em>section</em>, <em>facet</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#get_facet_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.get_facet_options" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the list of facet options.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cfg</strong> (<em>RawConfigParser</em>) &#8211; The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)</li>
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>facet</strong> (<em>str</em>) &#8211; The facet to get available values</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The facet options</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>list</em></p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the option list or maptable is missing</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.parser.get_options_from_list">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">get_options_from_list</code><span class="sig-paren">(</span><em>cfg</em>, <em>section</em>, <em>facet</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#get_options_from_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.get_options_from_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the list of facet options from options list.
-:param RawConfigParser cfg: The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)
-:param str section: The section name to parse
-:param str facet: The facet to get available values
-:returns: The facet options
-:rtype: <em>list</em>
-:raises Error: If the experiment list is misdeclared</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.parser.get_options_from_map">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">get_options_from_map</code><span class="sig-paren">(</span><em>cfg</em>, <em>section</em>, <em>facet</em>, <em>in_sources=False</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#get_options_from_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.get_options_from_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the list of facet options from maptable.
-:param RawConfigParser cfg: The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)
-:param str section: The section name to parse
-:param str facet: The facet to get available values
-:param boolean in_sources: True if facet is in &#8220;source keys&#8221; (default is False)
-:returns: The facet options
-:rtype: <em>list</em>
-:raises Error: If the facet key is not in the source/destination keys of the maptable</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.parser.get_options_from_pattern">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">get_options_from_pattern</code><span class="sig-paren">(</span><em>cfg</em>, <em>section</em>, <em>facet</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#get_options_from_pattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.get_options_from_pattern" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all <code class="docutils literal"><span class="pre">facet_patterns</span></code> attributes declared into the project section.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cfg</strong> (<em>RawConfigParser</em>) &#8211; The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)</li>
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>facet</strong> (<em>str</em>) &#8211; The facet to get available values</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The facet regex</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>re.RegexObject</em></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.parser.get_option_from_map">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">get_option_from_map</code><span class="sig-paren">(</span><em>cfg</em>, <em>section</em>, <em>facet</em>, <em>attributes</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#get_option_from_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.get_option_from_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the corresponding facet option from maptable.
-:param RawConfigParser cfg: The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)
-:param str section: The section name to parse
-:param str facet: The facet to get the value
-:param dict attributes: A dictionary of {facet: value} to input the maptable
-:returns: The facet options
-:rtype: <em>list</em>
-:raises Error: If the facet key is not in the destination keys of the maptable</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.parser.get_options_from_patterns">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">get_options_from_patterns</code><span class="sig-paren">(</span><em>cfg</em>, <em>section</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#get_options_from_patterns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.get_options_from_patterns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all <code class="docutils literal"><span class="pre">facet_patterns</span></code> attributes declared into the project section.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cfg</strong> (<em>RawConfigParser</em>) &#8211; The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)</li>
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dictionary of {facet: pattern}</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.parser.get_default_value">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">get_default_value</code><span class="sig-paren">(</span><em>cfg</em>, <em>section</em>, <em>facet</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#get_default_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.get_default_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the list of facet options from options list.
-:param RawConfigParser cfg: The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)
-:param str section: The section name to parse
-:param str facet: The facet to get default value
-:returns: The facet options
-:rtype: <em>list</em>
-:raises Error: If the experiment list is misdeclared</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.parser.get_maps">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">get_maps</code><span class="sig-paren">(</span><em>cfg</em>, <em>section</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#get_maps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.get_maps" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the list of maptables.
-:param RawConfigParser cfg: The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)
-:param str section: The section name to parse
-:returns: The maptables list
-:rtype: <em>list</em>
-:raises Error: If the &#8220;maps&#8221; options is missing list is misdeclared</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.parser.get_project_options">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">get_project_options</code><span class="sig-paren">(</span><em>cfg</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#get_project_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.get_project_options" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the list of facet options from options list.
-:param RawConfigParser cfg: The configuration file parser (as a <code class="xref py py-func docutils literal"><span class="pre">ConfigParser.RawConfigParser()</span></code> class instance)
-:returns: The project options
-:rtype: <em>tuple</em>
-:raises Error: If the project list is misdeclared</p>
 </dd></dl>
 
 <span class="target" id="module-esgprep.utils.utils"></span><table class="docutils field-list" frame="void" rules="none">
@@ -1509,6 +1778,12 @@ If &#8220;down&#8221; argument is True calls usual <code class="docutils literal
 </dd></dl>
 
 <dl class="exception">
+<dt id="esgprep.utils.exceptions.NoConfigKey">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.exceptions.</code><code class="descname">NoConfigKey</code><span class="sig-paren">(</span><em>key</em>, <em>option</em>, <em>section</em>, <em>paths</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/exceptions.html#NoConfigKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.exceptions.NoConfigKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when no corresponding value found in option of a section from the configuration file.</p>
+</dd></dl>
+
+<dl class="exception">
 <dt id="esgprep.utils.exceptions.NoConfigVariable">
 <em class="property">exception </em><code class="descclassname">esgprep.utils.exceptions.</code><code class="descname">NoConfigVariable</code><span class="sig-paren">(</span><em>option</em>, <em>directory_format</em>, <em>section</em>, <em>paths</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/exceptions.html#NoConfigVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.exceptions.NoConfigVariable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised when a <code class="docutils literal"><span class="pre">%(facet)s</span></code> pattern is missing into <code class="docutils literal"><span class="pre">directory_format</span></code> regex.</p>
@@ -1599,7 +1874,7 @@ If &#8220;down&#8221; argument is True calls usual <code class="docutils literal
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.5.2',
+            VERSION:'2.5.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

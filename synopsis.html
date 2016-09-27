@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Synopsis &mdash; esgprep 2.5.2 documentation</title>
+  <title>Synopsis &mdash; esgprep 2.5.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.5.2 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.5.6 documentation" href="index.html"/>
         <link rel="next" title="Installation" href="installation.html"/>
         <link rel="prev" title="esgprep toolbox" href="index.html"/> 
 
@@ -153,15 +153,17 @@ ESGF node.</p>
 <p><code class="docutils literal"><span class="pre">esgprep</span></code> gathers Python command-lines covering several steps of <a class="reference external" href="https://drive.google.com/open?id=0B7Kis5A3U5SKTUdFbjYwRnFhQ0E">ESGF publication workflow</a>.</p>
 <div class="section" id="esgprep-fetch-ini">
 <h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code><a class="headerlink" href="#esgprep-fetch-ini" title="Permalink to this headline">¶</a></h2>
-<p>The ESGF publishing client and most of ESGF tools rely on configuration files. These <code class="docutils literal"><span class="pre">.ini</span></code> files are the
+<p>The ESGF publishing client and most of ESGF tools rely on configuration files of different kinds, that are the
 primary means of configuring the ESGF publisher.</p>
 <p>The <code class="docutils literal"><span class="pre">esg.ini</span></code> file gathers all required information to configure the datanode regarding to data publication (e
 .g., PostgreSQL access, THREDDS configuration, etc.).</p>
 <p>The <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> files declare all facets and allowed values according to the <em>Data Reference Syntax</em>
 (DRS) and the controlled vocabularies of the corresponding project.</p>
-<p>The <code class="docutils literal"><span class="pre">fetch-ini</span></code> command allows you to download preset <code class="docutils literal"><span class="pre">.ini</span></code> files hosted on <a class="reference external" href="https://github.com/ESGF/config/">a GitHub repository</a>.</p>
+<p>The <code class="docutils literal"><span class="pre">esgcet_models_table.txt</span></code> declares the models and their descriptions among the projects.</p>
+<p>The <code class="docutils literal"><span class="pre">&lt;project_id&gt;_handler.py</span></code> are Python methods to guide the publisher in metadata harvesting.</p>
+<p>The <code class="docutils literal"><span class="pre">fetch-ini</span></code> command allows you to download and configure &#8220;on the fly&#8221; preset files hosted on <a class="reference external" href="https://github.com/ESGF/config/">a GitHub repository</a>.</p>
 <p>If you prepare your data outside of an ESGF node using <code class="docutils literal"><span class="pre">esgprep</span></code> as a full standalone toolbox, this step
-is mandatory. Keep in mind that the fetched <code class="docutils literal"><span class="pre">.ini</span></code> files have to be reviewed to ensure a correct configuration
+is mandatory. Keep in mind that the fetched files have to be reviewed to ensure a correct configuration
 of your projects.</p>
 </div>
 <div class="section" id="esgprep-drs">
@@ -266,7 +268,7 @@ define an output directory for your logs too.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.5.2',
+            VERSION:'2.5.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -17,7 +17,7 @@ ESGF node.
 ``esgprep fetch-ini``
 *********************
 
-The ESGF publishing client and most of ESGF tools rely on configuration files. These ``.ini`` files are the
+The ESGF publishing client and most of ESGF tools rely on configuration files of different kinds, that are the
 primary means of configuring the ESGF publisher.
 
 The ``esg.ini`` file gathers all required information to configure the datanode regarding to data publication (e
@@ -26,11 +26,15 @@ The ``esg.ini`` file gathers all required information to configure the datanode 
 The ``esg.<project_id>.ini`` files declare all facets and allowed values according to the *Data Reference Syntax*
 (DRS) and the controlled vocabularies of the corresponding project.
 
-The ``fetch-ini`` command allows you to download preset ``.ini`` files hosted on `a GitHub repository
+The ``esgcet_models_table.txt`` declares the models and their descriptions among the projects.
+
+The ``<project_id>_handler.py`` are Python methods to guide the publisher in metadata harvesting.
+
+The ``fetch-ini`` command allows you to download and configure "on the fly" preset files hosted on `a GitHub repository
 <https://github.com/ESGF/config/>`_.
 
 If you prepare your data outside of an ESGF node using ``esgprep`` as a full standalone toolbox, this step
-is mandatory. Keep in mind that the fetched ``.ini`` files have to be reviewed to ensure a correct configuration
+is mandatory. Keep in mind that the fetched files have to be reviewed to ensure a correct configuration
 of your projects.
 
 ``esgprep drs``

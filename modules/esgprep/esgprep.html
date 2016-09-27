@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.esgprep &mdash; esgprep 2.5.2 documentation</title>
+  <title>esgprep.esgprep &mdash; esgprep 2.5.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.5.2 documentation" href="../../index.html"/>
+    <link rel="top" title="esgprep 2.5.6 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -153,7 +153,7 @@
 <span class="kn">from</span> <span class="nn">utils.utils</span> <span class="k">import</span> <span class="n">MultilineFormatter</span><span class="p">,</span> <span class="n">init_logging</span><span class="p">,</span> <span class="n">version_checker</span><span class="p">,</span> <span class="n">directory_checker</span>
 
 <span class="c1"># Program version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;2.5.2&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2016</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-</span><span class="si">%d</span><span class="s2">-%m&quot;</span><span class="p">))</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;2.5.6&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2016</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">27</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-</span><span class="si">%d</span><span class="s2">-%m&quot;</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="get_args"><a class="viewcode-back" href="../../autodoc.html#esgprep.esgprep.get_args">[docs]</a><span class="k">def</span> <span class="nf">get_args</span><span class="p">():</span>
@@ -183,7 +183,7 @@
 <span class="s2">        configuration files are correctly build and declares all required attributes following recommended best</span>
 <span class="s2">        practices.|n|n</span>
 
-<span class="s2">        See full documentation and references on http://esgf-prepare.readthedocs.io/.</span>
+<span class="s2">        See full documentation and references on http://is-enes-data.github.io/esgf-prepare/.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -218,11 +218,11 @@
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-i&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;/esg/config/esgcet/.&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">directory_checker</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;/esg/config/esgcet/.&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Initialization/configuration directory containing|n</span>
-<span class="s2">        esg.ini&quot; and &quot;esg.&lt;project&gt;.ini&quot; files.|n</span>
+<span class="s2">        &quot;esg.ini&quot; and &quot;esg.&lt;project&gt;.ini&quot; files.|n</span>
 <span class="s2">        If not specified, the usual datanode directory is used.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -249,20 +249,21 @@
         <span class="s1">&#39;fetch-ini&#39;</span><span class="p">,</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep fetch-ini&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        The ESGF publishing client and most of other ESGF tool rely on configuration files. These &quot;.ini&quot; files are the</span>
-<span class="s2">        primary means of configuring the ESGF publisher.|n|n</span>
+<span class="s2">        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that are</span>
+<span class="s2">        the primary means of configuring the ESGF publisher.|n|n</span>
 
-<span class="s2">        The &quot;esg.ini`` file gathers all required information to configure the datanode regarding to data publication</span>
-<span class="s2">        (e.g., PostgreSQL access, THREDDS configuration, etc.).|n|n</span>
+<span class="s2">        - The &quot;esg.ini&quot; file gathers all required information to configure the datanode regarding to data publication</span>
+<span class="s2">        (e.g., PostgreSQL access, THREDDS configuration, etc.).|n</span>
+<span class="s2">        - The &quot;esg.&lt;project_id&gt;.ini&quot; files declare all facets and allowed values according to the Data Reference Syntax</span>
+<span class="s2">        (DRS) and the controlled vocabularies of the corresponding project.|n</span>
+<span class="s2">        - The &quot;esgcet_models_table.txt&quot; declares the models and their descriptions among the projects.|n</span>
+<span class="s2">        - The &quot;&lt;project_id&gt;_handler.py&quot; are Python methods to guide the publisher in metadata harvesting.</span>
 
-<span class="s2">        The &quot;esg.&lt;project_id&gt;.ini&quot; files declare all facets and allowed values according to the Data Reference Syntax</span>
-<span class="s2">        (DRS) and the controlled vocabularies of the corresponding project.|n|n</span>
+<span class="s2">        &quot;esgprep fetch-ini&quot; allows you to properly download, configure and deploy these configuration files hosted</span>
+<span class="s2">        on a GitHub repository.|n|n</span>
 
-<span class="s2">        &quot;esgprep fetch-ini&quot; allows you to download proper &quot;.ini&quot; files hosted on a GotHub repository. If you prepare</span>
-<span class="s2">        your data outside of an ESGF node using &quot;esgprep&quot; as a full standalone toolbox, this step is mandatory.|n|n</span>
-
-<span class="s2">        Keep in mind that the fetched &quot;.ini&quot; files have to be reviewed to ensure a correct configuration of your</span>
-<span class="s2">        projects.|n|n</span>
+<span class="s2">        Keep in mind that the fetched files have to be reviewed to ensure a correct configuration of your</span>
+<span class="s2">        publication.|n|n</span>
 
 <span class="s2">        The supply configuration directory is used to write the files retrieved from GitHub.|n|n</span>
 
@@ -279,13 +280,65 @@
     <span class="n">fetchini</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
     <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;project_id&gt;&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;project&gt;&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        One or more lower-cased project name(s).|n</span>
 <span class="s2">        If not, all &quot;esg.*.ini&quot; are fetched.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--db-password&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;password&gt;&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Database password.|n</span>
+<span class="s2">        Required to configure &quot;esg.ini&quot;.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--db-host&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Database hostname.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--db-port&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;5432&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;5432&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Database port.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--tds-password&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;password&gt;&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        THREDDS password.|n</span>
+<span class="s2">        Required to configure &quot;esg.ini&quot;.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--data-root-path&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;path&gt;&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Path of a file table in which each line follows the|n</span>
+<span class="s2">        syntax &quot;&lt;project_id&gt; | &lt;data_root_path&gt;&quot;.|n</span>
+<span class="s2">        Required to configure &quot;esg.ini&quot;.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--esgf-index-peer&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;hostname&gt;&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Index peer hostname.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--esgf-host&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;hostname&gt;&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Datanode hostname.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--esg-root-id&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;institute&gt;&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Institute root id.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">fetchini</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-k&#39;</span><span class="p">,</span>
@@ -297,6 +350,31 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Ignore and overwrite existing file(s) without prompt.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-b&#39;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;one_version&#39;</span><span class="p">,</span> <span class="s1">&#39;keep_versions&#39;</span><span class="p">],</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">=</span><span class="s1">&#39;one_version&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Backup mode of existing files.|n</span>
+<span class="s2">        &quot;one_version&quot; renames an existing file in its source|n</span>
+<span class="s2">        directory adding a &quot;.bkp&quot; extension to the filename.|n</span>
+<span class="s2">        &quot;keep_versions&quot; moves an existing file to a child|n</span>
+<span class="s2">        directory called &quot;bkp&quot; and add a timestamp to the filename.|n</span>
+<span class="s2">        If no mode specified, &quot;one_version&quot; is the default.|n</span>
+<span class="s2">        If not specified, no backup.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--gh-user&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;username&gt;&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;GitHub username.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--gh-password&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;password&gt;&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;GitHub password.&quot;&quot;&quot;</span><span class="p">)</span>
 
     <span class="c1">#######################################</span>
     <span class="c1"># Subparser for &quot;esgprep check-vocab&quot; #</span>
@@ -326,18 +404,28 @@
     <span class="n">checkvocab</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Optional arguments&quot;</span>
     <span class="n">checkvocab</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
     <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;project_id&gt;&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Required lower-cased project name.&quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;directory&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">directory_checker</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        One or more directories to recursively scan.|n</span>
 <span class="s2">        Unix wildcards are allowed.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;project_id&gt;&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Required lower-cased project name.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--filter&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">r&#39;&quot;.*\.nc$&quot;&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">r&#39;.*\.nc$&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Filter files matching the regular expression (default only|n</span>
+<span class="s2">        support NetCDF files). Regular expression syntax is defined|n</span>
+<span class="s2">        by the Python &quot;re&quot; module.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
 
     <span class="c1">###############################</span>
     <span class="c1"># Subparser for &quot;esgprep drs&quot; #</span>
@@ -364,7 +452,7 @@
     <span class="n">drs</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;incoming&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">directory_checker</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        One or more directories to recursively scan.|n</span>
@@ -378,7 +466,7 @@
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--outdir&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;$PWD&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">directory_checker</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Output directory to build the DRS.&quot;&quot;&quot;</span><span class="p">)</span>
 
@@ -430,7 +518,8 @@
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        One or more directories to recursively scan.|n</span>
-<span class="s2">        Unix wildcards are allowed.&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">        Unix wildcards are allowed.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;project_id&gt;&#39;</span><span class="p">,</span>
@@ -608,7 +697,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.5.2',
+            VERSION:'2.5.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -41,4 +41,5 @@ document <https://acme-climate.atlassian.net/wiki/x/JADm>`_.
    * The missing facet has to be declared as a "destination" key (i.e., on the right of the colon).
    * Duplicated lines cannot occur in a maptable.
    * A facet has to have at least one options list or maptable.
+   * A ``mapfile_drs`` attribute can be added to your project section to organize related mapfiles.
 
