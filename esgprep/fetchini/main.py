@@ -8,17 +8,16 @@
 """
 
 import logging
-import os
-import re
 import sys
 from datetime import datetime
+from os.path import *
 
-from esgprep.utils import parser
 from github3 import GitHub
 from github3.models import GitHubError
+
 from constants import *
+from esgprep.utils.parser import *
 from exceptions import *
-from esgprep.utils.exceptions import *
 
 
 def query_yes_no(question, default='no'):
@@ -30,6 +29,7 @@ def query_yes_no(question, default='no'):
         If None an answer is required.
     :returns: The answer True or False
     :rtype: *boolean*
+    :raises Error: If invalid default answer
 
     """
     # Dictionary of valid answers
@@ -46,7 +46,7 @@ def query_yes_no(question, default='no'):
         raise ValueError('Invalid default answer: {0}'.format(default))
     while True:
         sys.stdout.write('{0} {1} '.format(question, prompt))
-        choice = raw_input().lower()
+        choice = raw_input().lower().strip()
         if default is not None and choice == '':
             return valid[default]
         elif choice in valid:
@@ -54,6 +54,29 @@ def query_yes_no(question, default='no'):
         else:
             # Ask again
             pass
+
+
+def query_thredds_root(project):
+    """
+    Asks project data root path via raw_input() and return their answer.
+
+    :param str project: The project name
+    :return: The data root path
+    :rtype: *str*
+
+    """
+    while True:
+        path = raw_input('Root path for "{0}" data: '.format(project)).strip()
+        path = normpath(abspath(path))
+        if project.lower() not in path.lower():
+            if not query_yes_no('"{0}" does not include the project. Are you sure?'.format(path), default='no'):
+                # Ask again
+                continue
+        if not exists(path):
+            if not query_yes_no('"{0}" does not exist. Are you sure?'.format(path), default='no'):
+                # Ask again
+                continue
+        return path
 
 
 def github_connector(repository, username=None, password=None, team=None):
@@ -88,13 +111,13 @@ def backup(f, mode=None):
     :param str mode: The backup mode to follow
 
     """
-    if os.path.isfile(f):
+    if isfile(f):
         if mode == 'one_version':
             dst = '{0}.bkp'.format(f)
             os.rename(f, dst)
         elif mode == 'keep_versions':
-            bkpdir = os.path.join(os.path.dirname(f), 'bkp')
-            dst = os.path.join(bkpdir, '{0}.{1}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'), os.path.basename(f)))
+            bkpdir = join(dirname(f), 'bkp')
+            dst = join(bkpdir, '{0}.{1}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'), basename(f)))
             try:
                 os.makedirs(bkpdir)
             except OSError:
@@ -123,7 +146,7 @@ def gh_content(gh, path):
         if not content:
             raise GitHubNoContent(gh.contents_urlt.expand(path=path))
     except GitHubError, e:
-        raise GitHubConnectionError(e.msg, repository=gh.name, team=os.path.dirname(gh.full_name))
+        raise GitHubConnectionError(e.msg, repository=gh.name, team=dirname(gh.full_name))
     return content
 
 
@@ -142,18 +165,19 @@ def target_projects(gh, projects=None):
     p_avail = set([re.search(pattern, x).group(1) for x in files.keys() if re.search(pattern, x)])
     if projects:
         p = set(projects)
-        logging.warning("Following project ids are unavailable: {0}".format(p_avail.difference(p)))
-        return list(p_avail.intersection(p))
-    else:
-        return list(p_avail)
+        p_avail = p_avail.intersection(p)
+        if p.difference(p_avail):
+            logging.warning("Unavailable project(s): {0}".format(', '.join(p.difference(p_avail))))
+    return list(p_avail)
 
 
-def get_property(key, path):
+def get_property(key, path, sep='='):
     """
     Gets value corresponding to key from a key: value pairs file.
 
     :param str key: The requested key
     :param str path: The file path to parse
+    :param str sep: The fields separator
     :returns: The value
     :rtype: *str*
     :raises Error: If the key doesn't exist
@@ -162,7 +186,7 @@ def get_property(key, path):
     values = dict()
     with open(path) as f:
         for line in f:
-            k, v = line.partition('=')[::2]
+            k, v = line.partition(sep)[::2]
             values[str(k).strip()] = str(v).strip()
     return values[key]
 
@@ -176,10 +200,10 @@ def get_project_name(project, path):
     :rtype: *str*
 
     """
-    project_section = 'project:{0}'.format(project)
-    project_cfg = parser.config_parse(path, project_section)
+    section = 'project:{0}'.format(project)
+    cfg = CfgParser(path, section)
     try:
-        return parser.get_default_value(project_cfg, project_section, 'project')
+        return cfg.get_options_from_pairs(section, 'category_defaults', 'project')
     except NoConfigKey:
         return project
 
@@ -202,9 +226,9 @@ def fetch(f, keep, overwrite):
     :rtype: *boolean*
 
     """
-    return True if (not os.path.isfile(f) or
-                    (os.path.isfile(f) and not keep and
-                     (overwrite or query_yes_no('Overwrite existing "{0}"?'.format(os.path.basename(f)))))) else False
+    return True if (not isfile(f) or
+                    (isfile(f) and not keep and
+                     (overwrite or query_yes_no('Overwrite existing "{0}"?'.format(basename(f)))))) else False
 
 
 def main(args):
@@ -221,27 +245,27 @@ def main(args):
     :param ArgumentParser args: Parsed command-line arguments
 
     """
-    outdir = os.path.normpath(os.path.abspath(args.i))
+    outdir = normpath(abspath(args.i))
     # If output directory doesn't exist, create it.
-    if not os.path.isdir(outdir):
+    if not isdir(outdir):
         os.makedirs(outdir)
         logging.warning('{0} created'.format(outdir))
     # Instantiate Github session
     gh = github_connector(repository=GITHUB_REPO, team=GITHUB_TEAM, username=args.gh_user, password=args.gh_password)
     if args.v:
         logging.info('Connected to "{0}" GitHub repository '.format(GITHUB_REPO.lower()))
-    # Target projects
-    projects = target_projects(gh, args.project)
 
     ####################################
     # Fetch and deploy esg.project.ini #
     ####################################
 
+    # Target projects depending on the command-line
+    projects = target_projects(gh, args.project)
     for project in projects:
-        outfile = os.path.join(outdir, 'esg.{0}.ini'.format(project))
+        outfile = join(outdir, 'esg.{0}.ini'.format(project))
         if fetch(outfile, args.k, args.o):
             # Get file content
-            content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project)))
+            content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project)))
             # Backup old file if exists
             backup(outfile, mode=args.b)
             # Write new file
@@ -253,12 +277,12 @@ def main(args):
     # Fetch and deploy esg.ini #
     ############################
 
-    outfile = os.path.join(outdir, 'esg.ini')
+    outfile = join(outdir, 'esg.ini')
     if fetch(outfile, args.k, args.o):
         # Get file content
-        content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.ini'))
+        content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.ini'))
         # Configure ESGF properties
-        for key in list(set(re.findall(r'<(?!PROJECT.*)(.+?)>', content.decoded))):
+        for key in list(set(re.findall(r'<(?!PROJECT|DATA_ROOT_PATH.*)(.+?)>', content.decoded))):
             try:
                 value = get_property(key.replace('_', '.').lower(), path=ESGF_PROPERTIES)
             except (KeyError, IOError):
@@ -273,24 +297,31 @@ def main(args):
             f.write(content.decoded)
         logging.info('{0} --> {1}'.format(content.html_url, outfile))
 
-        # Update thredds dataset roots
-        cfg = parser.CfgParser()
-        cfg.read(outfile)
-        thredds_options = parser.get_thredds_roots(cfg)
-        for project in projects:
-            if project not in [t[0] for t in thredds_options]:
-                project_name = get_project_name(project, outdir)
-                thredds_options.append((project.lower(), os.path.join(args.data_root_path, project_name)))
-                new_thredds_options = tuple([parser.build_line(t, length=(15, 50)) for t in thredds_options])
-                cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + parser.build_line(new_thredds_options, sep='\n'))
-        # Write new file
-        with open(outfile, 'wb') as f:
-            cfg.write(f)
+    # Target projects depending on the "project sections" locally found
+    cfg = CfgParser(outdir)
+    projects = [s.split('project:')[1] for s in cfg.sections() if re.search(r'project:.*', s)]
 
-    # Update esg.ini project options in any case
-    cfg = parser.CfgParser()
-    cfg.read(outfile)
-    project_options = parser.get_project_options(cfg)
+    # Update thredds dataset roots
+    cfg = CfgParser(outdir, section='DEFAULT')
+    thredds_options = cfg.get_options_from_table('DEFAULT', 'thredds_dataset_roots')
+    for project in projects:
+        if project not in [t[0] for t in thredds_options]:
+            project_name = get_project_name(project, outdir)
+            if args.data_root_path and os.path.exists(args.data_root_path):
+                data_root_path = get_property(project, path=args.data_root_path, sep='|')
+            else:
+                data_root_path = query_thredds_root(project_name)
+            thredds_options.append((project.lower(), join(data_root_path, project_name)))
+    new_thredds_options = tuple([build_line(t, length=align(thredds_options)) for t in thredds_options])
+    cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + build_line(new_thredds_options, sep='\n'))
+    # Write new file
+    with open(outfile, 'wb') as f:
+        cfg.write(f)
+    logging.info('"thredds_dataset_roots" in "{0}" successfully updated'.format(outfile))
+
+    # Update esg.ini project options
+    cfg = CfgParser(outdir, section='DEFAULT')
+    project_options = cfg.get_options_from_table('DEFAULT', 'project_options')
     # Build project id as last project of the project_options
     project_id = 1
     if len(project_options) != 0:
@@ -300,21 +331,34 @@ def main(args):
             project_name = get_project_name(project, outdir)
             project_options.append((project.lower(), project_name, str(project_id)))
             project_id += 1
-            new_project_options = tuple([parser.build_line(p, length=(15, 15, 2)) for p in project_options])
-            cfg.set('DEFAULT', 'project_options', '\n' + parser.build_line(new_project_options, sep='\n'))
+    new_project_options = tuple([build_line(p, length=align(project_options)) for p in project_options])
+    cfg.set('DEFAULT', 'project_options', '\n' + build_line(new_project_options, sep='\n'))
     # Write new file
     with open(outfile, 'wb') as f:
         cfg.write(f)
-    logging.info('"{0}" successfully configured'.format(outfile))
+    logging.info('"project_options" in "{0}" successfully updated'.format(outfile))
+
+    # Apply pipe alignment to aggregation/file services
+    cfg = CfgParser(outdir, section='DEFAULT')
+    options = cfg.get_options_from_table('DEFAULT', 'thredds_aggregation_services')
+    new_options = tuple([build_line(o, length=align(options)) for o in options])
+    cfg.set('DEFAULT', 'thredds_aggregation_services', '\n' + build_line(new_options, sep='\n'))
+    options = cfg.get_options_from_table('DEFAULT', 'thredds_file_services')
+    new_options = tuple([build_line(o, length=align(options)) for o in options])
+    cfg.set('DEFAULT', 'thredds_file_services', '\n' + build_line(new_options, sep='\n'))
+    # Write new file
+    with open(outfile, 'wb') as f:
+        cfg.write(f)
+    logging.info('"thredds_aggregation/file_services" in "{0}" successfully formatted'.format(outfile))
 
     #############################################
     # Fetch and deploy esgcet_models_tables.txt #
     #############################################
 
-    outfile = os.path.join(outdir, 'esgcet_models_table.txt')
+    outfile = join(outdir, 'esgcet_models_table.txt')
     if fetch(outfile, args.k, args.o):
         # Get file content
-        content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt'))
+        content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'esgcet_models_table.txt'))
         # Backup old file if exists
         backup(outfile)
         # Write new file
@@ -328,21 +372,21 @@ def main(args):
 
     try:
         import esgcet
-        handler_outdir = os.path.join(os.path.dirname(esgcet.__file__), 'config')
-        if not os.path.exists(handler_outdir):
+        handler_outdir = join(dirname(esgcet.__file__), 'config')
+        if not exists(handler_outdir):
             logging.warning('"{0}" does not exist. Use "{1}" instead.'.format(handler_outdir, outdir))
             handler_outdir = outdir
     except ImportError:
         handler_outdir = outdir
     for project in projects:
-        project_section = 'project:{0}'.format(project)
-        project_cfg = parser.config_parse(outdir, project_section)
-        if project_cfg.has_option(project_section, 'handler'):
-            filename = '{0}.py'.format(re.search('.*\.(.+?):.*', project_cfg.get(project_section, 'handler')).group(1))
-            outfile = os.path.join(os.path.normpath(os.path.abspath(handler_outdir)), filename)
+        section = 'project:{0}'.format(project)
+        cfg = CfgParser(outdir, section=section)
+        if cfg.has_option(section, 'handler'):
+            filename = '{0}.py'.format(re.search('.*\.(.+?):.*', cfg.get(section, 'handler')).group(1))
+            outfile = join(normpath(abspath(handler_outdir)), filename)
             if fetch(outfile, args.k, args.o):
                 # Get file content
-                content = gh_content(gh, path=os.path.join(GITHUB_DIRECTORY, 'handlers', filename))
+                content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'handlers', filename))
                 # Backup old file if exists
                 backup(outfile)
                 # Write new file

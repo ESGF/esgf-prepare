@@ -17,7 +17,7 @@ from datetime import datetime
 from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.5.5', datetime(year=2016, month=9, day=22).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('2.5.6', datetime(year=2016, month=9, day=27).strftime("%Y-%d-%m"))
 
 
 def get_args():
@@ -47,7 +47,7 @@ def get_args():
         configuration files are correctly build and declares all required attributes following recommended best
         practices.|n|n
 
-        See full documentation and references on http://esgf-prepare.readthedocs.io/.
+        See full documentation and references on http://is-enes-data.github.io/esgf-prepare/.
         """,
         formatter_class=MultilineFormatter,
         add_help=False,
@@ -82,7 +82,7 @@ def get_args():
     parent.add_argument(
         '-i',
         metavar='/esg/config/esgcet/.',
-        type=str,
+        type=directory_checker,
         default='/esg/config/esgcet/.',
         help="""
         Initialization/configuration directory containing|n
@@ -125,9 +125,6 @@ def get_args():
 
         "esgprep fetch-ini" allows you to properly download, configure and deploy these configuration files hosted
         on a GitHub repository.|n|n
-
-        WARNING: If you prepare your data outside of an ESGF node using "esgprep" as a full standalone toolbox,
-        this step is could fail to deploy some files requiring specific hard-coded paths.|n|n
 
         Keep in mind that the fetched files have to be reviewed to ensure a correct configuration of your
         publication.|n|n
@@ -187,7 +184,8 @@ def get_args():
         metavar='<path>',
         type=str,
         help="""
-        Data root path.|n
+        Path of a file table in which each line follows the|n
+        syntax "<project_id> | <data_root_path>".|n
         Required to configure "esg.ini".
         """)
     fetchini.add_argument(
@@ -270,18 +268,28 @@ def get_args():
     checkvocab._optionals.title = "Optional arguments"
     checkvocab._positionals.title = "Positional arguments"
     checkvocab.add_argument(
-        '--project',
-        metavar='<project_id>',
-        type=str,
-        required=True,
-        help="""Required lower-cased project name.""")
-    checkvocab.add_argument(
         'directory',
         type=directory_checker,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
         Unix wildcards are allowed.""")
+    checkvocab.add_argument(
+        '--project',
+        metavar='<project_id>',
+        type=str,
+        required=True,
+        help="""Required lower-cased project name.""")
+    checkvocab.add_argument(
+        '--filter',
+        metavar=r'".*\.nc$"',
+        type=str,
+        default=r'.*\.nc$',
+        help="""
+        Filter files matching the regular expression (default only|n
+        support NetCDF files). Regular expression syntax is defined|n
+        by the Python "re" module.
+        """)
 
     ###############################
     # Subparser for "esgprep drs" #
@@ -308,7 +316,7 @@ def get_args():
     drs._positionals.title = "Positional arguments"
     drs.add_argument(
         'incoming',
-        type=str,
+        type=directory_checker,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
@@ -322,7 +330,7 @@ def get_args():
     drs.add_argument(
         '--outdir',
         metavar='$PWD',
-        type=str,
+        type=directory_checker,
         default=os.getcwd(),
         help="""Output directory to build the DRS.""")
 

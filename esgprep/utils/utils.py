@@ -64,11 +64,11 @@ def init_logging(logdir, level='INFO'):
 
     """
     __LOG_LEVELS__ = {'CRITICAL': logging.CRITICAL,
-                      'ERROR': logging.ERROR,
-                      'WARNING': logging.WARNING,
-                      'INFO': logging.INFO,
-                      'DEBUG': logging.DEBUG,
-                      'NOTSET': logging.NOTSET}
+                      'ERROR':    logging.ERROR,
+                      'WARNING':  logging.WARNING,
+                      'INFO':     logging.INFO,
+                      'DEBUG':    logging.DEBUG,
+                      'NOTSET':   logging.NOTSET}
     logging.getLogger("github3").setLevel(logging.CRITICAL)  # Disables logging message from github3 library
     logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
     if logdir:

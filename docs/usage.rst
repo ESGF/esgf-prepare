@@ -61,21 +61,24 @@ Download a particular esg.<project_id>.ini from GitHub
 
 .. code-block:: bash
 
-   $> esgprep fetch-ini --project <project_id>
-   YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/master/publisher-configs/ini/esg.<project_id>.ini...
-   YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
-   YYYY/MM/DD HH:MM:SS INFO <project_id> added to "project_options" of ~/config/esg.ini
+   $> esgprep fetch-ini --project <project_id> --db-password xxxx --tds-password xxxx --esgf-host <data.node.fr> --esg-root-id <institute> --esgf-index-peer <index.node.fr> --db-port <port> --db-host <host>
+   YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.<project_id>.ini --> /esg/config/esgcet/esg.<project_id>.ini
+   Overwrite existing "esg.ini"? [y/N] y
+   YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.ini --> /esg/config/esgcet/esg.ini
+   Root path for "<project_name>" data: /path/to/data/<project_name>
+   YYYY/MM/DD HH:MM:SS INFO "thredds_dataset_roots" in "/esg/config/esgcet/esg.ini" successfully updated
+   YYYY/MM/DD HH:MM:SS INFO "project_options" in "/esg/config/esgcet/esg.ini" successfully updated
+   YYYY/MM/DD HH:MM:SS INFO "thredds_aggregation/file_services" in "/esg/config/esgcet/esg.ini" successfully formatted
+   YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/esgcet_models_table.txt --> /esg/config/esgcet/esgcet_models_table.txt
+   YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/handlers/ipcc5_handler.py --> /usr/local/uvcdat/2.2.0/lib/python2.7/site-packages/esgcet-2.14.6-py2.7.egg/esgcet/ipcc5_handler.py
 
-.. note:: If a esg.<project_id> already exists you are prompted to confirm overwriting (default is "no"):
+.. note:: If a configuration file already exists you are prompted to confirm overwriting (default is "no").
 
-.. code-block:: bash
+.. warning:: If you choose to overwrite your existing ``esg.ini`` , you should at least provide your ``--db-password`` and ``--tds-password``. The other flags are optional if you run ``esgprep fetch-ini`` within your ESGF node (because ``esgf.properties`` includes the required information). Otherwise, all flags are required to properly configure the ``esg.ini`` (see ``esgprep fetch-ini -h``).
 
-   $> esgprep fetch-ini --project <project_id>
-   YYYY/MM/DD HH:MM:SS WARNING "esg.<project_id>.ini" already exists in ~/config
+.. note:: ``thredds_dataset_roots``, ``project_options`` and ``thredds_aggregation/file_services`` are updated in any case depending on the project list submitted on the command-line or the available local ``esg.<project_id>.ini``.
 
-   Overwrite existing "esg.<project_id>.ini"? [y/N] y
-   YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/master/publisher-configs/ini/esg.<project_id>.ini...
-   YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
+.. note:: ``--data-root-path`` can point to a file table with the following line-syntax: ``<project_id> | <data_root_path>``. Each ``<data_root_path>`` should exist and end with the project name (e.g., /path/to/data/CMIP5). If not you are prompted to valid your choice.
 
 Keep existing file(s) without prompt
 ------------------------------------
@@ -83,7 +86,9 @@ Keep existing file(s) without prompt
 .. code-block:: bash
 
    $> esgprep fetch-ini --project <project_id> -k
-   YYYY/MM/DD HH:MM:SS WARNING "esg.<project_id>.ini" already exists in ~/config
+   YYYY/MM/DD HH:MM:SS INFO "thredds_dataset_roots" in "/esg/config/esgcet/esg.ini" successfully updated
+   YYYY/MM/DD HH:MM:SS INFO "project_options" in "/esg/config/esgcet/esg.ini" successfully updated
+   YYYY/MM/DD HH:MM:SS INFO "thredds_aggregation/file_services" in "/esg/config/esgcet/esg.ini" successfully formatted
 
 Overwrite existing file(s) without prompt
 -----------------------------------------
@@ -91,9 +96,11 @@ Overwrite existing file(s) without prompt
 .. code-block:: bash
 
    $> esgprep fetch-ini --project <project_id> -o
-   YYYY/MM/DD HH:MM:SS WARNING "esg.<project_id>.ini" already exists in ~/config
-   YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/devel/publisher-configs/ini/esg.<project_id>.ini...
-   YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
+   YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.<project_id>.ini --> /esg/config/esgcet/esg.<project_id>.ini
+   YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.ini --> /esg/config/esgcet/esg.ini
+   YYYY/MM/DD HH:MM:SS INFO "thredds_dataset_roots" in "/esg/config/esgcet/esg.ini" successfully updated
+   YYYY/MM/DD HH:MM:SS INFO "project_options" in "/esg/config/esgcet/esg.ini" successfully updated
+   YYYY/MM/DD HH:MM:SS INFO "thredds_aggregation/file_services" in "/esg/config/esgcet/esg.ini" successfully formatted
 
 .. warning:: ``-o`` and ``-k`` cannot be used simultaneously.
 
@@ -103,15 +110,15 @@ Download all esg.<project_id>.ini from GitHub
 .. code-block:: bash
 
    $> esgprep fetch-ini -v
-   YYYY/MM/DD HH:MM:SS INFO Get filenames from GitHub repository: ESGF/config
-   YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/master/publisher-configs/ini/esg.projectA.ini...
-   YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
-   YYYY/MM/DD HH:MM:SS INFO Fetching https://raw.github.com/ESGF/config/master/publisher-configs/ini/esg.projectB.ini...
-   YYYY/MM/DD HH:MM:SS INFO Result: SUCCESSFUL
-   YYYY/MM/DD HH:MM:SS INFO projectB added to "project_options" of ~/config/esg.ini
-   "esg.projectC.ini" already exists in ~/config
-   Overwrite existing file? [y/N] N
-   [...]
+   YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.projectA.ini --> /esg/config/esgcet/esg.projectA.ini
+   YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.projectB.ini --> /esg/config/esgcet/esg.projectB.ini
+   Overwrite existing "esg.projectC.ini"? [y/N] y
+   YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.projectC.ini --> /esg/config/esgcet/esg.projectC.ini
+   Overwrite existing "esg.ini"? [y/N] N
+   YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.ini --> /esg/config/esgcet/esg.ini
+   YYYY/MM/DD HH:MM:SS INFO "thredds_dataset_roots" in "/esg/config/esgcet/esg.ini" successfully updated
+   YYYY/MM/DD HH:MM:SS INFO "project_options" in "/esg/config/esgcet/esg.ini" successfully updated
+   YYYY/MM/DD HH:MM:SS INFO "thredds_aggregation/file_services" in "/esg/config/esgcet/esg.ini" successfully formatted
 
 ``esgprep drs``
 ***************

@@ -32,6 +32,8 @@ class ProcessingContext(object):
     +------------------------+-------------+--------------------------------------------+
     | *self*.project_section | *str*       | Project section name in configuration file |
     +------------------------+-------------+--------------------------------------------+
+    | *self*.filter          | *re object* | File filter as regex pattern               |
+    +------------------------+-------------+--------------------------------------------+
     | *self*.pattern         | *re object* | DRS regex pattern without version          |
     +------------------------+-------------+--------------------------------------------+
     | *self*.facets          | *list*      | List of the DRS facets                     |
@@ -47,17 +49,17 @@ class ProcessingContext(object):
         self.directory = args.directory
         self.project = args.project
         self.verbosity = args.v
+        self.filter = args.filter
         self.project_section = 'project:{0}'.format(args.project)
-        self.cfg = parser.config_parse(args.i, self.project_section)
-        self.pattern = parser.translate_directory_format(self.cfg, self.project_section)
-        self.pattern = self.pattern.split('/(?P<version>')[0] + '$'
-        self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_FACETS))
+        self.cfg = parser.CfgParser(args.i, section=self.project_section)
+        self.pattern = self.cfg.translate_directory_format(self.project_section)
+        self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
 
 
-def get_dsets_from_tree(ctx):
+def yield_files_from_tree(ctx):
     """
     Yields datasets to process. Only the "dataset part" of the DRS tree is returned
-    (i.e., from "root" to before the "version" facet).
+    (i.e., from "root" to the facet before the "version" facet).
 
     :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context
     :returns: The dataset as a part of the DRS tree
@@ -65,16 +67,12 @@ def get_dsets_from_tree(ctx):
 
     """
     for directory in ctx.directory:
-        # Compile directory_format regex from start to the facet before <version> part
-        regex = re.compile(ctx.pattern)
-        # If the supplied directory is deeper than the version level, walk up the tree
-        for root, _, _ in utils.walk(directory, downstream=False, followlinks=True):
-            if regex.search(root):
-                yield root
-        # Or walk down.
-        for root, _, _ in utils.walk(directory, downstream=True, followlinks=True):
-            if regex.search(root):
-                yield root
+        for root, _, filenames in utils.walk(directory, downstream=True, followlinks=True):
+            if '/files/' not in root:
+                for filename in filenames:
+                    ffp = os.path.join(root, filename)
+                    if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
+                        yield ffp
 
 
 def get_facet_values_from_tree(ctx, dsets, facets):
@@ -92,7 +90,7 @@ def get_facet_values_from_tree(ctx, dsets, facets):
     used_values = {facet: set() for facet in facets}
     for dset in dsets:
         try:
-            attributes = re.match(ctx.pattern, os.path.realpath(dset)).groupdict()
+            attributes = re.match(ctx.pattern, dset).groupdict()
         except:
             raise DirectoryNotMatch(os.path.realpath(dset), ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
         # Each facet is ensured to be included into "attributes" from matching
@@ -116,15 +114,15 @@ def get_facet_values_from_config(cfg, section, facets):
     for facet in facets:
         logging.info('Collecting values from INI file(s) for "{0}" facet...'.format(facet))
         try:
-            declared_values[facet], _ = parser.get_facet_options(cfg, section, facet)
+            declared_values[facet], _ = cfg.get_options(section, facet)
             if not isinstance(declared_values[facet], type(re.compile("", 0))):
                 declared_values[facet] = set(declared_values[facet])
         except NoConfigOptions:
-            for m in parser.get_maps(cfg, section):
+            for m in cfg.get_options_from_list(section, 'maps'):
                 maptable = cfg.get(section, m)
                 from_keys, _ = parser.split_map_header(maptable.split('\n')[0])
                 if facet in from_keys:
-                    declared_values[facet] = set(parser.get_options_from_map(cfg, section, facet, in_sources=True))
+                    declared_values[facet] = set(cfg.get_options_from_map(section, facet, in_sources=True))
         finally:
             if facet not in declared_values.keys():
                 raise NoConfigOptions(facet, section, cfg.read_paths)
@@ -194,7 +192,7 @@ def main(args):
     # Get facets values declared into configuration file
     facet_values_config = get_facet_values_from_config(ctx.cfg, ctx.project_section, ctx.facets)
     # Walk trough DRS to get all dataset roots
-    dsets = get_dsets_from_tree(ctx)
+    dsets = yield_files_from_tree(ctx)
     # Get facets values used by DRS tree
     facet_values_tree = get_facet_values_from_tree(ctx, dsets, list(ctx.facets))
     # Compare values from tree against values from configuration file

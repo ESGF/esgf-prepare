@@ -98,16 +98,16 @@ class ProcessingContext(object):
         self.filter = args.filter
         self.project = args.project
         self.project_section = 'project:{0}'.format(args.project)
-        self.cfg = parser.config_parse(args.i, self.project_section)
+        self.cfg = parser.CfgParser(args.i, self.project_section)
         if args.no_checksum:
             self.checksum_client, self.checksum_type = None, None
         elif self.cfg.has_option('DEFAULT', 'checksum'):
-            self.checksum_client, self.checksum_type = parser.split_line(self.cfg.get('DEFAULT', 'checksum'))
+            self.checksum_client, self.checksum_type = self.cfg.get_options_from_table('DEFAULT', 'checksum')
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
         self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
                                      self.cfg.get(self.project_section, 'dataset_id', raw=True)))
-        self.pattern = parser.translate_directory_format(self.cfg, self.project_section)
+        self.pattern = self.cfg.translate_directory_format(self.project_section)
 
 
 def yield_inputs(ctx):

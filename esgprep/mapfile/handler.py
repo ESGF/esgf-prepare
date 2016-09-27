@@ -11,7 +11,6 @@ import os
 import re
 
 from esgprep.mapfile.exceptions import *
-from esgprep.utils import parser
 from esgprep.utils.exceptions import *
 
 
@@ -63,7 +62,7 @@ class File(object):
         """
         try:
             # re.search() method is required to search through the entire string.
-            # In our case we aims to match the regex starting from the filename (i.e., the end of the string)
+            # In this case we aim to match the regex starting from the filename (i.e., the end of the string)
             self.attributes = re.search(ctx.pattern, self.ffp).groupdict()
             # Only required to build proper dataset_id
             self.attributes['project'] = ctx.project.lower()
@@ -89,13 +88,12 @@ class File(object):
         # the DRS attributes are completed from esg.<project>.ini maptables.
         if not ctx.dataset:
             for facet in ctx.facets.intersection(self.attributes.keys()):
-                parser.check_facet(ctx.cfg, ctx.project_section, {facet: self.attributes[facet]})
+                ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
             for facet in ctx.facets.difference(self.attributes.keys()):
                 try:
-                    self.attributes[facet] = parser.get_option_from_map(ctx.cfg,
-                                                                        ctx.project_section,
-                                                                        facet,
-                                                                        self.attributes)
+                    self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
+                                                                         facet,
+                                                                         self.attributes)
                 except:
                     raise NoConfigVariable(facet,
                                            ctx.cfg.get(ctx.project_section, 'directory_format', raw=True).strip(),
