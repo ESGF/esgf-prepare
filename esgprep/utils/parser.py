@@ -185,7 +185,7 @@ class CfgParser(ConfigParser.ConfigParser):
             raise NoConfigSection(section, self.read_paths)
         if not self.has_option(section, option):
             raise NoConfigOption(option, section, self.read_paths)
-        if option.split('_')[0] == 'experiment':
+        if option.rsplit('_options')[0] == 'experiment':
             options = self.get_options_from_table(section, option, field_id=2)
         else:
             options = split_line(self.get(section, option), sep=',')
@@ -209,12 +209,12 @@ class CfgParser(ConfigParser.ConfigParser):
             raise NoConfigSection(section, self.read_paths)
         if not self.has_option(section, option):
             raise NoConfigOption(option, section, self.read_paths)
-        option_lines = split_line(self.get(section, option), sep='\n')
+        option_lines = split_line(self.get(section, option).lstrip(), sep='\n')
         try:
             if field_id:
-                options = [tuple(option)[field_id-1] for option in map(lambda x: split_line(x), option_lines[1:])]
+                options = [tuple(option)[field_id-1] for option in map(lambda x: split_line(x), option_lines)]
             else:
-                options = [tuple(option) for option in map(lambda x: split_line(x), option_lines[1:])]
+                options = [tuple(option) for option in map(lambda x: split_line(x), option_lines)]
         except:
             raise MisdeclaredOption(option, section, self.read_paths, reason="Wrong syntax")
         return options
@@ -248,13 +248,14 @@ class CfgParser(ConfigParser.ConfigParser):
         except KeyError:
             raise NoConfigKey(key, option, section, self.read_paths)
 
-    def get_options_from_map(self, section, option, in_sources=False):
+    def get_options_from_map(self, section, option, key=None):
         """
         Returns the list of option values from maptable.
+        If no key submitted, the option name has to be ``<key>_map``.
 
         :param str section: The section name to parse
         :param str option: The option to get available values
-        :param boolean in_sources: True if the related key is in "source keys" (default is False)
+        :param str key: The key to get the values
         :returns: The option values
         :rtype: *list*
         :raises Error: If the section does not exist
@@ -266,26 +267,22 @@ class CfgParser(ConfigParser.ConfigParser):
             raise NoConfigSection(section, self.read_paths)
         if not self.has_option(section, option):
             raise NoConfigOption(option, section, self.read_paths)
+        if not key:
+            key = option.split('_map')[0]
         from_keys, to_keys, value_map = split_map(self.get(section, option))
-        key = option.split('_')[0]
-        if in_sources:
-            if key not in from_keys:
-                raise MisdeclaredOption(option, section, self.read_paths,
-                                        reason="'{0}' has to be in 'source key'".format(key))
+        if key in from_keys:
             return list(set([value[from_keys.index(key)] for value in value_map.keys()]))
         else:
-            if key not in to_keys:
-                raise MisdeclaredOption(option, section, self.read_paths,
-                                        reason="'{0}' has to be in 'destination key'".format(key))
             return list(set([value[to_keys.index(key)] for value in value_map.values()]))
 
     def get_option_from_map(self, section, option, pairs):
         """
         Returns the destination values corresponding to key values from maptable.
+        The option name has to be ``<key>_map``. The key has to be in the destination keys of the maptable header.
 
         :param str section: The section name to parse
         :param str option: The option to get the value
-        :param dict pairs: A dictionary of {key: value} to input the maptable
+        :param dict pairs: A dictionary of {from_key: value} to input the maptable
         :returns: The corresponding option value
         :rtype: *list*
         :raises Error: If the section does not exist
@@ -298,7 +295,7 @@ class CfgParser(ConfigParser.ConfigParser):
         if not self.has_option(section, option):
             raise NoConfigOption(option, section, self.read_paths)
         from_keys, to_keys, value_map = split_map(self.get(section, option))
-        key = option.split('_')[0]
+        key = option.split('_map')[0]
         if key not in to_keys:
             raise MisdeclaredOption(option, section, self.read_paths,
                                     reason="'{0}' has to be in 'destination key'".format(key))
@@ -309,6 +306,7 @@ class CfgParser(ConfigParser.ConfigParser):
     def get_options_from_pattern(self, section, option):
         """
         Returns the expanded regex from ``key_pattern``.
+        The option name has to be ``<attr>_pattern`.
 
         :param str section: The section name to parse
         :param str option: The option to get available values
@@ -322,7 +320,7 @@ class CfgParser(ConfigParser.ConfigParser):
             raise NoConfigSection(section, self.read_paths)
         if not self.has_option(section, option):
             raise NoConfigOption(option, section, self.read_paths)
-        key = option.split('_')[0]
+        key = option.split('_pattern')[0]
         pattern = self.get(section, option, raw=True)
         pattern = re.sub(re.compile(r'%\((digit)\)s'), r'[\d]+', pattern)
         pattern = re.sub(re.compile(r'%\((string)\)s'), r'[\w]+', pattern)

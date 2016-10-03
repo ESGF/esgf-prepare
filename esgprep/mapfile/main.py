@@ -16,10 +16,10 @@ from fnmatch import filter
 from functools import wraps
 from multiprocessing.dummy import Pool as ThreadPool
 
-from esgprep.utils import parser, utils
 from lockfile import LockFile
 
 from constants import *
+from esgprep.utils import parser, utils
 from exceptions import *
 from handler import File
 
@@ -102,7 +102,7 @@ class ProcessingContext(object):
         if args.no_checksum:
             self.checksum_client, self.checksum_type = None, None
         elif self.cfg.has_option('DEFAULT', 'checksum'):
-            self.checksum_client, self.checksum_type = self.cfg.get_options_from_table('DEFAULT', 'checksum')
+            self.checksum_client, self.checksum_type = self.cfg.get_options_from_table('DEFAULT', 'checksum')[0]
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
         self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
@@ -220,8 +220,8 @@ def get_output_mapfile(attributes, dataset_id, dataset_version, ctx):
     # Deduce output directory from --outdir of 'mapfile_drs'
     outdir = os.path.realpath(ctx.outdir)
     if ctx.cfg.has_option(ctx.project_section, 'mapfile_drs'):
-        outdir = '{0}/{1}'.format(os.path.realpath(ctx.outdir),
-                                  ctx.cfg.get(ctx.project_section, 'mapfile_drs', 0, attributes))
+        outdir = os.path.join(os.path.realpath(ctx.outdir),
+                              ctx.cfg.get(ctx.project_section, 'mapfile_drs', 0, attributes))
     # Create output directory if not exists, catch OSError instead
     try:
         os.makedirs(outdir)
@@ -392,6 +392,7 @@ def main(args):
     ctx = ProcessingContext(args)
     logging.info('==> Scan started')
     # All incomplete mapfiles from a previous run are silently removed
+    logging.info('Output directory cleaning...')
     for root, _, filenames in os.walk(ctx.outdir):
         for filename in filter(filenames, '*{0}'.format(WORKING_EXTENSION)):
             os.remove(os.path.join(root, filename))

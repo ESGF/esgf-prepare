@@ -118,11 +118,11 @@ def get_facet_values_from_config(cfg, section, facets):
             if not isinstance(declared_values[facet], type(re.compile("", 0))):
                 declared_values[facet] = set(declared_values[facet])
         except NoConfigOptions:
-            for m in cfg.get_options_from_list(section, 'maps'):
-                maptable = cfg.get(section, m)
+            for option in cfg.get_options_from_list(section, 'maps'):
+                maptable = cfg.get(section, option)
                 from_keys, _ = parser.split_map_header(maptable.split('\n')[0])
                 if facet in from_keys:
-                    declared_values[facet] = set(cfg.get_options_from_map(section, facet, in_sources=True))
+                    declared_values[facet] = set(cfg.get_options_from_map(section, option, facet))
         finally:
             if facet not in declared_values.keys():
                 raise NoConfigOptions(facet, section, cfg.read_paths)

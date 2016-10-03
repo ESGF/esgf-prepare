@@ -92,7 +92,7 @@ class File(object):
             for facet in ctx.facets.difference(self.attributes.keys()):
                 try:
                     self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
-                                                                         facet,
+                                                                         '{0}_map'.format(facet),
                                                                          self.attributes)
                 except:
                     raise NoConfigVariable(facet,
