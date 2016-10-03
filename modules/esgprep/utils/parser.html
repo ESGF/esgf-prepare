@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.parser &mdash; esgprep 2.5.6 documentation</title>
+  <title>esgprep.utils.parser &mdash; esgprep 2.5.8 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.5.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.5.8 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -321,7 +321,7 @@
             <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;experiment&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;_options&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;experiment&#39;</span><span class="p">:</span>
             <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">field_id</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">options</span> <span class="o">=</span> <span class="n">split_line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
@@ -345,12 +345,12 @@
             <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="n">option_lines</span> <span class="o">=</span> <span class="n">split_line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">option_lines</span> <span class="o">=</span> <span class="n">split_line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">field_id</span><span class="p">:</span>
-                <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">option</span><span class="p">)[</span><span class="n">field_id</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">split_line</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">option_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+                <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">option</span><span class="p">)[</span><span class="n">field_id</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">split_line</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">option_lines</span><span class="p">)]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">split_line</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">option_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+                <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">split_line</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">option_lines</span><span class="p">)]</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MisdeclaredOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Wrong syntax&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">options</span></div>
@@ -384,13 +384,14 @@
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NoConfigKey</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CfgParser.get_options_from_map"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_options_from_map">[docs]</a>    <span class="k">def</span> <span class="nf">get_options_from_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">in_sources</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CfgParser.get_options_from_map"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_options_from_map">[docs]</a>    <span class="k">def</span> <span class="nf">get_options_from_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the list of option values from maptable.</span>
+<span class="sd">        If no key submitted, the option name has to be ``&lt;key&gt;_map``.</span>
 
 <span class="sd">        :param str section: The section name to parse</span>
 <span class="sd">        :param str option: The option to get available values</span>
-<span class="sd">        :param boolean in_sources: True if the related key is in &quot;source keys&quot; (default is False)</span>
+<span class="sd">        :param str key: The key to get the values</span>
 <span class="sd">        :returns: The option values</span>
 <span class="sd">        :rtype: *list*</span>
 <span class="sd">        :raises Error: If the section does not exist</span>
@@ -402,26 +403,22 @@
             <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_map&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">from_keys</span><span class="p">,</span> <span class="n">to_keys</span><span class="p">,</span> <span class="n">value_map</span> <span class="o">=</span> <span class="n">split_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">))</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">in_sources</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">from_keys</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MisdeclaredOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">,</span>
-                                        <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&#39;</span><span class="si">{0}</span><span class="s2">&#39; has to be in &#39;source key&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">from_keys</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">value</span><span class="p">[</span><span class="n">from_keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">value_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()]))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">to_keys</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MisdeclaredOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">,</span>
-                                        <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&#39;</span><span class="si">{0}</span><span class="s2">&#39; has to be in &#39;destination key&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">value</span><span class="p">[</span><span class="n">to_keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">value_map</span><span class="o">.</span><span class="n">values</span><span class="p">()]))</span></div>
 
 <div class="viewcode-block" id="CfgParser.get_option_from_map"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_option_from_map">[docs]</a>    <span class="k">def</span> <span class="nf">get_option_from_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">pairs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the destination values corresponding to key values from maptable.</span>
+<span class="sd">        The option name has to be ``&lt;key&gt;_map``. The key has to be in the destination keys of the maptable header.</span>
 
 <span class="sd">        :param str section: The section name to parse</span>
 <span class="sd">        :param str option: The option to get the value</span>
-<span class="sd">        :param dict pairs: A dictionary of {key: value} to input the maptable</span>
+<span class="sd">        :param dict pairs: A dictionary of {from_key: value} to input the maptable</span>
 <span class="sd">        :returns: The corresponding option value</span>
 <span class="sd">        :rtype: *list*</span>
 <span class="sd">        :raises Error: If the section does not exist</span>
@@ -434,7 +431,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
         <span class="n">from_keys</span><span class="p">,</span> <span class="n">to_keys</span><span class="p">,</span> <span class="n">value_map</span> <span class="o">=</span> <span class="n">split_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">))</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_map&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">to_keys</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MisdeclaredOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">,</span>
                                     <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&#39;</span><span class="si">{0}</span><span class="s2">&#39; has to be in &#39;destination key&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
@@ -445,6 +442,7 @@
 <div class="viewcode-block" id="CfgParser.get_options_from_pattern"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_options_from_pattern">[docs]</a>    <span class="k">def</span> <span class="nf">get_options_from_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the expanded regex from ``key_pattern``.</span>
+<span class="sd">        The option name has to be ``&lt;attr&gt;_pattern`.</span>
 
 <span class="sd">        :param str section: The section name to parse</span>
 <span class="sd">        :param str option: The option to get available values</span>
@@ -458,7 +456,7 @@
             <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_pattern&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\((digit)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;[\d]+&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\((string)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;[\w]+&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
@@ -616,7 +614,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.5.6',
+            VERSION:'2.5.8',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

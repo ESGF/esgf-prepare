@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.5.6 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.5.8 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.5.6 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.5.8 documentation" href="index.html"/>
         <link rel="prev" title="Changelog" href="log.html"/> 
 
   
@@ -1420,8 +1420,9 @@ in the configuration file. This can be passed to the Python <code class="docutil
 
 <dl class="method">
 <dt id="esgprep.utils.parser.CfgParser.get_options_from_map">
-<code class="descname">get_options_from_map</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>in_sources=False</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_options_from_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_options_from_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the list of option values from maptable.</p>
+<code class="descname">get_options_from_map</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>key=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_options_from_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_options_from_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of option values from maptable.
+If no key submitted, the option name has to be <code class="docutils literal"><span class="pre">&lt;key&gt;_map</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1429,7 +1430,7 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
 <li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
-<li><strong>in_sources</strong> (<em>boolean</em>) &#8211; True if the related key is in &#8220;source keys&#8221; (default is False)</li>
+<li><strong>key</strong> (<em>str</em>) &#8211; The key to get the values</li>
 </ul>
 </td>
 </tr>
@@ -1453,7 +1454,8 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <dl class="method">
 <dt id="esgprep.utils.parser.CfgParser.get_option_from_map">
 <code class="descname">get_option_from_map</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>pairs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_option_from_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_option_from_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the destination values corresponding to key values from maptable.</p>
+<dd><p>Returns the destination values corresponding to key values from maptable.
+The option name has to be <code class="docutils literal"><span class="pre">&lt;key&gt;_map</span></code>. The key has to be in the destination keys of the maptable header.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1461,7 +1463,7 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
 <li><strong>option</strong> (<em>str</em>) &#8211; The option to get the value</li>
-<li><strong>pairs</strong> (<em>dict</em>) &#8211; A dictionary of {key: value} to input the maptable</li>
+<li><strong>pairs</strong> (<em>dict</em>) &#8211; A dictionary of {from_key: value} to input the maptable</li>
 </ul>
 </td>
 </tr>
@@ -1485,7 +1487,8 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <dl class="method">
 <dt id="esgprep.utils.parser.CfgParser.get_options_from_pattern">
 <code class="descname">get_options_from_pattern</code><span class="sig-paren">(</span><em>section</em>, <em>option</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_options_from_pattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_options_from_pattern" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the expanded regex from <code class="docutils literal"><span class="pre">key_pattern</span></code>.</p>
+<dd><p>Returns the expanded regex from <code class="docutils literal"><span class="pre">key_pattern</span></code>.
+The option name has to be <a href="#id1"><span class="problematic" id="id2">``</span></a>&lt;attr&gt;_pattern`.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1874,7 +1877,7 @@ If &#8220;down&#8221; argument is True calls usual <code class="docutils literal
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.5.6',
+            VERSION:'2.5.8',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

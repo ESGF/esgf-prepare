@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.handler &mdash; esgprep 2.5.6 documentation</title>
+  <title>esgprep.mapfile.handler &mdash; esgprep 2.5.8 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.5.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.5.8 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -228,7 +228,7 @@
             <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_option_from_map</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span>
-                                                                         <span class="n">facet</span><span class="p">,</span>
+                                                                         <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_map&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">),</span>
                                                                          <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
                 <span class="k">except</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">NoConfigVariable</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span>
@@ -306,7 +306,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.5.6',
+            VERSION:'2.5.8',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
