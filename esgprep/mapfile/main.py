@@ -392,10 +392,10 @@ def main(args):
     ctx = ProcessingContext(args)
     logging.info('==> Scan started')
     # All incomplete mapfiles from a previous run are silently removed
-    logging.info('Output directory cleaning...')
     for root, _, filenames in os.walk(ctx.outdir):
         for filename in filter(filenames, '*{0}'.format(WORKING_EXTENSION)):
             os.remove(os.path.join(root, filename))
+    logging.info('Output directory cleaned')
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.threads))
     # Return the list of generated mapfiles full paths
