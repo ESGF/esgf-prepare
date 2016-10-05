@@ -90,9 +90,9 @@ class CfgParser(ConfigParser.ConfigParser):
                 if section not in self.sections():
                     raise NoConfigSection(section, self.read_paths)
         else:
-            paths = glob(os.path.join(path, '*.ini'))
+            paths = glob(os.path.join(path, 'esg*.ini'))
             if not paths:
-                raise NoConfigFile(os.path.join(path, '*.ini'))
+                raise NoConfigFile(os.path.join(path, 'esg*.ini'))
             self.read(paths)
         if not self:
             raise EmptyConfigFile(self.read_paths)
