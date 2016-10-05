@@ -311,7 +311,7 @@ def main(args):
                 data_root_path = get_property(project, path=args.data_root_path, sep='|')
             else:
                 data_root_path = query_thredds_root(project_name)
-            thredds_options.append((project.lower(), join(data_root_path, project_name)))
+            thredds_options.append((project.lower(), data_root_path))
     new_thredds_options = tuple([build_line(t, length=align(thredds_options)) for t in thredds_options])
     cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + build_line(new_thredds_options, sep='\n'))
     # Write new file

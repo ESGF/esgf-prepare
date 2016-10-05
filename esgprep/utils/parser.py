@@ -210,6 +210,8 @@ class CfgParser(ConfigParser.ConfigParser):
         if not self.has_option(section, option):
             raise NoConfigOption(option, section, self.read_paths)
         option_lines = split_line(self.get(section, option).lstrip(), sep='\n')
+        if len(option_lines) == 1 and not option_lines[0]:
+            return list()
         try:
             if field_id:
                 options = [tuple(option)[field_id-1] for option in map(lambda x: split_line(x), option_lines)]
