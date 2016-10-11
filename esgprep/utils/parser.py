@@ -242,7 +242,7 @@ class CfgParser(ConfigParser.ConfigParser):
             raise NoConfigOption(option, section, self.read_paths)
         options_lines = split_line(self.get(section, option), sep='\n')
         try:
-            options = {k: v for (k, v) in map(lambda x: split_line(x), options_lines[1:])}
+            options = dict((k, v) for k, v in map(lambda x: split_line(x), options_lines[1:]))
         except:
             raise MisdeclaredOption(option, section, self.read_paths, reason="Wrong syntax")
         try:

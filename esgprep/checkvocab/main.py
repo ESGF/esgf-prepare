@@ -87,7 +87,7 @@ def get_facet_values_from_tree(ctx, dsets, facets):
 
     """
     logging.info('Harvesting facets values from DRS tree...')
-    used_values = {facet: set() for facet in facets}
+    used_values = dict((facet, set()) for facet in facets)
     for dset in dsets:
         try:
             attributes = re.match(ctx.pattern, dset).groupdict()
