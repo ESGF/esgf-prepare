@@ -152,15 +152,6 @@ def get_args():
         If not, all "esg.*.ini" are fetched.
         """)
     fetchini.add_argument(
-        '-c', '--config',
-        action='store_true',
-        default=False,
-        help="""
-        Run "esg.ini" configuration. It requires at least|n
-        "--db-password", "--tds-password" and "--data-root-path"|n
-        arguments.
-        """)
-    fetchini.add_argument(
         '--db-password',
         metavar='<password>',
         type=str,
@@ -223,6 +214,11 @@ def get_args():
         action='store_true',
         default=False,
         help="""Ignore and overwrite existing file(s) without prompt.""")
+    fetchini.add_argument(
+        '--get-config',
+        action='store_true',
+        default=False,
+        help="""Ignore "esg.ini" fetching if not exists.""")
     fetchini.add_argument(
         '-b',
         choices=['one_version', 'keep_versions'],

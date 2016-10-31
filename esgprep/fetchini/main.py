@@ -208,11 +208,11 @@ def get_project_name(project, path):
         return project
 
 
-def fetch(f, keep, overwrite):
+def fetch(f, keep, overwrite, get=True):
     """
     Returns True if
 
-    - the file doesn't exists
+    - the file doesn't exists AND 'get mode' is enabled (default)
 
     OR
 
@@ -220,13 +220,14 @@ def fetch(f, keep, overwrite):
                          AND 'overwrite mode' is enabled OR the prompt answer is YES.
 
     :param str f: The file to test
+    :param boolean get: True to get no existing files
     :param boolean overwrite: True if overwrite existing files
     :param boolean keep: True if keep existing files
     :return: True depending on the conditions
     :rtype: *boolean*
 
     """
-    return True if (not isfile(f) or
+    return True if ((not isfile(f) and get) or
                     (isfile(f) and not keep and
                      (overwrite or query_yes_no('Overwrite existing "{0}"?'.format(basename(f)))))) else False
 
@@ -276,8 +277,9 @@ def main(args):
     ############################
     # Fetch and deploy esg.ini #
     ############################
+
     outfile = join(outdir, 'esg.ini')
-    if fetch(outfile, args.k, args.o):
+    if fetch(outfile, args.k, args.o, args.get_config):
         # Get file content
         content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.ini'))
         # Configure ESGF properties
@@ -296,31 +298,29 @@ def main(args):
             f.write(content.decoded)
         logging.info('{0} --> {1}'.format(content.html_url, outfile))
 
-    #####################
-    # Configure esg.ini #
-    #####################
-    if args.c:
-        # Target projects depending on the "project sections" locally found
-        cfg = CfgParser(outdir)
-        projects = [s.split('project:')[1] for s in cfg.sections() if re.search(r'project:.*', s)]
+    # Target projects depending on the "project sections" locally found
+    cfg = CfgParser(outdir)
+    projects = [s.split('project:')[1] for s in cfg.sections() if re.search(r'project:.*', s)]
 
+    # Configure esg.ini if exists and "project sections" have been found.
+    if projects and isfile(outfile):
         # Update thredds dataset roots
         cfg = CfgParser(outdir, section='DEFAULT')
         thredds_options = cfg.get_options_from_table('DEFAULT', 'thredds_dataset_roots')
         for project in projects:
             if project not in [t[0] for t in thredds_options]:
-                project_name = get_project_name(project, outdir)
-                if args.data_root_path and os.path.exists(args.data_root_path):
+                if args.data_root_path:
                     data_root_path = get_property(project, path=args.data_root_path, sep='|')
+                    thredds_options.append((project.lower(), data_root_path))
                 else:
-                    data_root_path = query_thredds_root(project_name)
-                thredds_options.append((project.lower(), data_root_path))
-        new_thredds_options = tuple([build_line(t, length=align(thredds_options)) for t in thredds_options])
-        cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + build_line(new_thredds_options, sep='\n'))
-        # Write new file
-        with open(outfile, 'wb') as f:
-            cfg.write(f)
-        logging.info('"thredds_dataset_roots" in "{0}" successfully updated'.format(outfile))
+                    logging.warning('Please update "{0}" with the appropriate THREDDS root path '
+                                    'for project "{1}"'.format(outfile, project))
+            new_thredds_options = tuple([build_line(t, length=align(thredds_options)) for t in thredds_options])
+            cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + build_line(new_thredds_options, sep='\n'))
+            # Write new file
+            with open(outfile, 'wb') as f:
+                cfg.write(f)
+            logging.info('"thredds_dataset_roots" in "{0}" successfully updated'.format(outfile))
 
         # Update esg.ini project options
         cfg = CfgParser(outdir, section='DEFAULT')
