@@ -260,9 +260,9 @@ def main(args):
     # Fetch and deploy esg.project.ini #
     ####################################
 
-    # Target projects depending on the command-line
-    projects = target_projects(gh, args.project)
-    for project in projects:
+    # Get "remote" project targeted from the command-line
+    remote_projects = target_projects(gh, args.project)
+    for project in remote_projects:
         outfile = join(outdir, 'esg.{0}.ini'.format(project))
         if fetch(outfile, args.k, args.o):
             # Get file content
@@ -298,29 +298,31 @@ def main(args):
             f.write(content.decoded)
         logging.info('{0} --> {1}'.format(content.html_url, outfile))
 
-    # Target projects depending on the "project sections" locally found
+    # Get local project from the "project sections" locally found in INI files
     cfg = CfgParser(outdir)
-    projects = [s.split('project:')[1] for s in cfg.sections() if re.search(r'project:.*', s)]
+    local_projects = [s.split('project:')[1] for s in cfg.sections() if re.search(r'project:.*', s)]
+    # Remote projects should be a subset of local projects (i.e., null intersection)
+    assert list(set(local_projects).intersection(set(remote_projects))) == remote_projects
 
     # Configure esg.ini if exists and "project sections" have been found.
-    if projects and isfile(outfile):
+    if local_projects and isfile(outfile):
         # Update thredds dataset roots
         cfg = CfgParser(outdir, section='DEFAULT')
         thredds_options = cfg.get_options_from_table('DEFAULT', 'thredds_dataset_roots')
-        for project in projects:
+        for project in local_projects:
             if project not in [t[0] for t in thredds_options]:
-                if args.data_root_path:
-                    data_root_path = get_property(project, path=args.data_root_path, sep='|')
-                    thredds_options.append((project.lower(), data_root_path))
-                else:
-                    logging.warning('Please update "{0}" with the appropriate THREDDS root path '
-                                    'for project "{1}"'.format(outfile, project))
-            new_thredds_options = tuple([build_line(t, length=align(thredds_options)) for t in thredds_options])
-            cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + build_line(new_thredds_options, sep='\n'))
-            # Write new file
-            with open(outfile, 'wb') as f:
-                cfg.write(f)
-            logging.info('"thredds_dataset_roots" in "{0}" successfully updated'.format(outfile))
+                 if (project in remote_projects) and args.data_root_path:
+                     data_root_path = get_property(project, path=args.data_root_path, sep='|')
+                     thredds_options.append((project.lower(), data_root_path))
+                 else:
+                     logging.warning('Please update "{0}" with the appropriate THREDDS root path '
+                                     'for project "{1}"'.format(outfile, project))
+        new_thredds_options = tuple([build_line(t, length=align(thredds_options)) for t in thredds_options])
+        cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + build_line(new_thredds_options, sep='\n'))
+        # Write new file
+        with open(outfile, 'wb') as f:
+            cfg.write(f)
+        logging.info('"thredds_dataset_roots" in "{0}" successfully updated'.format(outfile))
 
         # Update esg.ini project options
         cfg = CfgParser(outdir, section='DEFAULT')
@@ -329,11 +331,15 @@ def main(args):
         project_id = 1
         if len(project_options) != 0:
             project_id = max([int(p[2]) for p in project_options]) + 1
-        for project in projects:
+        for project in local_projects:
             if project not in [p[0] for p in project_options]:
-                project_name = get_project_name(project, outdir)
-                project_options.append((project.lower(), project_name, str(project_id)))
-                project_id += 1
+                if project in remote_projects:
+                    project_name = get_project_name(project, outdir)
+                    project_options.append((project.lower(), project_name, str(project_id)))
+                    project_id += 1
+                else:
+                    logging.warning('Please update "{0}" with the appropriate project option '
+                                    'for project "{1}"'.format(outfile, project))
         new_project_options = tuple([build_line(p, length=align(project_options)) for p in project_options])
         cfg.set('DEFAULT', 'project_options', '\n' + build_line(new_project_options, sep='\n'))
         # Write new file
@@ -381,20 +387,26 @@ def main(args):
             handler_outdir = outdir
     except ImportError:
         handler_outdir = outdir
-    for project in projects:
+    # Target projects depending on the command-line
+    for project in local_projects:
         section = 'project:{0}'.format(project)
         cfg = CfgParser(outdir, section=section)
         if cfg.has_option(section, 'handler'):
             filename = '{0}.py'.format(re.search('.*\.(.+?):.*', cfg.get(section, 'handler')).group(1))
             outfile = join(normpath(abspath(handler_outdir)), filename)
-            if fetch(outfile, args.k, args.o):
-                # Get file content
-                content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'handlers', filename))
-                # Backup old file if exists
-                backup(outfile)
-                # Write new file
-                with open(outfile, 'w+') as f:
-                    f.write(content.decoded)
-                logging.info('{0} --> {1}'.format(content.html_url, outfile))
+            if project in remote_projects:
+                if fetch(outfile, args.k, args.o):
+                    # Get file content
+                    content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'handlers', filename))
+                    # Backup old file if exists
+                    backup(outfile)
+                    # Write new file
+                    with open(outfile, 'w+') as f:
+                        f.write(content.decoded)
+                    logging.info('{0} --> {1}'.format(content.html_url, outfile))
+            else:
+                if not isfile(outfile):
+                    logging.warning('"{0}" is missing in "{1}"'.format(filename, handler_outdir))
         else:
-            logging.info('No "handler" option found into "esg.{0}.ini"'.format(project))
+            if project in remote_projects:
+                logging.info('No handler is required for project "{0}"'.format(project))
