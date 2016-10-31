@@ -17,7 +17,7 @@ from datetime import datetime
 from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.6.0', datetime(year=2016, month=10, day=3).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('2.6.1', datetime(year=2016, month=10, day=31).strftime("%Y-%d-%m"))
 
 
 def get_args():
@@ -150,6 +150,15 @@ def get_args():
         help="""
         One or more lower-cased project name(s).|n
         If not, all "esg.*.ini" are fetched.
+        """)
+    fetchini.add_argument(
+        '-c', '--config',
+        action='store_true',
+        default=False,
+        help="""
+        Run "esg.ini" configuration. It requires at least|n
+        "--db-password", "--tds-password" and "--data-root-path"|n
+        arguments.
         """)
     fetchini.add_argument(
         '--db-password',
@@ -426,7 +435,7 @@ def get_args():
         """)
     group.add_argument(
         '--version',
-        metavar=datetime.now().strftime("%Y%d%m"),
+        metavar=datetime.now().strftime("%Y%m%d"),
         type=version_checker,
         help="""
         Generates mapfile(s) scanning datasets with the|n

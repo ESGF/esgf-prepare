@@ -216,8 +216,8 @@ def fetch(f, keep, overwrite):
 
     OR
 
-    - if the file exists AND 'keep mode' is set disable
-                         AND 'overwrite mode' is enable OR the prompt answer is YES.
+    - if the file exists AND 'keep mode' is disabled
+                         AND 'overwrite mode' is enabled OR the prompt answer is YES.
 
     :param str f: The file to test
     :param boolean overwrite: True if overwrite existing files
@@ -276,7 +276,6 @@ def main(args):
     ############################
     # Fetch and deploy esg.ini #
     ############################
-
     outfile = join(outdir, 'esg.ini')
     if fetch(outfile, args.k, args.o):
         # Get file content
@@ -297,59 +296,63 @@ def main(args):
             f.write(content.decoded)
         logging.info('{0} --> {1}'.format(content.html_url, outfile))
 
-    # Target projects depending on the "project sections" locally found
-    cfg = CfgParser(outdir)
-    projects = [s.split('project:')[1] for s in cfg.sections() if re.search(r'project:.*', s)]
+    #####################
+    # Configure esg.ini #
+    #####################
+    if args.c:
+        # Target projects depending on the "project sections" locally found
+        cfg = CfgParser(outdir)
+        projects = [s.split('project:')[1] for s in cfg.sections() if re.search(r'project:.*', s)]
 
-    # Update thredds dataset roots
-    cfg = CfgParser(outdir, section='DEFAULT')
-    thredds_options = cfg.get_options_from_table('DEFAULT', 'thredds_dataset_roots')
-    for project in projects:
-        if project not in [t[0] for t in thredds_options]:
-            project_name = get_project_name(project, outdir)
-            if args.data_root_path and os.path.exists(args.data_root_path):
-                data_root_path = get_property(project, path=args.data_root_path, sep='|')
-            else:
-                data_root_path = query_thredds_root(project_name)
-            thredds_options.append((project.lower(), data_root_path))
-    new_thredds_options = tuple([build_line(t, length=align(thredds_options)) for t in thredds_options])
-    cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + build_line(new_thredds_options, sep='\n'))
-    # Write new file
-    with open(outfile, 'wb') as f:
-        cfg.write(f)
-    logging.info('"thredds_dataset_roots" in "{0}" successfully updated'.format(outfile))
+        # Update thredds dataset roots
+        cfg = CfgParser(outdir, section='DEFAULT')
+        thredds_options = cfg.get_options_from_table('DEFAULT', 'thredds_dataset_roots')
+        for project in projects:
+            if project not in [t[0] for t in thredds_options]:
+                project_name = get_project_name(project, outdir)
+                if args.data_root_path and os.path.exists(args.data_root_path):
+                    data_root_path = get_property(project, path=args.data_root_path, sep='|')
+                else:
+                    data_root_path = query_thredds_root(project_name)
+                thredds_options.append((project.lower(), data_root_path))
+        new_thredds_options = tuple([build_line(t, length=align(thredds_options)) for t in thredds_options])
+        cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + build_line(new_thredds_options, sep='\n'))
+        # Write new file
+        with open(outfile, 'wb') as f:
+            cfg.write(f)
+        logging.info('"thredds_dataset_roots" in "{0}" successfully updated'.format(outfile))
 
-    # Update esg.ini project options
-    cfg = CfgParser(outdir, section='DEFAULT')
-    project_options = cfg.get_options_from_table('DEFAULT', 'project_options')
-    # Build project id as last project of the project_options
-    project_id = 1
-    if len(project_options) != 0:
-        project_id = max([int(p[2]) for p in project_options]) + 1
-    for project in projects:
-        if project not in [p[0] for p in project_options]:
-            project_name = get_project_name(project, outdir)
-            project_options.append((project.lower(), project_name, str(project_id)))
-            project_id += 1
-    new_project_options = tuple([build_line(p, length=align(project_options)) for p in project_options])
-    cfg.set('DEFAULT', 'project_options', '\n' + build_line(new_project_options, sep='\n'))
-    # Write new file
-    with open(outfile, 'wb') as f:
-        cfg.write(f)
-    logging.info('"project_options" in "{0}" successfully updated'.format(outfile))
+        # Update esg.ini project options
+        cfg = CfgParser(outdir, section='DEFAULT')
+        project_options = cfg.get_options_from_table('DEFAULT', 'project_options')
+        # Build project id as last project of the project_options
+        project_id = 1
+        if len(project_options) != 0:
+            project_id = max([int(p[2]) for p in project_options]) + 1
+        for project in projects:
+            if project not in [p[0] for p in project_options]:
+                project_name = get_project_name(project, outdir)
+                project_options.append((project.lower(), project_name, str(project_id)))
+                project_id += 1
+        new_project_options = tuple([build_line(p, length=align(project_options)) for p in project_options])
+        cfg.set('DEFAULT', 'project_options', '\n' + build_line(new_project_options, sep='\n'))
+        # Write new file
+        with open(outfile, 'wb') as f:
+            cfg.write(f)
+        logging.info('"project_options" in "{0}" successfully updated'.format(outfile))
 
-    # Apply pipe alignment to aggregation/file services
-    cfg = CfgParser(outdir, section='DEFAULT')
-    options = cfg.get_options_from_table('DEFAULT', 'thredds_aggregation_services')
-    new_options = tuple([build_line(o, length=align(options)) for o in options])
-    cfg.set('DEFAULT', 'thredds_aggregation_services', '\n' + build_line(new_options, sep='\n'))
-    options = cfg.get_options_from_table('DEFAULT', 'thredds_file_services')
-    new_options = tuple([build_line(o, length=align(options)) for o in options])
-    cfg.set('DEFAULT', 'thredds_file_services', '\n' + build_line(new_options, sep='\n'))
-    # Write new file
-    with open(outfile, 'wb') as f:
-        cfg.write(f)
-    logging.info('"thredds_aggregation/file_services" in "{0}" successfully formatted'.format(outfile))
+        # Apply pipe alignment to aggregation/file services
+        cfg = CfgParser(outdir, section='DEFAULT')
+        options = cfg.get_options_from_table('DEFAULT', 'thredds_aggregation_services')
+        new_options = tuple([build_line(o, length=align(options)) for o in options])
+        cfg.set('DEFAULT', 'thredds_aggregation_services', '\n' + build_line(new_options, sep='\n'))
+        options = cfg.get_options_from_table('DEFAULT', 'thredds_file_services')
+        new_options = tuple([build_line(o, length=align(options)) for o in options])
+        cfg.set('DEFAULT', 'thredds_file_services', '\n' + build_line(new_options, sep='\n'))
+        # Write new file
+        with open(outfile, 'wb') as f:
+            cfg.write(f)
+        logging.info('"thredds_aggregation/file_services" in "{0}" successfully formatted'.format(outfile))
 
     #############################################
     # Fetch and deploy esgcet_models_tables.txt #
