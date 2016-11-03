@@ -208,11 +208,11 @@ def get_project_name(project, path):
         return project
 
 
-def fetch(f, keep, overwrite, get=True):
+def fetch(f, keep, overwrite):
     """
     Returns True if
 
-    - the file doesn't exists AND 'get mode' is enabled (default)
+    - the file doesn't exist
 
     OR
 
@@ -220,14 +220,13 @@ def fetch(f, keep, overwrite, get=True):
                          AND 'overwrite mode' is enabled OR the prompt answer is YES.
 
     :param str f: The file to test
-    :param boolean get: True to get no existing files
     :param boolean overwrite: True if overwrite existing files
     :param boolean keep: True if keep existing files
     :return: True depending on the conditions
     :rtype: *boolean*
 
     """
-    return True if ((not isfile(f) and get) or
+    return True if (not isfile(f) or
                     (isfile(f) and not keep and
                      (overwrite or query_yes_no('Overwrite existing "{0}"?'.format(basename(f)))))) else False
 
@@ -279,24 +278,25 @@ def main(args):
     ############################
 
     outfile = join(outdir, 'esg.ini')
-    if fetch(outfile, args.k, args.o, args.get_config):
-        # Get file content
-        content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.ini'))
-        # Configure ESGF properties
-        for key in list(set(re.findall(r'<(?!PROJECT|DATA_ROOT_PATH.*)(.+?)>', content.decoded))):
-            try:
-                value = get_property(key.replace('_', '.').lower(), path=ESGF_PROPERTIES)
-            except (KeyError, IOError):
-                value = vars(args)[key.lower()]
-                if value is None:
-                    raise MissingArgument('--{0}'.format(key.replace('_', '-').lower()))
-            content.decoded = re.sub('<{0}>'.format(key), value, content.decoded)
-        # Backup old file if exists
-        backup(outfile)
-        # Write new file
-        with open(outfile, 'w+') as f:
-            f.write(content.decoded)
-        logging.info('{0} --> {1}'.format(content.html_url, outfile))
+    if get_config:
+        if fetch(outfile, args.k, args.o):
+            # Get file content
+            content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.ini'))
+            # Configure ESGF properties
+            for key in list(set(re.findall(r'<(?!PROJECT|DATA_ROOT_PATH.*)(.+?)>', content.decoded))):
+                try:
+                    value = get_property(key.replace('_', '.').lower(), path=ESGF_PROPERTIES)
+                except (KeyError, IOError):
+                    value = vars(args)[key.lower()]
+                    if value is None:
+                        raise MissingArgument('--{0}'.format(key.replace('_', '-').lower()))
+                content.decoded = re.sub('<{0}>'.format(key), value, content.decoded)
+            # Backup old file if exists
+            backup(outfile)
+            # Write new file
+            with open(outfile, 'w+') as f:
+                f.write(content.decoded)
+            logging.info('{0} --> {1}'.format(content.html_url, outfile))
 
     # Get local project from the "project sections" locally found in INI files
     cfg = CfgParser(outdir)

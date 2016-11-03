@@ -152,6 +152,11 @@ def get_args():
         If not, all "esg.*.ini" are fetched.
         """)
     fetchini.add_argument(
+        '--esg-config',
+        action='store_true',
+        default=False,
+        help="""Restart "esg.ini" configuration by fetching an empty template.""")
+    fetchini.add_argument(
         '--db-password',
         metavar='<password>',
         type=str,
@@ -184,7 +189,7 @@ def get_args():
         metavar='<path>',
         type=str,
         help="""
-        The data directory path of the corresponding requested project.|n
+        The data directory of the corresponding requested project.|n
         If one or several projects are requested, the path of a file|n
         in which each line follows the syntax: |n
         "<project_id> | <data_root_path>".|n
