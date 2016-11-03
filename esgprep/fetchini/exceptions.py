@@ -46,3 +46,16 @@ class MissingArgument(Exception):
     def __init__(self, arg):
         self.msg = "'{0}' argument is missing".format(arg)
         super(self.__class__, self).__init__(self.msg)
+
+
+class WrongArgument(Exception):
+    """
+    Raised when a command-line argument is missing.
+
+    """
+
+    def __init__(self, arg, reason=None):
+        self.msg = "Inappropriate argument: '{0}'".format(arg)
+        if reason:
+            self.msg += "\n{0}".format(reason)
+        super(self.__class__, self).__init__(self.msg)

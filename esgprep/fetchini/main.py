@@ -315,7 +315,11 @@ def main(args):
                 if (project in remote_projects) and args.data_root_path:
                     if isfile(args.data_root_path):
                         args.data_root_path = get_property(project, path=args.data_root_path, sep='|')
-                    thredds_options.append((project.lower(), args.data_root_path))
+                    elif len(args.project) != 1:
+                        raise WrongArgument(arg, reason='Should have only one value,'
+                                                        '{0} submitted'.format(len(args.project)))
+                    else:
+                        thredds_options.append((project.lower(), args.data_root_path))
                 else:
                     logging.warning('Please update "{0}" with the appropriate THREDDS root path '
                                     'for project "{1}"'.format(outfile, project))
