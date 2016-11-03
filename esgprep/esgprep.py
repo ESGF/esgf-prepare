@@ -184,8 +184,8 @@ def get_args():
         metavar='<path>',
         type=str,
         help="""
-        The data root path of the corresponding requested project.|n
-        If one or several projects are requested, the path of a file table|n
+        The data directory path of the corresponding requested project.|n
+        If one or several projects are requested, the path of a file|n
         in which each line follows the syntax: |n
         "<project_id> | <data_root_path>".|n
         Required to configure "esg.ini".
