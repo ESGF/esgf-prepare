@@ -316,8 +316,8 @@ def main(args):
                     if isfile(args.data_root_path):
                         args.data_root_path = get_property(project, path=args.data_root_path, sep='|')
                     elif len(args.project) != 1:
-                        raise WrongArgument(arg, reason='Should have only one value,'
-                                                        '{0} submitted'.format(len(args.project)))
+                        raise WrongArgument('--project', reason='Should have only one value,'
+                                                                '{0} submitted'.format(len(args.project)))
                     else:
                         thredds_options.append((project.lower(), args.data_root_path))
                 else:
