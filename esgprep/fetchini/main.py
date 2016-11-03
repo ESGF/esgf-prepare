@@ -278,7 +278,7 @@ def main(args):
     ############################
 
     outfile = join(outdir, 'esg.ini')
-    if get_config:
+    if args.esg_config:
         if fetch(outfile, args.k, args.o):
             # Get file content
             content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.ini'))

@@ -190,8 +190,8 @@ def get_args():
         type=str,
         help="""
         The data directory of the corresponding requested project.|n
-        If one or several projects are requested, the path of a file|n
-        in which each line follows the syntax: |n
+        If (one or) several projects are requested, the path of|n
+         a file in which each line follows the syntax: |n
         "<project_id> | <data_root_path>".|n
         Required to configure "esg.ini".
         """)
