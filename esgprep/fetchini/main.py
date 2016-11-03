@@ -311,18 +311,20 @@ def main(args):
         thredds_options = cfg.get_options_from_table('DEFAULT', 'thredds_dataset_roots')
         for project in local_projects:
             if project not in [t[0] for t in thredds_options]:
-                 if (project in remote_projects) and args.data_root_path:
-                     data_root_path = get_property(project, path=args.data_root_path, sep='|')
-                     thredds_options.append((project.lower(), data_root_path))
-                 else:
-                     logging.warning('Please update "{0}" with the appropriate THREDDS root path '
-                                     'for project "{1}"'.format(outfile, project))
+                if (project in remote_projects) and args.data_root_path:
+                    if isfile(args.data_root_path):
+                        args.data_root_path = get_property(project, path=args.data_root_path, sep='|')
+                    thredds_options.append((project.lower(), args.data_root_path))
+                else:
+                    logging.warning('Please update "{0}" with the appropriate THREDDS root path '
+                                    'for project "{1}"'.format(outfile, project))
         new_thredds_options = tuple([build_line(t, length=align(thredds_options)) for t in thredds_options])
-        cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + build_line(new_thredds_options, sep='\n'))
-        # Write new file
-        with open(outfile, 'wb') as f:
-            cfg.write(f)
-        logging.info('"thredds_dataset_roots" in "{0}" successfully updated'.format(outfile))
+        if thredds_options != new_thredds_options:
+            cfg.set('DEFAULT', 'thredds_dataset_roots', '\n' + build_line(new_thredds_options, sep='\n'))
+            # Write new file
+            with open(outfile, 'wb') as f:
+                cfg.write(f)
+            logging.info('"thredds_dataset_roots" in "{0}" successfully updated'.format(outfile))
 
         # Update esg.ini project options
         cfg = CfgParser(outdir, section='DEFAULT')
@@ -341,24 +343,24 @@ def main(args):
                     logging.warning('Please update "{0}" with the appropriate project option '
                                     'for project "{1}"'.format(outfile, project))
         new_project_options = tuple([build_line(p, length=align(project_options)) for p in project_options])
-        cfg.set('DEFAULT', 'project_options', '\n' + build_line(new_project_options, sep='\n'))
-        # Write new file
-        with open(outfile, 'wb') as f:
-            cfg.write(f)
-        logging.info('"project_options" in "{0}" successfully updated'.format(outfile))
+        if project_options != new_project_options:
+            cfg.set('DEFAULT', 'project_options', '\n' + build_line(new_project_options, sep='\n'))
+            # Write new file
+            with open(outfile, 'wb') as f:
+                cfg.write(f)
+            logging.info('"project_options" in "{0}" successfully updated'.format(outfile))
 
         # Apply pipe alignment to aggregation/file services
         cfg = CfgParser(outdir, section='DEFAULT')
-        options = cfg.get_options_from_table('DEFAULT', 'thredds_aggregation_services')
-        new_options = tuple([build_line(o, length=align(options)) for o in options])
-        cfg.set('DEFAULT', 'thredds_aggregation_services', '\n' + build_line(new_options, sep='\n'))
-        options = cfg.get_options_from_table('DEFAULT', 'thredds_file_services')
-        new_options = tuple([build_line(o, length=align(options)) for o in options])
-        cfg.set('DEFAULT', 'thredds_file_services', '\n' + build_line(new_options, sep='\n'))
-        # Write new file
-        with open(outfile, 'wb') as f:
-            cfg.write(f)
-        logging.info('"thredds_aggregation/file_services" in "{0}" successfully formatted'.format(outfile))
+        for option in ['thredds_aggregation_services', 'thredds_file_services']:
+            options = cfg.get_options_from_table('DEFAULT', option)
+            new_options = tuple([build_line(o, length=align(options)) for o in options])
+            if options != new_options:
+                cfg.set('DEFAULT', option, '\n' + build_line(new_options, sep='\n'))
+                # Write new file
+                with open(outfile, 'wb') as f:
+                    cfg.write(f)
+                logging.info('"{0}" in "{1}" successfully formatted'.format(option, outfile))
 
     #############################################
     # Fetch and deploy esgcet_models_tables.txt #
