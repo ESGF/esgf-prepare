@@ -353,8 +353,7 @@ def get_args():
         'mapfile',
         prog='esgprep mapfile',
         description="""
-        The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes a
-        file to publish on the following format:|n|n
+        The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes a file to publish on the following format:|n|n
 
         dataset_ID | absolute_path | size_bytes [ | option=value ]|n|n
 

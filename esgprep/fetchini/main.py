@@ -365,7 +365,6 @@ def main(args):
             # Write new file
             with open(outfile, 'wb') as f:
                 cfg.write(f)
-            logging.info('"{0}" in "{1}" successfully formatted'.format(option, outfile))
 
     #############################################
     # Fetch and deploy esgcet_models_tables.txt #
