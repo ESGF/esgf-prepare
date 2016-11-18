@@ -17,7 +17,7 @@ from datetime import datetime
 from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.6.1', datetime(year=2016, month=10, day=31).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('2.6.2', datetime(year=2016, month=11, day=18).strftime("%Y-%d-%m"))
 
 
 def get_args():
@@ -95,7 +95,11 @@ def get_args():
         type=str,
         const=os.getcwd(),
         nargs='?',
-        help="""Logfile directory. If not, standard output is used.""")
+        help="""
+        Logfile directory.|n
+        An existing logfile can be submitted.|n
+        If not, standard output is used.
+        """)
     parent.add_argument(
         '-h', '--help',
         action='help',

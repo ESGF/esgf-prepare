@@ -53,17 +53,19 @@ class MultilineFormatter(HelpFormatter):
         return multiline_text
 
 
-def init_logging(logdir, level='INFO'):
+def init_logging(log, level='INFO'):
     """
-    Initiates the logging configuration (output, message formatting).
-    In the case of a logfile, the logfile name is unique and formatted as follows:
-    ``name-YYYYMMDD-HHMMSS-JOBID.log``
+    Initiates the logging configuration (output, date/message formatting).
+    If a directory is submitted the logfile name is unique and formatted as follows:
+    ``name-YYYYMMDD-HHMMSS-JOBID.log``If ``None`` the standard output is used.
 
-    :param str logdir: The relative or absolute logfile directory. If ``None`` the standard output is used.
+    :param str log: The logfile name or directory.
     :param str level: The log level.
 
     """
-    __LOG_LEVELS__ = {'CRITICAL': logging.CRITICAL,
+    log_fmt = '%(asctime)s %(levelname)s %(message)s'
+    log_date_fmt = '%Y/%m/%d %I:%M:%S %p'
+    log_levels = {'CRITICAL': logging.CRITICAL,
                       'ERROR':    logging.ERROR,
                       'WARNING':  logging.WARNING,
                       'INFO':     logging.INFO,
@@ -71,19 +73,25 @@ def init_logging(logdir, level='INFO'):
                       'NOTSET':   logging.NOTSET}
     logging.getLogger("github3").setLevel(logging.CRITICAL)  # Disables logging message from github3 library
     logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
-    if logdir:
-        logfile = 'esgprep-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"),
-                                               os.getpid())
-        if not os.path.isdir(logdir):
-            os.makedirs(logdir)
-        logging.basicConfig(filename=os.path.join(logdir, logfile),
-                            level=__LOG_LEVELS__[level],
-                            format='%(asctime)s %(levelname)s %(message)s',
-                            datefmt='%Y/%m/%d %I:%M:%S %p')
+    if log:
+        if os.path.isfile(log):
+            logging.basicConfig(filename=log,
+                                level=log_levels[level],
+                                format=log_fmt,
+                                datefmt=log_date_fmt)
+        else:
+            logfile = 'esgprep-{0}-{1}.log'.format(datetime.now().strftime("%Y%m%d-%H%M%S"),
+                                                   os.getpid())
+            if not os.path.isdir(log):
+                os.makedirs(log)
+            logging.basicConfig(filename=os.path.join(log, logfile),
+                                level=log_levels[level],
+                                format=log_fmt,
+                                datefmt=log_date_fmt)
     else:
-        logging.basicConfig(level=__LOG_LEVELS__[level],
-                            format='%(asctime)s %(levelname)s %(message)s',
-                            datefmt='%Y/%m/%d %I:%M:%S %p')
+        logging.basicConfig(level=log_levels[level],
+                            format=log_fmt,
+                            datefmt=log_date_fmt)
 
 
 def directory_checker(path):
