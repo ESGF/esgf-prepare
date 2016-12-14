@@ -10,6 +10,7 @@
 import logging
 import sys
 from datetime import datetime
+from hashlib import sha1
 from os.path import *
 
 from github3 import GitHub
@@ -61,7 +62,7 @@ def query_thredds_root(project):
     Asks project data root path via raw_input() and return their answer.
 
     :param str project: The project name
-    :return: The data root path
+    :returns: The data root path
     :rtype: *str*
 
     """
@@ -196,7 +197,7 @@ def get_project_name(project, path):
     Gets the project name from the configuration file defaults option
     :param str project: The project id
     :param str path: Directory path of configuration files
-    :return: The project name
+    :returns: The project name
     :rtype: *str*
 
     """
@@ -208,27 +209,49 @@ def get_project_name(project, path):
         return project
 
 
-def fetch(f, keep, overwrite):
+def fetch(f, remote_checksum, keep, overwrite):
     """
-    Returns True if
-
-    - the file doesn't exist
-
-    OR
-
-    - if the file exists AND 'keep mode' is disabled
-                         AND 'overwrite mode' is enabled OR the prompt answer is YES.
+    Returns True or False depending on decision schema
 
     :param str f: The file to test
+    :param str remote_checksum: The remote file checksum
     :param boolean overwrite: True if overwrite existing files
     :param boolean keep: True if keep existing files
-    :return: True depending on the conditions
+    :returns: True depending on the conditions
     :rtype: *boolean*
 
     """
-    return True if (not isfile(f) or
-                    (isfile(f) and not keep and
-                     (overwrite or query_yes_no('Overwrite existing "{0}"?'.format(basename(f)))))) else False
+    if overwrite:
+        return True
+    else:
+        if not isfile(f):
+            return True
+        else:
+            if githash(f) == remote_checksum:
+                return False
+            else:
+                logging.warning('Local "{0}" does not match version on GitHub. '
+                                'The file is either outdated or was modified.'.format((basename(f))))
+                if keep:
+                    return False
+                else:
+                    return query_yes_no('Overwrite?')
+
+
+def githash(outfile):
+    """
+    Makes Git checksum (as called by "git hash-object") of a file
+
+    :param outfile:
+    :returns: The SHA1 sum
+
+    """
+    with open(outfile, 'r') as f:
+        data = f.read()
+    s = sha1()
+    s.update("blob %u\0" % len(data))
+    s.update(data)
+    return unicode(s.hexdigest())
 
 
 def main(args):
@@ -263,9 +286,9 @@ def main(args):
     remote_projects = target_projects(gh, args.project)
     for project in remote_projects:
         outfile = join(outdir, 'esg.{0}.ini'.format(project))
-        if fetch(outfile, args.k, args.o):
-            # Get file content
-            content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project)))
+        # Get file content
+        content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project)))
+        if fetch(outfile, content.sha, args.k, args.o):
             # Backup old file if exists
             backup(outfile, mode=args.b)
             # Write new file
@@ -279,9 +302,9 @@ def main(args):
 
     outfile = join(outdir, 'esg.ini')
     if args.esg_config:
-        if fetch(outfile, args.k, args.o):
-            # Get file content
-            content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.ini'))
+        # Get file content
+        content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.ini'))
+        if fetch(outfile, content.sha, args.k, args.o):
             # Configure ESGF properties
             for key in list(set(re.findall(r'<(?!PROJECT|DATA_ROOT_PATH.*)(.+?)>', content.decoded))):
                 try:
@@ -371,9 +394,9 @@ def main(args):
     #############################################
 
     outfile = join(outdir, 'esgcet_models_table.txt')
-    if fetch(outfile, args.k, args.o):
-        # Get file content
-        content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'esgcet_models_table.txt'))
+    # Get file content
+    content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'esgcet_models_table.txt'))
+    if fetch(outfile, content.sha, args.k, args.o):
         # Backup old file if exists
         backup(outfile)
         # Write new file
@@ -401,9 +424,9 @@ def main(args):
             filename = '{0}.py'.format(re.search('.*\.(.+?):.*', cfg.get(section, 'handler')).group(1))
             outfile = join(normpath(abspath(handler_outdir)), filename)
             if project in remote_projects:
-                if fetch(outfile, args.k, args.o):
-                    # Get file content
-                    content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'handlers', filename))
+                # Get file content
+                content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'handlers', filename))
+                if fetch(outfile, content.sha, args.k, args.o):
                     # Backup old file if exists
                     backup(outfile)
                     # Write new file
