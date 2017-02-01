@@ -8,4 +8,4 @@
 """
 
 # Facets ignored during checking
-IGNORED_KEYS = ['root', 'project', 'filename', 'variable', 'version']
+IGNORED_KEYS = ['root', 'project', 'filename', 'variable', 'version', 'period_start', 'period_end']

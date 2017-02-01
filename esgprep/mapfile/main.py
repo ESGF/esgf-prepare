@@ -7,12 +7,12 @@
 
 """
 
+import fnmatch
 import logging
 import os
 import re
 import sys
 from datetime import datetime
-from fnmatch import filter
 from functools import wraps
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -20,8 +20,9 @@ from lockfile import LockFile
 
 from constants import *
 from esgprep.utils import parser, utils
-from exceptions import *
+from esgprep.utils.exceptions import *
 from handler import File
+from esgprep.utils.constants import *
 
 
 class ProcessingContext(object):
@@ -89,6 +90,7 @@ class ProcessingContext(object):
         self.no_version = args.no_version
         self.threads = args.max_threads
         self.dataset = args.dataset
+        self.clean = args.no_cleanup
         self.all = args.all_versions
         if self.all:
             self.no_version = False
@@ -105,20 +107,14 @@ class ProcessingContext(object):
             self.checksum_client, self.checksum_type = self.cfg.get_options_from_table('DEFAULT', 'checksum')[0]
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
-        self.facets = set(re.findall(re.compile(r'%\(([^()]*)\)s'),
-                                     self.cfg.get(self.project_section, 'dataset_id', raw=True)))
+        self.facets = self.cfg.get_facets(self.project_section, "dataset_id")
         self.pattern = self.cfg.translate_directory_format(self.project_section)
 
 
 def yield_inputs(ctx):
     """
     Yields all files to process within tuples with the processing context. The file walking
-    through the DRS tree follows the latest version of each dataset. This behavior is modified
-    using:
-
-     * ``--all-versions`` flag, to pick up all versions,
-     * ``--version <version_number>`` argument, to pick up a specified version,
-     * ``--latest-symlink`` flag, to pick up the version pointed by the latest symlink (if exists).
+    through the DRS tree follows the symlinks.
 
     If the supplied directory to scan specifies the version into its path, only this version is
     picked up as with ``--version`` argument.
@@ -144,11 +140,11 @@ def yield_inputs(ctx):
             else:
                 regex = re.compile('/'.join(regex.pattern.split('/')[:-1]))
         # Walk trough the DRS tree
-        for root, _, filenames in utils.walk(directory, downstream=True, followlinks=True):
+        for root, _, filenames in utils.walk(directory, followlinks=True):
             if '/files/' not in root:
                 for filename in filenames:
                     ffp = os.path.join(root, filename)
-                    if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
+                    if os.path.isfile(ffp) and fnmatch.fnmatchcase(filename, ctx.filter):
                         yield ffp, ctx
 
 
@@ -297,6 +293,16 @@ def insert_mapfile_entry(outfile, entry, ffp):
 
 
 def in_version_scope(fh, ctx):
+    """
+    Returns True if the file is in the version scope of the scan.
+    This depends on the different version flags on the command-line.
+
+    :param esgprep.mapfile.handler.File fh: The file handler
+    :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
+    :returns: True if the file is in the version scope
+    :rtype: *boolean*
+
+    """
     # Get the version number from DRS tree
     try:
         path_version = fh.get('version')
@@ -392,10 +398,11 @@ def main(args):
     ctx = ProcessingContext(args)
     logging.info('==> Scan started')
     # All incomplete mapfiles from a previous run are silently removed
-    for root, _, filenames in os.walk(ctx.outdir):
-        for filename in filter(filenames, '*{0}'.format(WORKING_EXTENSION)):
-            os.remove(os.path.join(root, filename))
-    logging.info('Output directory cleaned')
+    if ctx.clean:
+        for root, _, filenames in os.walk(ctx.outdir):
+            for filename in fnmatch.filter(filenames, '*{0}'.format(WORKING_EXTENSION)):
+                os.remove(os.path.join(root, filename))
+        logging.info('Output directory cleaned')
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.threads))
     # Return the list of generated mapfiles full paths

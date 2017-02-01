@@ -14,8 +14,7 @@ import string
 from glob import glob
 
 from esgprep.utils.utils import directory_checker
-from constants import *
-from exceptions import *
+from esgprep.utils.exceptions import *
 
 
 class CfgParser(ConfigParser.ConfigParser):
@@ -123,6 +122,43 @@ class CfgParser(ConfigParser.ConfigParser):
         pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
         return '{0}/(?P<filename>[\w.-]+)$'.format(pattern)
 
+    def translate_filename_format(self, section):
+        """
+        Return a list of regular expression filters associated with the ``directory_format`` option
+        in the configuration file. This can be passed to the Python ``re`` methods.
+
+        :param str section: The section name to parse
+        :returns: The corresponding ``re`` pattern
+
+        """
+        # Start translation
+        pattern = self.get(section, 'filename_format', raw=True).strip()
+        pattern = pattern.replace('\.', '__ESCAPE_DOT__')
+        pattern = pattern.replace('.', r'\.')
+        pattern = pattern.replace('__ESCAPE_DOT__', r'\.')
+        # Translate all patterns matching [.*] as optional pattern
+        pattern = re.sub(re.compile(r'\[(.*)\]'), r'(\1)?', pattern)
+        # Remove underscore from latest mandatory pattern to allow optional brackets
+        pattern = re.sub(re.compile(r'%\(([^()]*)\)s\('), r'(?P<\1>[^-_]+)(', pattern)
+        # Translate all patterns matching %(name)s
+        return re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
+
+    def get_facets(self, section, option, ignored=None):
+        """
+        Returns the set of facets declared into "*_format" attributes in the configuration file.
+
+        :param str section: The section name to parse
+        :param str option: The option to get facet names
+        :param list ignored: The list of facets to ignored
+        :returns: The collection of facets
+        :rtype: *set*
+        """
+        facets = re.findall(re.compile(r'%\(([^()]*)\)s'), self.get(section, option, raw=True))
+        if ignored:
+            return [f for f in facets if f not in ignored]
+        else:
+            return facets
+
     def check_options(self, section, pairs):
         """
         Checks a {key: value} pairs against the corresponding options from the configuration file.
@@ -133,18 +169,17 @@ class CfgParser(ConfigParser.ConfigParser):
 
         """
         for key in pairs.keys():
-            if key not in IGNORED_KEYS:
-                options, option = self.get_options(section, key)
-                try:
-                    # get_options returned a list
-                    if pairs[key] not in options:
-                        raise NoConfigValue(pairs[key], option, section, self.read_paths)
-                except TypeError:
-                    # get_options returned a regex from pattern
-                    if not options.match(pairs[key]):
-                        raise NoConfigValue(pairs[key], option, section, self.read_paths)
-            else:
-                pass
+            options, option = self.get_options(section, key)
+            try:
+                # get_options returned a list
+                if pairs[key] not in options:
+                    raise NoConfigValue(pairs[key], option, section, self.read_paths)
+            except TypeError:
+                # get_options returned a regex from pattern
+                if not options.match(pairs[key]):
+                    raise NoConfigValue(pairs[key], option, section, self.read_paths)
+                else:
+                    self.check_options(section, options.match(pairs[key]).groupdict())
 
     def get_options(self, section, option):
         """
@@ -322,12 +357,14 @@ class CfgParser(ConfigParser.ConfigParser):
             raise NoConfigSection(section, self.read_paths)
         if not self.has_option(section, option):
             raise NoConfigOption(option, section, self.read_paths)
-        key = option.split('_pattern')[0]
         pattern = self.get(section, option, raw=True)
+        # Translate all patterns matching %(digit)s
         pattern = re.sub(re.compile(r'%\((digit)\)s'), r'[\d]+', pattern)
+        # Translate all patterns matching %(string)s
         pattern = re.sub(re.compile(r'%\((string)\)s'), r'[\w]+', pattern)
-        # TODO: Add the %(facet)s sub-pattern to combine several facets
-        return re.compile('(?P<{0}>{1})'.format(key, pattern))
+        # Translate all patterns matching %(facet)s
+        pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
+        return re.compile(pattern)
 
     def get_patterns(self, section):
         """

@@ -14,6 +14,7 @@ import re
 import textwrap
 from argparse import HelpFormatter, ArgumentTypeError
 from datetime import datetime
+from collections import OrderedDict
 
 
 class MultilineFormatter(HelpFormatter):
@@ -66,11 +67,11 @@ def init_logging(log, level='INFO'):
     log_fmt = '%(asctime)s %(levelname)s %(message)s'
     log_date_fmt = '%Y/%m/%d %I:%M:%S %p'
     log_levels = {'CRITICAL': logging.CRITICAL,
-                      'ERROR':    logging.ERROR,
-                      'WARNING':  logging.WARNING,
-                      'INFO':     logging.INFO,
-                      'DEBUG':    logging.DEBUG,
-                      'NOTSET':   logging.NOTSET}
+                  'ERROR':    logging.ERROR,
+                  'WARNING':  logging.WARNING,
+                  'INFO':     logging.INFO,
+                  'DEBUG':    logging.DEBUG,
+                  'NOTSET':   logging.NOTSET}
     logging.getLogger("github3").setLevel(logging.CRITICAL)  # Disables logging message from github3 library
     logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
     if log:
@@ -109,6 +110,23 @@ def directory_checker(path):
         msg = 'No such directory: {0}'.format(path)
         raise ArgumentTypeError(msg)
     return path
+
+
+def pair_checker(pair):
+    """
+    Checks if the supplied directory exists. The path is normalized without trailing slash.
+
+    :param str path: The path list to check
+    :returns: The same path list
+    :rtype: *str*
+    :raises Error: If one of the directory does not exist
+
+    """
+    pattern = re.compile(r'([^=]+)=([^=]+)(?:,|$)')
+    if not pattern.search(pair):
+        msg = 'Bad argument syntax: {0}'.format(pair)
+        raise ArgumentTypeError(msg)
+    return pattern.search(pair).groups()
 
 
 def version_checker(version):

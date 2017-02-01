@@ -1,4 +1,8 @@
 requests
+fuzzywuzzy
+netCDF4
 lockfile
 github3.py
 uritemplate.py
+hurry.filesize
+treelib
