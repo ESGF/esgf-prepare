@@ -34,20 +34,29 @@ def get_args():
     main = argparse.ArgumentParser(
         prog='esgprep',
         description="""
-        The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers to
-        easily prepare their data before publishing to an ESGF node.|n|n
+        The ESGF publication process requires a strong and effective|n
+        data management. "esgprep" allows data providers to easily|n
+        prepare their data before publishing to an ESGF node.|n|n
 
-        "esgprep" gathers python command-lines covering several steps of ESGF publication workflow:|n
-        i. Fetch proper configuration files from ESGF GitHub repository,|n
-        ii. Data Reference Syntax management,|n
-        iii. Check DRS vocable against configuration files,|n
+        "esgprep" provides python command-lines covering several |n
+        steps of ESGF publication workflow: |n|n
+
+        i. Fetch proper configuration files from ESGF GitHub|n
+           repository,|n|n
+
+        ii. Data Reference Syntax management,|n|n
+
+        iii. Check DRS vocabulary against configuration files,|n|n
+
         iv. Generate mapfiles.|n|n
 
-        The "esgprep" toolbox is based on the ESGF datanode configuration files called "esg.ini". It implies those
-        configuration files are correctly build and declares all required attributes following recommended best
-        practices.|n|n
+        The "esgprep" toolbox is based on the ESGF data node|n
+        configuration files called "esg.ini".  It requires that |n
+        those configuration files are correctly built and declares|n
+        all required attributes following recommended best practices.|n|n
 
-        See full documentation and references on http://is-enes-data.github.io/esgf-prepare/.
+        See full documentation and references at|n
+        http://is-enes-data.github.io/esgf-prepare/.|n
         """,
         formatter_class=MultilineFormatter,
         add_help=False,
