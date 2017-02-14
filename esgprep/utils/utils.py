@@ -12,7 +12,7 @@ import logging
 import os
 import re
 import textwrap
-from argparse import HelpFormatter, ArgumentTypeError
+from argparse import HelpFormatter, ArgumentTypeError, Action
 from datetime import datetime
 
 
@@ -92,6 +92,11 @@ def init_logging(log, level='INFO'):
         logging.basicConfig(level=log_levels[level],
                             format=log_fmt,
                             datefmt=log_date_fmt)
+
+
+class DirectoryCheckerAction(Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, directory_checker(values))
 
 
 def directory_checker(path):

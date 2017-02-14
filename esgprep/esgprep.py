@@ -14,13 +14,13 @@ import argparse
 import os
 from datetime import datetime
 
-from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker
+from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker, DirectoryCheckerAction
 
 # Program version
 __version__ = 'v{0} {1}'.format('2.6.3', datetime(year=2016, month=11, day=18).strftime("%Y-%d-%m"))
 
 
-def get_args():
+def get_args(default_config_dir='/esg/config/esgcet'):
     """
     Returns parsed command-line arguments. See ``esgprep -h`` for full description.
 
@@ -89,18 +89,23 @@ def get_args():
     #######################################
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument(
-        '-i',
-        metavar='/esg/config/esgcet/.',
-        type=directory_checker,
-        default='/esg/config/esgcet/.',
+        '-h', '--help',
+        action='help',
+        help="""Show this help message and exit.""")
+
+    config_dir_action = parent.add_argument(
+        '-i',        
+        metavar='<directory>',
+        action=DirectoryCheckerAction,
         help="""
         Initialization/configuration directory containing|n
         "esg.ini" and "esg.<project>.ini" files.|n
         If not specified, the usual datanode directory is used.
         """)
+
     parent.add_argument(
         '--log',
-        metavar='$PWD',
+        metavar='<directory>',
         type=str,
         const=os.getcwd(),
         nargs='?',
@@ -109,10 +114,6 @@ def get_args():
         An existing logfile can be submitted.|n
         If not, standard output is used.
         """)
-    parent.add_argument(
-        '-h', '--help',
-        action='help',
-        help="""Show this help message and exit.""")
     parent.add_argument(
         '-v',
         action='store_true',
@@ -126,23 +127,35 @@ def get_args():
         'fetch-ini',
         prog='esgprep fetch-ini',
         description="""
-        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that are
-        the primary means of configuring the ESGF publisher.|n|n
 
-        - The "esg.ini" file gathers all required information to configure the datanode regarding to data publication
-        (e.g., PostgreSQL access, THREDDS configuration, etc.).|n
-        - The "esg.<project_id>.ini" files declare all facets and allowed values according to the Data Reference Syntax
-        (DRS) and the controlled vocabularies of the corresponding project.|n
-        - The "esgcet_models_table.txt" declares the models and their descriptions among the projects.|n
-        - The "<project_id>_handler.py" are Python methods to guide the publisher in metadata harvesting.
+        The ESGF publishing client and most of other ESGF tool rely |n
+        on configuration files of different kinds, that are the|n
+        primary means of configuring the ESGF publisher.|n|n
 
-        "esgprep fetch-ini" allows you to properly download, configure and deploy these configuration files hosted
-        on a GitHub repository.|n|n
+        - The "esg.ini" file gathers all required information to|n
+        configure the datanode regarding to data publication (e.g.,|n
+        PostgreSQL access, THREDDS configuration, etc.).|n|n
 
-        Keep in mind that the fetched files have to be reviewed to ensure a correct configuration of your
-        publication.|n|n
+        - The "esg.<project_id>.ini" files declare all facets and|n
+        allowed values according to the Data Reference Syntax (DRS)|n
+        and the controlled vocabularies of the corresponding|n
+        project.|n|n
 
-        The supply configuration directory is used to write the files retrieved from GitHub.|n|n
+        - The "esgcet_models_table.txt" declares the models and their|n
+          descriptions among the projects.|n|n
+
+        - The "<project_id>_handler.py" are Python methods to guide|n
+          the publisher in metadata harvesting.|n|n
+
+        "esgprep fetch-ini" allows you to properly download, configure|n
+        and deploy these configuration files hosted on a GitHub|n
+        repository.|n|n
+
+        Keep in mind that the fetched files have to be reviewed to|n
+        ensure a correct configuration of your publication.|n|n
+
+        The supply configuration directory is used to write the files|n
+        retrieved from GitHub.|n|n
 
         The default values are displayed next to the corresponding flags.
         """,
@@ -182,13 +195,13 @@ def get_args():
         """)
     fetchini.add_argument(
         '--db-host',
-        metavar='localhost',
+        metavar='<hostname>',
         type=str,
         default='localhost',
         help="""Database hostname.""")
     fetchini.add_argument(
         '--db-port',
-        metavar='5432',
+        metavar='<port>',
         type=str,
         default='5432',
         help="""Database port.""")
@@ -297,7 +310,7 @@ def get_args():
     checkvocab._positionals.title = "Positional arguments"
     checkvocab.add_argument(
         'directory',
-        type=directory_checker,
+        action=DirectoryCheckerAction,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
@@ -344,7 +357,7 @@ def get_args():
     drs._positionals.title = "Positional arguments"
     drs.add_argument(
         'incoming',
-        type=directory_checker,
+        action=DirectoryCheckerAction,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
@@ -358,7 +371,7 @@ def get_args():
     drs.add_argument(
         '--outdir',
         metavar='$PWD',
-        type=directory_checker,
+        action=DirectoryCheckerAction,
         default=os.getcwd(),
         help="""Output directory to build the DRS.""")
 
@@ -405,7 +418,7 @@ def get_args():
     mapfile._positionals.title = "Positional arguments"
     mapfile.add_argument(
         'directory',
-        type=directory_checker,
+        action=DirectoryCheckerAction,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
@@ -524,7 +537,19 @@ def get_args():
         one seems sequential processing.
         """)
 
-    return main.parse_args()
+    args = main.parse_args()
+
+    # Apply default config dir if not set.  This ensures that the
+    # checker gets called for the default config dir, but only if the
+    # default is actually to be used.  If the "-h" flag is specified,
+    # it exits inside parse_args after displaying the help message,
+    # and it does not matter whether the config dir (either default or
+    # specified with -i) exists.
+    if args.i == None:
+        config_dir_action(main, args, default_config_dir)
+
+    return args
+
 
 
 def run():
