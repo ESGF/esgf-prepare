@@ -8,20 +8,6 @@
 """
 
 
-class KeyNotFound(Exception):
-    """
-    Raised when a class key is not found.
-    Print list of available keys if submitted.
-
-    """
-
-    def __init__(self, key, keys=None):
-        self.msg = "No key: '{0}'".format(key)
-        if keys:
-            self.msg += "\n<Available keys: '{0}'>".format(', '.join(keys))
-        super(self.__class__, self).__init__(self.msg)
-
-
 class ChecksumFail(Exception):
     """
     Raised when a checksum fails.

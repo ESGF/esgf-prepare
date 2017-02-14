@@ -14,10 +14,10 @@ import argparse
 import os
 from datetime import datetime
 
-from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker, DirectoryCheckerAction
+from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker, pair_checker, DirectoryCheckerAction
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.6.3', datetime(year=2016, month=11, day=18).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('2.6.4', datetime(year=2016, month=12, day=23).strftime("%Y-%d-%m"))
 
 
 def get_args(default_config_dir='/esg/config/esgcet'):
@@ -288,7 +288,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         'check-vocab',
         prog='esgprep check-vocab',
         description="""
-        The data management/preparation" relies on the ESGF node configuration files. These "esg.<project>.ini" files
+        The data management/preparation relies on the ESGF node configuration files. These "esg.<project>.ini" files
         declares the Data Reference Syntax (DRS) and the controlled vocabularies of each project.|n|n
 
         In the case of your data already follow the appropriate directory structure, you may want to check that all
@@ -314,7 +314,8 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
-        Unix wildcards are allowed.""")
+        Unix wildcards are allowed.
+        """)
     checkvocab.add_argument(
         '--project',
         metavar='<project_id>',
@@ -344,7 +345,8 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of
         publication-level datasets to minimise disk usage.|n|n
 
-        This feature is coming soon !
+        Only CMORized NetCDF files are supported as incoming files.
+
         """,
         formatter_class=MultilineFormatter,
         help="""
@@ -356,8 +358,25 @@ def get_args(default_config_dir='/esg/config/esgcet'):
     drs._optionals.title = "Optional arguments"
     drs._positionals.title = "Positional arguments"
     drs.add_argument(
+<<<<<<< HEAD
         'incoming',
         action=DirectoryCheckerAction,
+=======
+        'action',
+        choices=['list', 'tree', 'todo', 'upgrade'],
+        metavar='action',
+        type=str,
+        help="""
+        DRS action:|n
+        - "list" lists publication-level datasets,|n
+        - "tree" displays the final DRS tree,|n
+        - "todo" shows file operations pending for the next version,|n
+        - "upgrade" makes changes to upgrade datasets to the next version.
+        """)
+    drs.add_argument(
+        'directory',
+        type=directory_checker,
+>>>>>>> remotes/origin/devel
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
@@ -369,11 +388,61 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         required=True,
         help="""Required lower-cased project name.""")
     drs.add_argument(
-        '--outdir',
+        '--root',
         metavar='$PWD',
         action=DirectoryCheckerAction,
         default=os.getcwd(),
-        help="""Output directory to build the DRS.""")
+        help="""Root directory to build the DRS.""")
+    drs.add_argument(
+        '--version',
+        metavar=datetime.now().strftime("%Y%m%d"),
+        type=version_checker,
+        default=datetime.now().strftime('%Y%m%d'),
+        help="""Set the version number for all scanned files.""")
+    drs.add_argument(
+        '--set',
+        metavar='<key>=<value>',
+        type=pair_checker,
+        action='append',
+        help="""
+        One or several facet values to set.|n
+        This overwrites facet auto-detection.
+        """)
+    drs.add_argument(
+        '--no-checksum',
+        action='store_true',
+        default=False,
+        help="""Does not include files checksums for version comparison.""")
+    group = drs.add_mutually_exclusive_group(required=False)
+    group.add_argument(
+        '--copy',
+        action='store_true',
+        default=False,
+        help="""Copy incoming files into the DRS tree. Default is moving files.""")
+    group.add_argument(
+        '--link',
+        action='store_true',
+        default=False,
+        help="""Hard link incoming files to the DRS tree. Default is moving files.""")
+    drs.add_argument(
+        '--filter',
+        metavar='"*.nc"',
+        type=str,
+        default='*.nc',
+        help="""
+        Filter files matching the regular expression (default only|n
+        support NetCDF files). Uniw wildcards are supported.
+        """)
+    drs.add_argument(
+        '--max-threads',
+        metavar=4,
+        type=int,
+        default=4,
+        help="""
+        Number of maximal threads to simultaneously process several|n
+        files (useful if checksum calculation is enabled). Set to|n
+        one seems sequential processing.
+        """)
 
     ###################################
     # Subparser for "esgprep mapfile" #
@@ -382,7 +451,8 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         'mapfile',
         prog='esgprep mapfile',
         description="""
-        The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes a file to publish on the following format:|n|n
+        The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes
+        a file to publish on the following format:|n|n
 
         dataset_ID | absolute_path | size_bytes [ | option=value ]|n|n
 
@@ -497,13 +567,12 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         help="""Does not include files checksums into the mapfile(s).""")
     mapfile.add_argument(
         '--filter',
-        metavar=r'".*\.nc$"',
+        metavar='"*.nc"',
         type=str,
-        default=r'.*\.nc$',
+        default='*.nc',
         help="""
         Filter files matching the regular expression (default only|n
-        support NetCDF files). Regular expression syntax is defined|n
-        by the Python "re" module.
+        scan NetCDF files). Uniw wildcards are supported.
         """)
     mapfile.add_argument(
         '--tech-notes-url',
@@ -535,6 +604,14 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         Number of maximal threads to simultaneously process several|n
         files (useful if checksum calculation is enabled). Set to|n
         one seems sequential processing.
+        """)
+    mapfile.add_argument(
+        '--no-cleanup',
+        action='store_false',
+        default=True,
+        help="""Disables output directory cleanup prior to mapfile process.|n
+        This is recommended if several "esgprep mapfile" instances |n
+        run with the same output directory.
         """)
 
     args = main.parse_args()

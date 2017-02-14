@@ -11,6 +11,7 @@ import os
 import re
 
 from esgprep.mapfile.exceptions import *
+from esgprep.utils.constants import *
 from esgprep.utils.exceptions import *
 
 
@@ -38,6 +39,7 @@ class File(object):
         :param str key: The key
         :returns: The corresponding value
         :rtype: *str* or *list* or *dict* depending on the key
+        :raises Error: If unknown key
 
         """
         if key in self.attributes:
@@ -80,6 +82,7 @@ class File(object):
         :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
         :returns: The dataset identifier
         :rtype: *str*
+        :raises Error: If a facet cannot be checked
 
         """
         # Check each facet required by the dataset_id template from esg.<project>.ini
@@ -87,18 +90,20 @@ class File(object):
         # If a DRS attribute is missing regarding the dataset_id template,
         # the DRS attributes are completed from esg.<project>.ini maptables.
         if not ctx.dataset:
-            for facet in ctx.facets.intersection(self.attributes.keys()):
-                ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
-            for facet in ctx.facets.difference(self.attributes.keys()):
-                try:
-                    self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
-                                                                         '{0}_map'.format(facet),
-                                                                         self.attributes)
-                except:
-                    raise NoConfigVariable(facet,
-                                           ctx.cfg.get(ctx.project_section, 'directory_format', raw=True).strip(),
-                                           ctx.project_section,
-                                           ctx.cfg.read_paths)
+            for facet in set(ctx.facets).intersection(self.attributes.keys()):
+                if facet not in IGNORED_KEYS:
+                    ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
+            for facet in set(ctx.facets).difference(self.attributes.keys()):
+                if facet not in IGNORED_KEYS:
+                    try:
+                        self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
+                                                                             '{0}_map'.format(facet),
+                                                                             self.attributes)
+                    except:
+                        raise NoConfigVariable(facet,
+                                               ctx.cfg.get(ctx.project_section, 'directory_format', raw=True).strip(),
+                                               ctx.project_section,
+                                               ctx.cfg.read_paths)
             dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, self.attributes)
         else:
             dataset_id = ctx.dataset
@@ -133,7 +138,7 @@ class File(object):
         if not checksum_client:
             return None
         try:
-            shell = os.popen("{0} {1} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, self.ffp), 'r')
+            shell = os.popen("{0} {1} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, self.ffp))
             return shell.readline()[:-1]
         except:
             raise ChecksumFail(self.ffp, checksum_type)

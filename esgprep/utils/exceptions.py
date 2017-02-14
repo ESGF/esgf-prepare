@@ -111,7 +111,7 @@ class NoConfigVariable(Exception):
     """
 
     def __init__(self, option, directory_format, section, paths):
-        self.msg = "No pattern: '%({0})s'. Should be added or declared through an '{0}_map' option.".format(option)
+        self.msg = "No pattern: '%({0})s'. Should be added or declared through a '{0}_map' option.".format(option)
         self.msg += "\n<format: '{0}'>".format(directory_format)
         self.msg += "\n<section: '{0}'>".format(section)
         for path in paths:
@@ -199,7 +199,7 @@ class DuplicatedMapEntry(Exception):
 
 class DirectoryNotMatch(Exception):
     """
-    Raised when a directory does not math the regex format.
+    Raised when a directory does not match the regex format.
 
     """
 
@@ -210,4 +210,34 @@ class DirectoryNotMatch(Exception):
         self.msg += "\n<section: '{0}'>".format(section)
         for path in paths:
             self.msg += "\n<config file: '{0}'>".format(path)
+        super(self.__class__, self).__init__(self.msg)
+
+
+class FilenameNotMatch(Exception):
+    """
+    Raised when a filename not match the regex format.
+
+    """
+
+    def __init__(self, filename, filename_format, section, paths):
+        self.msg = "Matching failed to deduce DRS attributes."
+        self.msg += "\n<filename: '{0}'>".format(filename)
+        self.msg += "\n<format: '{0}'>".format(filename_format)
+        self.msg += "\n<section: '{0}'>".format(section)
+        for path in paths:
+            self.msg += "\n<config file: '{0}'>".format(path)
+        super(self.__class__, self).__init__(self.msg)
+
+
+class KeyNotFound(Exception):
+    """
+    Raised when a class key is not found.
+    Print list of available keys if submitted.
+
+    """
+
+    def __init__(self, key, keys=None):
+        self.msg = "No key: '{0}'".format(key)
+        if keys:
+            self.msg += "\n<Available keys: '{0}'>".format(', '.join(keys))
         super(self.__class__, self).__init__(self.msg)
