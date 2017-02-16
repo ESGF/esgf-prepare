@@ -358,10 +358,6 @@ def get_args(default_config_dir='/esg/config/esgcet'):
     drs._optionals.title = "Optional arguments"
     drs._positionals.title = "Positional arguments"
     drs.add_argument(
-<<<<<<< HEAD
-        'incoming',
-        action=DirectoryCheckerAction,
-=======
         'action',
         choices=['list', 'tree', 'todo', 'upgrade'],
         metavar='action',
@@ -375,8 +371,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         """)
     drs.add_argument(
         'directory',
-        type=directory_checker,
->>>>>>> remotes/origin/devel
+        action=DirectoryCheckerAction,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
