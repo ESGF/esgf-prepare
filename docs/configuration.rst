@@ -6,7 +6,7 @@ Configuration
 
 ``esgprep`` works with `the configuration file(s) of ESGF nodes <https://acme-climate.atlassian.net/wiki/x/JADm>`_.
 
-The only configuration you need to do at least is to define the checksum client and checksum type under the
+The only mandatory configuration is to define the checksum client and checksum type under the
 ``[default]`` section in your ``esg.ini`` file. Edit the file to set the Shell command line to use (default is
 ``sha256sum``).
 
