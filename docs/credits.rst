@@ -13,9 +13,9 @@ Contributors
 
 `Katharina BERGER <berger@dkrz.de>`_ (`DKRZ <https://www.dkrz.de/>`_)
 
-`Alan IWI <alan.iwi@stfc.ac.uk>`_ (`STFC <http://www.stfc.ac.uk/>`_/`BADC <https://badc.nerc.ac.uk/home/>`_)
+`Alan IWI <alan.iwi@stfc.ac.uk>`_ (`STFC <http://www.stfc.ac.uk/>`_/`CEDA <http://www.ceda.ac.uk/>`_)
 
-`Ag STEPHENS <ag.stephens@stfc.ac.uk>`_ (`STFC <http://www.stfc.ac.uk/>`_/`BADC <https://badc.nerc.ac.uk/home/>`_)
+`Ag STEPHENS <ag.stephens@stfc.ac.uk>`_ (`STFC <http://www.stfc.ac.uk/>`_/`CEDA <http://www.ceda.ac.uk/>`_)
 
 Contacts
 ********

@@ -64,8 +64,8 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         Developed by:|n
         Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.jussieu.fr)|n
         Berger, K. (DKRZ - berger@dkrz.de)|n
-        Iwi, A. (STFC/BADC - alan.iwi@stfc.ac.uk)|n
-        Stephens, A. (STFC/BADC - ag.stephens@stfc.ac.uk)
+        Iwi, A. (STFC/CEDA - alan.iwi@stfc.ac.uk)|n
+        Stephens, A. (STFC/CEDA - ag.stephens@stfc.ac.uk)
         """)
     main._optionals.title = "Optional arguments"
     main._positionals.title = "Positional arguments"
@@ -244,12 +244,12 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         '-k',
         action='store_true',
         default=False,
-        help="""Ignore and keep existing file(s) without prompt.""")
+        help="""Ignore and keep existing file(s) without prompting.""")
     group.add_argument(
         '-o',
         action='store_true',
         default=False,
-        help="""Ignore and overwrite existing file(s) without prompt.""")
+        help="""Ignore and overwrite existing file(s) without prompting.""")
     # ----------------
     # Apparently unused at present (and not sure what it is meant to do).
     # Please uncomment and clarify help text if implementing.  Alan 2017-02-17
@@ -431,7 +431,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         default='*.nc',
         help="""
         Filter files matching the regular expression (default only|n
-        support netCDF files). Uniw wildcards are supported.
+        support netCDF files). Unix wildcards are supported.
         """)
     drs.add_argument(
         '--max-threads',
