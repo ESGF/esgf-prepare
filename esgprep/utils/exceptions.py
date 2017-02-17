@@ -28,7 +28,7 @@ class NoConfigFile(Exception):
     """
 
     def __init__(self, path):
-        self.msg = "No or not a file"
+        self.msg = "No such file"
         self.msg += "\n<config file: '{0}'>".format(path)
         super(self.__class__, self).__init__(self.msg)
 

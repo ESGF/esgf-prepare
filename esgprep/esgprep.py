@@ -296,11 +296,11 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         The data management/preparation relies on the ESGF node configuration files. These "esg.<project>.ini" files
         declares the Data Reference Syntax (DRS) and the controlled vocabularies of each project.|n|n
 
-        In the case of your data already follow the appropriate directory structure, you may want to check that all
-        values of each facet are correctly declared into "esg.<project_id>.ini" sections.|n|n
+        In the case that your data already follows the appropriate directory structure, you may want to check that all
+        values of each facet are correctly declared in the "esg.<project_id>.ini" sections.|n|n
 
         "esgprep check-vocab" allows you to easily check the configuration file attributes by scanning your data tree.
-        It implies that your directory structure strictly follows the project DRS including the version facet.|n|n
+        It requires that your directory structure strictly follows the project DRS including the version facet.|n|n
 
         The default values are displayed next to the corresponding flags.
         """,
@@ -334,7 +334,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         default=r'.*\.nc$',
         help="""
         Filter files matching the regular expression (default only|n
-        support NetCDF files). Regular expression syntax is defined|n
+        support netCDF files). Regular expression syntax is defined|n
         by the Python "re" module.
         """)
 
@@ -350,7 +350,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of
         publication-level datasets to minimise disk usage.|n|n
 
-        Only CMORized NetCDF files are supported as incoming files.
+        Only CMORized netCDF files are supported as incoming files.
 
         """,
         formatter_class=MultilineFormatter,
@@ -431,7 +431,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         default='*.nc',
         help="""
         Filter files matching the regular expression (default only|n
-        support NetCDF files). Uniw wildcards are supported.
+        support netCDF files). Uniw wildcards are supported.
         """)
     drs.add_argument(
         '--max-threads',
@@ -572,7 +572,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         default='*.nc',
         help="""
         Filter files matching the regular expression (default only|n
-        scan NetCDF files). Uniw wildcards are supported.
+        scan netCDF files). Uniw wildcards are supported.
         """)
     mapfile.add_argument(
         '--tech-notes-url',
