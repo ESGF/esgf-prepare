@@ -36,7 +36,11 @@ class ProcessingContext(object):
     +------------------------+-------------+--------------------------------------------+
     | *self*.pattern         | *re object* | DRS regex pattern without version          |
     +------------------------+-------------+--------------------------------------------+
-    | *self*.facets          | *list*      | List of the DRS facets                     |
+    | *self*.facets_from_directory_format  | Set of the DRS facets obtained from the    |
+    |                        | *set*       | directory_format                           |
+    +------------------------+-------------+--------------------------------------------+
+    | *self*.facets_of_type_enum           | Set of the DRS facets that have type enum  |
+    |                        | *set*       | in the categories table                    |
     +------------------------+-------------+--------------------------------------------+
 
     :param ArgumentParser args: Parsed command-line arguments
