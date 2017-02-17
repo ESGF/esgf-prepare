@@ -250,11 +250,16 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         action='store_true',
         default=False,
         help="""Ignore and overwrite existing file(s) without prompt.""")
-    fetchini.add_argument(
-        '--get-config',
-        action='store_true',
-        default=False,
-        help="""Ignore "esg.ini" fetching if not exists.""")
+    # ----------------
+    # Apparently unused at present (and not sure what it is meant to do).
+    # Please uncomment and clarify help text if implementing.  Alan 2017-02-17
+    #
+    # fetchini.add_argument(
+    #     '--get-config',
+    #     action='store_true',
+    #     default=False,
+    #     help="""Ignore "esg.ini" fetching if not exists.""")
+    # ----------------
     fetchini.add_argument(
         '-b',
         choices=['one_version', 'keep_versions'],
@@ -619,7 +624,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
     # specified with -i) exists.
     if args.i == None:
         config_dir_action(main, args, default_config_dir)
-
+    
     return args
 
 
