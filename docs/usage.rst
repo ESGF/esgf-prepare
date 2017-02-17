@@ -13,7 +13,8 @@ Specify the project
 
    $> esgprep <command> --project <project_id>
 
-.. warning:: This ``--project`` argument is always required.
+.. warning:: This ``--project`` argument is always required (except 
+             it is optional for command ``fetch-ini``)
 
 .. warning:: This ``--project`` name has to correspond to a section of the configuration file.
 

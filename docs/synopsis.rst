@@ -17,7 +17,7 @@ ESGF node.
 ``esgprep fetch-ini``
 *********************
 
-The ESGF publishng client and most of the ESGF tools rely on configuration files of different kinds, which are the
+The ESGF publishing client and most of the ESGF tools rely on configuration files of different kinds, which are the
 primary means of configuring the ESGF publisher.
 
 * The ``esg.ini`` file gathers all information needed to configure the data node for data publication (e.g., PostgreSQL access, THREDDS configuration, etc.).
