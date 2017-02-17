@@ -97,7 +97,11 @@ def init_logging(log, level='INFO'):
 
 class DirectoryCheckerAction(Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, directory_checker(values))
+        if isinstance(values, list):
+            checked_vals = [directory_checker(x) for x in values]
+        else:
+            checked_vals = directory_checker(values)
+        setattr(namespace, self.dest, checked_vals)
 
 
 def directory_checker(path):
