@@ -53,8 +53,9 @@ class ProcessingContext(object):
         self.project_section = 'project:{0}'.format(args.project)
         self.cfg = parser.CfgParser(args.i, section=self.project_section)
         self.pattern = self.cfg.translate_directory_format(self.project_section)
-        self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
-
+        self.facets_from_directory_format = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
+        categories = self.cfg.get_options_from_table(self.project_section, "categories")
+        self.facets_of_type_enum = set([x[0] for x in categories if x[1] == "enum"])
 
 def yield_files_from_tree(ctx):
     """
@@ -189,13 +190,16 @@ def main(args):
     """
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
-    # Get facets values declared into configuration file
-    facet_values_config = get_facet_values_from_config(ctx.cfg, ctx.project_section, ctx.facets)
+    # Get set of facets to process: only those that are both in the directory_format 
+    # and of type enum
+    facets = ctx.facets_from_directory_format & ctx.facets_of_type_enum
+    # Get facets values declared in configuration file
+    facet_values_config = get_facet_values_from_config(ctx.cfg, ctx.project_section, facets)
     # Walk trough DRS to get all dataset roots
     dsets = yield_files_from_tree(ctx)
     # Get facets values used by DRS tree
-    facet_values_tree = get_facet_values_from_tree(ctx, dsets, list(ctx.facets))
+    facet_values_tree = get_facet_values_from_tree(ctx, dsets, list(facets))
     # Compare values from tree against values from configuration file
-    any_disallowed = compare_values(list(ctx.facets), facet_values_tree, facet_values_config, ctx.verbosity)
+    any_disallowed = compare_values(list(facets), facet_values_tree, facet_values_config, ctx.verbosity)
     if any_disallowed:
         sys.exit(1)
