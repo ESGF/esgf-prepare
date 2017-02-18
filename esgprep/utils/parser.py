@@ -122,6 +122,22 @@ class CfgParser(ConfigParser.ConfigParser):
         pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
         return '{0}/(?P<filename>[\w.-]+)$'.format(pattern)
 
+    def translate_dataset_id(self, section):
+        """
+        Return a list of regular expression filters associated with the ``dataset_id`` option
+        in the configuration file. This can be passed to the Python ``re`` methods.
+
+        :param str section: The section name to parse
+        :returns: The corresponding ``re`` pattern
+
+        """
+        pattern = self.get(section, 'dataset_id', raw=True).strip()
+        pattern = pattern.replace('\.', '__ESCAPE_DOT__')
+        pattern = pattern.replace('.', r'\.')
+        pattern = pattern.replace('__ESCAPE_DOT__', r'\.')
+        pattern = re.sub(r'%\(([^()]*)\)s', r'(?P<\1>[^\.]+)', pattern)
+        return pattern
+
     def translate_filename_format(self, section):
         """
         Return a list of regular expression filters associated with the ``directory_format`` option

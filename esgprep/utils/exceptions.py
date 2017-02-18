@@ -213,9 +213,22 @@ class DirectoryNotMatch(Exception):
         super(self.__class__, self).__init__(self.msg)
 
 
+class DatasetNotMatch(Exception):
+    """
+    Raised when a dataset does not match the regex format.
+
+    """
+
+    def __init__(self, dset, dataset_id_pattern, section):
+        self.msg = "Matching failed to deduce DRS attributes."
+        self.msg += "\n<dataset: '{0}'>".format(dset)
+        self.msg += "\n<format: '{0}'>".format(dataset_id_pattern)
+        self.msg += "\n<section: '{0}'>".format(section)
+        super(self.__class__, self).__init__(self.msg)
+
 class FilenameNotMatch(Exception):
     """
-    Raised when a filename not match the regex format.
+    Raised when a filename does not match the regex format.
 
     """
 

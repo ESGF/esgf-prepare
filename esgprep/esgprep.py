@@ -313,13 +313,21 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         parents=[parent])
     checkvocab._optionals.title = "Optional arguments"
     checkvocab._positionals.title = "Positional arguments"
-    checkvocab.add_argument(
-        'directory',
+    group = checkvocab.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        '--directory',
         action=DirectoryCheckerAction,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
         Unix wildcards are allowed.
+        """)
+    group.add_argument(
+        '--dataset-list',
+        metavar='<text_file>',
+        type=str,
+        help="""
+        File containing list of dataset IDs.
         """)
     checkvocab.add_argument(
         '--project',

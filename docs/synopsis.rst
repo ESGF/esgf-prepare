@@ -50,7 +50,12 @@ publication-level datasets in a way that minimises disk usage.
 
 In the case that your data already follows the appropriate directory structure, you may want to check that all
 values of each facet are correctly declared in the ``esg.<project_id>.ini`` sections. The ``check-vocab`` command
-allows you to easily check the configuration file attributes by scanning your data tree.
+allows you to easily check the configuration file attributes by scanning your data tree, and the facet values 
+will be derived from the directory pattern.
+
+Alternatively, you may supply a list of dataset IDs in a text file. In this case, the ``check-vocab`` command will
+perform a similar operation without scanning the file system, and the facet values will be derived from the 
+dataset ID pattern.
 
 ``esgprep mapfile``
 *******************
