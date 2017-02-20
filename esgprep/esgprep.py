@@ -229,11 +229,6 @@ def get_args():
         default=False,
         help="""Ignore and overwrite existing file(s) without prompt.""")
     fetchini.add_argument(
-        '--get-config',
-        action='store_true',
-        default=False,
-        help="""Ignore "esg.ini" fetching if not exists.""")
-    fetchini.add_argument(
         '-b',
         choices=['one_version', 'keep_versions'],
         type=str,
