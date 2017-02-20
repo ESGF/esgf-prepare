@@ -91,8 +91,8 @@ class ProcessingContext(object):
             self.checksum_client, self.checksum_type = self.cfg.get_options_from_table('DEFAULT', 'checksum')[0]
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
-        self.facets = self.cfg.get_facets(self.project_section, 'directory_format')
-        self.pattern = self.cfg.translate_filename_format(self.project_section)
+        self.facets = self.cfg.get_pattern_and_facets_from_directory_format(self.project_section)[1]
+        self.pattern = self.cfg.get_pattern_from_filename_format(self.project_section)
         self.verbose = args.v
         self.tree = DRSTree(self.root)
 

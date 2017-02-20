@@ -58,19 +58,24 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
+
         self.directory = args.directory
         self.dataset_list = args.dataset_list
         self.project = args.project
         self.verbosity = args.v
         self.filter = args.filter
         self.project_section = 'project:{0}'.format(args.project)
+
         self.cfg = parser.CfgParser(args.i, section=self.project_section)
-        self.pattern = self.cfg.translate_directory_format(self.project_section)
-        self.facets_from_directory_format = set(re.compile(self.pattern).groupindex.keys())
-        categories = self.cfg.get_options_from_table(self.project_section, "categories")
-        self.facets_of_type_enum = set([x[0] for x in categories if x[1] == "enum"])
-        self.dataset_id_pattern = self.cfg.translate_dataset_id(self.project_section)
-        self.facets_from_dataset_id = set(re.compile(self.dataset_id_pattern).groupindex.keys())
+
+        self.pattern, self.facets_from_directory_format = \
+            self.cfg.get_pattern_and_facets_from_directory_format(self.project_section)
+
+        self.facets_of_type_enum = self.cfg.get_facets_of_type_enum(self.project_section)
+
+        self.dataset_id_pattern, self.facets_from_dataset_id = \
+            self.cfg.get_pattern_and_facets_from_dataset_format(self.project_section)
+
 
 def yield_datasets_from_file(ctx):
     """
@@ -242,13 +247,13 @@ def main(args):
     # Get set of facets to process: only those that are both in the directory_format 
     # and of type enum
     if ctx.directory:
-        facets = (ctx.facets_from_directory_format & ctx.facets_of_type_enum) - set(IGNORED_KEYS)
+        facets = (set(ctx.facets_from_directory_format) & set(ctx.facets_of_type_enum)) - set(IGNORED_KEYS)
         # Walk trough DRS to get all dataset roots
         dsets = yield_files_from_tree(ctx)
         # Get facets values used by DRS tree
         facet_values_found = get_facet_values_from_tree(ctx, dsets, list(facets))
     else:
-        facets = (ctx.facets_from_dataset_id & ctx.facets_of_type_enum) - set(IGNORED_KEYS)
+        facets = (set(ctx.facets_from_dataset_id) & set(ctx.facets_of_type_enum)) - set(IGNORED_KEYS)
         dsets = yield_datasets_from_file(ctx)
         facet_values_found = get_facet_values_from_dataset_list(ctx, dsets, list(facets))
     # Get facets values declared in configuration file

@@ -45,7 +45,7 @@ class CfgParser(ConfigParser.ConfigParser):
 
     def read(self, filenames):
         """
-        Read and parse a filename or a list of filenames, and records there paths.
+        Read and parse a filename or a list of filenames, and records their paths.
 
         """
         if isinstance(filenames, basestring):
@@ -96,9 +96,9 @@ class CfgParser(ConfigParser.ConfigParser):
         if not self:
             raise EmptyConfigFile(self.read_paths)
 
-    def translate_directory_format(self, section):
+    def get_pattern_from_directory_format(self, section):
         """
-        Return a list of regular expression filters associated with the ``directory_format`` option
+        Return a regular expression associated with the ``directory_format`` option
         in the configuration file. This can be passed to the Python ``re`` methods.
 
         :param str section: The section name to parse
@@ -122,9 +122,9 @@ class CfgParser(ConfigParser.ConfigParser):
         pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
         return '{0}/(?P<filename>[\w.-]+)$'.format(pattern)
 
-    def translate_dataset_id(self, section):
+    def get_pattern_from_dataset_format(self, section):
         """
-        Return a list of regular expression filters associated with the ``dataset_id`` option
+        Return a regular expression associated with the ``dataset_id`` option
         in the configuration file. This can be passed to the Python ``re`` methods.
 
         :param str section: The section name to parse
@@ -138,9 +138,9 @@ class CfgParser(ConfigParser.ConfigParser):
         pattern = re.sub(r'%\(([^()]*)\)s', r'(?P<\1>[^\.]+)', pattern)
         return pattern
 
-    def translate_filename_format(self, section):
+    def get_pattern_from_filename_format(self, section):
         """
-        Return a list of regular expression filters associated with the ``directory_format`` option
+        Return a regular expression filters associated with the ``directory_format`` option
         in the configuration file. This can be passed to the Python ``re`` methods.
 
         :param str section: The section name to parse
@@ -159,21 +159,30 @@ class CfgParser(ConfigParser.ConfigParser):
         # Translate all patterns matching %(name)s
         return re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
 
-    def get_facets(self, section, option, ignored=None):
+    def _get_vars_in_pattern(self, pattern):
         """
-        Returns the set of facets declared into "*_format" attributes in the configuration file.
+        Return a list of variable names in the regexp referenced with the (?P<varname>expression) syntax
+        """
+        return re.compile(pattern).groupindex.keys()
 
-        :param str section: The section name to parse
-        :param str option: The option to get facet names
-        :param list ignored: The list of facets to ignored
-        :returns: The collection of facets
-        :rtype: *set*
+    def get_pattern_and_facets_from_directory_format(self, section):
+        pattern = self.get_pattern_from_directory_format(section)
+        return pattern, self._get_vars_in_pattern(pattern)
+        
+    def get_pattern_and_facets_from_dataset_format(self, section):
+        pattern = self.get_pattern_from_dataset_format(section)
+        return pattern, self._get_vars_in_pattern(pattern)
+        
+    def get_pattern_and_facets_from_filename_format(self, section):
+        pattern = self.get_pattern_from_filename_format(section)
+        return pattern, self._get_vars_in_pattern(pattern)        
+
+    def get_facets_of_type_enum(self, section):
         """
-        facets = re.findall(re.compile(r'%\(([^()]*)\)s'), self.get(section, option, raw=True))
-        if ignored:
-            return [f for f in facets if f not in ignored]
-        else:
-            return facets
+        Returns the list of facets listed in the 'categories' table with 'enum' as their type.
+        """
+        categories = self.get_options_from_table(section, "categories")
+        return ([x[0] for x in categories if x[1] == "enum"])
 
     def check_options(self, section, pairs):
         """
