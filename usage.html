@@ -418,26 +418,23 @@ YYYY/MM/DD HH:MM:SS PM INFO <span class="o">[</span>...<span class="o">]</span>
 </div>
 <div class="section" id="run-the-drs-upgrade">
 <h3>Run the DRS upgrade<a class="headerlink" href="#run-the-drs-upgrade" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><dl class="docutils">
-<dt>$&gt; esgprep drs upgrade -i ~/work/esgf-config/publisher-configs/ini/ &#8211;project &lt;project_id&gt; /path/to/scan</dt>
-<dd><p class="first">YYYY/MM/DD HH:MM:SS PM INFO ==&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;&#8211; file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;&#8211; file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;&#8211; file3.nc
-YYYY/MM/DD HH:MM:SS PM INFO [...]
-============================================================================================================================================</p>
-<blockquote>
-<div>Unix command-lines</div></blockquote>
-<p class="last">mkdir -p /drs/path/facet1/facet2/.../files/dYYYYMMDD
-mv /path/to/scan/file1.nc /drs/path/facet1/facet2/.../files/dYYYYMMDD/file1.nc
-mkdir -p /drs/path/facet1/facet2/.../vYYYYMMDD
-ln -s ../files/dYYYYMMDD/file1.nc /drs/path/facet1/facet2/.../vYYYYMMDD/file1.nc
-[...]
-============================================================================================================================================</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs upgrade -i ~/work/esgf-config/publisher-configs/ini/ --project &lt;project_id&gt; /path/to/scan
+   YYYY/MM/DD HH:MM:SS PM <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file1.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file2.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- file3.nc
+   YYYY/MM/DD HH:MM:SS PM INFO <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+                                                           Unix command-lines
+   --------------------------------------------------------------------------------------------------------------------------------------------
+   mkdir -p /drs/path/facet1/facet2/.../files/dYYYYMMDD
+   mv /path/to/scan/file1.nc /drs/path/facet1/facet2/.../files/dYYYYMMDD/file1.nc
+   mkdir -p /drs/path/facet1/facet2/.../vYYYYMMDD
+   ln -s ../files/dYYYYMMDD/file1.nc /drs/path/facet1/facet2/.../vYYYYMMDD/file1.nc
+   <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="esgprep-check-vocab">

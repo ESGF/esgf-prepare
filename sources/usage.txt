@@ -223,6 +223,8 @@ List Unix command to apply
 Run the DRS upgrade
 -------------------
 
+.. code-block:: bash
+
    $> esgprep drs upgrade -i ~/work/esgf-config/publisher-configs/ini/ --project <project_id> /path/to/scan
       YYYY/MM/DD HH:MM:SS PM INFO ==> Scan started
       YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD <-- file1.nc
