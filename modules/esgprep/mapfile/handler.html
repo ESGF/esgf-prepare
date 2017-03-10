@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.handler &mdash; esgprep 2.5.8 documentation</title>
+  <title>esgprep.mapfile.handler &mdash; esgprep 2.6.4 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.5.8 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.6.4 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                2.5
+                2.6
               </div>
             
           
@@ -147,6 +147,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">esgprep.mapfile.exceptions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.exceptions</span> <span class="k">import</span> <span class="o">*</span>
 
 
@@ -174,6 +175,7 @@
 <span class="sd">        :param str key: The key</span>
 <span class="sd">        :returns: The corresponding value</span>
 <span class="sd">        :rtype: *str* or *list* or *dict* depending on the key</span>
+<span class="sd">        :raises Error: If unknown key</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
@@ -216,6 +218,7 @@
 <span class="sd">        :param esgprep.mapfile.main.ProcessingContext ctx: The processing context</span>
 <span class="sd">        :returns: The dataset identifier</span>
 <span class="sd">        :rtype: *str*</span>
+<span class="sd">        :raises Error: If a facet cannot be checked</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check each facet required by the dataset_id template from esg.&lt;project&gt;.ini</span>
@@ -223,18 +226,20 @@
         <span class="c1"># If a DRS attribute is missing regarding the dataset_id template,</span>
         <span class="c1"># the DRS attributes are completed from esg.&lt;project&gt;.ini maptables.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-                <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">check_options</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="p">{</span><span class="n">facet</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]})</span>
-            <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_option_from_map</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span>
-                                                                         <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_map&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">),</span>
-                                                                         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
-                <span class="k">except</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NoConfigVariable</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span>
-                                           <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="s1">&#39;directory_format&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
-                                           <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span>
-                                           <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">facet</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">IGNORED_KEYS</span><span class="p">:</span>
+                    <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">check_options</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="p">{</span><span class="n">facet</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]})</span>
+            <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">facet</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">IGNORED_KEYS</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_option_from_map</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span>
+                                                                             <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_map&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">),</span>
+                                                                             <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">NoConfigVariable</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span>
+                                               <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="s1">&#39;directory_format&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                                               <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span>
+                                               <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
             <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="s1">&#39;dataset_id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset</span>
@@ -269,7 +274,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">checksum_client</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">shell</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> | awk -F &#39; &#39; &#39;{{ print $1 }}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">checksum_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">shell</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> | awk -F &#39; &#39; &#39;{{ print $1 }}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">checksum_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">shell</span><span class="o">.</span><span class="n">readline</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ChecksumFail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span></div></div>
@@ -306,7 +311,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.5.8',
+            VERSION:'2.6.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

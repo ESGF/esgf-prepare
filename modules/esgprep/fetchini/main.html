@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.fetchini.main &mdash; esgprep 2.5.8 documentation</title>
+  <title>esgprep.fetchini.main &mdash; esgprep 2.6.4 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.5.8 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.6.4 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                2.5
+                2.6
               </div>
             
           
@@ -146,6 +146,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">hashlib</span> <span class="k">import</span> <span class="n">sha1</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="kn">from</span> <span class="nn">github3</span> <span class="k">import</span> <span class="n">GitHub</span>
@@ -197,7 +198,7 @@
 <span class="sd">    Asks project data root path via raw_input() and return their answer.</span>
 
 <span class="sd">    :param str project: The project name</span>
-<span class="sd">    :return: The data root path</span>
+<span class="sd">    :returns: The data root path</span>
 <span class="sd">    :rtype: *str*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -332,7 +333,7 @@
 <span class="sd">    Gets the project name from the configuration file defaults option</span>
 <span class="sd">    :param str project: The project id</span>
 <span class="sd">    :param str path: Directory path of configuration files</span>
-<span class="sd">    :return: The project name</span>
+<span class="sd">    :returns: The project name</span>
 <span class="sd">    :rtype: *str*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -344,27 +345,49 @@
         <span class="k">return</span> <span class="n">project</span></div>
 
 
-<div class="viewcode-block" id="fetch"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.fetch">[docs]</a><span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+<div class="viewcode-block" id="fetch"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.fetch">[docs]</a><span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">remote_checksum</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns True if</span>
-
-<span class="sd">    - the file doesn&#39;t exists</span>
-
-<span class="sd">    OR</span>
-
-<span class="sd">    - if the file exists AND &#39;keep mode&#39; is set disable</span>
-<span class="sd">                         AND &#39;overwrite mode&#39; is enable OR the prompt answer is YES.</span>
+<span class="sd">    Returns True or False depending on decision schema</span>
 
 <span class="sd">    :param str f: The file to test</span>
+<span class="sd">    :param str remote_checksum: The remote file checksum</span>
 <span class="sd">    :param boolean overwrite: True if overwrite existing files</span>
 <span class="sd">    :param boolean keep: True if keep existing files</span>
-<span class="sd">    :return: True depending on the conditions</span>
+<span class="sd">    :returns: True depending on the conditions</span>
 <span class="sd">    :rtype: *boolean*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">isfile</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">or</span>
-                    <span class="p">(</span><span class="n">isfile</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">keep</span> <span class="ow">and</span>
-                     <span class="p">(</span><span class="n">overwrite</span> <span class="ow">or</span> <span class="n">query_yes_no</span><span class="p">(</span><span class="s1">&#39;Overwrite existing &quot;</span><span class="si">{0}</span><span class="s1">&quot;?&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">))))))</span> <span class="k">else</span> <span class="kc">False</span></div>
+    <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isfile</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">githash</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">==</span> <span class="n">remote_checksum</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Local &quot;</span><span class="si">{0}</span><span class="s1">&quot; does not match version on GitHub. &#39;</span>
+                                <span class="s1">&#39;The file is either outdated or was modified.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">))))</span>
+                <span class="k">if</span> <span class="n">keep</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">query_yes_no</span><span class="p">(</span><span class="s1">&#39;Overwrite?&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="githash"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.githash">[docs]</a><span class="k">def</span> <span class="nf">githash</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes Git checksum (as called by &quot;git hash-object&quot;) of a file</span>
+
+<span class="sd">    :param outfile:</span>
+<span class="sd">    :returns: The SHA1 sum</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">sha1</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;blob </span><span class="si">%u</span><span class="se">\0</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">unicode</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
@@ -395,13 +418,13 @@
     <span class="c1"># Fetch and deploy esg.project.ini #</span>
     <span class="c1">####################################</span>
 
-    <span class="c1"># Target projects depending on the command-line</span>
-    <span class="n">projects</span> <span class="o">=</span> <span class="n">target_projects</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
+    <span class="c1"># Get &quot;remote&quot; project targeted from the command-line</span>
+    <span class="n">remote_projects</span> <span class="o">=</span> <span class="n">target_projects</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">remote_projects</span><span class="p">:</span>
         <span class="n">outfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">fetch</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">):</span>
-            <span class="c1"># Get file content</span>
-            <span class="n">content</span> <span class="o">=</span> <span class="n">gh_content</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;ini&#39;</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">)))</span>
+        <span class="c1"># Get file content</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">gh_content</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;ini&#39;</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">fetch</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">content</span><span class="o">.</span><span class="n">sha</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">):</span>
             <span class="c1"># Backup old file if exists</span>
             <span class="n">backup</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
             <span class="c1"># Write new file</span>
@@ -414,87 +437,102 @@
     <span class="c1">############################</span>
 
     <span class="n">outfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s1">&#39;esg.ini&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">fetch</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">esg_config</span><span class="p">:</span>
         <span class="c1"># Get file content</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">gh_content</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;ini&#39;</span><span class="p">,</span> <span class="s1">&#39;esg.ini&#39;</span><span class="p">))</span>
-        <span class="c1"># Configure ESGF properties</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">r&#39;&lt;(?!PROJECT|DATA_ROOT_PATH.*)(.+?)&gt;&#39;</span><span class="p">,</span> <span class="n">content</span><span class="o">.</span><span class="n">decoded</span><span class="p">))):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">get_property</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">path</span><span class="o">=</span><span class="n">ESGF_PROPERTIES</span><span class="p">)</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">):</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
-                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="s1">&#39;--</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
-            <span class="n">content</span><span class="o">.</span><span class="n">decoded</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&lt;</span><span class="si">{0}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">,</span> <span class="n">content</span><span class="o">.</span><span class="n">decoded</span><span class="p">)</span>
-        <span class="c1"># Backup old file if exists</span>
-        <span class="n">backup</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
-        <span class="c1"># Write new file</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">decoded</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> --&gt; </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">html_url</span><span class="p">,</span> <span class="n">outfile</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">fetch</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">content</span><span class="o">.</span><span class="n">sha</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">):</span>
+            <span class="c1"># Configure ESGF properties</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">r&#39;&lt;(?!PROJECT|DATA_ROOT_PATH.*)(.+?)&gt;&#39;</span><span class="p">,</span> <span class="n">content</span><span class="o">.</span><span class="n">decoded</span><span class="p">))):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">get_property</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">path</span><span class="o">=</span><span class="n">ESGF_PROPERTIES</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+                    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">MissingArgument</span><span class="p">(</span><span class="s1">&#39;--</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+                <span class="n">content</span><span class="o">.</span><span class="n">decoded</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&lt;</span><span class="si">{0}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">,</span> <span class="n">content</span><span class="o">.</span><span class="n">decoded</span><span class="p">)</span>
+            <span class="c1"># Backup old file if exists</span>
+            <span class="n">backup</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+            <span class="c1"># Write new file</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">decoded</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> --&gt; </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">html_url</span><span class="p">,</span> <span class="n">outfile</span><span class="p">))</span>
 
-    <span class="c1"># Target projects depending on the &quot;project sections&quot; locally found</span>
+    <span class="c1"># Get local project from the &quot;project sections&quot; locally found in INI files</span>
     <span class="n">cfg</span> <span class="o">=</span> <span class="n">CfgParser</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
-    <span class="n">projects</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;project:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">()</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">r&#39;project:.*&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)]</span>
+    <span class="n">local_projects</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;project:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">()</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">r&#39;project:.*&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)]</span>
+    <span class="c1"># Remote projects should be a subset of local projects (i.e., null intersection)</span>
+    <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">local_projects</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">remote_projects</span><span class="p">)))</span> <span class="o">==</span> <span class="n">remote_projects</span>
 
-    <span class="c1"># Update thredds dataset roots</span>
-    <span class="n">cfg</span> <span class="o">=</span> <span class="n">CfgParser</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">)</span>
-    <span class="n">thredds_options</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;thredds_dataset_roots&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">project</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thredds_options</span><span class="p">]:</span>
-            <span class="n">project_name</span> <span class="o">=</span> <span class="n">get_project_name</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">outdir</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">data_root_path</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">data_root_path</span><span class="p">):</span>
-                <span class="n">data_root_path</span> <span class="o">=</span> <span class="n">get_property</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">data_root_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">data_root_path</span> <span class="o">=</span> <span class="n">query_thredds_root</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span>
-            <span class="n">thredds_options</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">join</span><span class="p">(</span><span class="n">data_root_path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">)))</span>
-    <span class="n">new_thredds_options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">build_line</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">align</span><span class="p">(</span><span class="n">thredds_options</span><span class="p">))</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thredds_options</span><span class="p">])</span>
-    <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;thredds_dataset_roots&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">build_line</span><span class="p">(</span><span class="n">new_thredds_options</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
-    <span class="c1"># Write new file</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&quot;thredds_dataset_roots&quot; in &quot;</span><span class="si">{0}</span><span class="s1">&quot; successfully updated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span>
+    <span class="c1"># Configure esg.ini if exists and &quot;project sections&quot; have been found.</span>
+    <span class="k">if</span> <span class="n">local_projects</span> <span class="ow">and</span> <span class="n">isfile</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
+        <span class="c1"># Update thredds dataset roots</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">CfgParser</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">)</span>
+        <span class="n">thredds_options</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;thredds_dataset_roots&#39;</span><span class="p">)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">thredds_options</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">local_projects</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">project</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thredds_options</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">project</span> <span class="ow">in</span> <span class="n">remote_projects</span><span class="p">)</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">data_root_path</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">data_root_path</span><span class="p">):</span>
+                        <span class="n">args</span><span class="o">.</span><span class="n">data_root_path</span> <span class="o">=</span> <span class="n">get_property</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">data_root_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">WrongArgument</span><span class="p">(</span><span class="s1">&#39;--project&#39;</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;Should have only one value, &#39;</span>
+                                                                <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> submitted&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">)))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">thredds_options</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">args</span><span class="o">.</span><span class="n">data_root_path</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Please update &quot;</span><span class="si">{0}</span><span class="s1">&quot; with the appropriate THREDDS root path &#39;</span>
+                                    <span class="s1">&#39;for project &quot;</span><span class="si">{1}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">project</span><span class="p">))</span>
+        <span class="n">new_thredds_options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">build_line</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">align</span><span class="p">(</span><span class="n">thredds_options</span><span class="p">))</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thredds_options</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">thredds_options</span><span class="p">):</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;thredds_dataset_roots&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">build_line</span><span class="p">(</span><span class="n">new_thredds_options</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
+            <span class="c1"># Write new file</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&quot;thredds_dataset_roots&quot; in &quot;</span><span class="si">{0}</span><span class="s1">&quot; successfully updated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span>
 
-    <span class="c1"># Update esg.ini project options</span>
-    <span class="n">cfg</span> <span class="o">=</span> <span class="n">CfgParser</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">)</span>
-    <span class="n">project_options</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;project_options&#39;</span><span class="p">)</span>
-    <span class="c1"># Build project id as last project of the project_options</span>
-    <span class="n">project_id</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">project_options</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">project_id</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">project_options</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">project</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">project_options</span><span class="p">]:</span>
-            <span class="n">project_name</span> <span class="o">=</span> <span class="n">get_project_name</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">outdir</span><span class="p">)</span>
-            <span class="n">project_options</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">project_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">project_id</span><span class="p">)))</span>
-            <span class="n">project_id</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="n">new_project_options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">build_line</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">align</span><span class="p">(</span><span class="n">project_options</span><span class="p">))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">project_options</span><span class="p">])</span>
-    <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;project_options&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">build_line</span><span class="p">(</span><span class="n">new_project_options</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
-    <span class="c1"># Write new file</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&quot;project_options&quot; in &quot;</span><span class="si">{0}</span><span class="s1">&quot; successfully updated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span>
+        <span class="c1"># Update esg.ini project options</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">CfgParser</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">)</span>
+        <span class="n">project_options</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;project_options&#39;</span><span class="p">)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">project_options</span><span class="p">)</span>
+        <span class="c1"># Build project id as last project of the project_options</span>
+        <span class="n">project_id</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">project_id</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">project_options</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">local_projects</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">project</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">project_options</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">remote_projects</span><span class="p">:</span>
+                    <span class="n">project_name</span> <span class="o">=</span> <span class="n">get_project_name</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">outdir</span><span class="p">)</span>
+                    <span class="n">project_options</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">project_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">project_id</span><span class="p">)))</span>
+                    <span class="n">project_id</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Please update &quot;</span><span class="si">{0}</span><span class="s1">&quot; with the appropriate project option &#39;</span>
+                                    <span class="s1">&#39;for project &quot;</span><span class="si">{1}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">project</span><span class="p">))</span>
+        <span class="n">new_project_options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">build_line</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">align</span><span class="p">(</span><span class="n">project_options</span><span class="p">))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">project_options</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">project_options</span><span class="p">):</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;project_options&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">build_line</span><span class="p">(</span><span class="n">new_project_options</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
+            <span class="c1"># Write new file</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&quot;project_options&quot; in &quot;</span><span class="si">{0}</span><span class="s1">&quot; successfully updated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span>
 
-    <span class="c1"># Apply pipe alignment to aggregation/file services</span>
-    <span class="n">cfg</span> <span class="o">=</span> <span class="n">CfgParser</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">)</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;thredds_aggregation_services&#39;</span><span class="p">)</span>
-    <span class="n">new_options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">build_line</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">align</span><span class="p">(</span><span class="n">options</span><span class="p">))</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">options</span><span class="p">])</span>
-    <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;thredds_aggregation_services&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">build_line</span><span class="p">(</span><span class="n">new_options</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;thredds_file_services&#39;</span><span class="p">)</span>
-    <span class="n">new_options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">build_line</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">align</span><span class="p">(</span><span class="n">options</span><span class="p">))</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">options</span><span class="p">])</span>
-    <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;thredds_file_services&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">build_line</span><span class="p">(</span><span class="n">new_options</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
-    <span class="c1"># Write new file</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&quot;thredds_aggregation/file_services&quot; in &quot;</span><span class="si">{0}</span><span class="s1">&quot; successfully formatted&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span>
+        <span class="c1"># Apply pipe alignment to aggregation/file services</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">CfgParser</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;thredds_aggregation_services&#39;</span><span class="p">,</span> <span class="s1">&#39;thredds_file_services&#39;</span><span class="p">]:</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
+            <span class="n">new_options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">build_line</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">align</span><span class="p">(</span><span class="n">options</span><span class="p">))</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">options</span><span class="p">])</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">build_line</span><span class="p">(</span><span class="n">new_options</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
+            <span class="c1"># Write new file</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
     <span class="c1">#############################################</span>
     <span class="c1"># Fetch and deploy esgcet_models_tables.txt #</span>
     <span class="c1">#############################################</span>
 
     <span class="n">outfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s1">&#39;esgcet_models_table.txt&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">fetch</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">):</span>
-        <span class="c1"># Get file content</span>
-        <span class="n">content</span> <span class="o">=</span> <span class="n">gh_content</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;esgcet_models_table.txt&#39;</span><span class="p">))</span>
+    <span class="c1"># Get file content</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">gh_content</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;esgcet_models_table.txt&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">fetch</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">content</span><span class="o">.</span><span class="n">sha</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">):</span>
         <span class="c1"># Backup old file if exists</span>
         <span class="n">backup</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
         <span class="c1"># Write new file</span>
@@ -514,23 +552,29 @@
             <span class="n">handler_outdir</span> <span class="o">=</span> <span class="n">outdir</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
         <span class="n">handler_outdir</span> <span class="o">=</span> <span class="n">outdir</span>
-    <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
+    <span class="c1"># Target projects depending on the command-line</span>
+    <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">local_projects</span><span class="p">:</span>
         <span class="n">section</span> <span class="o">=</span> <span class="s1">&#39;project:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
         <span class="n">cfg</span> <span class="o">=</span> <span class="n">CfgParser</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="n">section</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;handler&#39;</span><span class="p">):</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">.py&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;.*\.(.+?):.*&#39;</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;handler&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
             <span class="n">outfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">normpath</span><span class="p">(</span><span class="n">abspath</span><span class="p">(</span><span class="n">handler_outdir</span><span class="p">)),</span> <span class="n">filename</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">fetch</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">remote_projects</span><span class="p">:</span>
                 <span class="c1"># Get file content</span>
                 <span class="n">content</span> <span class="o">=</span> <span class="n">gh_content</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;handlers&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
-                <span class="c1"># Backup old file if exists</span>
-                <span class="n">backup</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
-                <span class="c1"># Write new file</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">decoded</span><span class="p">)</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> --&gt; </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">html_url</span><span class="p">,</span> <span class="n">outfile</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">fetch</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">content</span><span class="o">.</span><span class="n">sha</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">):</span>
+                    <span class="c1"># Backup old file if exists</span>
+                    <span class="n">backup</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+                    <span class="c1"># Write new file</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">decoded</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> --&gt; </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">html_url</span><span class="p">,</span> <span class="n">outfile</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">isfile</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{0}</span><span class="s1">&quot; is missing in &quot;</span><span class="si">{1}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">handler_outdir</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No &quot;handler&quot; option found into &quot;esg.</span><span class="si">{0}</span><span class="s1">.ini&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span></div>
+            <span class="k">if</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">remote_projects</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No handler is required for project &quot;</span><span class="si">{0}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
@@ -564,7 +608,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.5.8',
+            VERSION:'2.6.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

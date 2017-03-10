@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.utils &mdash; esgprep 2.5.8 documentation</title>
+  <title>esgprep.utils.utils &mdash; esgprep 2.6.4 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.5.8 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.6.4 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                2.5
+                2.6
               </div>
             
           
@@ -150,6 +150,7 @@
 <span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">HelpFormatter</span><span class="p">,</span> <span class="n">ArgumentTypeError</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
 
 
 <div class="viewcode-block" id="MultilineFormatter"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.MultilineFormatter">[docs]</a><span class="k">class</span> <span class="nc">MultilineFormatter</span><span class="p">(</span><span class="n">HelpFormatter</span><span class="p">):</span>
@@ -189,37 +190,45 @@
         <span class="k">return</span> <span class="n">multiline_text</span></div>
 
 
-<div class="viewcode-block" id="init_logging"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.init_logging">[docs]</a><span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="n">logdir</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="init_logging"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.init_logging">[docs]</a><span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Initiates the logging configuration (output, message formatting).</span>
-<span class="sd">    In the case of a logfile, the logfile name is unique and formatted as follows:</span>
-<span class="sd">    ``name-YYYYMMDD-HHMMSS-JOBID.log``</span>
+<span class="sd">    Initiates the logging configuration (output, date/message formatting).</span>
+<span class="sd">    If a directory is submitted the logfile name is unique and formatted as follows:</span>
+<span class="sd">    ``name-YYYYMMDD-HHMMSS-JOBID.log``If ``None`` the standard output is used.</span>
 
-<span class="sd">    :param str logdir: The relative or absolute logfile directory. If ``None`` the standard output is used.</span>
+<span class="sd">    :param str log: The logfile name or directory.</span>
 <span class="sd">    :param str level: The log level.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">__LOG_LEVELS__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CRITICAL&#39;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">,</span>
-                      <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span>    <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
-                      <span class="s1">&#39;WARNING&#39;</span><span class="p">:</span>  <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span>
-                      <span class="s1">&#39;INFO&#39;</span><span class="p">:</span>     <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
-                      <span class="s1">&#39;DEBUG&#39;</span><span class="p">:</span>    <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
-                      <span class="s1">&#39;NOTSET&#39;</span><span class="p">:</span>   <span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">}</span>
+    <span class="n">log_fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(levelname)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+    <span class="n">log_date_fmt</span> <span class="o">=</span> <span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1"> %I:%M:%S %p&#39;</span>
+    <span class="n">log_levels</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CRITICAL&#39;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">,</span>
+                  <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span>    <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+                  <span class="s1">&#39;WARNING&#39;</span><span class="p">:</span>  <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span>
+                  <span class="s1">&#39;INFO&#39;</span><span class="p">:</span>     <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+                  <span class="s1">&#39;DEBUG&#39;</span><span class="p">:</span>    <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                  <span class="s1">&#39;NOTSET&#39;</span><span class="p">:</span>   <span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">}</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;github3&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>  <span class="c1"># Disables logging message from github3 library</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;requests&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>  <span class="c1"># Disables logging message from request library</span>
-    <span class="k">if</span> <span class="n">logdir</span><span class="p">:</span>
-        <span class="n">logfile</span> <span class="o">=</span> <span class="s1">&#39;esgprep-</span><span class="si">{0}</span><span class="s1">-</span><span class="si">{1}</span><span class="s1">.log&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">-%H%M%S&quot;</span><span class="p">),</span>
-                                               <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">logdir</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">logdir</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">logdir</span><span class="p">,</span> <span class="n">logfile</span><span class="p">),</span>
-                            <span class="n">level</span><span class="o">=</span><span class="n">__LOG_LEVELS__</span><span class="p">[</span><span class="n">level</span><span class="p">],</span>
-                            <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(levelname)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
-                            <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1"> %I:%M:%S %p&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">log</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+                                <span class="n">level</span><span class="o">=</span><span class="n">log_levels</span><span class="p">[</span><span class="n">level</span><span class="p">],</span>
+                                <span class="nb">format</span><span class="o">=</span><span class="n">log_fmt</span><span class="p">,</span>
+                                <span class="n">datefmt</span><span class="o">=</span><span class="n">log_date_fmt</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logfile</span> <span class="o">=</span> <span class="s1">&#39;esgprep-</span><span class="si">{0}</span><span class="s1">-</span><span class="si">{1}</span><span class="s1">.log&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">-%H%M%S&quot;</span><span class="p">),</span>
+                                                   <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">log</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">logfile</span><span class="p">),</span>
+                                <span class="n">level</span><span class="o">=</span><span class="n">log_levels</span><span class="p">[</span><span class="n">level</span><span class="p">],</span>
+                                <span class="nb">format</span><span class="o">=</span><span class="n">log_fmt</span><span class="p">,</span>
+                                <span class="n">datefmt</span><span class="o">=</span><span class="n">log_date_fmt</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">__LOG_LEVELS__</span><span class="p">[</span><span class="n">level</span><span class="p">],</span>
-                            <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(levelname)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
-                            <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1"> %I:%M:%S %p&#39;</span><span class="p">)</span></div>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">log_levels</span><span class="p">[</span><span class="n">level</span><span class="p">],</span>
+                            <span class="nb">format</span><span class="o">=</span><span class="n">log_fmt</span><span class="p">,</span>
+                            <span class="n">datefmt</span><span class="o">=</span><span class="n">log_date_fmt</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="directory_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.directory_checker">[docs]</a><span class="k">def</span> <span class="nf">directory_checker</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
@@ -237,6 +246,23 @@
         <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;No such directory: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">path</span></div>
+
+
+<div class="viewcode-block" id="pair_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.pair_checker">[docs]</a><span class="k">def</span> <span class="nf">pair_checker</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if the supplied directory exists. The path is normalized without trailing slash.</span>
+
+<span class="sd">    :param str path: The path list to check</span>
+<span class="sd">    :returns: The same path list</span>
+<span class="sd">    :rtype: *str*</span>
+<span class="sd">    :raises Error: If one of the directory does not exist</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;([^=]+)=([^=]+)(?:,|$)&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Bad argument syntax: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="version_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.version_checker">[docs]</a><span class="k">def</span> <span class="nf">version_checker</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
@@ -328,7 +354,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.5.8',
+            VERSION:'2.6.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

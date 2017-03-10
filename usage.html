@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Usage and tutorials &mdash; esgprep 2.5.8 documentation</title>
+  <title>Usage and tutorials &mdash; esgprep 2.6.4 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.5.8 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.6.4 documentation" href="index.html"/>
         <link rel="next" title="Frequently asked questions" href="faq.html"/>
         <link rel="prev" title="Configuration" href="configuration.html"/> 
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                2.5
+                2.6
               </div>
             
           
@@ -101,7 +101,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#download-all-esg-project-id-ini-from-github">Download all esg.&lt;project_id&gt;.ini from GitHub</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#esgprep-drs"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#esgprep-drs"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list-the-datasets-related-to-the-incoming-files">List the datasets related to the incoming files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualize-the-excepted-final-drs-tree">Visualize the excepted final DRS tree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#list-unix-command-to-apply">List Unix command to apply</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-the-drs-upgrade">Run the DRS upgrade</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#esgprep-check-vocab"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">check-vocab</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#check-the-facet-options">Check the facet options</a></li>
 </ul>
@@ -300,9 +306,138 @@ YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;thredds_aggregation/file_service
 </div>
 <div class="section" id="esgprep-drs">
 <h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code><a class="headerlink" href="#esgprep-drs" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="list-the-datasets-related-to-the-incoming-files">
+<h3>List the datasets related to the incoming files<a class="headerlink" href="#list-the-datasets-related-to-the-incoming-files" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> deduces the excepted DRS by scanning the incoming files against the corresponding <code class="docutils literal"><span class="pre">esg.&lt;project&gt;.ini</span></code> file.
+The DRS facets values are deduced from:
+1. The command-line using <code class="docutils literal"><span class="pre">--set</span> <span class="pre">facet=value</span></code>. This flag can be used several time to set several facets values.
+2. The filename using the <code class="docutils literal"><span class="pre">filename_format</span></code> from the <code class="docutils literal"><span class="pre">esg.&lt;project&gt;.ini</span></code>
+3. The netCDF global attributes by picking the attribute with nearest name of the facet key.</div></blockquote>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs list -i ~/work/esgf-config/publisher-configs/ini/ --project &lt;project_id&gt; /path/to/scan
+YYYY/MM/DD HH:MM:SS PM <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- file3.nc
+YYYY/MM/DD HH:MM:SS PM INFO <span class="o">[</span>...<span class="o">]</span>
+<span class="o">============================================================================================================================================</span>
+                      Publication level                             Current latest   -&gt;  Upgraded version   Files upgraded   Upgrade size
+--------------------------------------------------------------------------------------------------------------------------------------------
+&lt;dataset_drs_path1&gt;                                                &lt;latest_version&gt;  -&gt;     &lt;new_version&gt;              XX                XXG
+&lt;dataset_drs_path2&gt;                                                &lt;latest_version&gt;  -&gt;     &lt;new_version&gt;              XX                XXG
+<span class="o">[</span>...<span class="o">]</span>
+<span class="o">============================================================================================================================================</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last"><strong>Coming soon !</strong></p>
+<p class="last">The resulting table summaries the version upgrade at the dataset level in comparison with the latest known version on the filesystem and giving the number of files to upgrade and their total size.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The upgraded version can be set using <code class="docutils literal"><span class="pre">--version</span> <span class="pre">YYYYMMDD</span></code>.</p>
+</div>
+</div>
+<div class="section" id="visualize-the-excepted-final-drs-tree">
+<h3>Visualize the excepted final DRS tree<a class="headerlink" href="#visualize-the-excepted-final-drs-tree" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs tree -i ~/work/esgf-config/publisher-configs/ini/ --project &lt;project_id&gt; /path/to/scan
+   YYYY/MM/DD HH:MM:SS PM <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file1.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file2.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- file3.nc
+   YYYY/MM/DD HH:MM:SS PM INFO <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+                                                                 Upgrade DRS Tree
+   --------------------------------------------------------------------------------------------------------------------------------------------
+   &lt;project&gt;
+    └── &lt;facet1&gt;
+        └── &lt;facet2&gt;
+            └── &lt;...&gt;
+                └── &lt;...&gt;
+                    └── &lt;...&gt;
+                        └── &lt;...&gt;
+                            └── &lt;...&gt;
+                                └── &lt;...&gt;
+                                    ├── files
+                                    │   └── dYYYYMMDD
+                                    │       ├── file1.nc
+                                    │       ├── file2.nc
+                                    │       ├── <span class="o">[</span>...<span class="o">]</span>
+                                    ├── latest --&gt; vYYYYMMDD
+                                    └── vYYYYMMDD
+                                        ├── file1.nc --&gt; ../files/dYYYYMMDD/file1.nc
+                                        ├── file2.nc --&gt; ../files/dYYYYMMDD/file2.nc
+                                        ├── <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In order to save disk space, the scanned files are moved into <code class="docutils literal"><span class="pre">files/dYYYYMMDD</span></code> folders. The <code class="docutils literal"><span class="pre">vYYYYMMDD</span></code> has a symbolic links skeleton that avoid to duplicate files between two versions.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> compare the incoming files to the files from the latest knwon version with the same filename, using a <code class="docutils literal"><span class="pre">sha256</span></code> checksum. Because this could be time consuming <code class="docutils literal"><span class="pre">--no-checksum</span></code> allows you to only make a comparison on filenames.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">A root path can be set to start the finale DRS from it. Use <code class="docutils literal"><span class="pre">--root</span> <span class="pre">/my/drs/root</span></code>. Be careful, the finale DRS is autoamtically rebuilt from the project level.</p>
+</div>
+</div>
+<div class="section" id="list-unix-command-to-apply">
+<h3>List Unix command to apply<a class="headerlink" href="#list-unix-command-to-apply" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs todo -i ~/work/esgf-config/publisher-configs/ini/ --project &lt;project_id&gt; /path/to/scan
+   YYYY/MM/DD HH:MM:SS PM <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file1.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file2.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- file3.nc
+   YYYY/MM/DD HH:MM:SS PM INFO <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+                                                           Unix command-lines <span class="o">(</span>DRY-RUN<span class="o">)</span>
+   --------------------------------------------------------------------------------------------------------------------------------------------
+   mkdir -p /drs/path/facet1/facet2/.../files/dYYYYMMDD
+   mv /path/to/scan/file1.nc /drs/path/facet1/facet2/.../files/dYYYYMMDD/file1.nc
+   mkdir -p /drs/path/facet1/facet2/.../vYYYYMMDD
+   ln -s ../files/dYYYYMMDD/file1.nc /drs/path/facet1/facet2/.../vYYYYMMDD/file1.nc
+   <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">todo</span></code> action can be seen as a dry-run to check which unix commands should be apply to build the excpeted DRS.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">At this step, no file are moved or copy to the finale DRS.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> allows different file migration mode. Default is to move the files from the incomping path to the finale DRS. Use <code class="docutils literal"><span class="pre">--copy</span></code> to make hard copies or <code class="docutils literal"><span class="pre">--link</span></code> to make hard links from the incoming path. We recommend to use <code class="docutils literal"><span class="pre">--link</span></code> and remove the incoming directory after DRS checking. This doesn&#8217;t affect the symbolic link skeleton used for the dataset versioning.</p>
+</div>
+</div>
+<div class="section" id="run-the-drs-upgrade">
+<h3>Run the DRS upgrade<a class="headerlink" href="#run-the-drs-upgrade" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="docutils">
+<dt>$&gt; esgprep drs upgrade -i ~/work/esgf-config/publisher-configs/ini/ &#8211;project &lt;project_id&gt; /path/to/scan</dt>
+<dd><p class="first">YYYY/MM/DD HH:MM:SS PM INFO ==&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;&#8211; file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;&#8211; file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;&#8211; file3.nc
+YYYY/MM/DD HH:MM:SS PM INFO [...]
+============================================================================================================================================</p>
+<blockquote>
+<div>Unix command-lines</div></blockquote>
+<p class="last">mkdir -p /drs/path/facet1/facet2/.../files/dYYYYMMDD
+mv /path/to/scan/file1.nc /drs/path/facet1/facet2/.../files/dYYYYMMDD/file1.nc
+mkdir -p /drs/path/facet1/facet2/.../vYYYYMMDD
+ln -s ../files/dYYYYMMDD/file1.nc /drs/path/facet1/facet2/.../vYYYYMMDD/file1.nc
+[...]
+============================================================================================================================================</p>
+</dd>
+</dl>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="esgprep-check-vocab">
@@ -696,7 +831,7 @@ dataset_ID_test <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.n
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.5.8',
+            VERSION:'2.6.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
