@@ -7,6 +7,7 @@
 
 """
 
+import re
 
 class EmptyConfigFile(Exception):
     """
@@ -28,7 +29,7 @@ class NoConfigFile(Exception):
     """
 
     def __init__(self, path):
-        self.msg = "No or not a file"
+        self.msg = "No such file"
         self.msg += "\n<config file: '{0}'>".format(path)
         super(self.__class__, self).__init__(self.msg)
 
@@ -203,19 +204,34 @@ class DirectoryNotMatch(Exception):
 
     """
 
-    def __init__(self, path, directory_format, section, paths):
+    def __init__(self, path, directory_format, section, config_paths):
+
         self.msg = "Matching failed to deduce DRS attributes."
         self.msg += "\n<path: '{0}'>".format(path)
         self.msg += "\n<format: '{0}'>".format(directory_format)
         self.msg += "\n<section: '{0}'>".format(section)
-        for path in paths:
-            self.msg += "\n<config file: '{0}'>".format(path)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)        
+        self.msg += "\n" + _get_regexp_diagnosis(directory_format, path)
         super(self.__class__, self).__init__(self.msg)
 
+class DatasetNotMatch(Exception):
+    """
+    Raised when a dataset does not match the regex format.
+
+    """
+
+    def __init__(self, dset, dataset_id_pattern, section):
+        self.msg = "Matching failed to deduce DRS attributes."
+        self.msg += "\n<dataset: '{0}'>".format(dset)
+        self.msg += "\n<format: '{0}'>".format(dataset_id_pattern)
+        self.msg += "\n<section: '{0}'>".format(section)
+        self.msg += "\n" + _get_regexp_diagnosis(dataset_id_pattern, dset)
+        super(self.__class__, self).__init__(self.msg)
 
 class FilenameNotMatch(Exception):
     """
-    Raised when a filename not match the regex format.
+    Raised when a filename does not match the regex format.
 
     """
 
@@ -226,6 +242,7 @@ class FilenameNotMatch(Exception):
         self.msg += "\n<section: '{0}'>".format(section)
         for path in paths:
             self.msg += "\n<config file: '{0}'>".format(path)
+        self.msg += "\n" + _get_regexp_diagnosis(filename_format, filename)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -241,3 +258,41 @@ class KeyNotFound(Exception):
         if keys:
             self.msg += "\n<Available keys: '{0}'>".format(', '.join(keys))
         super(self.__class__, self).__init__(self.msg)
+
+
+def _get_regexp_diagnosis(pattern, strng):
+    """
+    Given a pattern and a string (which is known not to match), returns a report
+    showing how much of the regexp matches, in order to help identify where the 
+    regexp is incorrect.
+    """
+    p = pattern
+    while p:
+        try:
+            m = re.match(p, strng)
+            if m:
+                break
+        except:
+            pass
+        p = p[:-1]
+    if not p:
+        return "Pattern fails to match from very start"
+
+    matching_pattern = p
+    matching_string = m.group(0)
+
+    non_matching_pattern = pattern[len(p):]
+    non_matching_string = strng[len(matching_string):]
+
+    return """
+Longest matching subpattern:
+
+  start of pattern: {0}
+  matches substring: {1}
+
+Non-matching part at end:
+
+  remainder of pattern: {2}
+  does not match: {3}
+""".format(matching_pattern, matching_string, 
+           non_matching_pattern, non_matching_string)

@@ -5,7 +5,7 @@
 Synopsis
 ========
 
-The Earth System Grid Federation (ESGF) publication process requires a strong and effective data management that
+The Earth System Grid Federation (ESGF) publication process requires a strong and effective data management, which
 could also be a burden. ``esgprep`` allows the ESGF data providers to easily prepare their data for publishing to an
 ESGF node.
 
@@ -17,18 +17,16 @@ ESGF node.
 ``esgprep fetch-ini``
 *********************
 
-The ESGF publishing client and most of ESGF tools rely on configuration files of different kinds, that are the
+The ESGF publishing client and most of the ESGF tools rely on configuration files of different kinds, which are the
 primary means of configuring the ESGF publisher.
 
-The ``esg.ini`` file gathers all required information to configure the datanode regarding to data publication (e
-.g., PostgreSQL access, THREDDS configuration, etc.).
+* The ``esg.ini`` file gathers all information needed to configure the data node for data publication (e.g., PostgreSQL access, THREDDS configuration, etc.).
 
-The ``esg.<project_id>.ini`` files declare all facets and allowed values according to the *Data Reference Syntax*
-(DRS) and the controlled vocabularies of the corresponding project.
+* The ``esg.<project_id>.ini`` files declare all facets and allowed values according to the *Data Reference Syntax* (DRS) and the controlled vocabularies of the corresponding project.
 
-The ``esgcet_models_table.txt`` declares the models and their descriptions among the projects.
+* The ``esgcet_models_table.txt`` declares the models and their descriptions for all the projects.
 
-The ``<project_id>_handler.py`` are Python methods to guide the publisher in metadata harvesting.
+* The ``<project_id>_handler.py`` are Python methods to guide the publisher in metadata harvesting.
 
 The ``fetch-ini`` command allows you to download and configure "on the fly" preset files hosted on `a GitHub repository
 <https://github.com/ESGF/config/>`_.
@@ -40,32 +38,37 @@ of your projects.
 ``esgprep drs``
 ***************
 
-The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper
-publication on ESGF node. The ``drs`` command is designed to help ESGF datanode managers to prepare incoming
-data for publication, placing files in the DRS directory structure, and manage multiple versions of
-publication-level datasets to minimise disk usage.
+The Data Reference Syntax (DRS) defines the way your data must be organised on your filesystem. This allows a proper
+publication on the ESGF node. The ``drs`` command is designed to help ESGF data node managers to prepare incoming
+data for publication, placing files in the DRS directory structure, and to manage multiple versions of
+publication-level datasets in a way that minimises disk usage.
 
 **This feature is coming soon !**
 
 ``esgprep check-vocab``
 ***********************
 
-In the case of your data already follow the appropriate directory structure, you may want to check that all
-values of each facet are correctly declared into ``esg.<project_id>.ini`` sections. The ``check-vocab`` command
-allows you to easily check the configuration file attributes by scanning your data tree.
+In the case that your data already follows the appropriate directory structure, you may want to check that all
+values of each facet are correctly declared in the ``esg.<project_id>.ini`` sections. The ``check-vocab`` command
+allows you to easily check the configuration file attributes by scanning your data tree, and the facet values 
+will be derived from the directory pattern.
+
+Alternatively, you may supply a list of dataset IDs in a text file. In this case, the ``check-vocab`` command will
+perform a similar operation without scanning the file system, and the facet values will be derived from the 
+dataset ID pattern.
 
 ``esgprep mapfile``
 *******************
 
-The publication process of the ESGF nodes requires *mapfiles*. Mapfiles are text files where each line
-describes a file to publish on the following format:
+The publication process on the ESGF nodes requires *mapfiles*. Mapfiles are text files where each line
+describes a file to publish, using the following format:
 ::
 
    dataset_ID | absolute_path | size_bytes [ | option=value ]
 
-``mapfile`` is a flexible command-line allowing you to easily generate mapfiles upon local ESGF datanode or not.
+``mapfile`` is a flexible command-line allowing you to easily generate mapfiles, whether run on the local ESGF data node or elsewhere.
 
-.. warning:: ``esgprep`` implies that your directory structure strictly follows the tree fixed by the project's *Data
+.. warning:: ``esgprep`` requires that your directory structure strictly follows the tree fixed by the project's *Data
    Reference Syntax* (DRS) **including the version facet**.
 
 Key features
@@ -73,31 +76,32 @@ Key features
 
 Directory as input
    You only need to specify the directory to recursively scan. To include several data directories, you can use all
-   Unix wildcards in the path or submit several paths.
+   Unix wildcards in the path or specify several paths.
 
 Compatibility with ESGF node configuration file(s)
-   To ensure a right facets auto-detection, ``esgprep`` directly works from the usual ESGF configuration files.
+   To ensure a correct auto-detection of facets, ``esgprep`` works +directly from the usual ESGF configuration files.
 
-Facets values auto-detection
-   The facets values are automatically detected from the full path of the file, using the ``directory_format``
+Facet values auto-detection
+   The facet values are automatically detected from the full path of the file, using the ``directory_format``
    regular expression in the configuration files. These DRS values are used to fill the dataset identifier template.
    Each facet value from the dataset identifier is assessed in the light of configuration file(s) options or maps.
 
 Multi-threading
-   To compute the checksum of a lot of large files becomes time consuming. We implement multi-threading at file level.
+   Computing the checksum of many large files becomes time consuming. We implement multi-threading at the file level.
 
 Standalone
-   Security policies of computing centres, that often host `ESGF`_ nodes, do not allow to use ``esgprep`` within a
-   node that is conventionally used to generate mapfiles.
+   Security policies of computing centres, which often host `ESGF`_ nodes, limit the tools that can be run on 
+   operational data nodes (which are conventionally used to generate mapfiles). Instead, a standalone installation 
+   of ``esgprep`` may be used elsewhere.
 
 Tracebacks
-   The threads-processes do not shutdown the main process of ``esgprep`` run. If an error occurs on a thread, the
+   The threads-processes do not shut down the top-level ``esgprep`` process. If an error occurs on a thread, the
    traceback of the child-process is not raised to the main process. To help you to have a fast debug, the
    tracebacks of each threads can be raised using the ``-v`` option (see :ref:`usage`).
 
-Use a logfile
-   You can initiate a logger instead of the standard output. This could be useful for automatic workflows. The
+Use of a logfile
+   You can initiate a logger instead of standard output. This could be useful for automatic workflows. The
    logfile name is automatically defined and unique (using the the job's name, the date and the job's ID). You can
-   define an output directory for your logs too.
+   also define an output directory for your logs.
 
 .. note:: For all detailed features see the help message of each ``esgprep`` sub-command.

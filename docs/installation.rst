@@ -25,7 +25,7 @@ Installation from GitHub
 
 .. code-block:: bash
 
-   git clone git@github.com:IS-ENES-Data/esgf-prepare.git
+   git clone git://github.com/IS-ENES-Data/esgf-prepare.git
 
 3. Run the ``setup.py``:
 
@@ -36,12 +36,13 @@ Installation from GitHub
 
 4. The ``esgprep`` command-line is ready.
 
-.. warning:: To run ``esgprep`` you have to be logged on filesystem hosting the data to publish.
+.. warning:: To run ``esgprep`` you have to be logged into a machine which
+             mounts the filesystem hosting the data to publish.
 
 Dependencies and requirements
 *****************************
 
-``esgprep`` uses the following basic Python libraries includes in Python 2.5+. Becareful your Python environment
+``esgprep`` uses the following basic Python libraries included in Python 2.5+. Ensure that your Python environment
 includes:
 
  * `os <https://docs.python.org/2/library/os.html>`_
@@ -58,7 +59,7 @@ includes:
  * `multiprocessing <https://docs.python.org/2/library/multiprocessing.html>`_
 
 
-Please install the ``lockfile`` and ``requests`` libraries not included in most of Python distributions using the usual
+Please install the ``lockfile`` and ``requests`` libraries not included in most Python distributions using the usual
 PIP command-line:
 
 .. code-block:: bash

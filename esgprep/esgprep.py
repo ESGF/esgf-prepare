@@ -14,13 +14,13 @@ import argparse
 import os
 from datetime import datetime
 
-from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker, pair_checker
+from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker, pair_checker, DirectoryCheckerAction
 
 # Program version
 __version__ = 'v{0} {1}'.format('2.6.4', datetime(year=2016, month=12, day=23).strftime("%Y-%d-%m"))
 
 
-def get_args():
+def get_args(default_config_dir='/esg/config/esgcet'):
     """
     Returns parsed command-line arguments. See ``esgprep -h`` for full description.
 
@@ -34,20 +34,29 @@ def get_args():
     main = argparse.ArgumentParser(
         prog='esgprep',
         description="""
-        The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers to
-        easily prepare their data before publishing to an ESGF node.|n|n
+        The ESGF publication process requires a strong and effective|n
+        data management. "esgprep" allows data providers to easily|n
+        prepare their data before publishing to an ESGF node.|n|n
 
-        "esgprep" gathers python command-lines covering several steps of ESGF publication workflow:|n
-        i. Fetch proper configuration files from ESGF GitHub repository,|n
-        ii. Data Reference Syntax management,|n
-        iii. Check DRS vocable against configuration files,|n
+        "esgprep" provides python command-lines covering several |n
+        steps of ESGF publication workflow: |n|n
+
+        i. Fetch proper configuration files from ESGF GitHub|n
+           repository,|n|n
+
+        ii. Data Reference Syntax management,|n|n
+
+        iii. Check DRS vocabulary against configuration files,|n|n
+
         iv. Generate mapfiles.|n|n
 
-        The "esgprep" toolbox is based on the ESGF datanode configuration files called "esg.ini". It implies those
-        configuration files are correctly build and declares all required attributes following recommended best
-        practices.|n|n
+        The "esgprep" toolbox is based on the ESGF data node|n
+        configuration files called "esg.ini".  It requires that |n
+        those configuration files are correctly built and declares|n
+        all required attributes following recommended best practices.|n|n
 
-        See full documentation and references on http://is-enes-data.github.io/esgf-prepare/.
+        See full documentation and references at|n
+        http://is-enes-data.github.io/esgf-prepare/.|n
         """,
         formatter_class=MultilineFormatter,
         add_help=False,
@@ -55,8 +64,8 @@ def get_args():
         Developed by:|n
         Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.jussieu.fr)|n
         Berger, K. (DKRZ - berger@dkrz.de)|n
-        Iwi, A. (STFC/BADC - alan.iwi@stfc.ac.uk)|n
-        Stephens, A. (STFC/BADC - ag.stephens@stfc.ac.uk)
+        Iwi, A. (STFC/CEDA - alan.iwi@stfc.ac.uk)|n
+        Stephens, A. (STFC/CEDA - ag.stephens@stfc.ac.uk)
         """)
     main._optionals.title = "Optional arguments"
     main._positionals.title = "Positional arguments"
@@ -80,18 +89,23 @@ def get_args():
     #######################################
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument(
-        '-i',
-        metavar='/esg/config/esgcet/.',
-        type=directory_checker,
-        default='/esg/config/esgcet/.',
+        '-h', '--help',
+        action='help',
+        help="""Show this help message and exit.""")
+
+    config_dir_action = parent.add_argument(
+        '-i',        
+        metavar='<directory>',
+        action=DirectoryCheckerAction,
         help="""
         Initialization/configuration directory containing|n
         "esg.ini" and "esg.<project>.ini" files.|n
         If not specified, the usual datanode directory is used.
         """)
+
     parent.add_argument(
         '--log',
-        metavar='$PWD',
+        metavar='<directory>',
         type=str,
         const=os.getcwd(),
         nargs='?',
@@ -100,10 +114,6 @@ def get_args():
         An existing logfile can be submitted.|n
         If not, standard output is used.
         """)
-    parent.add_argument(
-        '-h', '--help',
-        action='help',
-        help="""Show this help message and exit.""")
     parent.add_argument(
         '-v',
         action='store_true',
@@ -117,23 +127,35 @@ def get_args():
         'fetch-ini',
         prog='esgprep fetch-ini',
         description="""
-        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that are
-        the primary means of configuring the ESGF publisher.|n|n
 
-        - The "esg.ini" file gathers all required information to configure the datanode regarding to data publication
-        (e.g., PostgreSQL access, THREDDS configuration, etc.).|n
-        - The "esg.<project_id>.ini" files declare all facets and allowed values according to the Data Reference Syntax
-        (DRS) and the controlled vocabularies of the corresponding project.|n
-        - The "esgcet_models_table.txt" declares the models and their descriptions among the projects.|n
-        - The "<project_id>_handler.py" are Python methods to guide the publisher in metadata harvesting.
+        The ESGF publishing client and most of other ESGF tool rely |n
+        on configuration files of different kinds, that are the|n
+        primary means of configuring the ESGF publisher.|n|n
 
-        "esgprep fetch-ini" allows you to properly download, configure and deploy these configuration files hosted
-        on a GitHub repository.|n|n
+        - The "esg.ini" file gathers all required information to|n
+        configure the datanode regarding to data publication (e.g.,|n
+        PostgreSQL access, THREDDS configuration, etc.).|n|n
 
-        Keep in mind that the fetched files have to be reviewed to ensure a correct configuration of your
-        publication.|n|n
+        - The "esg.<project_id>.ini" files declare all facets and|n
+        allowed values according to the Data Reference Syntax (DRS)|n
+        and the controlled vocabularies of the corresponding|n
+        project.|n|n
 
-        The supply configuration directory is used to write the files retrieved from GitHub.|n|n
+        - The "esgcet_models_table.txt" declares the models and their|n
+          descriptions among the projects.|n|n
+
+        - The "<project_id>_handler.py" are Python methods to guide|n
+          the publisher in metadata harvesting.|n|n
+
+        "esgprep fetch-ini" allows you to properly download, configure|n
+        and deploy these configuration files hosted on a GitHub|n
+        repository.|n|n
+
+        Keep in mind that the fetched files have to be reviewed to|n
+        ensure a correct configuration of your publication.|n|n
+
+        The supply configuration directory is used to write the files|n
+        retrieved from GitHub.|n|n
 
         The default values are displayed next to the corresponding flags.
         """,
@@ -173,13 +195,13 @@ def get_args():
         """)
     fetchini.add_argument(
         '--db-host',
-        metavar='localhost',
+        metavar='<hostname>',
         type=str,
         default='localhost',
         help="""Database hostname.""")
     fetchini.add_argument(
         '--db-port',
-        metavar='5432',
+        metavar='<port>',
         type=str,
         default='5432',
         help="""Database port.""")
@@ -222,12 +244,11 @@ def get_args():
         '-k',
         action='store_true',
         default=False,
-        help="""Ignore and keep existing file(s) without prompt.""")
+        help="""Ignore and keep existing file(s) without prompting.""")
     group.add_argument(
         '-o',
         action='store_true',
         default=False,
-        help="""Ignore and overwrite existing file(s) without prompt.""")
     fetchini.add_argument(
         '-b',
         choices=['one_version', 'keep_versions'],
@@ -264,11 +285,11 @@ def get_args():
         The data management/preparation relies on the ESGF node configuration files. These "esg.<project>.ini" files
         declares the Data Reference Syntax (DRS) and the controlled vocabularies of each project.|n|n
 
-        In the case of your data already follow the appropriate directory structure, you may want to check that all
-        values of each facet are correctly declared into "esg.<project_id>.ini" sections.|n|n
+        In the case that your data already follows the appropriate directory structure, you may want to check that all
+        values of each facet are correctly declared in the "esg.<project_id>.ini" sections.|n|n
 
         "esgprep check-vocab" allows you to easily check the configuration file attributes by scanning your data tree.
-        It implies that your directory structure strictly follows the project DRS including the version facet.|n|n
+        It requires that your directory structure strictly follows the project DRS including the version facet.|n|n
 
         The default values are displayed next to the corresponding flags.
         """,
@@ -281,13 +302,21 @@ def get_args():
         parents=[parent])
     checkvocab._optionals.title = "Optional arguments"
     checkvocab._positionals.title = "Positional arguments"
-    checkvocab.add_argument(
-        'directory',
-        type=directory_checker,
+    group = checkvocab.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        '--directory',
+        action=DirectoryCheckerAction,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
         Unix wildcards are allowed.
+        """)
+    group.add_argument(
+        '--dataset-list',
+        metavar='<text_file>',
+        type=str,
+        help="""
+        File containing list of dataset IDs.
         """)
     checkvocab.add_argument(
         '--project',
@@ -302,7 +331,7 @@ def get_args():
         default=r'.*\.nc$',
         help="""
         Filter files matching the regular expression (default only|n
-        support NetCDF files). Regular expression syntax is defined|n
+        support netCDF files). Regular expression syntax is defined|n
         by the Python "re" module.
         """)
 
@@ -318,7 +347,7 @@ def get_args():
         incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of
         publication-level datasets to minimise disk usage.|n|n
 
-        Only CMORized NetCDF files are supported as incoming files.
+        Only CMORized netCDF files are supported as incoming files.
 
         """,
         formatter_class=MultilineFormatter,
@@ -344,7 +373,7 @@ def get_args():
         """)
     drs.add_argument(
         'directory',
-        type=directory_checker,
+        action=DirectoryCheckerAction,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
@@ -358,7 +387,7 @@ def get_args():
     drs.add_argument(
         '--root',
         metavar='$PWD',
-        type=directory_checker,
+        action=DirectoryCheckerAction,
         default=os.getcwd(),
         help="""Root directory to build the DRS.""")
     drs.add_argument(
@@ -399,7 +428,7 @@ def get_args():
         default='*.nc',
         help="""
         Filter files matching the regular expression (default only|n
-        support NetCDF files). Uniw wildcards are supported.
+        support netCDF files). Unix wildcards are supported.
         """)
     drs.add_argument(
         '--max-threads',
@@ -456,7 +485,7 @@ def get_args():
     mapfile._positionals.title = "Positional arguments"
     mapfile.add_argument(
         'directory',
-        type=directory_checker,
+        action=DirectoryCheckerAction,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
@@ -540,7 +569,7 @@ def get_args():
         default='*.nc',
         help="""
         Filter files matching the regular expression (default only|n
-        scan NetCDF files). Uniw wildcards are supported.
+        scan netCDF files). Uniw wildcards are supported.
         """)
     mapfile.add_argument(
         '--tech-notes-url',
@@ -582,7 +611,19 @@ def get_args():
         run with the same output directory.
         """)
 
-    return main.parse_args()
+    args = main.parse_args()
+
+    # Apply default config dir if not set.  This ensures that the
+    # checker gets called for the default config dir, but only if the
+    # default is actually to be used.  If the "-h" flag is specified,
+    # it exits inside parse_args after displaying the help message,
+    # and it does not matter whether the config dir (either default or
+    # specified with -i) exists.
+    if args.i == None:
+        config_dir_action(main, args, default_config_dir)
+    
+    return args
+
 
 
 def run():

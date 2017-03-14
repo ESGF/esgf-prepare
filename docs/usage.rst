@@ -13,7 +13,8 @@ Specify the project
 
    $> esgprep <command> --project <project_id>
 
-.. warning:: This ``--project`` argument is always required.
+.. warning:: This ``--project`` argument is always required (except 
+             it is optional for command ``fetch-ini``)
 
 .. warning:: This ``--project`` name has to correspond to a section of the configuration file.
 
@@ -247,20 +248,37 @@ Run the DRS upgrade
 Check the facet options
 -----------------------
 
+The datasets IDs can be found by scanning the filesystem:
+
 .. code-block:: bash
 
-   $> esgprep check-vocab /path/to/scan --project <project_id>
+   $> esgprep check-vocab --directory /path/to/scan --project <project_id>
    YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file(s) for "product" facet...
    YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file(s) for "realm" facet...
    [...]
    YYYY/MM/DD HH:MM:SS INFO Harvesting facets values from DRS tree...
    YYYY/MM/DD HH:MM:SS INFO Result: ALL USED VALUES ARE PROPERLY DECLARED.
 
+Or dataset IDs they can be supplied in a file:
+
+.. code-block:: bash
+
+   $> esgprep check-vocab --dataset-list path_of_text_file --project <project_id>
+   YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file(s) for "product" facet...
+   YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file(s) for "realm" facet...
+   [...]
+   YYYY/MM/DD HH:MM:SS INFO Harvesting facets values from DRS tree...
+   YYYY/MM/DD HH:MM:SS INFO Result: ALL USED VALUES ARE PROPERLY DECLARED.
+
+In this case, the file must contain one dataset ID per line. This can be
+without version, or with a version suffix of the form ``.v<version>`` 
+or ``#<version>`` which is ignored.
+
 If a used option is missing:
 
 .. code-block:: bash
 
-   $> esgprep check-vocab /path/to/scan --project <project_id>
+   $> esgprep check-vocab --directory /path/to/scan --project <project_id>
    YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file(s) for "product" facet...
    YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file(s) for "realm" facet...
    [...]
@@ -275,7 +293,7 @@ Verbose output:
 
 .. code-block:: bash
 
-   $> esgprep check-vocab /path/to/scan --project <project_id> -v
+   $> esgprep check-vocab --directory /path/to/scan --project <project_id> -v
    YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file(s) for "product" facet...
    YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file(s) for "realm" facet...
    [...]

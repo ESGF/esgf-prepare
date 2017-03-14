@@ -26,6 +26,8 @@ class ProcessingContext(object):
     +========================+=============+============================================+
     | *self*.directory       | *list*      | Paths to scan                              |
     +------------------------+-------------+--------------------------------------------+
+    | *self*.dataset_list    | *str*       | Path of file containing dataset IDs        |
+    +------------------------+-------------+--------------------------------------------+
     | *self*.project         | *str*       | Project                                    |
     +------------------------+-------------+--------------------------------------------+
     | *self*.cfg             | *callable*  | Configuration file parser                  |
@@ -36,7 +38,17 @@ class ProcessingContext(object):
     +------------------------+-------------+--------------------------------------------+
     | *self*.pattern         | *re object* | DRS regex pattern without version          |
     +------------------------+-------------+--------------------------------------------+
-    | *self*.facets          | *list*      | List of the DRS facets                     |
+    | *self*.facets_from_directory_format  | Set of the DRS facets obtained from the    |
+    |                        | *set*       | directory_format                           |
+    +------------------------+-------------+--------------------------------------------+
+    | *self*.facets_of_type_enum           | Set of the DRS facets that have type enum  |
+    |                        | *set*       | in the categories table                    |
+    +------------------------+-------------+--------------------------------------------+
+    | *self*.dataset_id_pattern            | DRS regex pattern from dataset_id          |
+    |                        | *re object* | config variable                            |
+    +------------------------+-------------+--------------------------------------------+
+    | *self*.facets_from_dataset_id        | Set of the DRS facets obtained from the    |
+    |                        | *set*       | dataset_id                                 |
     +------------------------+-------------+--------------------------------------------+
 
     :param ArgumentParser args: Parsed command-line arguments
@@ -46,15 +58,34 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
+
         self.directory = args.directory
+        self.dataset_list = args.dataset_list
         self.project = args.project
         self.verbosity = args.v
         self.filter = args.filter
         self.project_section = 'project:{0}'.format(args.project)
-        self.cfg = parser.CfgParser(args.i, section=self.project_section)
-        self.pattern = self.cfg.translate_directory_format(self.project_section)
-        self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
 
+        self.cfg = parser.CfgParser(args.i, section=self.project_section)
+
+        self.pattern, self.facets_from_directory_format = \
+            self.cfg.get_pattern_and_facets_from_directory_format(self.project_section)
+
+        self.facets_of_type_enum = self.cfg.get_facets_of_type_enum(self.project_section)
+
+        self.dataset_id_pattern, self.facets_from_dataset_id = \
+            self.cfg.get_pattern_and_facets_from_dataset_format(self.project_section)
+
+
+def yield_datasets_from_file(ctx):
+    """
+    Yields datasets to process from a text file.  Each line may contain the dataset with optional 
+    appended .v<version> or #<version>, and only the part without the version is returned.
+    """
+    trailing = re.compile("((\.v|#)[0-9]+)?\s*$")  # re for optional version and any whitespace
+    with open(ctx.dataset_list) as f:
+        for line in f:
+            yield trailing.sub("", line)
 
 def yield_files_from_tree(ctx):
     """
@@ -93,6 +124,30 @@ def get_facet_values_from_tree(ctx, dsets, facets):
             attributes = re.match(ctx.pattern, dset).groupdict()
         except:
             raise DirectoryNotMatch(os.path.realpath(dset), ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
+        # Each facet is ensured to be included into "attributes" from matching
+        for facet in facets:
+            used_values[facet].add(attributes[facet])
+    return used_values
+
+def get_facet_values_from_dataset_list(ctx, dsets, facets):
+    """
+    Returns all used values of each facet from the supplied of dataset IDs.
+
+    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context
+    :param iter dsets: The dataset part of the DRS tree
+    :param list facets: The facets list
+    :returns: The declared values of each facet
+    :rtype: *dict*
+
+    """
+    logging.info('Harvesting facets values from dataset list...')
+    used_values = dict((facet, set()) for facet in facets)
+    
+    for dset in dsets:
+        try:
+            attributes = re.match(ctx.dataset_id_pattern, dset).groupdict()
+        except:
+            raise DatasetNotMatch(dset, ctx.dataset_id_pattern, ctx.project_section)
         # Each facet is ensured to be included into "attributes" from matching
         for facet in facets:
             used_values[facet].add(attributes[facet])
@@ -189,13 +244,21 @@ def main(args):
     """
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
-    # Get facets values declared into configuration file
-    facet_values_config = get_facet_values_from_config(ctx.cfg, ctx.project_section, ctx.facets)
-    # Walk trough DRS to get all dataset roots
-    dsets = yield_files_from_tree(ctx)
-    # Get facets values used by DRS tree
-    facet_values_tree = get_facet_values_from_tree(ctx, dsets, list(ctx.facets))
+    # Get set of facets to process: only those that are both in the directory_format 
+    # and of type enum
+    if ctx.directory:
+        facets = (set(ctx.facets_from_directory_format) & set(ctx.facets_of_type_enum)) - set(IGNORED_KEYS)
+        # Walk trough DRS to get all dataset roots
+        dsets = yield_files_from_tree(ctx)
+        # Get facets values used by DRS tree
+        facet_values_found = get_facet_values_from_tree(ctx, dsets, list(facets))
+    else:
+        facets = (set(ctx.facets_from_dataset_id) & set(ctx.facets_of_type_enum)) - set(IGNORED_KEYS)
+        dsets = yield_datasets_from_file(ctx)
+        facet_values_found = get_facet_values_from_dataset_list(ctx, dsets, list(facets))
+    # Get facets values declared in configuration file
+    facet_values_config = get_facet_values_from_config(ctx.cfg, ctx.project_section, facets)
     # Compare values from tree against values from configuration file
-    any_disallowed = compare_values(list(ctx.facets), facet_values_tree, facet_values_config, ctx.verbosity)
+    any_disallowed = compare_values(list(facets), facet_values_found, facet_values_config, ctx.verbosity)
     if any_disallowed:
         sys.exit(1)

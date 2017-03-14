@@ -90,20 +90,19 @@ class File(object):
         # If a DRS attribute is missing regarding the dataset_id template,
         # the DRS attributes are completed from esg.<project>.ini maptables.
         if not ctx.dataset:
-            for facet in set(ctx.facets).intersection(self.attributes.keys()):
-                if facet not in IGNORED_KEYS:
-                    ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
-            for facet in set(ctx.facets).difference(self.attributes.keys()):
-                if facet not in IGNORED_KEYS:
-                    try:
-                        self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
-                                                                             '{0}_map'.format(facet),
-                                                                             self.attributes)
-                    except:
-                        raise NoConfigVariable(facet,
-                                               ctx.cfg.get(ctx.project_section, 'directory_format', raw=True).strip(),
-                                               ctx.project_section,
-                                               ctx.cfg.read_paths)
+            facets = (set(ctx.facets) & set(ctx.facets_of_type_enum) - set(IGNORED_KEYS))
+            for facet in facets & set(self.attributes.keys()):
+                ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
+            for facet in facets - set(self.attributes.keys()):
+                try:
+                    self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
+                                                                         '{0}_map'.format(facet),
+                                                                         self.attributes)
+                except:
+                    raise NoConfigVariable(facet,
+                                           ctx.cfg.get(ctx.project_section, 'directory_format', raw=True).strip(),
+                                           ctx.project_section,
+                                           ctx.cfg.read_paths)
             dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, self.attributes)
         else:
             dataset_id = ctx.dataset
