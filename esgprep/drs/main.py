@@ -208,27 +208,27 @@ def process(ffp, ctx):
                 # i.e., copy latest dataset leaves to Tree
                 if filename != fh.filename:
                     src = os.readlink(os.path.join(root, filename))
-                    ctx.tree.create_leaf(nodes=fph.items(),
+                    ctx.tree.create_leaf(nodes=fph.items(root=True),
                                          leaf='{0}{1}{2}'.format(filename, LINK_SEPARATOR, src),
                                          src=src,
                                          mode='symlink')
     else:
         fph.v_latest = 'Initial'
     # Add file DRS path to Tree
-    src = ['..'] * len(fph.items(d_part=False, latest=True, file=True))
+    src = ['..'] * len(fph.items(d_part=False, file=False))
     src.extend(fph.items(d_part=False, latest=True, file=True))
     src.append(fh.filename)
-    ctx.tree.create_leaf(nodes=fph.items(),
+    ctx.tree.create_leaf(nodes=fph.items(root=True),
                          leaf='{0}{1}{2}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
                          src=os.path.join(*src),
                          mode='symlink')
     # Add "latest" node for symlink
-    ctx.tree.create_leaf(nodes=fph.items(f_part=False, version=False),
+    ctx.tree.create_leaf(nodes=fph.items(f_part=False, version=False, root=True),
                          leaf='{0}{1}{2}'.format('latest', LINK_SEPARATOR, fph.v_upgrade),
                          src=fph.v_upgrade,
                          mode='symlink')
     # Add "files" node to Tree
-    ctx.tree.create_leaf(nodes=fph.items(file=True),
+    ctx.tree.create_leaf(nodes=fph.items(file=True, root=True),
                          leaf=fh.filename,
                          src=fh.ffp,
                          mode=ctx.mode)
