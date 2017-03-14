@@ -249,6 +249,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         '-o',
         action='store_true',
         default=False,
+    help="""Ignore and overwrite existing file(s) without prompting.""")
     fetchini.add_argument(
         '-b',
         choices=['one_version', 'keep_versions'],
@@ -514,7 +515,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         '--outdir',
         metavar='$PWD',
         type=str,
-        default=os.getcwd(),
+        default=os.path.join(os.getcwd(), 'mapfiles'),
         help="""
         Mapfile(s) output directory. A "mapfile_drs" can be defined |n
         per each project section in INI files and joined to build a |n
