@@ -384,7 +384,7 @@ class CfgParser(ConfigParser.ConfigParser):
     def get_options_from_pattern(self, section, option):
         """
         Returns the expanded regex from ``key_pattern``.
-        The option name has to be ``<attr>_pattern`.
+        The option name has to be ``<attr>_pattern``.
 
         :param str section: The section name to parse
         :param str option: The option to get available values

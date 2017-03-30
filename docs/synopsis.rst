@@ -14,63 +14,6 @@ ESGF node.
 ``esgprep`` gathers Python command-lines covering several steps of `ESGF publication workflow <https://drive.google
 .com/open?id=0B7Kis5A3U5SKTUdFbjYwRnFhQ0E>`_.
 
-``esgprep fetch-ini``
-*********************
-
-The ESGF publishing client and most of the ESGF tools rely on configuration files of different kinds, which are the
-primary means of configuring the ESGF publisher.
-
-* The ``esg.ini`` file gathers all information needed to configure the data node for data publication (e.g., PostgreSQL access, THREDDS configuration, etc.).
-
-* The ``esg.<project_id>.ini`` files declare all facets and allowed values according to the *Data Reference Syntax* (DRS) and the controlled vocabularies of the corresponding project.
-
-* The ``esgcet_models_table.txt`` declares the models and their descriptions for all the projects.
-
-* The ``<project_id>_handler.py`` are Python methods to guide the publisher in metadata harvesting.
-
-The ``fetch-ini`` command allows you to download and configure "on the fly" preset files hosted on `a GitHub repository
-<https://github.com/ESGF/config/>`_.
-
-If you prepare your data outside of an ESGF node using ``esgprep`` as a full standalone toolbox, this step
-is mandatory. Keep in mind that the fetched files have to be reviewed to ensure a correct configuration
-of your projects.
-
-``esgprep drs``
-***************
-
-The Data Reference Syntax (DRS) defines the way your data must be organised on your filesystem. This allows a proper
-publication on the ESGF node. The ``drs`` command is designed to help ESGF data node managers to prepare incoming
-data for publication, placing files in the DRS directory structure, and to manage multiple versions of
-publication-level datasets in a way that minimises disk usage.
-
-**This feature is coming soon !**
-
-``esgprep check-vocab``
-***********************
-
-In the case that your data already follows the appropriate directory structure, you may want to check that all
-values of each facet are correctly declared in the ``esg.<project_id>.ini`` sections. The ``check-vocab`` command
-allows you to easily check the configuration file attributes by scanning your data tree, and the facet values 
-will be derived from the directory pattern.
-
-Alternatively, you may supply a list of dataset IDs in a text file. In this case, the ``check-vocab`` command will
-perform a similar operation without scanning the file system, and the facet values will be derived from the 
-dataset ID pattern.
-
-``esgprep mapfile``
-*******************
-
-The publication process on the ESGF nodes requires *mapfiles*. Mapfiles are text files where each line
-describes a file to publish, using the following format:
-::
-
-   dataset_ID | absolute_path | size_bytes [ | option=value ]
-
-``mapfile`` is a flexible command-line allowing you to easily generate mapfiles, whether run on the local ESGF data node or elsewhere.
-
-.. warning:: ``esgprep`` requires that your directory structure strictly follows the tree fixed by the project's *Data
-   Reference Syntax* (DRS) **including the version facet**.
-
 Key features
 ************
 
