@@ -9,9 +9,11 @@
 
 import fnmatch
 import logging
+import pickle
 import os
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
+from tqdm import tqdm
 
 from esgprep.drs.constants import *
 from esgprep.drs.exceptions import *
@@ -21,43 +23,7 @@ from handler import File, DRSTree, DRSPath
 
 class ProcessingContext(object):
     """
-    Encapsulates the following processing context/information for main process:
-
-    +------------------------+-------------+----------------------------------------------+
-    | Attribute              | Type        | Description                                  |
-    +========================+=============+==============================================+
-    | *self*.directory       | *list*      | Paths to scan                                |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.root            | *str*       | The DRS root directory                       |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.filter          | *re object* | File filter as regex pattern                 |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.set_facets      | *re object* | Facets pairs to set                          |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.action          | *str*       | DRS action                                   |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.mode            | *str*       | File migration mode                          |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.version         | *str*       | Set upgrade version                          |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.verbose         | *boolean*   | True if verbose mode                         |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.project         | *str*       | Project                                      |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.project_section | *str*       | Project section name in configuration file   |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.checksum_client | *str*       | Checksum client as shell command-line to use |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.checksum_type   | *str*       | Checksum type                                |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.threads         | *int*       | Maximum threads number                       |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.cfg             | *callable*  | Configuration file parser                    |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.pattern         | *re object* | DRS regex pattern                            |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.facets          | *list*      | List of the DRS facets                       |
-    +------------------------+-------------+----------------------------------------------+
+    Encapsulates the processing context/information for main process.
 
     :param ArgumentParser args: Parsed command-line arguments
     :returns: The processing context
@@ -91,7 +57,7 @@ class ProcessingContext(object):
             self.checksum_client, self.checksum_type = self.cfg.get_options_from_table('DEFAULT', 'checksum')[0]
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
-        self.facets = self.cfg.get_pattern_and_facets_from_directory_format(self.project_section)[1]
+        self.facets = self.cfg.get_facets(self.project_section, 'directory_format')
         self.pattern = self.cfg.get_pattern_from_filename_format(self.project_section)
         self.verbose = args.v
         self.tree = DRSTree(self.root)
@@ -215,7 +181,7 @@ def process(ffp, ctx):
     else:
         fph.v_latest = 'Initial'
     # Add file DRS path to Tree
-    src = ['..'] * len(fph.items(d_part=False, file=False))
+    src = ['..'] * len(fph.items(d_part=False))
     src.extend(fph.items(d_part=False, latest=True, file=True))
     src.append(fh.filename)
     ctx.tree.create_leaf(nodes=fph.items(root=True),
@@ -263,24 +229,68 @@ def main(args):
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
     logging.info('==> Scan started')
+    # Get the number of files to scan
+    nfiles = sum(1 for _ in yield_inputs(ctx))
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.threads))
-    # Process supplied files
-    outfiles = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
-    # Raises exception when all processed files failed (i.e., filtered list empty)
-    if not all(outfiles):
-        logging.warning('==> All files have been ignored or have failed leading to no tree.')
-        sys.exit(1)
+    if ctx.action != 'list' and os.path.isfile('/tmp/DRSTree.pkl'):
+        # Load 'DRSTree.pkl' if already exists
+        with open('/tmp/DRSTree.pkl', 'rb') as f:
+            ctx.tree = pickle.load(f)
+            results = pickle.load(f)
+        logging.warning('DRS tree loaded')
     else:
-        if outfiles:
-            # Save current directory
-            cwd = os.getcwd()
-            # Change current directory -> DRS root directory
-            os.chdir(ctx.root)
-            # Apply tree action
-            ctx.tree.get_display_lengths()
-            getattr(ctx.tree, ctx.action)()
-            # Back to initial working directory
-            os.chdir(cwd)
+        # Process supplied files
+        if not args.log and not ctx.verbose:
+            results = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
+                                       desc='Scanning incoming files',
+                                       total=nfiles,
+                                       bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                                       ncols=100,
+                                       unit='files')]
         else:
-            logging.info('==> No files found.')
+            results = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
+    if ctx.action == 'list':
+        # Backup DRS Tree for later usage with other command lines
+        with open('/tmp/DRSTree.pkl', 'wb') as f:
+            pickle.dump(ctx.tree, f)
+            pickle.dump(results, f)
+        logging.warning('DRS tree backuped')
+    # Close threads pool
+    pool.close()
+    pool.join()
+    # Decline outputs depending on the scan results
+    # Raise errors when one or several files have been skipped or failed
+    if all(results) and any(results):
+        # Results list contains only True value = all files have been successfully scanned
+        logging.info('==> Scan completed ({0} file(s) scanned)'.format(len(results)))
+        # Apply tree action
+        ctx.tree.get_display_lengths()
+        getattr(ctx.tree, ctx.action)()
+        sys.exit(0)
+    elif all(results) and not any(results):
+        # Results list is empty = no files scanned/found
+        logging.warning('==> No files found')
+        sys.exit(1)
+    elif not all(results) and any(results):
+        # Results list contains some None values = some files have been skipped or failed during the scan
+        # Print number of scan errors
+        if not args.log and not ctx.verbose:
+            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(21),
+                                              results.count(None),
+                                              logging.getLogger().handlers[0].baseFilename))
+        logging.warning('{0} file(s) have been skipped'.format(results.count(None)))
+        logging.info('==> Scan completed ({0} file(s) scanned)'.format(len(results)))
+        # Apply tree action
+        ctx.tree.get_display_lengths()
+        getattr(ctx.tree, ctx.action)()
+        sys.exit(2)
+    elif not all(results) and not any(results):
+        # Results list contains only None values = all files have been skipped or failed during the scan
+        # Print number of scan errors
+        if not args.log and not ctx.verbose:
+            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(21),
+                                              len(results),
+                                              logging.getLogger().handlers[0].baseFilename))
+        logging.warning('==> All files have been ignored or have failed leading to no mapfile.')
+        sys.exit(3)

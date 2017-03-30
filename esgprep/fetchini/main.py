@@ -97,7 +97,7 @@ def github_connector(repository, username=None, password=None, team=None):
 
     try:
         return GitHub(username, password).repository(team, repository.lower())
-    except GitHubError, e:
+    except GitHubError as e:
         raise GitHubConnectionError(e.msg, repository, username, password, team)
 
 
@@ -146,7 +146,7 @@ def gh_content(gh, path):
         content = gh.contents(path)
         if not content:
             raise GitHubNoContent(gh.contents_urlt.expand(path=path))
-    except GitHubError, e:
+    except GitHubError as e:
         raise GitHubConnectionError(e.msg, repository=gh.name, team=dirname(gh.full_name))
     return content
 
@@ -268,6 +268,7 @@ def main(args):
     :param ArgumentParser args: Parsed command-line arguments
 
     """
+    # TODO: Split fetch-ini tasks to only keep esg.project.ini fetching
     outdir = normpath(abspath(args.i))
     # If output directory doesn't exist, create it.
     if not isdir(outdir):

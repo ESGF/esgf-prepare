@@ -8,7 +8,6 @@
 """
 
 import os
-import re
 
 from esgprep.mapfile.exceptions import *
 from esgprep.utils.constants import *

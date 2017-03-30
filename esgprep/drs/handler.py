@@ -9,16 +9,12 @@
 
 import logging
 import os
-import re
 from collections import OrderedDict
 from datetime import datetime
 
 from fuzzywuzzy import fuzz, process
 from hurry.filesize import size
 from netCDF4 import Dataset
-from shutil import copy2 as copy
-from shutil import move
-from os import link, symlink
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
 
@@ -145,7 +141,7 @@ class File(object):
                         # Rename attribute key
                         self.attributes[facet] = self.attributes.pop(key)
                         if ctx.verbose:
-                            logging.warning('Consider "{0}" attribute for instead of "{1}" facet'.format(key, facet))
+                            logging.warning('Consider "{0}" attribute instead of "{1}" facet'.format(key, facet))
                         ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
                     else:
                         raise NoConfigVariable(facet,
@@ -315,7 +311,7 @@ class DRSTree(Tree):
         Gets the string lengths for comfort display.
 
         """
-        self.d_lengths = [max([len(i) for i in self.paths.keys()]), 20, 20, 15, 15]
+        self.d_lengths = [max([len(i) for i in self.paths.keys()]), 20, 20, 16, 16]
         self.d_lengths.append(sum(self.d_lengths) + 2)
 
     def create_leaf(self, nodes, leaf, src, mode):
@@ -369,9 +365,9 @@ class DRSTree(Tree):
         """
         print(''.center(self.d_lengths[-1], '='))
         print('{0}{1}->{2}{3}{4}'.format('Publication level'.center(self.d_lengths[0]),
-                                         'Current latest'.center(self.d_lengths[1]),
-                                         'Upgraded version'.center(self.d_lengths[2]),
-                                         'Files upgraded'.rjust(self.d_lengths[3]),
+                                         'Latest version'.center(self.d_lengths[1]),
+                                         'Upgrade version'.center(self.d_lengths[2]),
+                                         'Files to upgrade'.rjust(self.d_lengths[3]),
                                          'Upgrade size'.rjust(self.d_lengths[4])))
         print(''.center(self.d_lengths[-1], '-'))
         for dset_path, incomings in self.paths.items():

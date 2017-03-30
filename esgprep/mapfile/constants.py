@@ -9,6 +9,3 @@
 
 # Mapfile extension during processing
 WORKING_EXTENSION = '.part'
-
-# Mapfile final extension (mapfiles always are TXT files)
-FINAL_EXTENSION = '.map'

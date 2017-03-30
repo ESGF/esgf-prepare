@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 """
     :platform: Unix
     :synopsis: Generates ESGF mapfiles upon a local ESGF node or not.
@@ -10,68 +12,22 @@
 import fnmatch
 import logging
 import os
-import re
 import sys
 from datetime import datetime
-from functools import wraps
 from multiprocessing.dummy import Pool as ThreadPool
 
 from lockfile import LockFile
+from tqdm import tqdm
 
 from constants import *
 from esgprep.utils import parser, utils
 from esgprep.utils.exceptions import *
 from handler import File
-from esgprep.utils.constants import *
 
 
 class ProcessingContext(object):
     """
-    Encapsulates the following processing context/information for main process:
-
-    +------------------------+-------------+----------------------------------------------+
-    | Attribute              | Type        | Description                                  |
-    +========================+=============+==============================================+
-    | *self*.directory       | *list*      | Paths to scan                                |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.outmap          | *str*       | Mapfile name/pattern using tokens            |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.latest          | *boolean*   | True to follow latest symlink                |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.outdir          | *str*       | Output directory                             |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.notes_url       | *str*       | Dataset technical notes URL                  |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.notes_title     | *str*       | Dataset technical notes title                |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.verbose         | *boolean*   | True if verbose mode                         |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.all             | *boolean*   | True to scan all versions                    |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.version         | *str*       | Version to scan                              |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.filter          | *re object* | File filter as regex pattern                 |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.no_version      | *boolean*   | True to not include version in dataset ID    |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.project         | *str*       | Project                                      |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.project_section | *str*       | Project section name in configuration file   |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.dataset         | *str*       | Dataset ID name                              |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.checksum_client | *str*       | Checksum client as shell command-line to use |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.checksum_type   | *str*       | Checksum type                                |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.threads         | *int*       | Maximum threads number                       |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.cfg             | *callable*  | Configuration file parser                    |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.pattern         | *re object* | DRS regex pattern                            |
-    +------------------------+-------------+----------------------------------------------+
-    | *self*.facets          | *list*      | List of the DRS facets                       |
-    +------------------------+-------------+----------------------------------------------+
+    Encapsulates the processing context/information for main process.
 
     :param ArgumentParser args: Parsed command-line arguments
     :returns: The processing context
@@ -90,7 +46,7 @@ class ProcessingContext(object):
         self.no_version = args.no_version
         self.threads = args.max_threads
         self.dataset = args.dataset
-        self.clean = args.no_cleanup
+        self.no_cleanup = args.no_cleanup
         self.all = args.all_versions
         if self.all:
             self.no_version = False
@@ -108,11 +64,12 @@ class ProcessingContext(object):
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
         self.pattern = self.cfg.get_pattern_from_directory_format(self.project_section)
-        
+
         self.dataset_id_pattern, self.facets = \
             self.cfg.get_pattern_and_facets_from_dataset_format(self.project_section)
 
         self.facets_of_type_enum = self.cfg.get_facets_of_type_enum(self.project_section)
+
 
 def yield_inputs(ctx):
     """
@@ -171,30 +128,6 @@ def wrapper(inputs):
         else:
             logging.exception('{0} failed'.format(ffp))
         return None
-
-
-def counted(fct):
-    """
-    Decorator used to count all file process calls.
-
-    :param callable fct: The function to monitor
-    :returns: A wrapped function with a ``.called`` attribute
-    :rtype: *callable*
-
-    """
-
-    # Convenience decorator to keep the file_process docstring
-    @wraps(fct)
-    def wrap(*args, **kwargs):
-        """
-        Wrapper function for counting
-        """
-        wrap.called += 1
-        return fct(*args, **kwargs)
-
-    wrap.called = 0
-    wrap.__name__ = fct.__name__
-    return wrap
 
 
 def get_output_mapfile(attributes, dataset_id, dataset_version, ctx):
@@ -337,7 +270,6 @@ def in_version_scope(fh, ctx):
             return False
 
 
-@counted
 def process(ffp, ctx):
     """
     process(ffp, ctx)
@@ -362,25 +294,38 @@ def process(ffp, ctx):
     # Matching between directory_format and file full path
     fh.load_attributes(ctx)
     # Silently stop process if not in desired version scope
-    if not in_version_scope(fh, ctx):
-        return False
-    # Deduce dataset_id
-    dataset_id = fh.get_dataset_id(ctx)
-    # Deduce dataset_version
-    dataset_version = fh.get_dataset_version(ctx)
-    # Build mapfile name depending on the --mapfile flag and appropriate tokens
-    outfile = get_output_mapfile(fh.attributes, dataset_id, dataset_version, ctx)
-    # Generate the corresponding mapfile entry/line
-    line = generate_mapfile_entry(dataset_id,
-                                  dataset_version,
-                                  ffp,
-                                  fh.size,
-                                  fh.mtime,
-                                  fh.checksum(ctx.checksum_type, ctx.checksum_client),
-                                  ctx)
-    insert_mapfile_entry(outfile, line, ffp)
-    # Return mapfile name
-    return outfile
+    if in_version_scope(fh, ctx):
+        # Deduce dataset_id
+        dataset_id = fh.get_dataset_id(ctx)
+        # Deduce dataset_version
+        dataset_version = fh.get_dataset_version(ctx)
+        # Build mapfile name depending on the --mapfile flag and appropriate tokens
+        outfile = get_output_mapfile(fh.attributes, dataset_id, dataset_version, ctx)
+        # Generate the corresponding mapfile entry/line
+        line = generate_mapfile_entry(dataset_id,
+                                      dataset_version,
+                                      ffp,
+                                      fh.size,
+                                      fh.mtime,
+                                      fh.checksum(ctx.checksum_type, ctx.checksum_client),
+                                      ctx)
+        insert_mapfile_entry(outfile, line, ffp)
+        # Return mapfile name
+        return outfile
+
+
+def clean(directory):
+    """
+    Clean directory from incomplete mapfiles.
+    Incomplete mapfiles from a previous run are silently removed.
+
+    :param str directory: The directory to clean
+
+    """
+    for root, _, filenames in os.walk(directory):
+        for filename in fnmatch.filter(filenames, '*{0}'.format(WORKING_EXTENSION)):
+            os.remove(os.path.join(root, filename))
+    logging.info('{0} cleaned'.format(directory))
 
 
 def main(args):
@@ -400,35 +345,69 @@ def main(args):
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
     logging.info('==> Scan started')
-    # All incomplete mapfiles from a previous run are silently removed
-    for root, _, filenames in os.walk(ctx.outdir):
-        for filename in fnmatch.filter(filenames, '*{0}'.format(WORKING_EXTENSION)):
-            os.remove(os.path.join(root, filename))
-    logging.info('Output directory cleaned')
+    # Clean output directory
+    if not ctx.no_cleanup:
+        clean(ctx.outdir)
+    # Get the number of files to scan
+    nfiles = sum(1 for _ in yield_inputs(ctx))
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.threads))
-    # Return the list of generated mapfiles full paths
-    outfiles_all = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
-    outfiles = [x for x in outfiles_all if isinstance(x, str)]
+    # Return the list of generated mapfiles (with their full paths)
+    # If not verbose mode or log, print a progress bar on standard output
+    if not args.log and not ctx.verbose:
+        mapfiles = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
+                                    desc='Mapfile(s) generation',
+                                    total=nfiles,
+                                    bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                                    ncols=100,
+                                    unit='files')]
+    else:
+        mapfiles = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
     # Close threads pool
     pool.close()
     pool.join()
-    # Raises exception when all processed files failed (i.e., filtered list empty)
-    if not outfiles:
-        if process.called == 0:
-            logging.warning('==> No files found')
-            sys.exit(2)
-        else:
-            logging.warning('==> All files have been ignored or have failed leading to no mapfile.')
-            sys.exit(3)
-    # Replace mapfile working extension by final extension
-    # A final mapfile is silently overwritten if already exists
-    for outfile in list(set(outfiles)):
-        os.rename(outfile, outfile.replace(WORKING_EXTENSION, FINAL_EXTENSION))
-    # Display summary
-    logging.info('==> Scan completed ({0} file(s) scanned)'.format(len(outfiles)))
-    # Non-zero exit status if any files got filtered
-    if None in outfiles_all:
-        logging.warning('{0} file(s) have been skipped'.format(outfiles_all.count(None)))
+    # Decline outputs depending on the scan results
+    # Raise errors when one or several files have been skipped or failed
+    if all(mapfiles) and any(mapfiles):
+        # Mapfiles list contains only string value = all files have been successfully scanned
+        # Remove mapfile working extension
+        # A final mapfile is silently overwritten if already exists
+        for mapfile in mapfiles:
+            os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
+        # Print number of generated mapfiles
+        if not args.log and not ctx.verbose:
+            print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(21),
+                                              len(set(mapfiles)),
+                                              ctx.outdir))
+        logging.info('{0} mapfile(s) generated'.format(len(set(mapfiles))))
+        logging.info('==> Scan completed ({0} file(s) scanned)'.format(len(mapfiles)))
+        sys.exit(0)
+    elif all(mapfiles) and not any(mapfiles):
+        # Mapfiles list is empty = no files scanned/found
+        logging.warning('==> No files found')
         sys.exit(1)
-    sys.exit(0)
+    elif not all(mapfiles) and any(mapfiles):
+        # Mapfiles list contains some None values = some files have been skipped or failed during the scan
+        # Print number of generated mapfiles
+        if not args.log and not ctx.verbose:
+            print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(21),
+                                              len(set(filter(None, mapfiles))),
+                                              ctx.outdir))
+        logging.info('{0} mapfile(s) generated'.format(len(set(filter(None, mapfiles)))))
+        # Print number of scan errors
+        if not args.log and not ctx.verbose:
+            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(21),
+                                              mapfiles.count(None),
+                                              logging.getLogger().handlers[0].baseFilename))
+        logging.warning('{0} file(s) have been skipped'.format(mapfiles.count(None)))
+        logging.info('==> Scan completed ({0} file(s) scanned)'.format(len(mapfiles)))
+        sys.exit(2)
+    elif not all(mapfiles) and not any(mapfiles):
+        # Mapfiles list contains only None values = all files have been skipped or failed during the scan
+        # Print number of scan errors
+        if not args.log and not ctx.verbose:
+            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(21),
+                                              len(mapfiles),
+                                              logging.getLogger().handlers[0].baseFilename))
+        logging.warning('==> All files have been ignored or have failed leading to no mapfile.')
+        sys.exit(3)

@@ -14,13 +14,13 @@ import argparse
 import os
 from datetime import datetime
 
-from utils.utils import MultilineFormatter, init_logging, version_checker, directory_checker, pair_checker, DirectoryCheckerAction
+from utils.utils import MultilineFormatter, init_logging, keyval_converter, DirectoryChecker, VersionChecker
 
 # Program version
 __version__ = 'v{0} {1}'.format('2.6.4', datetime(year=2016, month=12, day=23).strftime("%Y-%d-%m"))
 
 
-def get_args(default_config_dir='/esg/config/esgcet'):
+def get_args():
     """
     Returns parsed command-line arguments. See ``esgprep -h`` for full description.
 
@@ -93,10 +93,11 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         action='help',
         help="""Show this help message and exit.""")
 
-    config_dir_action = parent.add_argument(
-        '-i',        
-        metavar='<directory>',
-        action=DirectoryCheckerAction,
+    parent.add_argument(
+        '-i',
+        metavar='/esg/config/esgcet/.',
+        action=DirectoryChecker,
+        default='/esg/config/esgcet/.',
         help="""
         Initialization/configuration directory containing|n
         "esg.ini" and "esg.<project>.ini" files.|n
@@ -105,13 +106,12 @@ def get_args(default_config_dir='/esg/config/esgcet'):
 
     parent.add_argument(
         '--log',
-        metavar='<directory>',
+        metavar='$PWD',
         type=str,
         const=os.getcwd(),
         nargs='?',
         help="""
         Logfile directory.|n
-        An existing logfile can be submitted.|n
         If not, standard output is used.
         """)
     parent.add_argument(
@@ -249,7 +249,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         '-o',
         action='store_true',
         default=False,
-    help="""Ignore and overwrite existing file(s) without prompting.""")
+        help="""Ignore and overwrite existing file(s) without prompting.""")
     fetchini.add_argument(
         '-b',
         choices=['one_version', 'keep_versions'],
@@ -306,7 +306,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
     group = checkvocab.add_mutually_exclusive_group(required=True)
     group.add_argument(
         '--directory',
-        action=DirectoryCheckerAction,
+        action=DirectoryChecker,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
@@ -374,7 +374,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         """)
     drs.add_argument(
         'directory',
-        action=DirectoryCheckerAction,
+        action=DirectoryChecker,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
@@ -388,19 +388,19 @@ def get_args(default_config_dir='/esg/config/esgcet'):
     drs.add_argument(
         '--root',
         metavar='$PWD',
-        action=DirectoryCheckerAction,
+        action=DirectoryChecker,
         default=os.getcwd(),
         help="""Root directory to build the DRS.""")
     drs.add_argument(
         '--version',
         metavar=datetime.now().strftime("%Y%m%d"),
-        type=version_checker,
+        action=VersionChecker,
         default=datetime.now().strftime('%Y%m%d'),
         help="""Set the version number for all scanned files.""")
     drs.add_argument(
         '--set',
         metavar='<key>=<value>',
-        type=pair_checker,
+        type=keyval_converter,
         action='append',
         help="""
         One or several facet values to set.|n
@@ -486,7 +486,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
     mapfile._positionals.title = "Positional arguments"
     mapfile.add_argument(
         'directory',
-        action=DirectoryCheckerAction,
+        action=DirectoryChecker,
         nargs='+',
         help="""
         One or more directories to recursively scan.|n
@@ -502,7 +502,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         '--mapfile',
         metavar='{dataset_id}.{version}.map',
         type=str,
-        default='{dataset_id}.{version}',
+        default='{dataset_id}.{version}.map',
         help="""
         Specifies template for the output mapfile(s) name.|n
         Substrings {dataset_id}, {version}, {job_id} or {date} |n
@@ -535,7 +535,7 @@ def get_args(default_config_dir='/esg/config/esgcet'):
     group.add_argument(
         '--version',
         metavar=datetime.now().strftime("%Y%m%d"),
-        type=version_checker,
+        type=VersionChecker,
         help="""
         Generates mapfile(s) scanning datasets with the|n
         corresponding version number only. It takes priority over|n
@@ -605,37 +605,26 @@ def get_args(default_config_dir='/esg/config/esgcet'):
         """)
     mapfile.add_argument(
         '--no-cleanup',
-        action='store_false',
-        default=True,
+        action='store_true',
+        default=False,
         help="""Disables output directory cleanup prior to mapfile process.|n
         This is recommended if several "esgprep mapfile" instances |n
         run with the same output directory.
         """)
 
-    args = main.parse_args()
-
-    # Apply default config dir if not set.  This ensures that the
-    # checker gets called for the default config dir, but only if the
-    # default is actually to be used.  If the "-h" flag is specified,
-    # it exits inside parse_args after displaying the help message,
-    # and it does not matter whether the config dir (either default or
-    # specified with -i) exists.
-    if args.i == None:
-        config_dir_action(main, args, default_config_dir)
-    
-    return args
-
+    return main.parse_args()
 
 
 def run():
+    """
+    Run main program
+
+    """
     # Get command-line arguments
     args = get_args()
 
     # Initialize logger
-    if args.v:
-        init_logging(args.log, level='DEBUG')
-    else:
-        init_logging(args.log)
+    init_logging(log=args.log, verbose=args.v)
 
     # Run subcommand
     if args.cmd == 'fetch-ini':

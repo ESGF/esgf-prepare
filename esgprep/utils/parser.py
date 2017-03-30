@@ -13,7 +13,7 @@ import re
 import string
 from glob import glob
 
-from esgprep.utils.utils import directory_checker
+from esgprep.utils.utils import DirectoryChecker
 from esgprep.utils.exceptions import *
 
 
@@ -26,7 +26,7 @@ class CfgParser(ConfigParser.ConfigParser):
     def __init__(self, directory, section=None):
         ConfigParser.ConfigParser.__init__(self)
         self.read_paths = list()
-        self.parse(directory_checker(directory), section=section)
+        self.parse(DirectoryChecker.directory_checker(directory), section=section)
 
     def options(self, section, defaults=True, **kwargs):
         """
@@ -48,7 +48,7 @@ class CfgParser(ConfigParser.ConfigParser):
         Read and parse a filename or a list of filenames, and records their paths.
 
         """
-        if isinstance(filenames, basestring):
+        if isinstance(filenames, str):
             filenames = [filenames]
         for filename in filenames:
             try:
@@ -183,6 +183,22 @@ class CfgParser(ConfigParser.ConfigParser):
         """
         categories = self.get_options_from_table(section, "categories")
         return ([x[0] for x in categories if x[1] == "enum"])
+
+    def get_facets(self, section, option, ignored=None):
+        """
+        Returns the set of facets declared into "*_format" attributes in the configuration file.
+        :param str section: The section name to parse
+        :param str option: The option to get facet names
+        :param list ignored: The list of facets to ignored
+        :returns: The collection of facets
+        :rtype: *set*
+        """
+        facets = re.findall(re.compile(r'%\(([^()]*)\)s'), self.get(section, option, raw=True))
+        if ignored:
+            return [f for f in facets if f not in ignored]
+        else:
+            return facets
+
 
     def check_options(self, section, pairs):
         """

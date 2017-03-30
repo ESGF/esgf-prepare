@@ -6,3 +6,4 @@ github3.py
 uritemplate.py
 hurry.filesize
 treelib
+tqdmw
