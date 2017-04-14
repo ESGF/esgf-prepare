@@ -9,3 +9,6 @@
 
 # Mapfile extension during processing
 WORKING_EXTENSION = '.part'
+
+# Progress bar message length
+LEN_MSG = 21

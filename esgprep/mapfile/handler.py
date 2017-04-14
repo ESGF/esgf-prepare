@@ -89,10 +89,9 @@ class File(object):
         # If a DRS attribute is missing regarding the dataset_id template,
         # the DRS attributes are completed from esg.<project>.ini maptables.
         if not ctx.dataset:
-            facets = (set(ctx.facets) & set(ctx.facets_of_type_enum) - set(IGNORED_KEYS))
-            for facet in facets & set(self.attributes.keys()):
+            for facet in set(ctx.facets).intersection(self.attributes.keys()) - set(IGNORED_KEYS):
                 ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
-            for facet in facets - set(self.attributes.keys()):
+            for facet in set(ctx.facets).difference(self.attributes.keys()) - set(IGNORED_KEYS):
                 try:
                     self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
                                                                          '{0}_map'.format(facet),

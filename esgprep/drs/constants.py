@@ -15,3 +15,9 @@ UNIX_COMMAND = {'symlink': 'ln -s',
                 'link': 'ln',
                 'copy': 'cp',
                 'move': 'mv'}
+
+# Command-line parameter to ignore
+IGNORED_ARGS = ['action', 'v', 'h', 'log', 'max_threads', 'log', 'no_checksum']
+
+# Progress bar message length
+LEN_MSG = 23

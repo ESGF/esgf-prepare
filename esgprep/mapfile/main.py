@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-
 """
     :platform: Unix
     :synopsis: Generates ESGF mapfiles upon a local ESGF node or not.
@@ -63,12 +61,8 @@ class ProcessingContext(object):
             self.checksum_client, self.checksum_type = self.cfg.get_options_from_table('DEFAULT', 'checksum')[0]
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
-        self.pattern = self.cfg.get_pattern_from_directory_format(self.project_section)
-
-        self.dataset_id_pattern, self.facets = \
-            self.cfg.get_pattern_and_facets_from_dataset_format(self.project_section)
-
-        self.facets_of_type_enum = self.cfg.get_facets_of_type_enum(self.project_section)
+        self.facets = self.cfg.get_facets(self.project_section, 'dataset_id')
+        self.pattern = self.cfg.translate_directory_format(self.project_section)
 
 
 def yield_inputs(ctx):
@@ -161,19 +155,19 @@ def get_output_mapfile(attributes, dataset_id, dataset_version, ctx):
         pass
     # Deduce mapfile name from --mapfile argument
     outmap = ctx.outmap
-    if re.compile(r'\{dataset_id\}').search(outmap):
-        outmap = re.sub(r'\{dataset_id\}', dataset_id, outmap)
-    if re.compile(r'\{version\}').search(outmap):
+    if re.compile(r'{dataset_id}').search(outmap):
+        outmap = re.sub(r'{dataset_id}', dataset_id, outmap)
+    if re.compile(r'{version}').search(outmap):
         if ctx.latest:
-            outmap = re.sub(r'\{version\}', 'latest', outmap)
+            outmap = re.sub(r'{version}', 'latest', outmap)
         elif dataset_version:
-            outmap = re.sub(r'\{version\}', dataset_version, outmap)
+            outmap = re.sub(r'{version}', dataset_version, outmap)
         else:
-            outmap = re.sub(r'.\{version\}', '', outmap)
-    if re.compile(r'\{date\}').search(outmap):
-        outmap = re.sub(r'\{date\}', datetime.now().strftime("%Y%d%m"), outmap)
-    if re.compile(r'\{job_id\}').search(outmap):
-        outmap = re.sub(r'\{job_id\}', str(os.getpid()), outmap)
+            outmap = re.sub(r'\.{version}', '', outmap)
+    if re.compile(r'{date}').search(outmap):
+        outmap = re.sub(r'{date}', datetime.now().strftime("%Y%d%m"), outmap)
+    if re.compile(r'{job_id}').search(outmap):
+        outmap = re.sub(r'{job_id}', str(os.getpid()), outmap)
     return os.path.join(outdir, outmap) + WORKING_EXTENSION
 
 
@@ -348,15 +342,17 @@ def main(args):
     # Clean output directory
     if not ctx.no_cleanup:
         clean(ctx.outdir)
-    # Get the number of files to scan
-    nfiles = sum(1 for _ in yield_inputs(ctx))
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.threads))
     # Return the list of generated mapfiles (with their full paths)
     # If not verbose mode or log, print a progress bar on standard output
     if not args.log and not ctx.verbose:
+        # Get the number of files to scan
+        nfiles = sum(1 for _ in utils.Tqdm(yield_inputs(ctx),
+                                           desc='Collecting files'.ljust(LEN_MSG),
+                                           unit='files'))
         mapfiles = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
-                                    desc='Mapfile(s) generation',
+                                    desc='Mapfile(s) generation'.ljust(LEN_MSG),
                                     total=nfiles,
                                     bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
                                     ncols=100,
@@ -372,11 +368,11 @@ def main(args):
         # Mapfiles list contains only string value = all files have been successfully scanned
         # Remove mapfile working extension
         # A final mapfile is silently overwritten if already exists
-        for mapfile in mapfiles:
+        for mapfile in set(mapfiles):
             os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
         # Print number of generated mapfiles
         if not args.log and not ctx.verbose:
-            print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(21),
+            print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(LEN_MSG),
                                               len(set(mapfiles)),
                                               ctx.outdir))
         logging.info('{0} mapfile(s) generated'.format(len(set(mapfiles))))
@@ -390,13 +386,13 @@ def main(args):
         # Mapfiles list contains some None values = some files have been skipped or failed during the scan
         # Print number of generated mapfiles
         if not args.log and not ctx.verbose:
-            print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(21),
+            print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(LEN_MSG),
                                               len(set(filter(None, mapfiles))),
                                               ctx.outdir))
         logging.info('{0} mapfile(s) generated'.format(len(set(filter(None, mapfiles)))))
         # Print number of scan errors
         if not args.log and not ctx.verbose:
-            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(21),
+            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(LEN_MSG),
                                               mapfiles.count(None),
                                               logging.getLogger().handlers[0].baseFilename))
         logging.warning('{0} file(s) have been skipped'.format(mapfiles.count(None)))
@@ -406,7 +402,7 @@ def main(args):
         # Mapfiles list contains only None values = all files have been skipped or failed during the scan
         # Print number of scan errors
         if not args.log and not ctx.verbose:
-            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(21),
+            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(LEN_MSG),
                                               len(mapfiles),
                                               logging.getLogger().handlers[0].baseFilename))
         logging.warning('==> All files have been ignored or have failed leading to no mapfile.')

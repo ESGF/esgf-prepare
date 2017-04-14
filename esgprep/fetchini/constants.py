@@ -14,3 +14,6 @@ GITHUB_DIRECTORY = 'publisher-configs'
 
 # esgf.properties default path
 ESGF_PROPERTIES = '/esg/config/esgf.properties'
+
+# Progress bar message length
+LEN_MSG = 23

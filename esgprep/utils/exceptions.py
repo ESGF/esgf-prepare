@@ -9,16 +9,17 @@
 
 import re
 
+
 class EmptyConfigFile(Exception):
     """
     Raised when configuration file is empty.
 
     """
 
-    def __init__(self, paths):
+    def __init__(self, config_paths):
         self.msg = "Empty configuration parser."
-        for path in paths:
-            self.msg += "\n<config file: '{0}'>".format(path)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -28,9 +29,9 @@ class NoConfigFile(Exception):
 
     """
 
-    def __init__(self, path):
+    def __init__(self, config_path):
         self.msg = "No such file"
-        self.msg += "\n<config file: '{0}'>".format(path)
+        self.msg += "\n<config file: '{0}'>".format(config_path)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -40,10 +41,10 @@ class NoConfigSection(Exception):
 
     """
 
-    def __init__(self, section, paths):
+    def __init__(self, section, config_paths):
         self.msg = "No section: '{0}'".format(section)
-        for path in paths:
-            self.msg += "\n<config file: '{0}'>".format(path)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -53,11 +54,11 @@ class NoConfigOption(Exception):
 
     """
 
-    def __init__(self, option, section, paths):
+    def __init__(self, option, section, config_paths):
         self.msg = "No option: '{0}'".format(option)
         self.msg += "\n<section: '{0}'>".format(section)
-        for path in paths:
-            self.msg += "\n<config file: '{0}'>".format(path)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -67,11 +68,11 @@ class NoConfigOptions(Exception):
 
     """
 
-    def __init__(self, facet, section, paths):
+    def __init__(self, facet, section, config_paths):
         self.msg = "No '{0}_options' or '{0}_map' or '{0}_pattern'".format(facet)
         self.msg += "\n<section: '{0}'>".format(section)
-        for path in paths:
-            self.msg += "\n<config file: '{0}'>".format(path)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -81,12 +82,12 @@ class NoConfigValue(Exception):
 
     """
 
-    def __init__(self, value, option, section, paths):
+    def __init__(self, value, option, section, config_paths):
         self.msg = "No value: '{0}'".format(value)
         self.msg += "\n<option: '{0}'>".format(option)
         self.msg += "\n<section: '{0}'>".format(section)
-        for path in paths:
-            self.msg += "\n<config file: '{0}'>".format(path)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -96,12 +97,12 @@ class NoConfigKey(Exception):
 
     """
 
-    def __init__(self, key, option, section, paths):
+    def __init__(self, key, option, section, config_paths):
         self.msg = "No key: '{0}'".format(key)
         self.msg += "\n<option: '{0}'>".format(option)
         self.msg += "\n<section: '{0}'>".format(section)
-        for path in paths:
-            self.msg += "\n<config file: '{0}'>".format(path)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -111,12 +112,12 @@ class NoConfigVariable(Exception):
 
     """
 
-    def __init__(self, option, directory_format, section, paths):
+    def __init__(self, option, directory_format, section, config_paths):
         self.msg = "No pattern: '%({0})s'. Should be added or declared through a '{0}_map' option.".format(option)
         self.msg += "\n<format: '{0}'>".format(directory_format)
         self.msg += "\n<section: '{0}'>".format(section)
-        for path in paths:
-            self.msg += "\n<config file: '{0}'>".format(path)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -126,13 +127,13 @@ class MisdeclaredOption(Exception):
 
     """
 
-    def __init__(self, option, section, paths, reason=None):
+    def __init__(self, option, section, config_paths, reason=None):
         self.msg = "Inappropriately formulated option: '{0}'".format(option)
         if reason:
             self.msg += "\n{0}".format(reason)
         self.msg += "\n<section: '{0}'>".format(section)
-        for path in paths:
-            self.msg += "\n<config file: '{0}'>".format(path)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -205,15 +206,15 @@ class DirectoryNotMatch(Exception):
     """
 
     def __init__(self, path, directory_format, section, config_paths):
-
         self.msg = "Matching failed to deduce DRS attributes."
         self.msg += "\n<path: '{0}'>".format(path)
         self.msg += "\n<format: '{0}'>".format(directory_format)
         self.msg += "\n<section: '{0}'>".format(section)
         for config_path in config_paths:
-            self.msg += "\n<config file: '{0}'>".format(config_path)        
-        self.msg += "\n" + _get_regexp_diagnosis(directory_format, path)
+            self.msg += "\n<config file: '{0}'>".format(config_path)
+        self.msg += "\n" + regexp_diagnosis(directory_format, path)
         super(self.__class__, self).__init__(self.msg)
+
 
 class DatasetNotMatch(Exception):
     """
@@ -221,13 +222,16 @@ class DatasetNotMatch(Exception):
 
     """
 
-    def __init__(self, dset, dataset_id_pattern, section):
+    def __init__(self, dset, dataset_format, section, config_paths):
         self.msg = "Matching failed to deduce DRS attributes."
         self.msg += "\n<dataset: '{0}'>".format(dset)
-        self.msg += "\n<format: '{0}'>".format(dataset_id_pattern)
+        self.msg += "\n<format: '{0}'>".format(dataset_format)
         self.msg += "\n<section: '{0}'>".format(section)
-        self.msg += "\n" + _get_regexp_diagnosis(dataset_id_pattern, dset)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
+        self.msg += "\n" + regexp_diagnosis(dataset_id_pattern, dset)
         super(self.__class__, self).__init__(self.msg)
+
 
 class FilenameNotMatch(Exception):
     """
@@ -235,14 +239,14 @@ class FilenameNotMatch(Exception):
 
     """
 
-    def __init__(self, filename, filename_format, section, paths):
+    def __init__(self, filename, filename_format, section, config_paths):
         self.msg = "Matching failed to deduce DRS attributes."
         self.msg += "\n<filename: '{0}'>".format(filename)
         self.msg += "\n<format: '{0}'>".format(filename_format)
         self.msg += "\n<section: '{0}'>".format(section)
-        for path in paths:
-            self.msg += "\n<config file: '{0}'>".format(path)
-        self.msg += "\n" + _get_regexp_diagnosis(filename_format, filename)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
+        self.msg += "\n" + regexp_diagnosis(filename_format, filename)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -260,7 +264,7 @@ class KeyNotFound(Exception):
         super(self.__class__, self).__init__(self.msg)
 
 
-def _get_regexp_diagnosis(pattern, strng):
+def regexp_diagnosis(pattern, strng):
     """
     Given a pattern and a string (which is known not to match), returns a report
     showing how much of the regexp matches, in order to help identify where the 
@@ -269,8 +273,7 @@ def _get_regexp_diagnosis(pattern, strng):
     p = pattern
     while p:
         try:
-            m = re.match(p, strng)
-            if m:
+            if re.match(p, strng):
                 break
         except:
             pass
@@ -279,7 +282,7 @@ def _get_regexp_diagnosis(pattern, strng):
         return "Pattern fails to match from very start"
 
     matching_pattern = p
-    matching_string = m.group(0)
+    matching_string = re.match(p, strng).group(0)
 
     non_matching_pattern = pattern[len(p):]
     non_matching_string = strng[len(matching_string):]
@@ -294,5 +297,7 @@ Non-matching part at end:
 
   remainder of pattern: {2}
   does not match: {3}
-""".format(matching_pattern, matching_string, 
-           non_matching_pattern, non_matching_string)
+""".format(matching_pattern,
+           matching_string,
+           non_matching_pattern,
+           non_matching_string)

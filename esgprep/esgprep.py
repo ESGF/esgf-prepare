@@ -17,7 +17,7 @@ from datetime import datetime
 from utils.utils import MultilineFormatter, init_logging, keyval_converter, DirectoryChecker, VersionChecker
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.6.4', datetime(year=2016, month=12, day=23).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('2.7.0', datetime(year=2017, month=04, day=14).strftime("%Y-%d-%m"))
 
 
 def get_args():
@@ -25,7 +25,7 @@ def get_args():
     Returns parsed command-line arguments. See ``esgprep -h`` for full description.
 
     :returns: The corresponding ``argparse`` Namespace
-    :rtype: *ArgumentParser*
+    :rtype: *argparse.Namespace*
 
     """
     #############################
@@ -177,68 +177,6 @@ def get_args():
         One or more lower-cased project name(s).|n
         If not, all "esg.*.ini" are fetched.
         """)
-    fetchini.add_argument(
-        '--esg-config',
-        action='store_true',
-        default=False,
-        help="""
-        Restart "esg.ini" configuration by fetching|n
-        an empty template.
-        """)
-    fetchini.add_argument(
-        '--db-password',
-        metavar='<password>',
-        type=str,
-        help="""
-        Database password.|n
-        Required to configure "esg.ini".
-        """)
-    fetchini.add_argument(
-        '--db-host',
-        metavar='<hostname>',
-        type=str,
-        default='localhost',
-        help="""Database hostname.""")
-    fetchini.add_argument(
-        '--db-port',
-        metavar='<port>',
-        type=str,
-        default='5432',
-        help="""Database port.""")
-    fetchini.add_argument(
-        '--tds-password',
-        metavar='<password>',
-        type=str,
-        help="""
-        THREDDS password.|n
-        Required to configure "esg.ini".
-        """)
-    fetchini.add_argument(
-        '--data-root-path',
-        metavar='<path>',
-        type=str,
-        help="""
-        The data directory of the corresponding requested project.|n
-        If (one or) several projects are requested, the path of|n
-         a file in which each line follows the syntax: |n
-        "<project_id> | <data_root_path>".|n
-        Required to configure "esg.ini".
-        """)
-    fetchini.add_argument(
-        '--esgf-index-peer',
-        metavar='<hostname>',
-        type=str,
-        help="""Index peer hostname.""")
-    fetchini.add_argument(
-        '--esgf-host',
-        metavar='<hostname>',
-        type=str,
-        help="""Datanode hostname.""")
-    fetchini.add_argument(
-        '--esg-root-id',
-        metavar='<institute>',
-        type=str,
-        help="""Institute root id.""")
     group = fetchini.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '-k',
@@ -316,9 +254,7 @@ def get_args():
         '--dataset-list',
         metavar='<text_file>',
         type=str,
-        help="""
-        File containing list of dataset IDs.
-        """)
+        help="""File containing list of dataset IDs.""")
     checkvocab.add_argument(
         '--project',
         metavar='<project_id>',
@@ -398,12 +334,23 @@ def get_args():
         default=datetime.now().strftime('%Y%m%d'),
         help="""Set the version number for all scanned files.""")
     drs.add_argument(
-        '--set',
-        metavar='<key>=<value>',
+        '--set-value',
+        metavar='<facet>=<value>',
         type=keyval_converter,
         action='append',
         help="""
-        One or several facet values to set.|n
+        Set a facet value.|n
+        Duplicate the flag to set several facet values.|n
+        This overwrites facet auto-detection.
+        """)
+    drs.add_argument(
+        '--set-key',
+        metavar='<facet>=<key>',
+        type=keyval_converter,
+        action='append',
+        help="""
+        Map one a facet key with a NetCDF attribute name.|n
+        Duplicate the flag to map several facet keys.|n
         This overwrites facet auto-detection.
         """)
     drs.add_argument(

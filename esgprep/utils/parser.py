@@ -9,12 +9,11 @@
 
 import ConfigParser
 import os
-import re
 import string
 from glob import glob
 
-from esgprep.utils.utils import DirectoryChecker
 from esgprep.utils.exceptions import *
+from esgprep.utils.utils import DirectoryChecker
 
 
 class CfgParser(ConfigParser.ConfigParser):
@@ -96,7 +95,7 @@ class CfgParser(ConfigParser.ConfigParser):
         if not self:
             raise EmptyConfigFile(self.read_paths)
 
-    def get_pattern_from_directory_format(self, section):
+    def translate_directory_format(self, section):
         """
         Return a regular expression associated with the ``directory_format`` option
         in the configuration file. This can be passed to the Python ``re`` methods.
@@ -114,7 +113,7 @@ class CfgParser(ConfigParser.ConfigParser):
         if re.compile(r'%\((root)\)s').search(pattern):
             pattern = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern)
         # Include specific facet patterns
-        for facet, facet_regex in self.get_patterns(section).iteritems():
+        for facet, facet_regex in self.get_patterns(section).items():
             pattern = re.sub(re.compile(r'%\(({0})\)s'.format(facet)), facet_regex.pattern, pattern)
         # Constraint on %(version)s number
         pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
@@ -122,7 +121,7 @@ class CfgParser(ConfigParser.ConfigParser):
         pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
         return '{0}/(?P<filename>[\w.-]+)$'.format(pattern)
 
-    def get_pattern_from_dataset_format(self, section):
+    def translate_dataset_format(self, section):
         """
         Return a regular expression associated with the ``dataset_id`` option
         in the configuration file. This can be passed to the Python ``re`` methods.
@@ -135,10 +134,16 @@ class CfgParser(ConfigParser.ConfigParser):
         pattern = pattern.replace('\.', '__ESCAPE_DOT__')
         pattern = pattern.replace('.', r'\.')
         pattern = pattern.replace('__ESCAPE_DOT__', r'\.')
-        pattern = re.sub(r'%\(([^()]*)\)s', r'(?P<\1>[^\.]+)', pattern)
+        # Include specific facet patterns
+        for facet, facet_regex in self.get_patterns(section).iteritems():
+            pattern = re.sub(re.compile(r'%\(({0})\)s'.format(facet)), facet_regex.pattern, pattern)
+        # Constraint on %(version)s number
+        pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
+        # Translate all patterns matching %(name)s
+        pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
         return pattern
 
-    def get_pattern_from_filename_format(self, section):
+    def translate_filename_format(self, section):
         """
         Return a regular expression filters associated with the ``directory_format`` option
         in the configuration file. This can be passed to the Python ``re`` methods.
@@ -159,31 +164,6 @@ class CfgParser(ConfigParser.ConfigParser):
         # Translate all patterns matching %(name)s
         return re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
 
-    def _get_vars_in_pattern(self, pattern):
-        """
-        Return a list of variable names in the regexp referenced with the (?P<varname>expression) syntax
-        """
-        return re.compile(pattern).groupindex.keys()
-
-    def get_pattern_and_facets_from_directory_format(self, section):
-        pattern = self.get_pattern_from_directory_format(section)
-        return pattern, self._get_vars_in_pattern(pattern)
-        
-    def get_pattern_and_facets_from_dataset_format(self, section):
-        pattern = self.get_pattern_from_dataset_format(section)
-        return pattern, self._get_vars_in_pattern(pattern)
-        
-    def get_pattern_and_facets_from_filename_format(self, section):
-        pattern = self.get_pattern_from_filename_format(section)
-        return pattern, self._get_vars_in_pattern(pattern)        
-
-    def get_facets_of_type_enum(self, section):
-        """
-        Returns the list of facets listed in the 'categories' table with 'enum' as their type.
-        """
-        categories = self.get_options_from_table(section, "categories")
-        return ([x[0] for x in categories if x[1] == "enum"])
-
     def get_facets(self, section, option, ignored=None):
         """
         Returns the set of facets declared into "*_format" attributes in the configuration file.
@@ -192,13 +172,13 @@ class CfgParser(ConfigParser.ConfigParser):
         :param list ignored: The list of facets to ignored
         :returns: The collection of facets
         :rtype: *set*
+        
         """
         facets = re.findall(re.compile(r'%\(([^()]*)\)s'), self.get(section, option, raw=True))
         if ignored:
             return [f for f in facets if f not in ignored]
         else:
             return facets
-
 
     def check_options(self, section, pairs):
         """
@@ -290,7 +270,7 @@ class CfgParser(ConfigParser.ConfigParser):
             return list()
         try:
             if field_id:
-                options = [tuple(option)[field_id-1] for option in map(lambda x: split_line(x), option_lines)]
+                options = [tuple(option)[field_id - 1] for option in map(lambda x: split_line(x), option_lines)]
             else:
                 options = [tuple(option) for option in map(lambda x: split_line(x), option_lines)]
         except:

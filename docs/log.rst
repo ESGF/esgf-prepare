@@ -6,6 +6,11 @@ Changelog
 +------------+---------+--------------------------------------------------------------------------------------------------+
 | Date       | Version | Modifications                                                                                    |
 +============+=========+==================================================================================================+
+| 2017-04-14 | 2.7     | Major review from Alan. Improve all outputs. Improve logger management.                          |
+|            |         | Remove ``esg.ini`` fetching and ``fetch-ini`` code simplified                                    |
+|            |         | Add ``--set-*`` features and ``drs`` result recording                                            |
+|            |         | Add ``--no-cleanup`` features to ``mapfile`` command                                             |
++------------+---------+--------------------------------------------------------------------------------------------------+
 | 2016-09-27 | 2.5     | Improvement of ``fetch-ini`` command to fetch all configuration files. Small refactoring.        |
 +------------+---------+--------------------------------------------------------------------------------------------------+
 | 2016-07-22 | 2.4     | Improvement of ``mapfile`` and ``check-vocab`` commands according to the 3.0  publisher release. |

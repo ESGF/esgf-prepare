@@ -66,7 +66,7 @@ class File(object):
 
          * Matches filename with corresponding project pattern to get DRS attributes values
          * Add NetCDF global attributes to DRS attributes
-         * Overwrite with ctx.set_facets pairs if submitted
+         * Overwrite with ctx.set_values pairs if submitted
          * attributes.keys() are facet names
          * attributes[facet] is the facet values.
 
@@ -90,7 +90,7 @@ class File(object):
         except:
             raise FilenameNotMatch(self.filename, ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
         # Get attributes from command-line, overwritting exsiting ones
-        self.attributes.update(ctx.set_facets)
+        self.attributes.update(ctx.set_values)
         # Set version to None
         self.attributes['root'] = ctx.root
         # Set version to None
@@ -110,10 +110,11 @@ class File(object):
 
          * Checks each value which the facet is found in directory_format AND attributes keys,
          * Gets missing attributes from the maptables in the esg.<project>.ini,
+         * Get attribute from ctx.set_keys if submitted and exists,
          * In the case of non-standard attribute, get the most similar key among attributes keys,
          * Builds the DRS path from the attributes.
 
-        :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
+        :param esgprep.drs.main.ProcessingContext ctx: The processing context
         :returns: The ordered DRS parts
         :rtype: *OrderedDict*
         :raises Error: If a facet cannot be checked
@@ -124,17 +125,22 @@ class File(object):
         # If a DRS attribute is missing regarding the directory-format template,
         # the DRS attributes are completed from esg.<project>.ini maptables, or with the most
         # similar NetCDF attribute.
-        for facet in set(ctx.facets).intersection(self.attributes.keys()):
-            if facet not in IGNORED_KEYS:
-                ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
-        for facet in set(ctx.facets).difference(self.attributes.keys()):
-            if facet not in IGNORED_KEYS:
-                try:
-                    self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
-                                                                         '{0}_map'.format(facet),
-                                                                         self.attributes)
-                except:
-                    # TODO: Make small project handler to map facet name with NetCDF attribute keys
+        for facet in set(ctx.facets).intersection(self.attributes.keys()) - set(IGNORED_KEYS):
+            ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
+        for facet in set(ctx.facets).difference(self.attributes.keys()) - set(IGNORED_KEYS):
+            try:
+                self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
+                                                                     '{0}_map'.format(facet),
+                                                                     self.attributes)
+            except:
+                if facet in ctx.set_keys.keys():
+                    try:
+                        # Rename attribute key
+                        self.attributes[facet] = self.attributes.pop(ctx.set_keys[facet])
+                        ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
+                    except KeyError:
+                        raise NoNetCDFAttribute(ctx.set_keys[facet], self.ffp)
+                else:
                     # Find closest NetCDF attributes in terms of partial string comparison
                     key, score = process.extractOne(facet, self.attributes.keys(), scorer=fuzz.partial_ratio)
                     if score >= 80:
@@ -298,13 +304,17 @@ class DRSTree(Tree):
 
     """
 
-    def __init__(self, root):
+    def __init__(self, root, version, mode):
         # Retrieve original class init
         Tree.__init__(self)
         # To records dataset and files
         self.paths = dict()
-        # Retrieve the root director to build the DRS
+        # Retrieve the root directory to build the DRS
         self.drs_root = root
+        # Retrieve the dataset version to build the DRS
+        self.drs_version = version
+        # Retrieve the migration mode
+        self.drs_mode = mode
 
     def get_display_lengths(self):
         """

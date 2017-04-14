@@ -9,10 +9,11 @@
 
 import fnmatch
 import logging
-import pickle
 import os
+import pickle
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
+
 from tqdm import tqdm
 
 from esgprep.drs.constants import *
@@ -35,9 +36,12 @@ class ProcessingContext(object):
         self.directory = args.directory
         self.root = os.path.normpath(args.root)
         self.filter = args.filter
-        self.set_facets = {}
-        if args.set:
-            self.set_facets = dict(args.set)
+        self.set_values = {}
+        if args.set_value:
+            self.set_values = dict(args.set_value)
+        self.set_keys = {}
+        if args.set_key:
+            self.set_keys = dict(args.set_key)
         self.threads = args.max_threads
         self.project = args.project
         self.action = args.action
@@ -58,9 +62,9 @@ class ProcessingContext(object):
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
         self.facets = self.cfg.get_facets(self.project_section, 'directory_format')
-        self.pattern = self.cfg.get_pattern_from_filename_format(self.project_section)
+        self.pattern = self.cfg.translate_filename_format(self.project_section)
         self.verbose = args.v
-        self.tree = DRSTree(self.root)
+        self.tree = DRSTree(self.root, self.version, self.mode)
 
 
 def yield_inputs(ctx):
@@ -213,6 +217,20 @@ def process(ffp, ctx):
     return True
 
 
+def check_args(args, old_args):
+    """
+    Checks command-line argument to avoid discrepancies between ``esgprep drs`` steps.
+    
+    :param argparse.Namespace args: The submitted arguments 
+    :param argparse.Namespace old_args: The recorded arguments 
+    :raises Error: If one argument differs
+    
+    """
+    for k in set(args.__dict__) - set(IGNORED_ARGS):
+        if args.__dict__[k] != old_args.__dict__[k]:
+            raise MultipleContextParameter(k, args.__dict__[k], old_args.__dict__[k])
+
+
 def main(args):
     """
     Main process that:
@@ -229,21 +247,26 @@ def main(args):
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
     logging.info('==> Scan started')
-    # Get the number of files to scan
-    nfiles = sum(1 for _ in yield_inputs(ctx))
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.threads))
     if ctx.action != 'list' and os.path.isfile('/tmp/DRSTree.pkl'):
         # Load 'DRSTree.pkl' if already exists
         with open('/tmp/DRSTree.pkl', 'rb') as f:
+            old_args = pickle.load(f)
             ctx.tree = pickle.load(f)
             results = pickle.load(f)
-        logging.warning('DRS tree loaded')
+        logging.warning('Previous DRS tree loaded')
+        # Ensure that processing context is similar to previous step
+        check_args(args, old_args)
     else:
         # Process supplied files
         if not args.log and not ctx.verbose:
+            # Get the number of files to scan
+            nfiles = sum(1 for _ in utils.Tqdm(yield_inputs(ctx),
+                                               desc='Collecting files'.ljust(LEN_MSG),
+                                               unit='files'))
             results = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
-                                       desc='Scanning incoming files',
+                                       desc='Scanning incoming files'.ljust(LEN_MSG),
                                        total=nfiles,
                                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
                                        ncols=100,
@@ -253,9 +276,10 @@ def main(args):
     if ctx.action == 'list':
         # Backup DRS Tree for later usage with other command lines
         with open('/tmp/DRSTree.pkl', 'wb') as f:
+            pickle.dump(args, f)
             pickle.dump(ctx.tree, f)
             pickle.dump(results, f)
-        logging.warning('DRS tree backuped')
+        logging.warning('DRS tree recorded for next usage')
     # Close threads pool
     pool.close()
     pool.join()
@@ -276,7 +300,7 @@ def main(args):
         # Results list contains some None values = some files have been skipped or failed during the scan
         # Print number of scan errors
         if not args.log and not ctx.verbose:
-            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(21),
+            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(23),
                                               results.count(None),
                                               logging.getLogger().handlers[0].baseFilename))
         logging.warning('{0} file(s) have been skipped'.format(results.count(None)))
@@ -289,7 +313,7 @@ def main(args):
         # Results list contains only None values = all files have been skipped or failed during the scan
         # Print number of scan errors
         if not args.log and not ctx.verbose:
-            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(21),
+            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(23),
                                               len(results),
                                               logging.getLogger().handlers[0].baseFilename))
         logging.warning('==> All files have been ignored or have failed leading to no mapfile.')
