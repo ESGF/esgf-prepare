@@ -297,6 +297,8 @@ class DRSLeaf(object):
             except OSError:
                 pass
         print('{0} {1} {2}'.format(UNIX_COMMAND[self.mode], self.src, self.dst))
+        if self.mode == 'symlink' and os.path.exists(self.dst):
+            os.unlink(self.dst)
         if not todo_only:
             globals()[self.mode](self.src, self.dst)
 
