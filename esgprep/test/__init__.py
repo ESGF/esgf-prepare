@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: esgprep
+.. module:: esgprep.test
 .. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.fr>
 
 """

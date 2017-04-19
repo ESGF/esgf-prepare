@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: esgprep
     :platform: Unix
     :synopsis: Toolbox to prepare ESGF date for publication.
-
-.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.jussieu.fr>
 
 """
 
@@ -62,7 +59,7 @@ def get_args():
         add_help=False,
         epilog="""
         Developed by:|n
-        Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.jussieu.fr)|n
+        Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.fr)|n
         Berger, K. (DKRZ - berger@dkrz.de)|n
         Iwi, A. (STFC/CEDA - alan.iwi@stfc.ac.uk)|n
         Stephens, A. (STFC/CEDA - ag.stephens@stfc.ac.uk)

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-   :platform: Unix
-   :synopsis: Useful functions to use with this package.
+    :platform: Unix
+    :synopsis: Useful functions to use with this package.
 
 """
 
@@ -150,6 +150,10 @@ class Tqdm(tqdm):
     def format_meter(n, total, elapsed, ncols=None, prefix='',
                      ascii=False, unit='it', unit_scale=False, rate=None,
                      bar_format=None, postfix=None):
+        """
+        Re-formet counter in case of unknown total
+        
+        """
         try:
             _unich = unichr
         except NameError:

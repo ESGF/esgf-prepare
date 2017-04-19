@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-   :platform: Unix
-   :synopsis: Methods used to parse ESGF ini files.
+    :platform: Unix
+    :synopsis: Methods used to parse ESGF ini files.
 
 """
 
