@@ -290,6 +290,7 @@ class DRSLeaf(object):
         :raises Error: If any IO action fails
 
         """
+        # Make directory for destination path if not exist
         print('{0} {1}'.format('mkdir -p', os.path.dirname(self.dst)))
         if not todo_only:
             try:
@@ -297,8 +298,12 @@ class DRSLeaf(object):
             except OSError:
                 pass
         print('{0} {1} {2}'.format(UNIX_COMMAND[self.mode], self.src, self.dst))
+        # Unlink symbolic link if already exists
         if self.mode == 'symlink' and os.path.exists(self.dst):
-            os.unlink(self.dst)
+            print('{0} {1}'.format('unlink', self.dst))
+            if not todo_only:
+                os.unlink(self.dst)
+        # Make upgrade depending on the migration mode
         if not todo_only:
             globals()[self.mode](self.src, self.dst)
 

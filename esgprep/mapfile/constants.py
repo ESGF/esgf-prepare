@@ -12,3 +12,6 @@ WORKING_EXTENSION = '.part'
 
 # Progress bar message length
 LEN_MSG = 21
+
+# Out of version scope (OOVS) tag
+OOVS = 'oovs'

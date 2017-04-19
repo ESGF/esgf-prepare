@@ -287,25 +287,26 @@ def process(ffp, ctx):
     fh = File(ffp)
     # Matching between directory_format and file full path
     fh.load_attributes(ctx)
-    # Silently stop process if not in desired version scope
-    if in_version_scope(fh, ctx):
-        # Deduce dataset_id
-        dataset_id = fh.get_dataset_id(ctx)
-        # Deduce dataset_version
-        dataset_version = fh.get_dataset_version(ctx)
-        # Build mapfile name depending on the --mapfile flag and appropriate tokens
-        outfile = get_output_mapfile(fh.attributes, dataset_id, dataset_version, ctx)
-        # Generate the corresponding mapfile entry/line
-        line = generate_mapfile_entry(dataset_id,
-                                      dataset_version,
-                                      ffp,
-                                      fh.size,
-                                      fh.mtime,
-                                      fh.checksum(ctx.checksum_type, ctx.checksum_client),
-                                      ctx)
-        insert_mapfile_entry(outfile, line, ffp)
-        # Return mapfile name
-        return outfile
+    # Silently stop process if not in desired version scope (i.e., Out Of Version Scope = OOVS)
+    if not in_version_scope(fh, ctx):
+        return OOVS
+    # Deduce dataset_id
+    dataset_id = fh.get_dataset_id(ctx)
+    # Deduce dataset_version
+    dataset_version = fh.get_dataset_version(ctx)
+    # Build mapfile name depending on the --mapfile flag and appropriate tokens
+    outfile = get_output_mapfile(fh.attributes, dataset_id, dataset_version, ctx)
+    # Generate the corresponding mapfile entry/line
+    line = generate_mapfile_entry(dataset_id,
+                                  dataset_version,
+                                  ffp,
+                                  fh.size,
+                                  fh.mtime,
+                                  fh.checksum(ctx.checksum_type, ctx.checksum_client),
+                                  ctx)
+    insert_mapfile_entry(outfile, line, ffp)
+    # Return mapfile name
+    return outfile
 
 
 def clean(directory):
@@ -362,6 +363,16 @@ def main(args):
     # Close threads pool
     pool.close()
     pool.join()
+    # Get the number of files out of version scope (OOVS) and clean them from mapfiles list
+    oovs = mapfiles.count(OOVS)
+    mapfiles = [mapfile for mapfile in mapfiles if mapfile is not OOVS]
+    # Print number of files out of the version scope if exist
+    if oovs:
+        if not args.log and not ctx.verbose:
+            print('{0}: {1} ({2})'.format('File(s) skipped'.ljust(LEN_MSG),
+                                          oovs,
+                                          'out of version scope'))
+        logging.info('{0} file(s) skipped (out of the version scope)'.format(oovs))
     # Decline outputs depending on the scan results
     # Raise errors when one or several files have been skipped or failed
     if all(mapfiles) and any(mapfiles):
@@ -385,6 +396,10 @@ def main(args):
     elif not all(mapfiles) and any(mapfiles):
         # Mapfiles list contains some None values = some files have been skipped or failed during the scan
         # Print number of generated mapfiles
+        # Remove mapfile working extension
+        # A final mapfile is silently overwritten if already exists
+        for mapfile in set(mapfiles):
+            os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
         if not args.log and not ctx.verbose:
             print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(LEN_MSG),
                                               len(set(filter(None, mapfiles))),
