@@ -9,9 +9,9 @@
 
 import logging
 import sys
+import os
 from datetime import datetime
 from hashlib import sha1
-from os.path import *
 
 from exceptions import *
 from github3 import GitHub
@@ -91,13 +91,14 @@ def backup(f, mode=None):
     :param str mode: The backup mode to follow
 
     """
-    if isfile(f):
+    if os.path.isfile(f):
         if mode == 'one_version':
             dst = '{0}.bkp'.format(f)
             os.rename(f, dst)
         elif mode == 'keep_versions':
-            bkpdir = join(dirname(f), 'bkp')
-            dst = join(bkpdir, '{0}.{1}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'), basename(f)))
+            bkpdir = os.path.join(os.path.dirname(f), 'bkp')
+            dst = os.path.join(bkpdir, '{0}.{1}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'),
+                                                        os.path.basename(f)))
             try:
                 os.makedirs(bkpdir)
             except OSError:
@@ -108,6 +109,18 @@ def backup(f, mode=None):
         else:
             # No backup = default
             pass
+
+
+def write_content(outfile, content):
+    """
+    Write GitHub content into a file using context manager.
+    
+    :param str outfile: The output file 
+    :param *github3.GitHub.repository.contents* content: The GitHub content
+    
+    """
+    with open(outfile, 'w+') as f:
+        f.write(content.decoded)
 
 
 def gh_content(gh, path):
@@ -126,7 +139,7 @@ def gh_content(gh, path):
         if not content:
             raise GitHubNoContent(gh.contents_urlt.expand(path=path))
     except GitHubError as e:
-        raise GitHubConnectionError(e.msg, repository=gh.name, team=dirname(gh.full_name))
+        raise GitHubConnectionError(e.msg, repository=gh.name, team=os.path.dirname(gh.full_name))
     return content
 
 
@@ -172,7 +185,7 @@ def target_handlers(gh, projects=None):
     return list(h_avail)
 
 
-def fetch(f, remote_checksum, keep, overwrite):
+def do_fetching(f, remote_checksum, keep, overwrite):
     """
     Returns True or False depending on decision schema
 
@@ -187,14 +200,14 @@ def fetch(f, remote_checksum, keep, overwrite):
     if overwrite:
         return True
     else:
-        if not isfile(f):
+        if not os.path.isfile(f):
             return True
         else:
             if githash(f) == remote_checksum:
                 return False
             else:
                 logging.warning('Local "{0}" does not match version on GitHub. '
-                                'The file is either outdated or was modified.'.format((basename(f))))
+                                'The file is either outdated or was modified.'.format((os.path.basename(f))))
                 if keep:
                     return False
                 else:
@@ -217,6 +230,30 @@ def githash(outfile):
     return unicode(s.hexdigest())
 
 
+def fetch(gh, outdir, path, backup_mode, keep=False, overwrite=False):
+    """
+    Get corresponding file from GitHub
+     
+    :param *github3.repos* gh: The GitHub repository connector
+    :param str outdir: The output directory
+    :param str path: The GitHub path of the remote file
+    :param str backup_mode: The backup mode
+    :param boolean keep: True to keep existing files
+    :param boolean overwrite: True to overwrite existing files
+    
+    """
+    # Set output file full path
+    outfile = os.path.join(outdir, os.path.basename(path))
+    # Get file content
+    content = gh_content(gh, path)
+    if do_fetching(outfile, content.sha, keep, overwrite):
+        # Backup old file if exists
+        backup(outfile, mode=backup_mode)
+        # Write new file
+        write_content(outfile, content)
+    logging.info('{0} --> {1}'.format(content.html_url, outfile))
+
+
 def main(args):
     """
     Main process that:
@@ -236,7 +273,7 @@ def main(args):
     # If ESGF node and args.i = other -> if not exists make it
     # If not ESGF node and args.i = other -> if not exists make it
     outdir = os.path.realpath(os.path.normpath(args.i))
-    if not isdir(outdir):
+    if not os.path.isdir(outdir):
         try:
             os.makedirs(outdir)
             logging.warning('{0} created'.format(outdir))
@@ -255,69 +292,68 @@ def main(args):
 
     # Get "remote" project targeted from the command-line
     projects = target_projects(gh, args.project)
-    for project in tqdm(projects,
+    if args.pbar:
+        for project in tqdm(projects,
                         desc='Fetching "esg.<project>.ini"'.ljust(LEN_MSG),
                         total=len(projects),
                         bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
                         ncols=100,
                         unit='files',
                         file=sys.stdout):
-        outfile = join(outdir, 'esg.{0}.ini'.format(project))
-        # Get file content
-        content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project)))
-        if fetch(outfile, content.sha, args.k, args.o):
-            # Backup old file if exists
-            backup(outfile, mode=args.b)
-            # Write new file
-            with open(outfile, 'w+') as f:
-                f.write(content.decoded)
+            path = os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project))
+            fetch(gh, outdir, path, args.b, args.k, args.o)
+    else:
+        for project in projects:
+            path = os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project))
+            fetch(gh, outdir, path, args.b, args.k, args.o)
 
     # Check if esgprep is run on an ESGF node
     try:
         import esgcet
+
     #############################################
     # Fetch and deploy esgcet_models_tables.txt #
     #############################################
+
         outdir = '/esg/config/esgcet'
-        if not exists(outdir):
+        if not os.path.exists(outdir):
             logging.warning('"{0}" does not exist. Fetching "esgcet_models_table.txt" aborted.'.format(outdir))
-        outfile = join(outdir, 'esgcet_models_table.txt')
-        # Get file content
-        content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'esgcet_models_table.txt'))
-        if fetch(outfile, content.sha, args.k, args.o):
-            # Backup old file if exists
-            backup(outfile)
-            # Write new file
-            with open(outfile, 'w+') as f:
-                f.write(content.decoded)
-        # Just for homogeneous display
-        print '{0}: 100% |█████████████████████████████████████████████| 1/1 files'.format(
-            'Fetching "esgcet_models_table.txt"'.ljust(LEN_MSG))
+        if args.pbar:
+            for _ in tqdm(range(0),
+                                desc='Fetching "esgcet_models_table.txt"'.ljust(LEN_MSG),
+                                total=1,
+                                bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                                ncols=100,
+                                unit='files',
+                                file=sys.stdout):
+                path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
+                fetch(gh, outdir, path, args.b, args.k, args.o)
+        else:
+            path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
+            fetch(gh, outdir, path, args.b, args.k, args.o)
 
     #######################################
     # Fetch and deploy project_handler.py #
     #######################################
 
-        outdir = join(dirname(esgcet.__file__), 'config')
-        if not exists(outdir):
+        outdir = os.path.join(os.path.dirname(esgcet.__file__), 'config')
+        if not os.path.exists(outdir):
             logging.warning('"{0}" does not exist. Fetching handlers aborted.'.format(outdir))
         projects = target_handlers(gh, args.project)
-        for project in tqdm(projects,
-                            desc='Fetching "<project>_handler.py"'.ljust(LEN_MSG),
-                            total=len(projects),
-                            bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                            ncols=100,
-                            unit='files',
-                            file=sys.stdout):
-            outfile = join(outdir, '{0}_handler.py'.format(project))
-            # Get file content
-            content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'handlers', '{0}_handler.py'.format(project)))
-            if fetch(outfile, content.sha, args.k, args.o):
-                # Backup old file if exists
-                backup(outfile, mode=args.b)
-                # Write new file
-                with open(outfile, 'w+') as f:
-                    f.write(content.decoded)
+        if args.pbar:
+            for project in tqdm(projects,
+                                desc='Fetching "<project>_handler.py"'.ljust(LEN_MSG),
+                                total=len(projects),
+                                bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                                ncols=100,
+                                unit='files',
+                                file=sys.stdout):
+                path = os.path.join(GITHUB_DIRECTORY, 'handlers', '{0}_handler.py'.format(project))
+                fetch(gh, outdir, path, args.b, args.k, args.o)
+        else:
+            for project in projects:
+                path = os.path.join(GITHUB_DIRECTORY, 'ini', '{0}_handler.py'.format(project))
+                fetch(gh, outdir, path, args.b, args.k, args.o)
 
     except ImportError:
         logging.warning('No module named "esgcet". Not on an ESGF node? Fetching aborted.')

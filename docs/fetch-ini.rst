@@ -14,7 +14,7 @@ primary means of configuring the ESGF publisher.
 
 * The ``<project_id>_handler.py`` are Python methods to guide the publisher in metadata harvesting.
 
-The ``fetch-ini`` command allows you to download and configure "on the fly" preset files hosted on `a GitHub repository <https://github.com/ESGF/config/>`_.
+The ``fetch-ini`` command allows you to download preset files hosted on `a GitHub repository <https://github.com/ESGF/config/>`_.
 
 If you prepare your data outside of an ESGF node using ``esgprep`` as a full standalone toolbox, this step
 is mandatory. Keep in mind that the fetched files have to be reviewed to ensure a correct configuration

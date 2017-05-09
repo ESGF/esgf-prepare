@@ -48,9 +48,16 @@ includes:
  * `os <https://docs.python.org/2/library/os.html>`_
  * `re <https://docs.python.org/2/library/re.html>`_
  * `sys <https://docs.python.org/2/library/sys.html>`_
+ * `glob <https://docs.python.org/2/library/glob.html>`_
+ * `hashlib <https://docs.python.org/2/library/hashlib.html>`_
+ * `importlib <https://docs.python.org/2/library/importlib.html>`_
  * `string <https://docs.python.org/2/library/string.html>`_
  * `fnmatch <https://docs.python.org/2/library/fnmatch.html>`_
  * `logging <https://docs.python.org/2/library/logging.html>`_
+ * `collections <https://docs.python.org/2/library/collections.html>`_
+ * `shutil <https://docs.python.org/2/library/shutil.html>`_
+ * `pickle <https://docs.python.org/2/library/pickle.html>`_
+ * `unittest <https://docs.python.org/2/library/unittest.html>`_
  * `argparse <https://docs.python.org/2/library/argparse.html>`_
  * `datetime <https://docs.python.org/2/library/datetime.html>`_
  * `ConfigParser <https://docs.python.org/2/library/configparser.html>`_
@@ -58,25 +65,12 @@ includes:
  * `functools <https://docs.python.org/2/library/functools.html>`_
  * `multiprocessing <https://docs.python.org/2/library/multiprocessing.html>`_
 
+Some required librairies are not included in most Python distributions. PLease install them using the usual PIP command:
 
-Please install the ``lockfile`` and ``requests`` libraries not included in most Python distributions using the usual
-PIP command-line:
-
-.. code-block:: bash
-
-   pip install lockfile
-   pip install requests
-
-or download and install the sources from `PyPi <https://pypi.python.org/pypi/>`_:
-
-.. code-block:: bash
-
-   wget https://pypi.python.org/packages/source/l/lockfile/lockfile-0.10.2.tar.gz#md5=1aa6175a6d57f082cd12e7ac6102ab15
-   tar -xzvf lockfile-0.10.2.tar.gz
-   cd lockfile-0.10.2/
-   python setup.py install
-
-   wget https://pypi.python.org/packages/49/6f/183063f01aae1e025cf0130772b55848750a2f3a89bfa11b385b35d7329d/requests-2.10.0.tar.gz#md5=a36f7a64600f1bfec4d55ae021d232ae
-   tar -xzvf requests-2.10.0.tar.gz
-   cd requests-2.10.0/
-   python setup.py install
+ * `fuzzywuzzy <https://pypi.python.org/pypi/fuzzywuzzy>`_
+ * `github3 <https://github3py.readthedocs.io/en/master/>`_
+ * `hurry.filesize <https://pypi.python.org/pypi/hurry.filesize>`_
+ * `lockfile <https://pypi.python.org/pypi/lockfile/0.12.2>`_
+ * `netCDF4 <http://unidata.github.io/netcdf4-python/>`_
+ * `tqdm <https://pypi.python.org/pypi/tqdm>`_
+ * `treelib <https://pypi.python.org/pypi/treelib>`_

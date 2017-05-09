@@ -118,19 +118,14 @@ def get_args():
         """)
     parent.add_argument(
         '--log',
-        metavar='$PWD',
+        metavar='CWD',
         type=str,
-        const=os.getcwd(),
+        const='{0}/logs'.format(os.getcwd()),
         nargs='?',
         help="""
         Logfile directory.|n
         If not, standard output is used.
         """)
-    parent.add_argument(
-        '--test',
-        action='store_true',
-        default=False,
-        help="""Run the test suite.""")
     parent.add_argument(
         '-v',
         action='store_true',
@@ -187,7 +182,7 @@ def get_args():
     fetchini._positionals.title = "Positional arguments"
     fetchini.add_argument(
         '--project',
-        metavar='<project>',
+        metavar='PROJECT_ID',
         type=str,
         nargs='+',
         help="""
@@ -207,6 +202,7 @@ def get_args():
         help="""Ignore and overwrite existing file(s) without prompting.""")
     fetchini.add_argument(
         '-b',
+        metavar='one_version',
         choices=['one_version', 'keep_versions'],
         type=str,
         nargs='?',
@@ -222,12 +218,12 @@ def get_args():
         """)
     fetchini.add_argument(
         '--gh-user',
-        metavar='<username>',
+        metavar='USERNAME',
         type=str,
         help="""GitHub username.""")
     fetchini.add_argument(
         '--gh-password',
-        metavar='<password>',
+        metavar='PASSWORD',
         type=str,
         help="""GitHub password.""")
 
@@ -261,6 +257,7 @@ def get_args():
     group = checkvocab.add_mutually_exclusive_group(required=True)
     group.add_argument(
         '--directory',
+        metavar='PATH',
         action=DirectoryChecker,
         nargs='+',
         help="""
@@ -269,12 +266,12 @@ def get_args():
         """)
     group.add_argument(
         '--dataset-list',
-        metavar='<text_file>',
+        metavar='TXT_FILE',
         type=str,
         help="""File containing list of dataset IDs.""")
     checkvocab.add_argument(
         '--project',
-        metavar='<project_id>',
+        metavar='PROJECT_ID',
         type=str,
         required=True,
         help="""Required lower-cased project name.""")
@@ -334,13 +331,13 @@ def get_args():
         Unix wildcards are allowed.""")
     drs.add_argument(
         '--project',
-        metavar='<project_id>',
+        metavar='PROJECT_ID',
         type=str,
         required=True,
         help="""Required lower-cased project name.""")
     drs.add_argument(
         '--root',
-        metavar='$PWD',
+        metavar='CWD',
         action=DirectoryChecker,
         default=os.getcwd(),
         help="""Root directory to build the DRS.""")
@@ -352,7 +349,7 @@ def get_args():
         help="""Set the version number for all scanned files.""")
     drs.add_argument(
         '--set-value',
-        metavar='<facet>=<value>',
+        metavar='FACET_KEY=VALUE',
         type=keyval_converter,
         action='append',
         help="""
@@ -362,7 +359,7 @@ def get_args():
         """)
     drs.add_argument(
         '--set-key',
-        metavar='<facet>=<key>',
+        metavar='FACET_KEY=ATTRIBUTE',
         type=keyval_converter,
         action='append',
         help="""
@@ -458,7 +455,7 @@ def get_args():
         """)
     mapfile.add_argument(
         '--project',
-        metavar='<project_id>',
+        metavar='PROJECT_ID',
         type=str,
         required=True,
         help="""Required lower-cased project name.""")
@@ -477,7 +474,7 @@ def get_args():
         """)
     mapfile.add_argument(
         '--outdir',
-        metavar='$PWD',
+        metavar='CWD/mapfiles',
         type=str,
         default=os.path.join(os.getcwd(), 'mapfiles'),
         help="""
@@ -538,7 +535,7 @@ def get_args():
         """)
     mapfile.add_argument(
         '--tech-notes-url',
-        metavar='<url>',
+        metavar='URL',
         type=str,
         help="""
         URL of the technical notes to be associated with each|n
@@ -546,12 +543,12 @@ def get_args():
         """)
     mapfile.add_argument(
         '--tech-notes-title',
-        metavar='<title>',
+        metavar='TITLE',
         type=str,
         help="""Technical notes title for display.""")
     mapfile.add_argument(
         '--dataset',
-        metavar='<dataset_id>',
+        metavar='DATASET_ID',
         type=str,
         help="""
         String name of the dataset. If specified, all files will|n
@@ -588,8 +585,10 @@ def run():
     args = get_args()
     # Initialize logger
     init_logging(log=args.log, verbose=args.v)
+    # Print progress bar
+    setattr(args, 'pbar', True if not args.log and not args.v else False)
     # Run subcommand
-    if args.test:
+    if args.test and not args.cmd:
         print('"esgprep" test suite is not available. Coming soon!')
         exit()
         testsuite = unittest.TestLoader().discover('.')
@@ -601,7 +600,7 @@ def run():
             test.run()
         else:
             main = import_module('.main', package='esgprep.{0}'.format(submodule))
-            main.main()
+            main.main(args)
 
 
 # Main entry point for stand-alone call.
