@@ -25,7 +25,7 @@ class CfgParser(ConfigParser.ConfigParser):
     def __init__(self, directory, section=None):
         ConfigParser.ConfigParser.__init__(self)
         self.read_paths = list()
-        self.parse(DirectoryChecker.directory_checker(directory), section=section)
+        self.parse(directory, section=section)
 
     def options(self, section, defaults=True, **kwargs):
         """

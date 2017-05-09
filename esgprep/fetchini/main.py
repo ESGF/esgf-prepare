@@ -231,11 +231,20 @@ def main(args):
     :param ArgumentParser args: Parsed command-line arguments
 
     """
-    outdir = normpath(abspath(args.i))
-    # If output directory doesn't exist, create it.
+    # If ESGF node and args.i = /esg/config/esgcet -> exists
+    # If not ESGF node and args.i = /esg/config/esgcet -> doesn't exist -> use $PWD/ini instead
+    # If ESGF node and args.i = other -> if not exists make it
+    # If not ESGF node and args.i = other -> if not exists make it
+    outdir = os.path.realpath(os.path.normpath(args.i))
     if not isdir(outdir):
-        os.makedirs(outdir)
-        logging.warning('{0} created'.format(outdir))
+        try:
+            os.makedirs(outdir)
+            logging.warning('{0} created'.format(outdir))
+        except OSError:
+            outdir = '{0}/ini'.format(os.getcwd())
+            if not isdir(outdir):
+                os.makedirs(outdir)
+                logging.warning('{0} created'.format(outdir))
     # Instantiate Github session
     gh = github_connector(repository=GITHUB_REPO, team=GITHUB_TEAM, username=args.gh_user, password=args.gh_password)
     logging.info('Connected to "{0}" GitHub repository '.format(GITHUB_REPO.lower()))
@@ -251,7 +260,8 @@ def main(args):
                         total=len(projects),
                         bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
                         ncols=100,
-                        unit='files'):
+                        unit='files',
+                        file=sys.stdout):
         outfile = join(outdir, 'esg.{0}.ini'.format(project))
         # Get file content
         content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project)))
@@ -265,7 +275,6 @@ def main(args):
     # Check if esgprep is run on an ESGF node
     try:
         import esgcet
-
     #############################################
     # Fetch and deploy esgcet_models_tables.txt #
     #############################################
@@ -298,7 +307,8 @@ def main(args):
                             total=len(projects),
                             bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
                             ncols=100,
-                            unit='files'):
+                            unit='files',
+                            file=sys.stdout):
             outfile = join(outdir, '{0}_handler.py'.format(project))
             # Get file content
             content = gh_content(gh, path=join(GITHUB_DIRECTORY, 'handlers', '{0}_handler.py'.format(project)))
@@ -310,4 +320,4 @@ def main(args):
                     f.write(content.decoded)
 
     except ImportError:
-        logging.warning('Not on an ESGF node. Fetching aborted.')
+        logging.warning('No module named "esgcet". Not on an ESGF node? Fetching aborted.')

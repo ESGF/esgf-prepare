@@ -264,13 +264,15 @@ def main(args):
             # Get the number of files to scan
             nfiles = sum(1 for _ in utils.Tqdm(yield_inputs(ctx),
                                                desc='Collecting files'.ljust(LEN_MSG),
-                                               unit='files'))
+                                               unit='files',
+                                               file=sys.stdout))
             results = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
                                        desc='Scanning incoming files'.ljust(LEN_MSG),
                                        total=nfiles,
                                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
                                        ncols=100,
-                                       unit='files')]
+                                       unit='files',
+                                       file=sys.stdout)]
         else:
             results = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
     if ctx.action == 'list':

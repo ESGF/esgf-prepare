@@ -9,12 +9,16 @@
 
 import argparse
 import os
+import sys
+import unittest
 from datetime import datetime
+from importlib import import_module
 
-from utils.utils import MultilineFormatter, init_logging, keyval_converter, DirectoryChecker, VersionChecker
+from utils.utils import MultilineFormatter, DirectoryChecker, VersionChecker
+from utils.utils import init_logging, keyval_converter
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.7.0', datetime(year=2017, month=04, day=14).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('2.7.0', datetime(year=2017, month=5, day=9).strftime("%Y-%d-%m"))
 
 
 def get_args():
@@ -25,6 +29,12 @@ def get_args():
     :rtype: *argparse.Namespace*
 
     """
+    # Workaround to run ``esgprep [subcommand] --test`` without subparsers and required flags
+    if len(sys.argv[1:]) == 1 and sys.argv[1:][-1] == '--test':
+        return argparse.Namespace(**{'cmd': None, 'test': True, 'log': None, 'v': False})
+    if len(sys.argv[1:]) == 2 and sys.argv[1:][-1] == '--test':
+        return argparse.Namespace(**{'cmd': sys.argv[1:][-2], 'test': True, 'log': None, 'v': False})
+
     #############################
     # Main parser for "esgprep" #
     #############################
@@ -71,6 +81,11 @@ def get_args():
         action='help',
         help="""Show this help message and exit.""")
     main.add_argument(
+        '--test',
+        action='store_true',
+        default=False,
+        help="""Run the full test suite.""")
+    main.add_argument(
         '-V',
         action='version',
         version='%(prog)s ({0})'.format(__version__),
@@ -98,9 +113,9 @@ def get_args():
         help="""
         Initialization/configuration directory containing|n
         "esg.ini" and "esg.<project>.ini" files.|n
-        If not specified, the usual datanode directory is used.
+        If not specified, the usual datanode directory|n
+        is used.
         """)
-
     parent.add_argument(
         '--log',
         metavar='$PWD',
@@ -111,6 +126,11 @@ def get_args():
         Logfile directory.|n
         If not, standard output is used.
         """)
+    parent.add_argument(
+        '--test',
+        action='store_true',
+        default=False,
+        help="""Run the test suite.""")
     parent.add_argument(
         '-v',
         action='store_true',
@@ -566,23 +586,22 @@ def run():
     """
     # Get command-line arguments
     args = get_args()
-
     # Initialize logger
     init_logging(log=args.log, verbose=args.v)
-
     # Run subcommand
-    if args.cmd == 'fetch-ini':
-        from fetchini import main
-        main.main(args)
-    elif args.cmd == 'check-vocab':
-        from checkvocab import main
-        main.main(args)
-    elif args.cmd == 'drs':
-        from drs import main
-        main.main(args)
-    elif args.cmd == 'mapfile':
-        from mapfile import main
-        main.main(args)
+    if args.test:
+        print('"esgprep" test suite is not available. Coming soon!')
+        exit()
+        testsuite = unittest.TestLoader().discover('.')
+        unittest.TextTestRunner().run(testsuite)
+    else:
+        submodule = args.cmd.lower().replace('-', '')
+        if args.test:
+            test = import_module('.test', package='esgprep.{0}'.format(submodule))
+            test.run()
+        else:
+            main = import_module('.main', package='esgprep.{0}'.format(submodule))
+            main.main()
 
 
 # Main entry point for stand-alone call.

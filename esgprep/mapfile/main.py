@@ -351,13 +351,15 @@ def main(args):
         # Get the number of files to scan
         nfiles = sum(1 for _ in utils.Tqdm(yield_inputs(ctx),
                                            desc='Collecting files'.ljust(LEN_MSG),
-                                           unit='files'))
+                                           unit='files',
+                                           file=sys.stdout))
         mapfiles = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
                                     desc='Mapfile(s) generation'.ljust(LEN_MSG),
                                     total=nfiles,
                                     bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
                                     ncols=100,
-                                    unit='files')]
+                                    unit='files',
+                                    file=sys.stdout)]
     else:
         mapfiles = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
     # Close threads pool

@@ -15,7 +15,6 @@ class GitHubConnectionError(Exception):
     """
 
     def __init__(self, error_msg, repository, username=None, password=None, team=None):
-        print type(error_msg)
         if "API rate limit exceeded" in error_msg:
             error_msg = "API rate limit exceeded. Please try again in 60 minutes or submit GitHub user/password."
         self.msg = "GitHub access denied: {0}".format(error_msg)
@@ -34,28 +33,4 @@ class GitHubNoContent(Exception):
 
     def __init__(self, uri):
         self.msg = "No content from '{0}'".format(uri)
-        super(self.__class__, self).__init__(self.msg)
-
-
-class MissingArgument(Exception):
-    """
-    Raised when a command-line argument is missing.
-
-    """
-
-    def __init__(self, arg):
-        self.msg = "'{0}' argument is missing".format(arg)
-        super(self.__class__, self).__init__(self.msg)
-
-
-class WrongArgument(Exception):
-    """
-    Raised when a command-line argument is missing.
-
-    """
-
-    def __init__(self, arg, reason=None):
-        self.msg = "Inappropriate argument: '{0}'".format(arg)
-        if reason:
-            self.msg += "\n{0}".format(reason)
         super(self.__class__, self).__init__(self.msg)

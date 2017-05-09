@@ -11,6 +11,8 @@
 import logging
 import os
 import re
+import sys
+import argparse
 import textwrap
 from argparse import HelpFormatter, ArgumentTypeError, Action
 from datetime import datetime
@@ -82,7 +84,9 @@ class DirectoryChecker(Action):
         """
         path = os.path.abspath(os.path.normpath(path))
         if not os.path.isdir(path):
+            print path
             msg = 'No such directory: {0}'.format(path)
+            print msg
             raise ArgumentTypeError(msg)
         return path
 
