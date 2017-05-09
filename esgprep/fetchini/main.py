@@ -9,7 +9,6 @@
 
 import logging
 import sys
-import os
 from datetime import datetime
 from hashlib import sha1
 
@@ -279,7 +278,7 @@ def main(args):
             logging.warning('{0} created'.format(outdir))
         except OSError:
             outdir = '{0}/ini'.format(os.getcwd())
-            if not isdir(outdir):
+            if not os.path.isdir(outdir):
                 os.makedirs(outdir)
                 logging.warning('{0} created'.format(outdir))
     # Instantiate Github session
@@ -327,7 +326,7 @@ def main(args):
                         file=sys.stdout)
             path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
             fetch(gh, outdir, path, args.b, args.k, args.o)
-            pbar.update(1)
+            pbar.update()
             pbar.close()
         else:
             path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
