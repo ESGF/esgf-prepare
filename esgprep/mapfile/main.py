@@ -347,7 +347,7 @@ def main(args):
     pool = ThreadPool(int(ctx.threads))
     # Return the list of generated mapfiles (with their full paths)
     # If not verbose mode or log, print a progress bar on standard output
-    if not args.log and not ctx.verbose:
+    if args.pbar:
         # Get the number of files to scan
         nfiles = sum(1 for _ in utils.Tqdm(yield_inputs(ctx),
                                            desc='Collecting files'.ljust(LEN_MSG),
@@ -370,7 +370,7 @@ def main(args):
     mapfiles = [mapfile for mapfile in mapfiles if mapfile is not OOVS]
     # Print number of files out of the version scope if exist
     if oovs:
-        if not args.log and not ctx.verbose:
+        if args.pbar:
             print('{0}: {1} ({2})'.format('File(s) skipped'.ljust(LEN_MSG),
                                           oovs,
                                           'out of version scope'))
@@ -384,7 +384,7 @@ def main(args):
         for mapfile in set(mapfiles):
             os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
         # Print number of generated mapfiles
-        if not args.log and not ctx.verbose:
+        if args.pbar:
             print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(LEN_MSG),
                                               len(set(mapfiles)),
                                               ctx.outdir))
@@ -402,13 +402,13 @@ def main(args):
         # A final mapfile is silently overwritten if already exists
         for mapfile in set(mapfiles):
             os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
-        if not args.log and not ctx.verbose:
+        if args.pbar:
             print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(LEN_MSG),
                                               len(set(filter(None, mapfiles))),
                                               ctx.outdir))
         logging.info('{0} mapfile(s) generated'.format(len(set(filter(None, mapfiles)))))
         # Print number of scan errors
-        if not args.log and not ctx.verbose:
+        if args.pbar:
             print('{0}: {1} (see {2})'.format('Scan errors'.ljust(LEN_MSG),
                                               mapfiles.count(None),
                                               logging.getLogger().handlers[0].baseFilename))
@@ -418,7 +418,7 @@ def main(args):
     elif not all(mapfiles) and not any(mapfiles):
         # Mapfiles list contains only None values = all files have been skipped or failed during the scan
         # Print number of scan errors
-        if not args.log and not ctx.verbose:
+        if args.pbar:
             print('{0}: {1} (see {2})'.format('Scan errors'.ljust(LEN_MSG),
                                               len(mapfiles),
                                               logging.getLogger().handlers[0].baseFilename))

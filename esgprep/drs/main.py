@@ -260,7 +260,7 @@ def main(args):
         check_args(args, old_args)
     else:
         # Process supplied files
-        if not args.log and not ctx.verbose:
+        if args.pbar:
             # Get the number of files to scan
             nfiles = sum(1 for _ in utils.Tqdm(yield_inputs(ctx),
                                                desc='Collecting files'.ljust(LEN_MSG),
@@ -301,7 +301,7 @@ def main(args):
     elif not all(results) and any(results):
         # Results list contains some None values = some files have been skipped or failed during the scan
         # Print number of scan errors
-        if not args.log and not ctx.verbose:
+        if args.pbar:
             print('{0}: {1} (see {2})'.format('Scan errors'.ljust(23),
                                               results.count(None),
                                               logging.getLogger().handlers[0].baseFilename))
@@ -314,7 +314,7 @@ def main(args):
     elif not all(results) and not any(results):
         # Results list contains only None values = all files have been skipped or failed during the scan
         # Print number of scan errors
-        if not args.log and not ctx.verbose:
+        if args.pbar:
             print('{0}: {1} (see {2})'.format('Scan errors'.ljust(23),
                                               len(results),
                                               logging.getLogger().handlers[0].baseFilename))

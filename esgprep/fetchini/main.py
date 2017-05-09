@@ -10,9 +10,9 @@
 import logging
 import sys
 from datetime import datetime
+from exceptions import *
 from hashlib import sha1
 
-from exceptions import *
 from github3 import GitHub
 from github3.models import GitHubError
 from tqdm import tqdm

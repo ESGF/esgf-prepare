@@ -69,7 +69,7 @@ def yield_files_from_tree(ctx):
 
     """
     for directory in ctx.directory:
-        for root, _, filenames in utils.walk(directory, downstream=True, followlinks=True):
+        for root, _, filenames in utils.walk(directory, followlinks=True):
             if '/files/' not in root:
                 for filename in filenames:
                     ffp = os.path.join(root, filename)
