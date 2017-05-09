@@ -16,4 +16,4 @@ GITHUB_DIRECTORY = 'publisher-configs'
 ESGF_PROPERTIES = '/esg/config/esgf.properties'
 
 # Progress bar message length
-LEN_MSG = 23
+LEN_MSG = 34

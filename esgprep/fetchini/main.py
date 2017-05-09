@@ -37,7 +37,7 @@ def query_yes_no(question, default='no'):
     """
     # Dictionary of valid answers
     valid = {'yes': True, 'y': True, 'YES': True, 'Y': True, 'Yes': True,
-             'no':  False, 'n': False, 'NO': False, 'N': False, 'No': False}
+             'no': False, 'n': False, 'NO': False, 'N': False, 'No': False}
     # Modify prompt depending on the default value
     if default is None:
         prompt = '[y/n]'
@@ -294,12 +294,12 @@ def main(args):
     projects = target_projects(gh, args.project)
     if args.pbar:
         for project in tqdm(projects,
-                        desc='Fetching "esg.<project>.ini"'.ljust(LEN_MSG),
-                        total=len(projects),
-                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                        ncols=100,
-                        unit='files',
-                        file=sys.stdout):
+                            desc='Fetching "esg.<project>.ini"'.ljust(LEN_MSG),
+                            total=len(projects),
+                            bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                            ncols=100,
+                            unit='files',
+                            file=sys.stdout):
             path = os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project))
             fetch(gh, outdir, path, args.b, args.k, args.o)
     else:
@@ -311,30 +311,31 @@ def main(args):
     try:
         import esgcet
 
-    #############################################
-    # Fetch and deploy esgcet_models_tables.txt #
-    #############################################
+        #############################################
+        # Fetch and deploy esgcet_models_tables.txt #
+        #############################################
 
         outdir = '/esg/config/esgcet'
         if not os.path.exists(outdir):
             logging.warning('"{0}" does not exist. Fetching "esgcet_models_table.txt" aborted.'.format(outdir))
         if args.pbar:
-            for _ in tqdm(range(0),
-                                desc='Fetching "esgcet_models_table.txt"'.ljust(LEN_MSG),
-                                total=1,
-                                bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                                ncols=100,
-                                unit='files',
-                                file=sys.stdout):
-                path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
-                fetch(gh, outdir, path, args.b, args.k, args.o)
+            pbar = tqdm(desc='Fetching "esgcet_models_table.txt"'.ljust(LEN_MSG),
+                        total=1,
+                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                        ncols=100,
+                        unit='files',
+                        file=sys.stdout)
+            path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
+            fetch(gh, outdir, path, args.b, args.k, args.o)
+            pbar.update(1)
+            pbar.close()
         else:
             path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
             fetch(gh, outdir, path, args.b, args.k, args.o)
 
-    #######################################
-    # Fetch and deploy project_handler.py #
-    #######################################
+        #######################################
+        # Fetch and deploy project_handler.py #
+        #######################################
 
         outdir = os.path.join(os.path.dirname(esgcet.__file__), 'config')
         if not os.path.exists(outdir):
