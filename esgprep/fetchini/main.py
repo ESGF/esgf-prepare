@@ -353,7 +353,7 @@ def main(args):
                 fetch(gh, outdir, path, args.b, args.k, args.o)
         else:
             for project in projects:
-                path = os.path.join(GITHUB_DIRECTORY, 'ini', '{0}_handler.py'.format(project))
+                path = os.path.join(GITHUB_DIRECTORY, 'handlers', '{0}_handler.py'.format(project))
                 fetch(gh, outdir, path, args.b, args.k, args.o)
 
     except ImportError:
