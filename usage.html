@@ -149,7 +149,7 @@
 <div class="section" id="check-the-help">
 <h2>Check the help<a class="headerlink" href="#check-the-help" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep -h
-$&gt; esgprep &lt;subcommand&gt; -h
+$&gt; esgprep SUBCOMMAND -h
 </pre></div>
 </div>
 </div>
@@ -194,8 +194,9 @@ verbose mode displaying each step.</p>
 Other information are logged into a file named <code class="docutils literal"><span class="pre">esgprep-YYYYMMDD-HHMMSS-PID.log</span></code> only if <code class="docutils literal"><span class="pre">--log</span></code> is submitted.
 If not, the standard output is used following the verbose mode.
 By default, the logifles are stored in a <code class="docutils literal"><span class="pre">logs</span></code> folder made in your current working directory (if not exists).
-It can be changed by submitting a logfile directory.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --log /path/to/logdir
+It can be changed by adding a logfile directory to the flag.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --log
+$&gt; esgprep SUBCOMMAND --log /path/to/logdir
 </pre></div>
 </div>
 <div class="admonition note">
