@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Check CV from configuration INI files &mdash; esgprep 2.7.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="esgprep 2.7.0 documentation" href="index.html"/>
+        <link rel="next" title="Generation mapfiles for ESGF publication" href="mapfiles.html"/>
+        <link rel="prev" title="Manage local data through the DRS" href="drs.html"/> 
+
+  
+  <script src="static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> esgprep
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Check CV from configuration INI files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#check-the-facet-options">Check the facet options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">esgprep</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Check CV from configuration INI files</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="sources/check-vocab.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="check-cv-from-configuration-ini-files">
+<span id="check-vocab"></span><h1>Check CV from configuration INI files<a class="headerlink" href="#check-cv-from-configuration-ini-files" title="Permalink to this headline">¶</a></h1>
+<p>In the case that your data already follows the appropriate directory structure, you may want to check that all
+values of each facet are correctly declared in the <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> sections. The <code class="docutils literal"><span class="pre">check-vocab</span></code> command
+allows you to easily check the configuration file attributes by scanning your data tree, and the facet values
+will be derived from the directory pattern.</p>
+<p>Alternatively, you may supply a list of dataset IDs in a text file. In this case, the <code class="docutils literal"><span class="pre">check-vocab</span></code> command will
+perform a similar operation without scanning the file system, and the facet values will be derived from the
+dataset ID pattern.</p>
+<div class="section" id="check-the-facet-options">
+<h2>Check the facet options<a class="headerlink" href="#check-the-facet-options" title="Permalink to this headline">¶</a></h2>
+<p>The datasets IDs can be found by scanning the filesystem:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep check-vocab --directory /path/to/scan --project &lt;project_id&gt;
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;product&quot;</span> facet...
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;realm&quot;</span> facet...
+<span class="o">[</span>...<span class="o">]</span>
+YYYY/MM/DD HH:MM:SS INFO Harvesting facets values from DRS tree...
+YYYY/MM/DD HH:MM:SS INFO Result: ALL USED VALUES ARE PROPERLY DECLARED.
+</pre></div>
+</div>
+<p>Or dataset IDs they can be supplied in a file:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep check-vocab --dataset-list path_of_text_file --project &lt;project_id&gt;
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;product&quot;</span> facet...
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;realm&quot;</span> facet...
+<span class="o">[</span>...<span class="o">]</span>
+YYYY/MM/DD HH:MM:SS INFO Harvesting facets values from DRS tree...
+YYYY/MM/DD HH:MM:SS INFO Result: ALL USED VALUES ARE PROPERLY DECLARED.
+</pre></div>
+</div>
+<p>In this case, the file must contain one dataset ID per line. This can be
+without version, or with a version suffix of the form <code class="docutils literal"><span class="pre">.v&lt;version&gt;</span></code>
+or <code class="docutils literal"><span class="pre">#&lt;version&gt;</span></code> which is ignored.</p>
+<p>If a used option is missing:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep check-vocab --directory /path/to/scan --project &lt;project_id&gt;
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;product&quot;</span> facet...
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;realm&quot;</span> facet...
+<span class="o">[</span>...<span class="o">]</span>
+YYYY/MM/DD HH:MM:SS INFO Harvesting facets values from DRS tree...
+YYYY/MM/DD HH:MM:SS INFO institute facet - UNDECLARED values: INPE
+YYYY/MM/DD HH:MM:SS INFO institute facet - UPDATED values to declare: ICHEC, CCCma, LASG, INPE, BNU, BCC, MIROC, CNRM-CERFACS, NASA-GMAO, MOHC, CAWCR, IPSL, CSIRO, MRI, CMCC, FIO, INM, NASA-GISS, NSF-DOE-NCAR, NOAA-GFDL, DOE-COLA-CMMAP-GMU, NCAR, NCC, NIMR-KMA, NICAM
+YYYY/MM/DD HH:MM:SS INFO ensemble facet - UNDECLARED values: r5i1p1
+YYYY/MM/DD HH:MM:SS INFO ensemble facet - UPDATED values to declare: r1i1p1, r5i1p1, r0i0p0
+YYYY/MM/DD HH:MM:SS ERROR Result: THERE WERE UNDECLARED VALUES USED.
+</pre></div>
+</div>
+<p>Verbose output:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep check-vocab --directory /path/to/scan --project &lt;project_id&gt; -v
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;product&quot;</span> facet...
+YYYY/MM/DD HH:MM:SS INFO Collecting values from INI file<span class="o">(</span>s<span class="o">)</span> <span class="k">for</span> <span class="s2">&quot;realm&quot;</span> facet...
+<span class="o">[</span>...<span class="o">]</span>
+YYYY/MM/DD HH:MM:SS INFO Harvesting facets values from DRS tree...
+YYYY/MM/DD HH:MM:SS INFO product facet - Declared values: output2, output1
+YYYY/MM/DD HH:MM:SS INFO product facet - Used values: output1
+YYYY/MM/DD HH:MM:SS INFO product facet - Unused values: output2
+YYYY/MM/DD HH:MM:SS INFO realm facet - Declared values: seaIce, land, landIce, atmosChem, ocean, atmos, aerosol, ocnBgchem
+YYYY/MM/DD HH:MM:SS INFO realm facet - Used values: seaIce, land, landIce, ocean, atmos, ocnBgchem
+YYYY/MM/DD HH:MM:SS INFO realm facet - Unused values: atmosChem, aerosol
+YYYY/MM/DD HH:MM:SS INFO Result: ALL USED VALUES ARE PROPERLY DECLARED.
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mapfiles.html" class="btn btn-neutral float-right" title="Generation mapfiles for ESGF publication" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="drs.html" class="btn btn-neutral" title="Manage local data through the DRS" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Levavasseur, G..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.7.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="static/jquery.js"></script>
+      <script type="text/javascript" src="static/underscore.js"></script>
+      <script type="text/javascript" src="static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

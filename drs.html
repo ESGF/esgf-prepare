@@ -1,0 +1,356 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Manage local data through the DRS &mdash; esgprep 2.7.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="esgprep 2.7.0 documentation" href="index.html"/>
+        <link rel="next" title="Check CV from configuration INI files" href="check-vocab.html"/>
+        <link rel="prev" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/> 
+
+  
+  <script src="static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> esgprep
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Manage local data through the DRS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#esgprep-drs"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#list-the-datasets-related-to-the-incoming-files">List the datasets related to the incoming files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualize-the-excepted-final-drs-tree">Visualize the excepted final DRS tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#list-unix-command-to-apply">List Unix command to apply</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade">Run the DRS upgrade</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">esgprep</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Manage local data through the DRS</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="sources/drs.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="manage-local-data-through-the-drs">
+<span id="drs"></span><h1>Manage local data through the DRS<a class="headerlink" href="#manage-local-data-through-the-drs" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="esgprep-drs">
+<h2><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code><a class="headerlink" href="#esgprep-drs" title="Permalink to this headline">¶</a></h2>
+<p>The Data Reference Syntax (DRS) defines the way your data must be organised on your filesystem. This allows a proper
+publication on the ESGF node. The <code class="docutils literal"><span class="pre">drs</span></code> command is designed to help ESGF data node managers to prepare incoming
+data for publication, placing files in the DRS directory structure, and to manage multiple versions of
+publication-level datasets in a way that minimises disk usage.</p>
+</div>
+<div class="section" id="list-the-datasets-related-to-the-incoming-files">
+<h2>List the datasets related to the incoming files<a class="headerlink" href="#list-the-datasets-related-to-the-incoming-files" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> deduces the excepted DRS by scanning the incoming files against the corresponding <code class="docutils literal"><span class="pre">esg.&lt;project&gt;.ini</span></code> file.
+The DRS facets values are deduced from:
+1. The command-line using <code class="docutils literal"><span class="pre">--set</span> <span class="pre">facet=value</span></code>. This flag can be used several time to set several facets values.
+2. The filename using the <code class="docutils literal"><span class="pre">filename_format</span></code> from the <code class="docutils literal"><span class="pre">esg.&lt;project&gt;.ini</span></code>
+3. The netCDF global attributes by picking the attribute with nearest name of the facet key.</div></blockquote>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs list -i ~/work/esgf-config/publisher-configs/ini/ --project &lt;project_id&gt; /path/to/scan
+YYYY/MM/DD HH:MM:SS PM <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file1.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file2.nc
+YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- file3.nc
+YYYY/MM/DD HH:MM:SS PM INFO <span class="o">[</span>...<span class="o">]</span>
+<span class="o">============================================================================================================================================</span>
+                      Publication level                             Current latest   -&gt;  Upgraded version   Files upgraded   Upgrade size
+--------------------------------------------------------------------------------------------------------------------------------------------
+&lt;dataset_drs_path1&gt;                                                &lt;latest_version&gt;  -&gt;     &lt;new_version&gt;              XX                XXG
+&lt;dataset_drs_path2&gt;                                                &lt;latest_version&gt;  -&gt;     &lt;new_version&gt;              XX                XXG
+<span class="o">[</span>...<span class="o">]</span>
+<span class="o">============================================================================================================================================</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The resulting table summaries the version upgrade at the dataset level in comparison with the latest known version on the filesystem and giving the number of files to upgrade and their total size.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The upgraded version can be set using <code class="docutils literal"><span class="pre">--version</span> <span class="pre">YYYYMMDD</span></code>.</p>
+</div>
+</div>
+<div class="section" id="visualize-the-excepted-final-drs-tree">
+<h2>Visualize the excepted final DRS tree<a class="headerlink" href="#visualize-the-excepted-final-drs-tree" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs tree -i ~/work/esgf-config/publisher-configs/ini/ --project &lt;project_id&gt; /path/to/scan
+   YYYY/MM/DD HH:MM:SS PM <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file1.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file2.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- file3.nc
+   YYYY/MM/DD HH:MM:SS PM INFO <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+                                                                 Upgrade DRS Tree
+   --------------------------------------------------------------------------------------------------------------------------------------------
+   &lt;project&gt;
+    └── &lt;facet1&gt;
+        └── &lt;facet2&gt;
+            └── &lt;...&gt;
+                └── &lt;...&gt;
+                    └── &lt;...&gt;
+                        └── &lt;...&gt;
+                            └── &lt;...&gt;
+                                └── &lt;...&gt;
+                                    ├── files
+                                    │   └── dYYYYMMDD
+                                    │       ├── file1.nc
+                                    │       ├── file2.nc
+                                    │       ├── <span class="o">[</span>...<span class="o">]</span>
+                                    ├── latest --&gt; vYYYYMMDD
+                                    └── vYYYYMMDD
+                                        ├── file1.nc --&gt; ../files/dYYYYMMDD/file1.nc
+                                        ├── file2.nc --&gt; ../files/dYYYYMMDD/file2.nc
+                                        ├── <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In order to save disk space, the scanned files are moved into <code class="docutils literal"><span class="pre">files/dYYYYMMDD</span></code> folders. The <code class="docutils literal"><span class="pre">vYYYYMMDD</span></code> has a symbolic links skeleton that avoid to duplicate files between two versions.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> compare the incoming files to the files from the latest knwon version with the same filename, using a <code class="docutils literal"><span class="pre">sha256</span></code> checksum. Because this could be time consuming <code class="docutils literal"><span class="pre">--no-checksum</span></code> allows you to only make a comparison on filenames.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">A root path can be set to start the finale DRS from it. Use <code class="docutils literal"><span class="pre">--root</span> <span class="pre">/my/drs/root</span></code>. Be careful, the finale DRS is autoamtically rebuilt from the project level.</p>
+</div>
+</div>
+<div class="section" id="list-unix-command-to-apply">
+<h2>List Unix command to apply<a class="headerlink" href="#list-unix-command-to-apply" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs todo -i ~/work/esgf-config/publisher-configs/ini/ --project &lt;project_id&gt; /path/to/scan
+   YYYY/MM/DD HH:MM:SS PM <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file1.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file2.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- file3.nc
+   YYYY/MM/DD HH:MM:SS PM INFO <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+                                                           Unix command-lines <span class="o">(</span>DRY-RUN<span class="o">)</span>
+   --------------------------------------------------------------------------------------------------------------------------------------------
+   mkdir -p /drs/path/facet1/facet2/.../files/dYYYYMMDD
+   mv /path/to/scan/file1.nc /drs/path/facet1/facet2/.../files/dYYYYMMDD/file1.nc
+   mkdir -p /drs/path/facet1/facet2/.../vYYYYMMDD
+   ln -s ../files/dYYYYMMDD/file1.nc /drs/path/facet1/facet2/.../vYYYYMMDD/file1.nc
+   <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">todo</span></code> action can be seen as a dry-run to check which unix commands should be apply to build the excpeted DRS.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">At this step, no file are moved or copy to the finale DRS.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> allows different file migration mode. Default is to move the files from the incomping path to the finale DRS. Use <code class="docutils literal"><span class="pre">--copy</span></code> to make hard copies or <code class="docutils literal"><span class="pre">--link</span></code> to make hard links from the incoming path. We recommend to use <code class="docutils literal"><span class="pre">--link</span></code> and remove the incoming directory after DRS checking. This doesn&#8217;t affect the symbolic link skeleton used for the dataset versioning.</p>
+</div>
+</div>
+<div class="section" id="run-the-drs-upgrade">
+<h2>Run the DRS upgrade<a class="headerlink" href="#run-the-drs-upgrade" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs upgrade -i ~/work/esgf-config/publisher-configs/ini/ --project &lt;project_id&gt; /path/to/scan
+   YYYY/MM/DD HH:MM:SS PM <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file1.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- file2.nc
+   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- file3.nc
+   YYYY/MM/DD HH:MM:SS PM INFO <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+                                                           Unix command-lines
+   --------------------------------------------------------------------------------------------------------------------------------------------
+   mkdir -p /drs/path/facet1/facet2/.../files/dYYYYMMDD
+   mv /path/to/scan/file1.nc /drs/path/facet1/facet2/.../files/dYYYYMMDD/file1.nc
+   mkdir -p /drs/path/facet1/facet2/.../vYYYYMMDD
+   ln -s ../files/dYYYYMMDD/file1.nc /drs/path/facet1/facet2/.../vYYYYMMDD/file1.nc
+   <span class="o">[</span>...<span class="o">]</span>
+   <span class="o">============================================================================================================================================</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="check-vocab.html" class="btn btn-neutral float-right" title="Check CV from configuration INI files" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="fetch-ini.html" class="btn btn-neutral" title="Fetch ESGF configuration INI files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Levavasseur, G..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.7.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="static/jquery.js"></script>
+      <script type="text/javascript" src="static/underscore.js"></script>
+      <script type="text/javascript" src="static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.main &mdash; esgprep 2.6.4 documentation</title>
+  <title>esgprep.drs.main &mdash; esgprep 2.7.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.6.4 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                2.6
+                2.7
               </div>
             
           
@@ -81,10 +81,13 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../synopsis.html">Synopsis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage and tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
@@ -146,8 +149,11 @@
 <span class="kn">import</span> <span class="nn">fnmatch</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="k">import</span> <span class="n">Pool</span> <span class="k">as</span> <span class="n">ThreadPool</span>
+
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">esgprep.drs.constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.drs.exceptions</span> <span class="k">import</span> <span class="o">*</span>
@@ -157,43 +163,7 @@
 
 <div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Encapsulates the following processing context/information for main process:</span>
-
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | Attribute              | Type        | Description                                  |</span>
-<span class="sd">    +========================+=============+==============================================+</span>
-<span class="sd">    | *self*.directory       | *list*      | Paths to scan                                |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.root            | *str*       | The DRS root directory                       |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.filter          | *re object* | File filter as regex pattern                 |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.set_facets      | *re object* | Facets pairs to set                          |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.action          | *str*       | DRS action                                   |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.mode            | *str*       | File migration mode                          |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.version         | *str*       | Set upgrade version                          |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.verbose         | *boolean*   | True if verbose mode                         |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.project         | *str*       | Project                                      |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.project_section | *str*       | Project section name in configuration file   |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.checksum_client | *str*       | Checksum client as shell command-line to use |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.checksum_type   | *str*       | Checksum type                                |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.threads         | *int*       | Maximum threads number                       |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.cfg             | *callable*  | Configuration file parser                    |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.pattern         | *re object* | DRS regex pattern                            |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.facets          | *list*      | List of the DRS facets                       |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
+<span class="sd">    Encapsulates the processing context/information for main process.</span>
 
 <span class="sd">    :param ArgumentParser args: Parsed command-line arguments</span>
 <span class="sd">    :returns: The processing context</span>
@@ -205,9 +175,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">filter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_facets</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">set</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_facets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">set</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">set_value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">set_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_keys</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">set_key</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_keys</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">set_key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">max_threads</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">action</span>
@@ -230,7 +203,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_facets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="s1">&#39;directory_format&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate_filename_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">v</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">DRSTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">DRSTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="yield_inputs"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.yield_inputs">[docs]</a><span class="k">def</span> <span class="nf">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
@@ -351,7 +324,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span> <span class="o">=</span> <span class="s1">&#39;Initial&#39;</span>
     <span class="c1"># Add file DRS path to Tree</span>
-    <span class="n">src</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;..&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">d_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;..&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">d_part</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
     <span class="n">src</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">d_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="n">src</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
     <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
@@ -383,6 +356,20 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
+<div class="viewcode-block" id="check_args"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.check_args">[docs]</a><span class="k">def</span> <span class="nf">check_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">old_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks command-line argument to avoid discrepancies between ``esgprep drs`` steps.</span>
+<span class="sd">    </span>
+<span class="sd">    :param argparse.Namespace args: The submitted arguments </span>
+<span class="sd">    :param argparse.Namespace old_args: The recorded arguments </span>
+<span class="sd">    :raises Error: If one argument differs</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">IGNORED_ARGS</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">!=</span> <span class="n">old_args</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">MultipleContextParameter</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">old_args</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">k</span><span class="p">])</span></div>
+
+
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main process that:</span>
@@ -401,25 +388,77 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan started&#39;</span><span class="p">)</span>
     <span class="c1"># Start threads pool over files list in supplied directory</span>
     <span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">threads</span><span class="p">))</span>
-    <span class="c1"># Process supplied files</span>
-    <span class="n">outfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">))]</span>
-    <span class="c1"># Raises exception when all processed files failed (i.e., filtered list empty)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">outfiles</span><span class="p">):</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; All files have been ignored or have failed leading to no tree.&#39;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="o">!=</span> <span class="s1">&#39;list&#39;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s1">&#39;/tmp/DRSTree.pkl&#39;</span><span class="p">):</span>
+        <span class="c1"># Load &#39;DRSTree.pkl&#39; if already exists</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/DRSTree.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">old_args</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Previous DRS tree loaded&#39;</span><span class="p">)</span>
+        <span class="c1"># Ensure that processing context is similar to previous step</span>
+        <span class="n">check_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">old_args</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">outfiles</span><span class="p">:</span>
-            <span class="c1"># Save current directory</span>
-            <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-            <span class="c1"># Change current directory -&gt; DRS root directory</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
-            <span class="c1"># Apply tree action</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_display_lengths</span><span class="p">()</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span><span class="p">)()</span>
-            <span class="c1"># Back to initial working directory</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
+        <span class="c1"># Process supplied files</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="c1"># Get the number of files to scan</span>
+            <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">Tqdm</span><span class="p">(</span><span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">),</span>
+                                               <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Collecting files&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                               <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
+                                               <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)),</span>
+                                       <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Scanning incoming files&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                       <span class="n">total</span><span class="o">=</span><span class="n">nfiles</span><span class="p">,</span>
+                                       <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
+                                       <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                       <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
+                                       <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; No files found.&#39;</span><span class="p">)</span></div>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">))]</span>
+    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span><span class="p">:</span>
+        <span class="c1"># Backup DRS Tree for later usage with other command lines</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/DRSTree.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;DRS tree recorded for next usage&#39;</span><span class="p">)</span>
+    <span class="c1"># Close threads pool</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+    <span class="c1"># Decline outputs depending on the scan results</span>
+    <span class="c1"># Raise errors when one or several files have been skipped or failed</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+        <span class="c1"># Results list contains only True value = all files have been successfully scanned</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{0}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)))</span>
+        <span class="c1"># Apply tree action</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_display_lengths</span><span class="p">()</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span><span class="p">)()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+        <span class="c1"># Results list is empty = no files scanned/found</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; No files found&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+        <span class="c1"># Results list contains some None values = some files have been skipped or failed during the scan</span>
+        <span class="c1"># Print number of scan errors</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Scan errors&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">23</span><span class="p">),</span>
+                                              <span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
+                                              <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> file(s) have been skipped&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{0}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)))</span>
+        <span class="c1"># Apply tree action</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_display_lengths</span><span class="p">()</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span><span class="p">)()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+        <span class="c1"># Results list contains only None values = all files have been skipped or failed during the scan</span>
+        <span class="c1"># Print number of scan errors</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Scan errors&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">23</span><span class="p">),</span>
+                                              <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+                                              <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; All files have been ignored or have failed leading to no mapfile.&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -453,7 +492,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.6.4',
+            VERSION:'2.7.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

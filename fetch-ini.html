@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Fetch ESGF configuration INI files &mdash; esgprep 2.7.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="esgprep 2.7.0 documentation" href="index.html"/>
+        <link rel="next" title="Manage local data through the DRS" href="drs.html"/>
+        <link rel="prev" title="Configuration" href="configuration.html"/> 
+
+  
+  <script src="static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> esgprep
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Fetch ESGF configuration INI files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#download-a-particular-esg-project-id-ini-from-github">Download a particular esg.&lt;project_id&gt;.ini from GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#keep-existing-file-s-without-prompt">Keep existing file(s) without prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overwrite-existing-file-s-without-prompt">Overwrite existing file(s) without prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-all-esg-project-id-ini-from-github">Download all esg.&lt;project_id&gt;.ini from GitHub</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">esgprep</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Fetch ESGF configuration INI files</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="sources/fetch-ini.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="fetch-esgf-configuration-ini-files">
+<span id="fetch-ini"></span><h1>Fetch ESGF configuration INI files<a class="headerlink" href="#fetch-esgf-configuration-ini-files" title="Permalink to this headline">¶</a></h1>
+<p>The ESGF publishing client and most of the ESGF tools rely on configuration files of different kinds, which are the
+primary means of configuring the ESGF publisher.</p>
+<ul class="simple">
+<li>The <code class="docutils literal"><span class="pre">esg.ini</span></code> file gathers all information needed to configure the data node for data publication (e.g., PostgreSQL access, THREDDS configuration, etc.).</li>
+<li>The <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> files declare all facets and allowed values according to the <em>Data Reference Syntax</em> (DRS) and the controlled vocabularies of the corresponding project.</li>
+<li>The <code class="docutils literal"><span class="pre">esgcet_models_table.txt</span></code> declares the models and their descriptions for all the projects.</li>
+<li>The <code class="docutils literal"><span class="pre">&lt;project_id&gt;_handler.py</span></code> are Python methods to guide the publisher in metadata harvesting.</li>
+</ul>
+<p>The <code class="docutils literal"><span class="pre">fetch-ini</span></code> command allows you to download preset files hosted on <a class="reference external" href="https://github.com/ESGF/config/">a GitHub repository</a>.</p>
+<p>If you prepare your data outside of an ESGF node using <code class="docutils literal"><span class="pre">esgprep</span></code> as a full standalone toolbox, this step
+is mandatory. Keep in mind that the fetched files have to be reviewed to ensure a correct configuration
+of your projects.</p>
+<div class="section" id="download-a-particular-esg-project-id-ini-from-github">
+<h2>Download a particular esg.&lt;project_id&gt;.ini from GitHub<a class="headerlink" href="#download-a-particular-esg-project-id-ini-from-github" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep fetch-ini --project &lt;project_id&gt; --db-password xxxx --tds-password xxxx --esgf-host &lt;data.node.fr&gt; --esg-root-id &lt;institute&gt; --esgf-index-peer &lt;index.node.fr&gt; --db-port &lt;port&gt; --db-host &lt;host&gt;
+YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.&lt;project_id&gt;.ini --&gt; /esg/config/esgcet/esg.&lt;project_id&gt;.ini
+Overwrite existing <span class="s2">&quot;esg.ini&quot;</span>? <span class="o">[</span>y/N<span class="o">]</span> y
+YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.ini --&gt; /esg/config/esgcet/esg.ini
+Root path <span class="k">for</span> <span class="s2">&quot;&lt;project_name&gt;&quot;</span> data: /path/to/data/&lt;project_name&gt;
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;thredds_dataset_roots&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully updated
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;project_options&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully updated
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;thredds_aggregation/file_services&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully formatted
+YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/esgcet_models_table.txt --&gt; /esg/config/esgcet/esgcet_models_table.txt
+YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/handlers/ipcc5_handler.py --&gt; /usr/local/uvcdat/2.2.0/lib/python2.7/site-packages/esgcet-2.14.6-py2.7.egg/esgcet/ipcc5_handler.py
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If a configuration file already exists you are prompted to confirm overwriting (default is &#8220;no&#8221;).</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If you choose to overwrite your existing <code class="docutils literal"><span class="pre">esg.ini</span></code> , you should at least provide your <code class="docutils literal"><span class="pre">--db-password</span></code> and <code class="docutils literal"><span class="pre">--tds-password</span></code>. The other flags are optional if you run <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code> within your ESGF node (because <code class="docutils literal"><span class="pre">esgf.properties</span></code> includes the required information). Otherwise, all flags are required to properly configure the <code class="docutils literal"><span class="pre">esg.ini</span></code> (see <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span> <span class="pre">-h</span></code>).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">thredds_dataset_roots</span></code>, <code class="docutils literal"><span class="pre">project_options</span></code> and <code class="docutils literal"><span class="pre">thredds_aggregation/file_services</span></code> are updated in any case depending on the project list submitted on the command-line or the available local <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code>.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">--data-root-path</span></code> can point to a file table with the following line-syntax: <code class="docutils literal"><span class="pre">&lt;project_id&gt;</span> <span class="pre">|</span> <span class="pre">&lt;data_root_path&gt;</span></code>. Each <code class="docutils literal"><span class="pre">&lt;data_root_path&gt;</span></code> should exist and end with the project name (e.g., /path/to/data/CMIP5). If not you are prompted to valid your choice.</p>
+</div>
+</div>
+<div class="section" id="keep-existing-file-s-without-prompt">
+<h2>Keep existing file(s) without prompt<a class="headerlink" href="#keep-existing-file-s-without-prompt" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep fetch-ini --project &lt;project_id&gt; -k
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;thredds_dataset_roots&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully updated
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;project_options&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully updated
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;thredds_aggregation/file_services&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully formatted
+</pre></div>
+</div>
+</div>
+<div class="section" id="overwrite-existing-file-s-without-prompt">
+<h2>Overwrite existing file(s) without prompt<a class="headerlink" href="#overwrite-existing-file-s-without-prompt" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep fetch-ini --project &lt;project_id&gt; -o
+YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.&lt;project_id&gt;.ini --&gt; /esg/config/esgcet/esg.&lt;project_id&gt;.ini
+YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.ini --&gt; /esg/config/esgcet/esg.ini
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;thredds_dataset_roots&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully updated
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;project_options&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully updated
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;thredds_aggregation/file_services&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully formatted
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><code class="docutils literal"><span class="pre">-o</span></code> and <code class="docutils literal"><span class="pre">-k</span></code> cannot be used simultaneously.</p>
+</div>
+</div>
+<div class="section" id="download-all-esg-project-id-ini-from-github">
+<h2>Download all esg.&lt;project_id&gt;.ini from GitHub<a class="headerlink" href="#download-all-esg-project-id-ini-from-github" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep fetch-ini -v
+YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.projectA.ini --&gt; /esg/config/esgcet/esg.projectA.ini
+YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.projectB.ini --&gt; /esg/config/esgcet/esg.projectB.ini
+Overwrite existing <span class="s2">&quot;esg.projectC.ini&quot;</span>? <span class="o">[</span>y/N<span class="o">]</span> y
+YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.projectC.ini --&gt; /esg/config/esgcet/esg.projectC.ini
+Overwrite existing <span class="s2">&quot;esg.ini&quot;</span>? <span class="o">[</span>y/N<span class="o">]</span> N
+YYYY/MM/DD HH:MM:SS INFO https://github.com/ESGF/config/blob/master/publisher-configs/ini/esg.ini --&gt; /esg/config/esgcet/esg.ini
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;thredds_dataset_roots&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully updated
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;project_options&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully updated
+YYYY/MM/DD HH:MM:SS INFO <span class="s2">&quot;thredds_aggregation/file_services&quot;</span> in <span class="s2">&quot;/esg/config/esgcet/esg.ini&quot;</span> successfully formatted
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="drs.html" class="btn btn-neutral float-right" title="Manage local data through the DRS" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="configuration.html" class="btn btn-neutral" title="Configuration" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Levavasseur, G..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.7.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="static/jquery.js"></script>
+      <script type="text/javascript" src="static/underscore.js"></script>
+      <script type="text/javascript" src="static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

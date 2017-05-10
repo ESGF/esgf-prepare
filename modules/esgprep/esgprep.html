@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.esgprep &mdash; esgprep 2.6.4 documentation</title>
+  <title>esgprep.esgprep &mdash; esgprep 2.7.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.6.4 documentation" href="../../index.html"/>
+    <link rel="top" title="esgprep 2.7.0 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                2.6
+                2.7
               </div>
             
           
@@ -81,10 +81,13 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../synopsis.html">Synopsis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage and tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../log.html">Changelog</a></li>
@@ -138,22 +141,23 @@
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">.. module:: esgprep</span>
 <span class="sd">    :platform: Unix</span>
 <span class="sd">    :synopsis: Toolbox to prepare ESGF date for publication.</span>
-
-<span class="sd">.. moduleauthor:: Guillaume Levavasseur &lt;glipsl@ipsl.jussieu.fr&gt;</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
 
-<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="k">import</span> <span class="n">MultilineFormatter</span><span class="p">,</span> <span class="n">init_logging</span><span class="p">,</span> <span class="n">version_checker</span><span class="p">,</span> <span class="n">directory_checker</span><span class="p">,</span> <span class="n">pair_checker</span>
+<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="k">import</span> <span class="n">MultilineFormatter</span><span class="p">,</span> <span class="n">DirectoryChecker</span><span class="p">,</span> <span class="n">VersionChecker</span>
+<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="k">import</span> <span class="n">init_logging</span><span class="p">,</span> <span class="n">keyval_converter</span>
 
 <span class="c1"># Program version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;2.6.4&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2016</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">23</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-</span><span class="si">%d</span><span class="s2">-%m&quot;</span><span class="p">))</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;2.7.0&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2017</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-</span><span class="si">%d</span><span class="s2">-%m&quot;</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="get_args"><a class="viewcode-back" href="../../autodoc.html#esgprep.esgprep.get_args">[docs]</a><span class="k">def</span> <span class="nf">get_args</span><span class="p">():</span>
@@ -161,38 +165,53 @@
 <span class="sd">    Returns parsed command-line arguments. See ``esgprep -h`` for full description.</span>
 
 <span class="sd">    :returns: The corresponding ``argparse`` Namespace</span>
-<span class="sd">    :rtype: *ArgumentParser*</span>
+<span class="sd">    :rtype: *argparse.Namespace*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Workaround to run ``esgprep [subcommand] --test`` without subparsers and required flags</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;--test&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;cmd&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;--test&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;cmd&#39;</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:][</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+
     <span class="c1">#############################</span>
     <span class="c1"># Main parser for &quot;esgprep&quot; #</span>
     <span class="c1">#############################</span>
     <span class="n">main</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        The ESGF publication process requires a strong and effective data management. &quot;esgprep&quot; allows data providers to</span>
-<span class="s2">        easily prepare their data before publishing to an ESGF node.|n|n</span>
+<span class="s2">        The ESGF publication process requires a strong and effective|n</span>
+<span class="s2">        data management. &quot;esgprep&quot; allows data providers to easily|n</span>
+<span class="s2">        prepare their data before publishing to an ESGF node.|n|n</span>
 
-<span class="s2">        &quot;esgprep&quot; gathers python command-lines covering several steps of ESGF publication workflow:|n</span>
-<span class="s2">        i. Fetch proper configuration files from ESGF GitHub repository,|n</span>
-<span class="s2">        ii. Data Reference Syntax management,|n</span>
-<span class="s2">        iii. Check DRS vocable against configuration files,|n</span>
+<span class="s2">        &quot;esgprep&quot; provides python command-lines covering several |n</span>
+<span class="s2">        steps of ESGF publication workflow: |n|n</span>
+
+<span class="s2">        i. Fetch proper configuration files from ESGF GitHub|n</span>
+<span class="s2">           repository,|n|n</span>
+
+<span class="s2">        ii. Data Reference Syntax management,|n|n</span>
+
+<span class="s2">        iii. Check DRS vocabulary against configuration files,|n|n</span>
+
 <span class="s2">        iv. Generate mapfiles.|n|n</span>
 
-<span class="s2">        The &quot;esgprep&quot; toolbox is based on the ESGF datanode configuration files called &quot;esg.ini&quot;. It implies those</span>
-<span class="s2">        configuration files are correctly build and declares all required attributes following recommended best</span>
-<span class="s2">        practices.|n|n</span>
+<span class="s2">        The &quot;esgprep&quot; toolbox is based on the ESGF data node|n</span>
+<span class="s2">        configuration files called &quot;esg.ini&quot;.  It requires that |n</span>
+<span class="s2">        those configuration files are correctly built and declares|n</span>
+<span class="s2">        all required attributes following recommended best practices.|n|n</span>
 
-<span class="s2">        See full documentation and references on http://is-enes-data.github.io/esgf-prepare/.</span>
+<span class="s2">        See full documentation and references at|n</span>
+<span class="s2">        http://is-enes-data.github.io/esgf-prepare/.|n</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Developed by:|n</span>
-<span class="s2">        Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.jussieu.fr)|n</span>
+<span class="s2">        Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.fr)|n</span>
 <span class="s2">        Berger, K. (DKRZ - berger@dkrz.de)|n</span>
-<span class="s2">        Iwi, A. (STFC/BADC - alan.iwi@stfc.ac.uk)|n</span>
-<span class="s2">        Stephens, A. (STFC/BADC - ag.stephens@stfc.ac.uk)</span>
+<span class="s2">        Iwi, A. (STFC/CEDA - alan.iwi@stfc.ac.uk)|n</span>
+<span class="s2">        Stephens, A. (STFC/CEDA - ag.stephens@stfc.ac.uk)</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">main</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Optional arguments&quot;</span>
     <span class="n">main</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
@@ -200,6 +219,11 @@
         <span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;--help&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;help&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Show this help message and exit.&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--test&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Run the full test suite.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-V&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;version&#39;</span><span class="p">,</span>
@@ -216,30 +240,31 @@
     <span class="c1">#######################################</span>
     <span class="n">parent</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;--help&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;help&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Show this help message and exit.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-i&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;/esg/config/esgcet/.&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">directory_checker</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;/esg/config/esgcet/.&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Initialization/configuration directory containing|n</span>
 <span class="s2">        &quot;esg.ini&quot; and &quot;esg.&lt;project&gt;.ini&quot; files.|n</span>
-<span class="s2">        If not specified, the usual datanode directory is used.</span>
+<span class="s2">        If not specified, the usual datanode directory|n</span>
+<span class="s2">        is used.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--log&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;$PWD&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;CWD&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">const</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+        <span class="n">const</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/logs&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()),</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Logfile directory.|n</span>
-<span class="s2">        An existing logfile can be submitted.|n</span>
 <span class="s2">        If not, standard output is used.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;--help&#39;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;help&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Show this help message and exit.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-v&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
@@ -253,23 +278,35 @@
         <span class="s1">&#39;fetch-ini&#39;</span><span class="p">,</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep fetch-ini&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that are</span>
-<span class="s2">        the primary means of configuring the ESGF publisher.|n|n</span>
 
-<span class="s2">        - The &quot;esg.ini&quot; file gathers all required information to configure the datanode regarding to data publication</span>
-<span class="s2">        (e.g., PostgreSQL access, THREDDS configuration, etc.).|n</span>
-<span class="s2">        - The &quot;esg.&lt;project_id&gt;.ini&quot; files declare all facets and allowed values according to the Data Reference Syntax</span>
-<span class="s2">        (DRS) and the controlled vocabularies of the corresponding project.|n</span>
-<span class="s2">        - The &quot;esgcet_models_table.txt&quot; declares the models and their descriptions among the projects.|n</span>
-<span class="s2">        - The &quot;&lt;project_id&gt;_handler.py&quot; are Python methods to guide the publisher in metadata harvesting.</span>
+<span class="s2">        The ESGF publishing client and most of other ESGF tool rely |n</span>
+<span class="s2">        on configuration files of different kinds, that are the|n</span>
+<span class="s2">        primary means of configuring the ESGF publisher.|n|n</span>
 
-<span class="s2">        &quot;esgprep fetch-ini&quot; allows you to properly download, configure and deploy these configuration files hosted</span>
-<span class="s2">        on a GitHub repository.|n|n</span>
+<span class="s2">        - The &quot;esg.ini&quot; file gathers all required information to|n</span>
+<span class="s2">        configure the datanode regarding to data publication (e.g.,|n</span>
+<span class="s2">        PostgreSQL access, THREDDS configuration, etc.).|n|n</span>
 
-<span class="s2">        Keep in mind that the fetched files have to be reviewed to ensure a correct configuration of your</span>
-<span class="s2">        publication.|n|n</span>
+<span class="s2">        - The &quot;esg.&lt;project_id&gt;.ini&quot; files declare all facets and|n</span>
+<span class="s2">        allowed values according to the Data Reference Syntax (DRS)|n</span>
+<span class="s2">        and the controlled vocabularies of the corresponding|n</span>
+<span class="s2">        project.|n|n</span>
 
-<span class="s2">        The supply configuration directory is used to write the files retrieved from GitHub.|n|n</span>
+<span class="s2">        - The &quot;esgcet_models_table.txt&quot; declares the models and their|n</span>
+<span class="s2">          descriptions among the projects.|n|n</span>
+
+<span class="s2">        - The &quot;&lt;project_id&gt;_handler.py&quot; are Python methods to guide|n</span>
+<span class="s2">          the publisher in metadata harvesting.|n|n</span>
+
+<span class="s2">        &quot;esgprep fetch-ini&quot; allows you to properly download, configure|n</span>
+<span class="s2">        and deploy these configuration files hosted on a GitHub|n</span>
+<span class="s2">        repository.|n|n</span>
+
+<span class="s2">        Keep in mind that the fetched files have to be reviewed to|n</span>
+<span class="s2">        ensure a correct configuration of your publication.|n|n</span>
+
+<span class="s2">        The supply configuration directory is used to write the files|n</span>
+<span class="s2">        retrieved from GitHub.|n|n</span>
 
 <span class="s2">        The default values are displayed next to the corresponding flags.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
@@ -284,88 +321,27 @@
     <span class="n">fetchini</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
     <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;project&gt;&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PROJECT_ID&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        One or more lower-cased project name(s).|n</span>
 <span class="s2">        If not, all &quot;esg.*.ini&quot; are fetched.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--esg-config&#39;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Restart &quot;esg.ini&quot; configuration by fetching|n</span>
-<span class="s2">        an empty template.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--db-password&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;password&gt;&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Database password.|n</span>
-<span class="s2">        Required to configure &quot;esg.ini&quot;.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--db-host&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Database hostname.&quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--db-port&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;5432&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;5432&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Database port.&quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--tds-password&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;password&gt;&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        THREDDS password.|n</span>
-<span class="s2">        Required to configure &quot;esg.ini&quot;.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--data-root-path&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;path&gt;&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        The data directory of the corresponding requested project.|n</span>
-<span class="s2">        If (one or) several projects are requested, the path of|n</span>
-<span class="s2">         a file in which each line follows the syntax: |n</span>
-<span class="s2">        &quot;&lt;project_id&gt; | &lt;data_root_path&gt;&quot;.|n</span>
-<span class="s2">        Required to configure &quot;esg.ini&quot;.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--esgf-index-peer&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;hostname&gt;&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Index peer hostname.&quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--esgf-host&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;hostname&gt;&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Datanode hostname.&quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--esg-root-id&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;institute&gt;&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Institute root id.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">fetchini</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-k&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Ignore and keep existing file(s) without prompt.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Ignore and keep existing file(s) without prompting.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-o&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Ignore and overwrite existing file(s) without prompt.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Ignore and overwrite existing file(s) without prompting.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-b&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;one_version&#39;</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;one_version&#39;</span><span class="p">,</span> <span class="s1">&#39;keep_versions&#39;</span><span class="p">],</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
@@ -381,12 +357,12 @@
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--gh-user&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;username&gt;&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;USERNAME&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;GitHub username.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--gh-password&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;password&gt;&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PASSWORD&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;GitHub password.&quot;&quot;&quot;</span><span class="p">)</span>
 
@@ -400,11 +376,11 @@
 <span class="s2">        The data management/preparation relies on the ESGF node configuration files. These &quot;esg.&lt;project&gt;.ini&quot; files</span>
 <span class="s2">        declares the Data Reference Syntax (DRS) and the controlled vocabularies of each project.|n|n</span>
 
-<span class="s2">        In the case of your data already follow the appropriate directory structure, you may want to check that all</span>
-<span class="s2">        values of each facet are correctly declared into &quot;esg.&lt;project_id&gt;.ini&quot; sections.|n|n</span>
+<span class="s2">        In the case that your data already follows the appropriate directory structure, you may want to check that all</span>
+<span class="s2">        values of each facet are correctly declared in the &quot;esg.&lt;project_id&gt;.ini&quot; sections.|n|n</span>
 
 <span class="s2">        &quot;esgprep check-vocab&quot; allows you to easily check the configuration file attributes by scanning your data tree.</span>
-<span class="s2">        It implies that your directory structure strictly follows the project DRS including the version facet.|n|n</span>
+<span class="s2">        It requires that your directory structure strictly follows the project DRS including the version facet.|n|n</span>
 
 <span class="s2">        The default values are displayed next to the corresponding flags.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
@@ -417,17 +393,24 @@
         <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">parent</span><span class="p">])</span>
     <span class="n">checkvocab</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Optional arguments&quot;</span>
     <span class="n">checkvocab</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
-    <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;directory&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">directory_checker</span><span class="p">,</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--directory&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        One or more directories to recursively scan.|n</span>
 <span class="s2">        Unix wildcards are allowed.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--dataset-list&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;TXT_FILE&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;File containing list of dataset IDs.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;project_id&gt;&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PROJECT_ID&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Required lower-cased project name.&quot;&quot;&quot;</span><span class="p">)</span>
@@ -438,7 +421,7 @@
         <span class="n">default</span><span class="o">=</span><span class="s1">r&#39;.*\.nc$&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Filter files matching the regular expression (default only|n</span>
-<span class="s2">        support NetCDF files). Regular expression syntax is defined|n</span>
+<span class="s2">        support netCDF files). Regular expression syntax is defined|n</span>
 <span class="s2">        by the Python &quot;re&quot; module.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
 
@@ -454,7 +437,7 @@
 <span class="s2">        incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of</span>
 <span class="s2">        publication-level datasets to minimise disk usage.|n|n</span>
 
-<span class="s2">        Only CMORized NetCDF files are supported as incoming files.</span>
+<span class="s2">        Only CMORized netCDF files are supported as incoming files.</span>
 
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
@@ -480,36 +463,47 @@
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;directory&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">directory_checker</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        One or more directories to recursively scan.|n</span>
 <span class="s2">        Unix wildcards are allowed.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;project_id&gt;&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PROJECT_ID&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Required lower-cased project name.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--root&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;$PWD&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">directory_checker</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;CWD&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Root directory to build the DRS.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--version&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">version_checker</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">VersionChecker</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Set the version number for all scanned files.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--set&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;key&gt;=&lt;value&gt;&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">pair_checker</span><span class="p">,</span>
+        <span class="s1">&#39;--set-value&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;FACET_KEY=VALUE&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">keyval_converter</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        One or several facet values to set.|n</span>
+<span class="s2">        Set a facet value.|n</span>
+<span class="s2">        Duplicate the flag to set several facet values.|n</span>
+<span class="s2">        This overwrites facet auto-detection.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--set-key&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;FACET_KEY=ATTRIBUTE&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">keyval_converter</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Map one a facet key with a NetCDF attribute name.|n</span>
+<span class="s2">        Duplicate the flag to map several facet keys.|n</span>
 <span class="s2">        This overwrites facet auto-detection.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -535,7 +529,7 @@
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;*.nc&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Filter files matching the regular expression (default only|n</span>
-<span class="s2">        support NetCDF files). Uniw wildcards are supported.</span>
+<span class="s2">        support netCDF files). Unix wildcards are supported.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--max-threads&#39;</span><span class="p">,</span>
@@ -592,7 +586,7 @@
     <span class="n">mapfile</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;directory&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">directory_checker</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        One or more directories to recursively scan.|n</span>
@@ -600,7 +594,7 @@
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;project_id&gt;&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PROJECT_ID&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Required lower-cased project name.&quot;&quot;&quot;</span><span class="p">)</span>
@@ -608,7 +602,7 @@
         <span class="s1">&#39;--mapfile&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{dataset_id}</span><span class="s1">.</span><span class="si">{version}</span><span class="s1">.map&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{dataset_id}</span><span class="s1">.</span><span class="si">{version}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{dataset_id}</span><span class="s1">.</span><span class="si">{version}</span><span class="s1">.map&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Specifies template for the output mapfile(s) name.|n</span>
 <span class="s2">        Substrings </span><span class="si">{dataset_id}</span><span class="s2">, </span><span class="si">{version}</span><span class="s2">, </span><span class="si">{job_id}</span><span class="s2"> or </span><span class="si">{date}</span><span class="s2"> |n</span>
@@ -619,9 +613,9 @@
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--outdir&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;$PWD&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;CWD/mapfiles&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;mapfiles&#39;</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Mapfile(s) output directory. A &quot;mapfile_drs&quot; can be defined |n</span>
 <span class="s2">        per each project section in INI files and joined to build a |n</span>
@@ -641,7 +635,7 @@
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--version&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">version_checker</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">VersionChecker</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Generates mapfile(s) scanning datasets with the|n</span>
 <span class="s2">        corresponding version number only. It takes priority over|n</span>
@@ -676,11 +670,11 @@
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;*.nc&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Filter files matching the regular expression (default only|n</span>
-<span class="s2">        scan NetCDF files). Uniw wildcards are supported.</span>
+<span class="s2">        scan netCDF files). Uniw wildcards are supported.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--tech-notes-url&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;url&gt;&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;URL&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        URL of the technical notes to be associated with each|n</span>
@@ -688,12 +682,12 @@
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--tech-notes-title&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;title&gt;&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;TITLE&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Technical notes title for display.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--dataset&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;dataset_id&gt;&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;DATASET_ID&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        String name of the dataset. If specified, all files will|n</span>
@@ -711,8 +705,8 @@
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--no-cleanup&#39;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Disables output directory cleanup prior to mapfile process.|n</span>
 <span class="s2">        This is recommended if several &quot;esgprep mapfile&quot; instances |n</span>
 <span class="s2">        run with the same output directory.</span>
@@ -721,29 +715,31 @@
     <span class="k">return</span> <span class="n">main</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span></div>
 
 
-<span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../autodoc.html#esgprep.esgprep.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run main program</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get command-line arguments</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">()</span>
-
     <span class="c1"># Initialize logger</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">v</span><span class="p">:</span>
-        <span class="n">init_logging</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">init_logging</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">log</span><span class="p">)</span>
-
+    <span class="n">init_logging</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">v</span><span class="p">)</span>
+    <span class="c1"># Print progress bar</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;pbar&#39;</span><span class="p">,</span> <span class="kc">True</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">log</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">v</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span>
     <span class="c1"># Run subcommand</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;fetch-ini&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">fetchini</span> <span class="k">import</span> <span class="n">main</span>
-        <span class="n">main</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;check-vocab&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">checkvocab</span> <span class="k">import</span> <span class="n">main</span>
-        <span class="n">main</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;drs&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">drs</span> <span class="k">import</span> <span class="n">main</span>
-        <span class="n">main</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;mapfile&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">mapfile</span> <span class="k">import</span> <span class="n">main</span>
-        <span class="n">main</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&quot;esgprep&quot; test suite is not available. Coming soon!&#39;</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">()</span>
+        <span class="n">testsuite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestLoader</span><span class="p">()</span><span class="o">.</span><span class="n">discover</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">unittest</span><span class="o">.</span><span class="n">TextTestRunner</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">testsuite</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">submodule</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test</span><span class="p">:</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.test&#39;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s1">&#39;esgprep.</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">submodule</span><span class="p">))</span>
+            <span class="n">test</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">main</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.main&#39;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s1">&#39;esgprep.</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">submodule</span><span class="p">))</span>
+            <span class="n">main</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
 
 <span class="c1"># Main entry point for stand-alone call.</span>
@@ -782,7 +778,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.6.4',
+            VERSION:'2.7.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

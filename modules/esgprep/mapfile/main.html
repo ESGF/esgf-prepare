@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.main &mdash; esgprep 2.6.4 documentation</title>
+  <title>esgprep.mapfile.main &mdash; esgprep 2.7.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.6.4 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                2.6
+                2.7
               </div>
             
           
@@ -81,10 +81,13 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../synopsis.html">Synopsis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage and tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
@@ -146,68 +149,22 @@
 <span class="kn">import</span> <span class="nn">fnmatch</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="k">import</span> <span class="n">Pool</span> <span class="k">as</span> <span class="n">ThreadPool</span>
 
 <span class="kn">from</span> <span class="nn">lockfile</span> <span class="k">import</span> <span class="n">LockFile</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils</span> <span class="k">import</span> <span class="n">parser</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.exceptions</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">File</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.constants</span> <span class="k">import</span> <span class="o">*</span>
 
 
 <div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Encapsulates the following processing context/information for main process:</span>
-
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | Attribute              | Type        | Description                                  |</span>
-<span class="sd">    +========================+=============+==============================================+</span>
-<span class="sd">    | *self*.directory       | *list*      | Paths to scan                                |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.outmap          | *str*       | Mapfile name/pattern using tokens            |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.latest          | *boolean*   | True to follow latest symlink                |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.outdir          | *str*       | Output directory                             |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.notes_url       | *str*       | Dataset technical notes URL                  |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.notes_title     | *str*       | Dataset technical notes title                |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.verbose         | *boolean*   | True if verbose mode                         |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.all             | *boolean*   | True to scan all versions                    |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.version         | *str*       | Version to scan                              |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.filter          | *re object* | File filter as regex pattern                 |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.no_version      | *boolean*   | True to not include version in dataset ID    |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.project         | *str*       | Project                                      |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.project_section | *str*       | Project section name in configuration file   |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.dataset         | *str*       | Dataset ID name                              |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.checksum_client | *str*       | Checksum client as shell command-line to use |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.checksum_type   | *str*       | Checksum type                                |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.threads         | *int*       | Maximum threads number                       |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.cfg             | *callable*  | Configuration file parser                    |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.pattern         | *re object* | DRS regex pattern                            |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
-<span class="sd">    | *self*.facets          | *list*      | List of the DRS facets                       |</span>
-<span class="sd">    +------------------------+-------------+----------------------------------------------+</span>
+<span class="sd">    Encapsulates the processing context/information for main process.</span>
 
 <span class="sd">    :param ArgumentParser args: Parsed command-line arguments</span>
 <span class="sd">    :returns: The processing context</span>
@@ -226,7 +183,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">no_version</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">no_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">max_threads</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clean</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cleanup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_cleanup</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cleanup</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">all_versions</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">no_version</span> <span class="o">=</span> <span class="kc">False</span>
@@ -243,7 +200,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;checksum&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># Use SHA256 as default because esg.ini not mandatory in configuration directory</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="s1">&#39;sha256sum&#39;</span><span class="p">,</span> <span class="s1">&#39;SHA256&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_facets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="s2">&quot;dataset_id&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_facets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="s1">&#39;dataset_id&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate_directory_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">)</span></div>
 
 
@@ -306,30 +263,6 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="counted"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.counted">[docs]</a><span class="k">def</span> <span class="nf">counted</span><span class="p">(</span><span class="n">fct</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Decorator used to count all file process calls.</span>
-
-<span class="sd">    :param callable fct: The function to monitor</span>
-<span class="sd">    :returns: A wrapped function with a ``.called`` attribute</span>
-<span class="sd">    :rtype: *callable*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># Convenience decorator to keep the file_process docstring</span>
-    <span class="nd">@wraps</span><span class="p">(</span><span class="n">fct</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Wrapper function for counting</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">wrap</span><span class="o">.</span><span class="n">called</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">fct</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="n">wrap</span><span class="o">.</span><span class="n">called</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">wrap</span><span class="o">.</span><span class="n">__name__</span> <span class="o">=</span> <span class="n">fct</span><span class="o">.</span><span class="n">__name__</span>
-    <span class="k">return</span> <span class="n">wrap</span></div>
-
-
 <div class="viewcode-block" id="get_output_mapfile"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.get_output_mapfile">[docs]</a><span class="k">def</span> <span class="nf">get_output_mapfile</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataset_version</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Builds the mapfile full path depending on:</span>
@@ -361,19 +294,19 @@
         <span class="k">pass</span>
     <span class="c1"># Deduce mapfile name from --mapfile argument</span>
     <span class="n">outmap</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">outmap</span>
-    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;\{dataset_id\}&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">outmap</span><span class="p">):</span>
-        <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\{dataset_id\}&#39;</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">outmap</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;\{version\}&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">outmap</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;</span><span class="si">{dataset_id}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">outmap</span><span class="p">):</span>
+        <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;</span><span class="si">{dataset_id}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">outmap</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;</span><span class="si">{version}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">outmap</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">latest</span><span class="p">:</span>
-            <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\{version\}&#39;</span><span class="p">,</span> <span class="s1">&#39;latest&#39;</span><span class="p">,</span> <span class="n">outmap</span><span class="p">)</span>
+            <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;</span><span class="si">{version}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;latest&#39;</span><span class="p">,</span> <span class="n">outmap</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">dataset_version</span><span class="p">:</span>
-            <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\{version\}&#39;</span><span class="p">,</span> <span class="n">dataset_version</span><span class="p">,</span> <span class="n">outmap</span><span class="p">)</span>
+            <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;</span><span class="si">{version}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">dataset_version</span><span class="p">,</span> <span class="n">outmap</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;.\{version\}&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">outmap</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;\{date\}&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">outmap</span><span class="p">):</span>
-        <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\{date\}&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y</span><span class="si">%d</span><span class="s2">%m&quot;</span><span class="p">),</span> <span class="n">outmap</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;\{job_id\}&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">outmap</span><span class="p">):</span>
-        <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\{job_id\}&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()),</span> <span class="n">outmap</span><span class="p">)</span>
+            <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\.</span><span class="si">{version}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">outmap</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;</span><span class="si">{date}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">outmap</span><span class="p">):</span>
+        <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;</span><span class="si">{date}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y</span><span class="si">%d</span><span class="s2">%m&quot;</span><span class="p">),</span> <span class="n">outmap</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;</span><span class="si">{job_id}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">outmap</span><span class="p">):</span>
+        <span class="n">outmap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;</span><span class="si">{job_id}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()),</span> <span class="n">outmap</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">outmap</span><span class="p">)</span> <span class="o">+</span> <span class="n">WORKING_EXTENSION</span></div>
 
 
@@ -470,7 +403,6 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<span class="nd">@counted</span>
 <div class="viewcode-block" id="process"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.process">[docs]</a><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    process(ffp, ctx)</span>
@@ -494,9 +426,9 @@
     <span class="n">fh</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
     <span class="c1"># Matching between directory_format and file full path</span>
     <span class="n">fh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
-    <span class="c1"># Silently stop process if not in desired version scope</span>
+    <span class="c1"># Silently stop process if not in desired version scope (i.e., Out Of Version Scope = OOVS)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">in_version_scope</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-        <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">OOVS</span>
     <span class="c1"># Deduce dataset_id</span>
     <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">get_dataset_id</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
     <span class="c1"># Deduce dataset_version</span>
@@ -516,6 +448,20 @@
     <span class="k">return</span> <span class="n">outfile</span></div>
 
 
+<div class="viewcode-block" id="clean"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.clean">[docs]</a><span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clean directory from incomplete mapfiles.</span>
+<span class="sd">    Incomplete mapfiles from a previous run are silently removed.</span>
+
+<span class="sd">    :param str directory: The directory to clean</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="s1">&#39;*</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> cleaned&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">directory</span><span class="p">))</span></div>
+
+
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main process that:</span>
@@ -533,39 +479,90 @@
     <span class="c1"># Instantiate processing context from command-line arguments or SYNDA job dictionary</span>
     <span class="n">ctx</span> <span class="o">=</span> <span class="n">ProcessingContext</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan started&#39;</span><span class="p">)</span>
-    <span class="c1"># All incomplete mapfiles from a previous run are silently removed</span>
-    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">clean</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">outdir</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="s1">&#39;*</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">)):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Output directory cleaned&#39;</span><span class="p">)</span>
+    <span class="c1"># Clean output directory</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">no_cleanup</span><span class="p">:</span>
+        <span class="n">clean</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">outdir</span><span class="p">)</span>
     <span class="c1"># Start threads pool over files list in supplied directory</span>
     <span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">threads</span><span class="p">))</span>
-    <span class="c1"># Return the list of generated mapfiles full paths</span>
-    <span class="n">outfiles_all</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">))]</span>
-    <span class="n">outfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">outfiles_all</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+    <span class="c1"># Return the list of generated mapfiles (with their full paths)</span>
+    <span class="c1"># If not verbose mode or log, print a progress bar on standard output</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+        <span class="c1"># Get the number of files to scan</span>
+        <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">Tqdm</span><span class="p">(</span><span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">),</span>
+                                           <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Collecting files&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                           <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
+                                           <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
+        <span class="n">mapfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)),</span>
+                                    <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Mapfile(s) generation&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                    <span class="n">total</span><span class="o">=</span><span class="n">nfiles</span><span class="p">,</span>
+                                    <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
+                                    <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                    <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
+                                    <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mapfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">))]</span>
     <span class="c1"># Close threads pool</span>
     <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-    <span class="c1"># Raises exception when all processed files failed (i.e., filtered list empty)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">outfiles</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">called</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; No files found&#39;</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; All files have been ignored or have failed leading to no mapfile.&#39;</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-    <span class="c1"># Replace mapfile working extension by final extension</span>
-    <span class="c1"># A final mapfile is silently overwritten if already exists</span>
-    <span class="k">for</span> <span class="n">outfile</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">outfiles</span><span class="p">)):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">outfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="n">FINAL_EXTENSION</span><span class="p">))</span>
-    <span class="c1"># Display summary</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{0}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">outfiles</span><span class="p">)))</span>
-    <span class="c1"># Non-zero exit status if any files got filtered</span>
-    <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">outfiles_all</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> file(s) have been skipped&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfiles_all</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+    <span class="c1"># Get the number of files out of version scope (OOVS) and clean them from mapfiles list</span>
+    <span class="n">oovs</span> <span class="o">=</span> <span class="n">mapfiles</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">OOVS</span><span class="p">)</span>
+    <span class="n">mapfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">mapfile</span> <span class="k">for</span> <span class="n">mapfile</span> <span class="ow">in</span> <span class="n">mapfiles</span> <span class="k">if</span> <span class="n">mapfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">OOVS</span><span class="p">]</span>
+    <span class="c1"># Print number of files out of the version scope if exist</span>
+    <span class="k">if</span> <span class="n">oovs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (</span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;File(s) skipped&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                          <span class="n">oovs</span><span class="p">,</span>
+                                          <span class="s1">&#39;out of version scope&#39;</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> file(s) skipped (out of the version scope)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oovs</span><span class="p">))</span>
+    <span class="c1"># Decline outputs depending on the scan results</span>
+    <span class="c1"># Raise errors when one or several files have been skipped or failed</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">):</span>
+        <span class="c1"># Mapfiles list contains only string value = all files have been successfully scanned</span>
+        <span class="c1"># Remove mapfile working extension</span>
+        <span class="c1"># A final mapfile is silently overwritten if already exists</span>
+        <span class="k">for</span> <span class="n">mapfile</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapfile</span><span class="p">,</span> <span class="n">mapfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="c1"># Print number of generated mapfiles</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Mapfile(s) generated&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                              <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">)),</span>
+                                              <span class="n">ctx</span><span class="o">.</span><span class="n">outdir</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> mapfile(s) generated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">))))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{0}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">)))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">):</span>
+        <span class="c1"># Mapfiles list is empty = no files scanned/found</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; No files found&#39;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">):</span>
+        <span class="c1"># Mapfiles list contains some None values = some files have been skipped or failed during the scan</span>
+        <span class="c1"># Print number of generated mapfiles</span>
+        <span class="c1"># Remove mapfile working extension</span>
+        <span class="c1"># A final mapfile is silently overwritten if already exists</span>
+        <span class="k">for</span> <span class="n">mapfile</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapfile</span><span class="p">,</span> <span class="n">mapfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Mapfile(s) generated&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                              <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapfiles</span><span class="p">))),</span>
+                                              <span class="n">ctx</span><span class="o">.</span><span class="n">outdir</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> mapfile(s) generated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapfiles</span><span class="p">)))))</span>
+        <span class="c1"># Print number of scan errors</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Scan errors&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                              <span class="n">mapfiles</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
+                                              <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> file(s) have been skipped&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mapfiles</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{0}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">)))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">):</span>
+        <span class="c1"># Mapfiles list contains only None values = all files have been skipped or failed during the scan</span>
+        <span class="c1"># Print number of scan errors</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Scan errors&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                              <span class="nb">len</span><span class="p">(</span><span class="n">mapfiles</span><span class="p">),</span>
+                                              <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; All files have been ignored or have failed leading to no mapfile.&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -599,7 +596,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.6.4',
+            VERSION:'2.7.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
