@@ -9,7 +9,7 @@ Check the help
 .. code-block:: bash
 
    $> esgprep -h
-   $> esgprep <subcommand> -h
+   $> esgprep SUBCOMMAND -h
 
 Specify the project
 *******************
@@ -57,10 +57,11 @@ All errors and exceptions are logged into a file named ``esgprep-YYYYMMDD-HHMMSS
 Other information are logged into a file named ``esgprep-YYYYMMDD-HHMMSS-PID.log`` only if ``--log`` is submitted.
 If not, the standard output is used following the verbose mode.
 By default, the logifles are stored in a ``logs`` folder made in your current working directory (if not exists).
-It can be changed by submitting a logfile directory.
+It can be changed by adding a logfile directory to the flag.
 
 .. code-block:: bash
 
+   $> esgprep SUBCOMMAND --log
    $> esgprep SUBCOMMAND --log /path/to/logdir
 
 .. note:: The logfile directory is optional.
