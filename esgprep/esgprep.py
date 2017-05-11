@@ -107,9 +107,9 @@ def get_args():
 
     parent.add_argument(
         '-i',
-        metavar='/esg/config/esgcet/.',
+        metavar='/esg/config/esgcet',
         action=DirectoryChecker,
-        default='/esg/config/esgcet/.',
+        default='/esg/config/esgcet',
         help="""
         Initialization/configuration directory containing|n
         "esg.ini" and "esg.<project>.ini" files.|n
