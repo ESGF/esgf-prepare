@@ -230,13 +230,17 @@ def main(args):
 
     # Get "remote" project targeted from the command-line
     projects = target_projects(gh, args.project)
-    for project in tqdm(projects,
-                        desc='Fetching "esg.<project>.ini"',
-                        total=len(projects),
-                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                        ncols=100,
-                        unit='files',
-                        file=sys.stdout):
-        path = os.path.join(GITHUB_DIRECTORY, 'esg.{0}.ini'.format(project))
-        fetch(gh, outdir, path, args.b, args.k, args.o)
-
+    if args.pbar:
+        for project in tqdm(projects,
+                            desc='Fetching "esg.<project>.ini"',
+                            total=len(projects),
+                            bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                            ncols=100,
+                            unit='files',
+                            file=sys.stdout):
+            path = os.path.join(GITHUB_DIRECTORY, 'esg.{0}.ini'.format(project))
+            fetch(gh, outdir, path, args.b, args.k, args.o)
+   else:
+       for project in projects:
+           path = os.path.join(GITHUB_DIRECTORY, 'esg.{0}.ini'.format(project))
+           fetch(gh, outdir, path, args.b, args.k, args.o)
