@@ -224,7 +224,6 @@ def main(args):
 
      * Checks if output directory exists,
      * Checks if configuration already exists in output directory,
-     * Asks confirmation if necessary,
      * Tests the corresponding GitHub URL,
      * Gets the GitHub URL,
      * Writes response into INI file.
@@ -250,10 +249,6 @@ def main(args):
     gh = github_connector(repository=GITHUB_REPO, team=GITHUB_TEAM, username=args.gh_user, password=args.gh_password)
     logging.info('Connected to "{0}" GitHub repository '.format(GITHUB_REPO.lower()))
 
-    ####################################
-    # Fetch and deploy esg.project.ini #
-    ####################################
-
     # Get "remote" project targeted from the command-line
     projects = target_projects(gh, args.project)
     for project in tqdm(projects,
@@ -266,45 +261,3 @@ def main(args):
         path = os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project))
         fetch(gh, outdir, path, args.b, args.k, args.o)
 
-    # Check if esgprep is run on an ESGF node
-    if os.path.exists('/esg/config/esgcet'):
-
-        #############################################
-        # Fetch and deploy esgcet_models_tables.txt #
-        #############################################
-
-        outdir = '/esg/config/esgcet'
-        if not os.path.exists(outdir):
-            logging.warning('"{0}" does not exist. Fetching "esgcet_models_table.txt" aborted.'.format(outdir))
-        pbar = tqdm(desc='Fetching "esgcet_models_table.txt"'.ljust(LEN_MSG),
-                    total=1,
-                    bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                    ncols=100,
-                    unit='files',
-                    file=sys.stdout)
-        path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
-        fetch(gh, outdir, path, args.b, args.k, args.o)
-        pbar.update()
-        pbar.close()
-
-        #######################################
-        # Fetch and deploy project_handler.py #
-        #######################################
-
-        outdir = os.path.join(os.path.dirname(esgcet.__file__), 'config')
-        if not os.path.exists(outdir):
-            logging.warning('"{0}" does not exist. Fetching handlers aborted.'.format(outdir))
-        projects = target_handlers(gh, args.project)
-        for project in tqdm(projects,
-                            desc='Fetching "<project>_handler.py"'.ljust(LEN_MSG),
-                            total=len(projects),
-                            bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                            ncols=100,
-                            unit='files',
-                            file=sys.stdout):
-            path = os.path.join(GITHUB_DIRECTORY, 'handlers', '{0}_handler.py'.format(project))
-            fetch(gh, outdir, path, args.b, args.k, args.o)
-        
-    else:
-
-        ogging.warning('No module named "esgcet". Not on an ESGF node? Fetching aborted.')
