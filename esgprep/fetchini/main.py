@@ -267,7 +267,7 @@ def main(args):
         fetch(gh, outdir, path, args.b, args.k, args.o)
 
     # Check if esgprep is run on an ESGF node
-    if os.path.exits('/esg/config/esgcet'):
+    if os.path.exists('/esg/config/esgcet'):
 
         #############################################
         # Fetch and deploy esgcet_models_tables.txt #
