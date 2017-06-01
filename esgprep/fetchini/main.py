@@ -118,7 +118,7 @@ def target_projects(gh, projects=None):
 
     """
     pattern = 'esg\.(.+?)\.ini'
-    files = gh_content(gh, path='{0}/{1}'.format(GITHUB_DIRECTORY, 'ini'))
+    files = gh_content(gh, path=GITHUB_DIRECTORY)
     p_avail = set([re.search(pattern, x).group(1) for x in files.keys() if re.search(pattern, x)])
     if projects:
         p = set(projects)
@@ -126,27 +126,6 @@ def target_projects(gh, projects=None):
         if p.difference(p_avail):
             logging.warning("Unavailable project(s): {0}".format(', '.join(p.difference(p_avail))))
     return list(p_avail)
-
-
-def target_handlers(gh, projects=None):
-    """
-    Gets the available handlers id from GitHub esg.*.ini files.
-
-    :param github3.GitHub.repository gh: A :func:`github_connector` instance
-    :param list projects: Desired project ids
-    :returns: The target projects
-    :rtype: *list*
-
-    """
-    pattern = '(.+?)_handler.py'
-    files = gh_content(gh, path='{0}/{1}'.format(GITHUB_DIRECTORY, 'handlers'))
-    h_avail = set([re.search(pattern, x).group(1) for x in files.keys() if re.search(pattern, x)])
-    if projects:
-        h = set(projects)
-        h_avail = h_avail.intersection(h)
-        if h.difference(h_avail):
-            logging.warning("Unavailable project(s): {0}".format(', '.join(h.difference(h_avail))))
-    return list(h_avail)
 
 
 def do_fetching(f, remote_checksum, keep, overwrite):
@@ -252,12 +231,12 @@ def main(args):
     # Get "remote" project targeted from the command-line
     projects = target_projects(gh, args.project)
     for project in tqdm(projects,
-                        desc='Fetching "esg.<project>.ini"'.ljust(LEN_MSG),
+                        desc='Fetching "esg.<project>.ini"',
                         total=len(projects),
                         bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
                         ncols=100,
                         unit='files',
                         file=sys.stdout):
-        path = os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project))
+        path = os.path.join(GITHUB_DIRECTORY, 'esg.{0}.ini'.format(project))
         fetch(gh, outdir, path, args.b, args.k, args.o)
 

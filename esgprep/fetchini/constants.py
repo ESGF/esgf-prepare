@@ -10,10 +10,5 @@
 # GitHub configuration
 GITHUB_TEAM = 'ESGF'
 GITHUB_REPO = 'config'
-GITHUB_DIRECTORY = 'publisher-configs'
+GITHUB_DIRECTORY = 'publisher-configs/ini'
 
-# esgf.properties default path
-ESGF_PROPERTIES = '/esg/config/esgf.properties'
-
-# Progress bar message length
-LEN_MSG = 34
