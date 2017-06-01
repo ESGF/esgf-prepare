@@ -10,6 +10,7 @@
 import fnmatch
 import logging
 import os
+import re
 import sys
 from datetime import datetime
 from multiprocessing.dummy import Pool as ThreadPool
