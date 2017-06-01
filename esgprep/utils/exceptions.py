@@ -7,8 +7,6 @@
 
 """
 
-import re
-
 
 class EmptyConfigFile(Exception):
     """
@@ -212,7 +210,6 @@ class DirectoryNotMatch(Exception):
         self.msg += "\n<section: '{0}'>".format(section)
         for config_path in config_paths:
             self.msg += "\n<config file: '{0}'>".format(config_path)
-        self.msg += "\n" + regexp_diagnosis(directory_format, path)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -229,7 +226,6 @@ class DatasetNotMatch(Exception):
         self.msg += "\n<section: '{0}'>".format(section)
         for config_path in config_paths:
             self.msg += "\n<config file: '{0}'>".format(config_path)
-        self.msg += "\n" + regexp_diagnosis(dataset_format, dset)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -246,7 +242,6 @@ class FilenameNotMatch(Exception):
         self.msg += "\n<section: '{0}'>".format(section)
         for config_path in config_paths:
             self.msg += "\n<config file: '{0}'>".format(config_path)
-        self.msg += "\n" + regexp_diagnosis(filename_format, filename)
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -262,37 +257,3 @@ class KeyNotFound(Exception):
         if keys:
             self.msg += "\n<Available keys: '{0}'>".format(', '.join(keys))
         super(self.__class__, self).__init__(self.msg)
-
-
-def regexp_diagnosis(pattern, strng):
-    """
-    Given a pattern and a string (which is known not to match), returns a report
-    showing how much of the regexp matches, in order to help identify where the 
-    regexp is incorrect.
-    
-    """
-    p = pattern
-    while p:
-        if re.match(p, strng):
-            break
-        p = p[:-1]
-    if not p:
-        return "Pattern fails to match from very start"
-    matching_pattern = p
-    matching_string = re.match(p, strng).group(0)
-    non_matching_pattern = pattern[len(p):]
-    non_matching_string = strng[len(matching_string):]
-    return """
-Longest matching subpattern:
-
-  start of pattern: {0}
-  matches substring: {1}
-
-Non-matching part at end:
-
-  remainder of pattern: {2}
-  does not match: {3}
-""".format(matching_pattern,
-           matching_string,
-           non_matching_pattern,
-           non_matching_string)

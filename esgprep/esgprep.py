@@ -57,11 +57,6 @@ def get_args():
 
         iv. Generate mapfiles.|n|n
 
-        The "esgprep" toolbox is based on the ESGF data node|n
-        configuration files called "esg.ini".  It requires that |n
-        those configuration files are correctly built and declares|n
-        all required attributes following recommended best practices.|n|n
-
         See full documentation and references at|n
         http://is-enes-data.github.io/esgf-prepare/.|n
         """,
@@ -153,15 +148,8 @@ def get_args():
         and the controlled vocabularies of the corresponding|n
         project.|n|n
 
-        - The "esgcet_models_table.txt" declares the models and their|n
-          descriptions among the projects.|n|n
-
-        - The "<project_id>_handler.py" are Python methods to guide|n
-          the publisher in metadata harvesting.|n|n
-
-        "esgprep fetch-ini" allows you to properly download, configure|n
-        and deploy these configuration files hosted on a GitHub|n
-        repository.|n|n
+        "esgprep fetch-ini" allows you to properly download and deploy|n
+        these configuration files hosted on a GitHub repository.|n|n
 
         Keep in mind that the fetched files have to be reviewed to|n
         ensure a correct configuration of your publication.|n|n

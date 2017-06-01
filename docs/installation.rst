@@ -36,14 +36,14 @@ Installation from GitHub
 
 4. The ``esgprep`` command-line is ready.
 
-.. warning:: To run ``esgprep`` you have to be logged into a machine which
-             mounts the filesystem hosting the data to publish.
+.. warning:: To run ``esgprep`` you have to be logged into a machine which mounts the filesystem hosting the data to
+publish.
 
 Dependencies and requirements
 *****************************
 
-``esgprep`` uses the following basic Python libraries included in Python 2.5+. Ensure that your Python environment
-includes:
+Linux distribution with Python 2.6+ is required. ``esgprep`` uses the following basic Python libraries. Ensure that
+your Python environment includes:
 
  * `os <https://docs.python.org/2/library/os.html>`_
  * `re <https://docs.python.org/2/library/re.html>`_
@@ -65,7 +65,7 @@ includes:
  * `functools <https://docs.python.org/2/library/functools.html>`_
  * `multiprocessing <https://docs.python.org/2/library/multiprocessing.html>`_
 
-Some required librairies are not included in most Python distributions. PLease install them using the usual PIP command:
+Some required librairies are not included in most Python distributions. Please install them using the usual PIP command:
 
  * `fuzzywuzzy <https://pypi.python.org/pypi/fuzzywuzzy>`_
  * `github3 <https://github3py.readthedocs.io/en/master/>`_
@@ -74,3 +74,8 @@ Some required librairies are not included in most Python distributions. PLease i
  * `netCDF4 <http://unidata.github.io/netcdf4-python/>`_
  * `tqdm <https://pypi.python.org/pypi/tqdm>`_
  * `treelib <https://pypi.python.org/pypi/treelib>`_
+
+.. code-block:: bash
+
+   pip install <pkg_name>
+
