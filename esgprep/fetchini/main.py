@@ -240,7 +240,7 @@ def main(args):
                             file=sys.stdout):
             path = os.path.join(GITHUB_DIRECTORY, 'esg.{0}.ini'.format(project))
             fetch(gh, outdir, path, args.b, args.k, args.o)
-   else:
-       for project in projects:
-           path = os.path.join(GITHUB_DIRECTORY, 'esg.{0}.ini'.format(project))
-           fetch(gh, outdir, path, args.b, args.k, args.o)
+    else:
+        for project in projects:
+            path = os.path.join(GITHUB_DIRECTORY, 'esg.{0}.ini'.format(project))
+            fetch(gh, outdir, path, args.b, args.k, args.o)
