@@ -23,42 +23,6 @@ from esgprep.fetchini.exceptions import *
 from esgprep.utils.parser import *
 
 
-def query_yes_no(question, default='no'):
-    """
-    Asks a yes/no question via raw_input() and return their answer.
-
-    :param str question: The question string that is presented to the user
-    :param str default: The default answer is the string if the user just hits the carriage return.
-        If None an answer is required.
-    :returns: The answer True or False
-    :rtype: *boolean*
-    :raises Error: If invalid default answer
-
-    """
-    # Dictionary of valid answers
-    valid = {'yes': True, 'y': True, 'YES': True, 'Y': True, 'Yes': True,
-             'no': False, 'n': False, 'NO': False, 'N': False, 'No': False}
-    # Modify prompt depending on the default value
-    if default is None:
-        prompt = '[y/n]'
-    elif default == 'yes':
-        prompt = '[Y/n]'
-    elif default == 'no':
-        prompt = '[y/N]'
-    else:
-        raise Exception('Invalid default answer: {0}'.format(default))
-    while True:
-        sys.stdout.write('{0} {1} '.format(question, prompt))
-        choice = raw_input().lower().strip()
-        if default is not None and choice == '':
-            return valid[default]
-        elif choice in valid:
-            return valid[choice]
-        else:
-            # Ask again
-            pass
-
-
 def github_connector(repository, username=None, password=None, team=None):
     """
     Instantiates the GitHub repository connector if granted.
@@ -211,7 +175,7 @@ def do_fetching(f, remote_checksum, keep, overwrite):
                 if keep:
                     return False
                 else:
-                    return query_yes_no('Overwrite?')
+                    return True        
 
 
 def githash(outfile):
@@ -268,9 +232,6 @@ def main(args):
     :param ArgumentParser args: Parsed command-line arguments
 
     """
-    # Do not display progress bar if user input is required
-    if not args.k and not args.o:
-        args.pbar = False
     # If ESGF node and args.i = /esg/config/esgcet -> exists
     # If not ESGF node and args.i = /esg/config/esgcet -> doesn't exist -> use $PWD/ini instead
     # If ESGF node and args.i = other -> if not exists make it
@@ -295,24 +256,18 @@ def main(args):
 
     # Get "remote" project targeted from the command-line
     projects = target_projects(gh, args.project)
-    if args.pbar:
-        for project in tqdm(projects,
-                            desc='Fetching "esg.<project>.ini"'.ljust(LEN_MSG),
-                            total=len(projects),
-                            bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                            ncols=100,
-                            unit='files',
-                            file=sys.stdout):
-            path = os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project))
-            fetch(gh, outdir, path, args.b, args.k, args.o)
-    else:
-        for project in projects:
-            path = os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project))
-            fetch(gh, outdir, path, args.b, args.k, args.o)
+    for project in tqdm(projects,
+                        desc='Fetching "esg.<project>.ini"'.ljust(LEN_MSG),
+                        total=len(projects),
+                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                        ncols=100,
+                        unit='files',
+                        file=sys.stdout):
+        path = os.path.join(GITHUB_DIRECTORY, 'ini', 'esg.{0}.ini'.format(project))
+        fetch(gh, outdir, path, args.b, args.k, args.o)
 
     # Check if esgprep is run on an ESGF node
-    try:
-        import esgcet
+    if os.path.exits('/esg/config/esgcet'):
 
         #############################################
         # Fetch and deploy esgcet_models_tables.txt #
@@ -321,20 +276,16 @@ def main(args):
         outdir = '/esg/config/esgcet'
         if not os.path.exists(outdir):
             logging.warning('"{0}" does not exist. Fetching "esgcet_models_table.txt" aborted.'.format(outdir))
-        if args.pbar:
-            pbar = tqdm(desc='Fetching "esgcet_models_table.txt"'.ljust(LEN_MSG),
-                        total=1,
-                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                        ncols=100,
-                        unit='files',
-                        file=sys.stdout)
-            path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
-            fetch(gh, outdir, path, args.b, args.k, args.o)
-            pbar.update()
-            pbar.close()
-        else:
-            path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
-            fetch(gh, outdir, path, args.b, args.k, args.o)
+        pbar = tqdm(desc='Fetching "esgcet_models_table.txt"'.ljust(LEN_MSG),
+                    total=1,
+                    bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                    ncols=100,
+                    unit='files',
+                    file=sys.stdout)
+        path = os.path.join(GITHUB_DIRECTORY, 'esgcet_models_table.txt')
+        fetch(gh, outdir, path, args.b, args.k, args.o)
+        pbar.update()
+        pbar.close()
 
         #######################################
         # Fetch and deploy project_handler.py #
@@ -344,20 +295,16 @@ def main(args):
         if not os.path.exists(outdir):
             logging.warning('"{0}" does not exist. Fetching handlers aborted.'.format(outdir))
         projects = target_handlers(gh, args.project)
-        if args.pbar:
-            for project in tqdm(projects,
-                                desc='Fetching "<project>_handler.py"'.ljust(LEN_MSG),
-                                total=len(projects),
-                                bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                                ncols=100,
-                                unit='files',
-                                file=sys.stdout):
-                path = os.path.join(GITHUB_DIRECTORY, 'handlers', '{0}_handler.py'.format(project))
-                fetch(gh, outdir, path, args.b, args.k, args.o)
-        else:
-            for project in projects:
-                path = os.path.join(GITHUB_DIRECTORY, 'handlers', '{0}_handler.py'.format(project))
-                fetch(gh, outdir, path, args.b, args.k, args.o)
+        for project in tqdm(projects,
+                            desc='Fetching "<project>_handler.py"'.ljust(LEN_MSG),
+                            total=len(projects),
+                            bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                            ncols=100,
+                            unit='files',
+                            file=sys.stdout):
+            path = os.path.join(GITHUB_DIRECTORY, 'handlers', '{0}_handler.py'.format(project))
+            fetch(gh, outdir, path, args.b, args.k, args.o)
+        
+    else:
 
-    except ImportError:
-        logging.warning('No module named "esgcet". Not on an ESGF node? Fetching aborted.')
+        ogging.warning('No module named "esgcet". Not on an ESGF node? Fetching aborted.')
