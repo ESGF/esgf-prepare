@@ -9,6 +9,7 @@
 
 import ConfigParser
 import os
+import re
 import string
 from glob import glob
 
