@@ -269,7 +269,7 @@ def main(args):
 
     """
     # Do not display progress bar if user input is required
-    if args.k or args.o:
+    if not args.k and not args.o:
         args.pbar = False
     # If ESGF node and args.i = /esg/config/esgcet -> exists
     # If not ESGF node and args.i = /esg/config/esgcet -> doesn't exist -> use $PWD/ini instead
