@@ -268,6 +268,9 @@ def main(args):
     :param ArgumentParser args: Parsed command-line arguments
 
     """
+    # Do not display progress bar if user input is required
+    if args.k or args.o:
+        args.pbar = False
     # If ESGF node and args.i = /esg/config/esgcet -> exists
     # If not ESGF node and args.i = /esg/config/esgcet -> doesn't exist -> use $PWD/ini instead
     # If ESGF node and args.i = other -> if not exists make it
