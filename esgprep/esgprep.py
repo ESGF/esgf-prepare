@@ -458,7 +458,8 @@ def get_args():
         (in YYYYDDMM) will be substituted where found. If |n
         {dataset_id} is not present in mapfile name, then all |n
         datasets will be written to a single mapfile, overriding |n
-        the default behavior of producing ONE mapfile PER dataset.
+        the default behavior of producing ONE mapfile PER|n
+        dataset.
         """)
     mapfile.add_argument(
         '--outdir',
@@ -466,9 +467,9 @@ def get_args():
         type=str,
         default=os.path.join(os.getcwd(), 'mapfiles'),
         help="""
-        Mapfile(s) output directory. A "mapfile_drs" can be defined |n
-        per each project section in INI files and joined to build a |n
-        mapfiles tree.
+        Mapfile(s) output directory. A "mapfile_drs" can be|n
+        defined per project section in INI files and joined to|n
+        build a mapfiles tree.
         """)
     group = mapfile.add_mutually_exclusive_group(required=False)
     group.add_argument(
@@ -489,8 +490,8 @@ def get_args():
         Generates mapfile(s) scanning datasets with the|n
         corresponding version number only. It takes priority over|n
         --all-versions. If directly specified in positional|n
-        argument, use the version number from supplied directory and|n
-        disables --all-versions and --latest-symlink.
+        argument, use the version number from supplied directory|n
+        and disables --all-versions and --latest-symlink.
         """)
     group.add_argument(
         '--latest-symlink',
@@ -498,9 +499,9 @@ def get_args():
         default=False,
         help="""
         Generates mapfile(s) following latest symlinks only. This|n
-        sets the {version} token to "latest" into the mapfile name,|n
-        but picked up the pointed version to build the dataset|n
-        identifier (if --no-version is disabled).
+        sets the {version} token to "latest" into the mapfile|n
+        name, but picked up the pointed version to build the|n
+        dataset identifier (if --no-version is disabled).
         """)
     mapfile.add_argument(
         '--no-version',
@@ -518,9 +519,8 @@ def get_args():
         type=str,
         nargs='+',
         help="""
-        One or more facet key(s) to not ignored.|n
-        This excludes the corresponding facet|n
-        from the default ignored list.|n
+        One or more facet key(s) to not ignored. This excludes|n
+        the corresponding facet from the default ignored list.|n
         Useful in case of differences between|n
         "directory_format" and "dataset_id" patterns.
         """)
@@ -530,8 +530,8 @@ def get_args():
         type=str,
         default='*.nc',
         help="""
-        Filter files matching the regular expression (default only|n
-        scan netCDF files). Uniw wildcards are supported.
+        Filter files matching the regular expression (default|n
+        only scan netCDF files). Uniw wildcards are supported.
         """)
     mapfile.add_argument(
         '--tech-notes-url',
@@ -560,17 +560,17 @@ def get_args():
         type=int,
         default=4,
         help="""
-        Number of maximal threads to simultaneously process several|n
-        files (useful if checksum calculation is enabled). Set to|n
-        one seems sequential processing.
+        Number of maximal threads to simultaneously process|n
+        several files (useful if checksum calculation is|n
+        enabled). Set to one seems sequential processing.
         """)
     mapfile.add_argument(
         '--no-cleanup',
         action='store_true',
         default=False,
-        help="""Disables output directory cleanup prior to mapfile process.|n
-        This is recommended if several "esgprep mapfile" instances |n
-        run with the same output directory.
+        help="""Disables output directory cleanup prior to mapfile|n
+        process. This is recommended if several "esgprep mapfile"|n
+        instances run with the same output directory.
         """)
 
     return main.parse_args()
