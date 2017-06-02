@@ -109,7 +109,7 @@ class File(object):
                 dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, self.attributes)
             except InterpolationMissingOptionError:
                 raise MissingPatternKey(self.attributes.keys(),
-                                        ctx.cfg.get(ctx.project_section, 'dataset_id'),
+                                        ctx.cfg.get(ctx.project_section, 'dataset_id', 1),
                                         ctx.project_section,
                                         ctx.cfg.read_paths)
         else:
