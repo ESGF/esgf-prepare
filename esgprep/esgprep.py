@@ -507,7 +507,10 @@ def get_args():
         '--no-version',
         action='store_true',
         default=False,
-        help="""Does not includes DRS version into the dataset identifier.""")
+        help="""
+        Does not includes DRS version into the dataset|n
+        identifier.
+        """)
     mapfile.add_argument(
         '--no-checksum',
         action='store_true',

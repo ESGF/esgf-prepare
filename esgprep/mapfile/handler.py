@@ -89,10 +89,12 @@ class File(object):
         # Facet values to check are deduced from file full-path
         # If a DRS attribute is missing regarding the dataset_id template,
         # the DRS attributes are completed from esg.<project>.ini maptables.
+        # If default keys has to be resolved through ini instead of ignored: remove it from the IGNORED_KEYS list
+        ignored_keys = set(IGNORED_KEYS) - set(ctx.not_ignored)
         if not ctx.dataset:
-            for facet in set(ctx.facets).intersection(self.attributes.keys()) - set(IGNORED_KEYS):
+            for facet in set(ctx.facets).intersection(self.attributes.keys()) - ignored_keys:
                 ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
-            for facet in set(ctx.facets).difference(self.attributes.keys()) - set(IGNORED_KEYS):
+            for facet in set(ctx.facets).difference(self.attributes.keys()) - ignored_keys:
                 try:
                     self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
                                                                          '{0}_map'.format(facet),

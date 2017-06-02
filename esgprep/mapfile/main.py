@@ -46,6 +46,7 @@ class ProcessingContext(object):
         self.threads = args.max_threads
         self.dataset = args.dataset
         self.no_cleanup = args.no_cleanup
+        self.not_ignored = args.not_ignored
         self.all = args.all_versions
         if self.all:
             self.no_version = False
@@ -340,6 +341,7 @@ def main(args):
     """
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
+    print(ctx.not_ignored)
     logging.info('==> Scan started')
     # Clean output directory
     if not ctx.no_cleanup:
