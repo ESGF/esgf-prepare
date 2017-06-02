@@ -205,8 +205,8 @@ class MissingPatternKey(Exception):
 
     def __init__(self, keys, pattern, section, config_paths):
         self.msg = 'A facet key is missing to deduce the pattern. Try to use "--not-ignored" argument.'
-        self.msg += "\n<found keys: '{0}'>".format(path)
-        self.msg += "\n<pattern: '{0}'>".format(directory_format)
+        self.msg += "\n<available keys: '{0}'>".format(keys)
+        self.msg += "\n<pattern: '{0}'>".format(pattern)
         self.msg += "\n<section: '{0}'>".format(section)
         for config_path in config_paths:
             self.msg += "\n<config file: '{0}'>".format(config_path)
