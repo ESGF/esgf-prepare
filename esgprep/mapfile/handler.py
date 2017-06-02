@@ -104,7 +104,13 @@ class File(object):
                                            ctx.cfg.get(ctx.project_section, 'directory_format', raw=True).strip(),
                                            ctx.project_section,
                                            ctx.cfg.read_paths)
-            dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, self.attributes)
+            try:
+                dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, self.attributes)
+            except InterpolationMissingOptionError:
+                raise MissingPatternKey(self.attributes.keys(),
+                                        ctx.cfg.get(ctx.project_section, 'dataset_id'),
+                                        ctx.project_section,
+                                        ctx.cfg.read_paths)
         else:
             dataset_id = ctx.dataset
         return dataset_id

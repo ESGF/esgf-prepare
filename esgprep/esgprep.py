@@ -521,6 +521,7 @@ def get_args():
         metavar='FACET_KEY',
         type=str,
         nargs='+',
+        default=[],
         help="""
         One or more facet key(s) to not ignored. This excludes|n
         the corresponding facet from the default ignored list.|n

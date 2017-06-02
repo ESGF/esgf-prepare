@@ -197,6 +197,22 @@ class DuplicatedMapEntry(Exception):
         super(self.__class__, self).__init__(self.msg)
 
 
+class MissingPatternKey(Exception):
+    """
+    Raised when facet cannot be deduce to rebuild the submitted pattern.
+
+    """
+
+    def __init__(self, keys, pattern, section, config_paths):
+        self.msg = 'A facet key is missing to deduce the pattern. Try to use "--not-ignored" argument.'
+        self.msg += "\n<found keys: '{0}'>".format(path)
+        self.msg += "\n<pattern: '{0}'>".format(directory_format)
+        self.msg += "\n<section: '{0}'>".format(section)
+        for config_path in config_paths:
+            self.msg += "\n<config file: '{0}'>".format(config_path)
+        super(self.__class__, self).__init__(self.msg)
+
+
 class DirectoryNotMatch(Exception):
     """
     Raised when a directory does not match the regex format.
