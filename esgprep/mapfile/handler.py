@@ -13,6 +13,7 @@ import re
 from esgprep.mapfile.exceptions import *
 from esgprep.utils.constants import *
 from esgprep.utils.exceptions import *
+from ConfigParser import InterpolationMissingOptionError
 
 
 class File(object):

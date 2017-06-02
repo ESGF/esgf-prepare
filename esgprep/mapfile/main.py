@@ -341,7 +341,6 @@ def main(args):
     """
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
-    print(ctx.not_ignored)
     logging.info('==> Scan started')
     # Clean output directory
     if not ctx.no_cleanup:
