@@ -401,9 +401,8 @@ def main(args):
         # Print number of generated mapfiles
         # Remove mapfile working extension
         # A final mapfile is silently overwritten if already exists
-        for mapfile in set(mapfiles):
-            if mapfile:
-                os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
+        for mapfile in [x for x in set(mapfiles) if x is not None]:
+            os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
         if args.pbar:
             print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(LEN_MSG),
                                               len(set(filter(None, mapfiles))),

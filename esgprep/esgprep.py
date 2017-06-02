@@ -513,6 +513,18 @@ def get_args():
         default=False,
         help="""Does not include files checksums into the mapfile(s).""")
     mapfile.add_argument(
+        '--not-ignored',
+        metavar='FACET_KEY',
+        type=str,
+        nargs='+',
+        help="""
+        One or more facet key(s) to not ignored.|n
+        This excludes the corresponding facet|n
+        from the default ignored list.|n
+        Useful in case of differences between|n
+        "directory_format" and "dataset_id" patterns.
+        """)
+    mapfile.add_argument(
         '--filter',
         metavar='"*.nc"',
         type=str,
