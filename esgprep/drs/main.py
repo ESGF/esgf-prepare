@@ -49,6 +49,8 @@ class ProcessingContext(object):
             self.mode = 'copy'
         elif args.link:
             self.mode = 'link'
+        elif args.symlink:
+            self.mode = 'symlink'
         else:
             self.mode = 'move'
         self.version = args.version

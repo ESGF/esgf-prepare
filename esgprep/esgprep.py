@@ -371,6 +371,11 @@ def get_args():
         action='store_true',
         default=False,
         help="""Hard link incoming files to the DRS tree. Default is moving files.""")
+    group.add_argument(
+        '--symlink',
+        action='store_true',
+        default=False,
+        help="""Symbolic link incoming files to the DRS tree. Default is moving files.""")
     drs.add_argument(
         '--filter',
         metavar='"*.nc"',

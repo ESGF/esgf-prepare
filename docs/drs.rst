@@ -106,7 +106,7 @@ List Unix command to apply
 
 .. warning:: At this step, no file are moved or copy to the finale DRS.
 
-.. note:: ``esgprep drs`` allows different file migration mode. Default is to move the files from the incomping path to the finale DRS. Use ``--copy`` to make hard copies or ``--link`` to make hard links from the incoming path. We recommend to use ``--link`` and remove the incoming directory after DRS checking. This doesn't affect the symbolic link skeleton used for the dataset versioning.
+.. note:: ``esgprep drs`` allows different file migration mode. Default is to move the files from the incomping path to the finale DRS. Use ``--copy`` to make hard copies, ``--link`` to make hard links or ``--symlink`` to make symbolic links from the incoming path. We recommend to use ``--link`` and remove the incoming directory after DRS checking. This doesn't affect the symbolic link skeleton used for the dataset versioning.
 
 Run the DRS upgrade
 *******************

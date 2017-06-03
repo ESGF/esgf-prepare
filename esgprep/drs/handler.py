@@ -9,6 +9,7 @@
 
 import logging
 import os
+import re
 from collections import OrderedDict
 from datetime import datetime
 
@@ -25,7 +26,6 @@ from esgprep.drs.constants import *
 from esgprep.drs.exceptions import *
 from esgprep.utils.constants import *
 from esgprep.utils.exceptions import *
-
 
 class File(object):
     """
