@@ -365,12 +365,26 @@ def get_args():
         '--copy',
         action='store_true',
         default=False,
-        help="""Copy incoming files into the DRS tree. Default is moving files.""")
+        help="""
+        Copy incoming files into the DRS tree.|n
+        Default is moving files.
+        """)
     group.add_argument(
         '--link',
         action='store_true',
         default=False,
-        help="""Hard link incoming files to the DRS tree. Default is moving files.""")
+        help="""
+        Hard link incoming files to the DRS tree.|n
+        Default is moving files.
+        """)
+    group.add_argument(
+        '--symlink',
+        action = 'store_true',
+        default = False,
+        help = """
+        Symbolic link incoming files to the DRS tree.|n
+        Default is moving files.
+        """)
     drs.add_argument(
         '--filter',
         metavar='"*.nc"',
