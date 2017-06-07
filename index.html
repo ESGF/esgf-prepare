@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep toolbox &mdash; esgprep 2.7.0 documentation</title>
+  <title>esgprep toolbox &mdash; esgprep 2.7.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.0 documentation" href="#"/>
+    <link rel="top" title="esgprep 2.7.2 documentation" href="#"/>
         <link rel="next" title="Installation" href="installation.html"/> 
 
   
@@ -86,7 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
@@ -140,9 +140,9 @@
 <h1><code class="docutils literal"><span class="pre">esgprep</span></code> toolbox<a class="headerlink" href="#esgprep-toolbox" title="Permalink to this headline">¶</a></h1>
 <p>The Earth System Grid Federation (<a class="reference external" href="https://esgf.llnl.gov/">ESGF</a>) publication process requires a strong and effective
 data management, which could also be a burden. The ESGF <code class="docutils literal"><span class="pre">esgprep</span></code> toolbox is a piece of software that enables data
-preparation according to ESGF best practices. <code class="docutils literal"><span class="pre">esgprep</span></code> allows the ESGF data providers to easily prepare their data
-for publishing to an ESGF node. It can be used to fetch required confioguration files, apply the <em>Data Reference Syntax</em>
-on local filesystems or generate mapfiles for ESGF publication.</p>
+preparation according to ESGF best practices. <code class="docutils literal"><span class="pre">esgprep</span></code> allows the ESGF data providers and datanode managers to
+easily prepare their data for publishing to an ESGF node. It can be used to fetch required configuration files, apply
+the <em>Data Reference Syntax</em> on local filesystems and/or generate mapfiles for ESGF publication.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last"><code class="docutils literal"><span class="pre">esgprep</span></code> is designed to follow all requirements from the <a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/JADm">ESGF Best Practices document</a>.</p>
@@ -159,7 +159,7 @@ on local filesystems or generate mapfiles for ESGF publication.</p>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
@@ -216,7 +216,7 @@ on local filesystems or generate mapfiles for ESGF publication.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.0',
+            VERSION:'2.7.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

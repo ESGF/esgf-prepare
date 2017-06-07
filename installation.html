@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; esgprep 2.7.0 documentation</title>
+  <title>Installation &mdash; esgprep 2.7.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.0 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.2 documentation" href="index.html"/>
         <link rel="next" title="Configuration" href="configuration.html"/>
         <link rel="prev" title="esgprep toolbox" href="index.html"/> 
 
@@ -90,11 +90,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV from configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="log.html">Changelog</a></li>
@@ -177,14 +177,14 @@ python setup.py install
 </ol>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">To run <code class="docutils literal"><span class="pre">esgprep</span></code> you have to be logged into a machine which
-mounts the filesystem hosting the data to publish.</p>
+<p class="last">To run <code class="docutils literal"><span class="pre">esgprep</span></code> you have to be logged into a machine which mounts the filesystem hosting the data to
+publish.</p>
 </div>
 </div>
 <div class="section" id="dependencies-and-requirements">
 <h2>Dependencies and requirements<a class="headerlink" href="#dependencies-and-requirements" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">esgprep</span></code> uses the following basic Python libraries included in Python 2.5+. Ensure that your Python environment
-includes:</p>
+<p>Linux distribution with Python 2.6+ is required. <code class="docutils literal"><span class="pre">esgprep</span></code> uses the following basic Python libraries. Ensure that
+your Python environment includes:</p>
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://docs.python.org/2/library/os.html">os</a></li>
@@ -208,7 +208,7 @@ includes:</p>
 <li><a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html">multiprocessing</a></li>
 </ul>
 </div></blockquote>
-<p>Some required librairies are not included in most Python distributions. PLease install them using the usual PIP command:</p>
+<p>Some required librairies are not included in most Python distributions. Please install them using the usual PIP command:</p>
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://pypi.python.org/pypi/fuzzywuzzy">fuzzywuzzy</a></li>
@@ -220,6 +220,9 @@ includes:</p>
 <li><a class="reference external" href="https://pypi.python.org/pypi/treelib">treelib</a></li>
 </ul>
 </div></blockquote>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install &lt;pkg_name&gt;
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -264,7 +267,7 @@ includes:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.0',
+            VERSION:'2.7.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.fetchini.main &mdash; esgprep 2.7.0 documentation</title>
+  <title>esgprep.fetchini.main &mdash; esgprep 2.7.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.2 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -86,7 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../fetch-ini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../check-vocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
@@ -146,6 +146,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
@@ -159,42 +160,6 @@
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.fetchini.exceptions</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.parser</span> <span class="k">import</span> <span class="o">*</span>
-
-
-<div class="viewcode-block" id="query_yes_no"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.query_yes_no">[docs]</a><span class="k">def</span> <span class="nf">query_yes_no</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;no&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Asks a yes/no question via raw_input() and return their answer.</span>
-
-<span class="sd">    :param str question: The question string that is presented to the user</span>
-<span class="sd">    :param str default: The default answer is the string if the user just hits the carriage return.</span>
-<span class="sd">        If None an answer is required.</span>
-<span class="sd">    :returns: The answer True or False</span>
-<span class="sd">    :rtype: *boolean*</span>
-<span class="sd">    :raises Error: If invalid default answer</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Dictionary of valid answers</span>
-    <span class="n">valid</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;yes&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;YES&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;Yes&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-             <span class="s1">&#39;no&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;NO&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;No&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
-    <span class="c1"># Modify prompt depending on the default value</span>
-    <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">prompt</span> <span class="o">=</span> <span class="s1">&#39;[y/n]&#39;</span>
-    <span class="k">elif</span> <span class="n">default</span> <span class="o">==</span> <span class="s1">&#39;yes&#39;</span><span class="p">:</span>
-        <span class="n">prompt</span> <span class="o">=</span> <span class="s1">&#39;[Y/n]&#39;</span>
-    <span class="k">elif</span> <span class="n">default</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
-        <span class="n">prompt</span> <span class="o">=</span> <span class="s1">&#39;[y/N]&#39;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Invalid default answer: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">default</span><span class="p">))</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">prompt</span><span class="p">))</span>
-        <span class="n">choice</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">choice</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">valid</span><span class="p">[</span><span class="n">default</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">valid</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">valid</span><span class="p">[</span><span class="n">choice</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Ask again</span>
-            <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="github_connector"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.github_connector">[docs]</a><span class="k">def</span> <span class="nf">github_connector</span><span class="p">(</span><span class="n">repository</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">team</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -292,7 +257,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;esg\.(.+?)\.ini&#39;</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="n">gh_content</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;ini&#39;</span><span class="p">))</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">gh_content</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">GITHUB_DIRECTORY</span><span class="p">)</span>
     <span class="n">p_avail</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x</span><span class="p">)])</span>
     <span class="k">if</span> <span class="n">projects</span><span class="p">:</span>
         <span class="n">p</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">projects</span><span class="p">)</span>
@@ -300,27 +265,6 @@
         <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">p_avail</span><span class="p">):</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unavailable project(s): </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">p_avail</span><span class="p">))))</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">p_avail</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="target_handlers"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.target_handlers">[docs]</a><span class="k">def</span> <span class="nf">target_handlers</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">projects</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Gets the available handlers id from GitHub esg.*.ini files.</span>
-
-<span class="sd">    :param github3.GitHub.repository gh: A :func:`github_connector` instance</span>
-<span class="sd">    :param list projects: Desired project ids</span>
-<span class="sd">    :returns: The target projects</span>
-<span class="sd">    :rtype: *list*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;(.+?)_handler.py&#39;</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="n">gh_content</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;handlers&#39;</span><span class="p">))</span>
-    <span class="n">h_avail</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">x</span><span class="p">)])</span>
-    <span class="k">if</span> <span class="n">projects</span><span class="p">:</span>
-        <span class="n">h</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">projects</span><span class="p">)</span>
-        <span class="n">h_avail</span> <span class="o">=</span> <span class="n">h_avail</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">h_avail</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unavailable project(s): </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">h_avail</span><span class="p">))))</span>
-    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">h_avail</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="do_fetching"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.do_fetching">[docs]</a><span class="k">def</span> <span class="nf">do_fetching</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">remote_checksum</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
@@ -349,7 +293,7 @@
                 <span class="k">if</span> <span class="n">keep</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">False</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">query_yes_no</span><span class="p">(</span><span class="s1">&#39;Overwrite?&#39;</span><span class="p">)</span></div>
+                    <span class="k">return</span> <span class="kc">True</span>        </div>
 
 
 <div class="viewcode-block" id="githash"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.githash">[docs]</a><span class="k">def</span> <span class="nf">githash</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
@@ -398,7 +342,6 @@
 
 <span class="sd">     * Checks if output directory exists,</span>
 <span class="sd">     * Checks if configuration already exists in output directory,</span>
-<span class="sd">     * Asks confirmation if necessary,</span>
 <span class="sd">     * Tests the corresponding GitHub URL,</span>
 <span class="sd">     * Gets the GitHub URL,</span>
 <span class="sd">     * Writes response into INI file.</span>
@@ -424,78 +367,22 @@
     <span class="n">gh</span> <span class="o">=</span> <span class="n">github_connector</span><span class="p">(</span><span class="n">repository</span><span class="o">=</span><span class="n">GITHUB_REPO</span><span class="p">,</span> <span class="n">team</span><span class="o">=</span><span class="n">GITHUB_TEAM</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">gh_user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">gh_password</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Connected to &quot;</span><span class="si">{0}</span><span class="s1">&quot; GitHub repository &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">GITHUB_REPO</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
 
-    <span class="c1">####################################</span>
-    <span class="c1"># Fetch and deploy esg.project.ini #</span>
-    <span class="c1">####################################</span>
-
     <span class="c1"># Get &quot;remote&quot; project targeted from the command-line</span>
     <span class="n">projects</span> <span class="o">=</span> <span class="n">target_projects</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">projects</span><span class="p">,</span>
-                            <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Fetching &quot;esg.&lt;project&gt;.ini&quot;&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                            <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Fetching &quot;esg.&lt;project&gt;.ini&quot;&#39;</span><span class="p">,</span>
                             <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">projects</span><span class="p">),</span>
                             <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
                             <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                             <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
                             <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;ini&#39;</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span>
             <span class="n">fetch</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;ini&#39;</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span>
-            <span class="n">fetch</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">)</span>
-
-    <span class="c1"># Check if esgprep is run on an ESGF node</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">esgcet</span>
-
-        <span class="c1">#############################################</span>
-        <span class="c1"># Fetch and deploy esgcet_models_tables.txt #</span>
-        <span class="c1">#############################################</span>
-
-        <span class="n">outdir</span> <span class="o">=</span> <span class="s1">&#39;/esg/config/esgcet&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outdir</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{0}</span><span class="s1">&quot; does not exist. Fetching &quot;esgcet_models_table.txt&quot; aborted.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-            <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Fetching &quot;esgcet_models_table.txt&quot;&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                        <span class="n">total</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                        <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
-                        <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                        <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
-                        <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;esgcet_models_table.txt&#39;</span><span class="p">)</span>
-            <span class="n">fetch</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">)</span>
-            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-            <span class="n">pbar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;esgcet_models_table.txt&#39;</span><span class="p">)</span>
-            <span class="n">fetch</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">)</span>
-
-        <span class="c1">#######################################</span>
-        <span class="c1"># Fetch and deploy project_handler.py #</span>
-        <span class="c1">#######################################</span>
-
-        <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">esgcet</span><span class="o">.</span><span class="n">__file__</span><span class="p">),</span> <span class="s1">&#39;config&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outdir</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{0}</span><span class="s1">&quot; does not exist. Fetching handlers aborted.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span>
-        <span class="n">projects</span> <span class="o">=</span> <span class="n">target_handlers</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">projects</span><span class="p">,</span>
-                                <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Fetching &quot;&lt;project&gt;_handler.py&quot;&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                                <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">projects</span><span class="p">),</span>
-                                <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
-                                <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                                <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
-                                <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
-                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;handlers&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_handler.py&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span>
-                <span class="n">fetch</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
-                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;handlers&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_handler.py&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span>
-                <span class="n">fetch</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">)</span>
-
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No module named &quot;esgcet&quot;. Not on an ESGF node? Fetching aborted.&#39;</span><span class="p">)</span></div>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GITHUB_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span>
+            <span class="n">fetch</span><span class="p">(</span><span class="n">gh</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">o</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -529,7 +416,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.0',
+            VERSION:'2.7.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

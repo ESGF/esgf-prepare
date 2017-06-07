@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuration &mdash; esgprep 2.7.0 documentation</title>
+  <title>Configuration &mdash; esgprep 2.7.2 documentation</title>
   
 
   
@@ -30,8 +30,8 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.0 documentation" href="index.html"/>
-        <link rel="next" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/>
+    <link rel="top" title="esgprep 2.7.2 documentation" href="index.html"/>
+        <link rel="next" title="Generic usage" href="usage.html"/>
         <link rel="prev" title="Installation" href="installation.html"/> 
 
   
@@ -83,12 +83,17 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#location">Location</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#esg-ini"><code class="docutils literal"><span class="pre">esg.ini</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#esg-project-id-ini"><code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV from configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="log.html">Changelog</a></li>
@@ -139,28 +144,57 @@
             
   <div class="section" id="configuration">
 <span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal"><span class="pre">esgprep</span></code> works with <a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/JADm">the configuration file(s) of ESGF nodes</a>.</p>
-<p>The only mandatory configuration is to define the checksum client and checksum type under the
-<code class="docutils literal"><span class="pre">[default]</span></code> section in your <code class="docutils literal"><span class="pre">esg.ini</span></code> file. Edit the file to set the Shell command line to use (default is
-<code class="docutils literal"><span class="pre">sha256sum</span></code>).</p>
+<p><code class="docutils literal"><span class="pre">esgprep</span></code> works according to
+<a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/JADm">the configuration INI file(s) of the ESGF nodes</a>.</p>
+<div class="section" id="location">
+<h2>Location<a class="headerlink" href="#location" title="Permalink to this headline">¶</a></h2>
+<p>On an ESGF node, the configuration directory containing those INI files is <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code>, that is the default
+for <code class="docutils literal"><span class="pre">esgprep</span></code>. In the case you are running <code class="docutils literal"><span class="pre">esgprep</span></code> outside of an ESGF node, the directory gathering all <code class="docutils literal"><span class="pre">.ini</span></code>
+files has to be submitted using the <code class="docutils literal"><span class="pre">-i</span></code> option (see <a class="reference internal" href="usage.html#usage"><span class="std std-ref">Generic usage</span></a>).</p>
+</div>
+<div class="section" id="esg-ini">
+<h2><code class="docutils literal"><span class="pre">esg.ini</span></code><a class="headerlink" href="#esg-ini" title="Permalink to this headline">¶</a></h2>
+<p>This INI file gathers all required information to configure the datanode regarding to data publication (e.g.,
+PostgreSQL access, THREDDS configuration, etc.).</p>
+<p>The only configuration in this section is to define the checksum client and checksum
+type under the <code class="docutils literal"><span class="pre">[default]</span></code> section. Edit the file to set the Shell command line to use (default is <code class="docutils literal"><span class="pre">sha256sum</span></code>).</p>
 <div class="highlight-ini"><div class="highlight"><pre><span></span><span class="k">[default]</span>
 <span class="na">checksum</span> <span class="o">=</span> <span class="s">sha256sum | SHA256</span>
 </pre></div>
 </div>
-<p>An <code class="docutils literal"><span class="pre">esg.ini</span></code> sample can be used from <a class="reference external" href="https://github.com/ESGF/config/tree/devel/publisher-configs/ini">this GitHub repository</a>.</p>
-<p>Then, preset <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> files can be downloaded from <a class="reference external" href="https://github.com/ESGF/config/tree/devel/publisher-configs/ini">the GitHub repository</a> using <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code>.</p>
-<p>The directory gathering all <code class="docutils literal"><span class="pre">.ini</span></code> files has to be submitted using the <code class="docutils literal"><span class="pre">-i</span></code> option (see <a class="reference internal" href="usage.html#usage"><span class="std std-ref">Generic usage</span></a>).</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Make sure the <code class="docutils literal"><span class="pre">dataset_id</span></code> and the <code class="docutils literal"><span class="pre">directory_format</span></code> options reflect your directory structure
-accordingly.</p>
-</div>
-<p>If no <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> corresponds to your project you can made your own following <a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/JADm">the ESGF Best Practices
-document</a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>To build your own project section:</p>
-<ul class="last simple">
+<p class="last">If <code class="docutils literal"><span class="pre">esg.ini</span></code> is unfound, the default is SHA256.</p>
+</div>
+</div>
+<div class="section" id="esg-project-id-ini">
+<h2><code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code><a class="headerlink" href="#esg-project-id-ini" title="Permalink to this headline">¶</a></h2>
+<p>Those INI files declare all facets and allowed values according to the Data Reference Syntax (DRS) and the controlled
+vocabularies of the corresponding project. Preset <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> files have been properly built by
+ESGF community for the following projects:</p>
+<blockquote>
+<div><ul class="simple">
+<li>CMIP6</li>
+<li>CMIP5</li>
+<li>CORDEX</li>
+<li>CORDEX-Adjust</li>
+<li>EUCLIPSE</li>
+<li>GeoMIP</li>
+<li>input4MIPs</li>
+<li>obs4MIPs</li>
+<li>PMIP3</li>
+<li>LUCID</li>
+<li>PRIMAVERA</li>
+<li>TAMIP</li>
+<li>ISIMIP-FT</li>
+</ul>
+</div></blockquote>
+<p>They can be downloaded from <a class="reference external" href="https://github.com/ESGF/config/tree/devel/publisher-configs/ini">the GitHub repository</a>
+or using <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code>.
+If no <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> corresponds to your project you can made your own following <a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/JADm">the ESGF Best Practices
+document</a>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>Please follow the structure detailed <a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/loDRAw">here</a>.</li>
 <li>Add your project into the <code class="docutils literal"><span class="pre">project_options</span></code> list of your <code class="docutils literal"><span class="pre">esg.ini</span></code>.</li>
 <li>The <code class="docutils literal"><span class="pre">--project</span></code> argument of <code class="docutils literal"><span class="pre">esgprep</span></code> directly refers to the <code class="docutils literal"><span class="pre">project_id</span></code> (i.e., requires lowercase).</li>
@@ -172,7 +206,14 @@ document</a>.</p>
 <li>Duplicated lines cannot occur in a maptable.</li>
 <li>A facet has to have at least one options list or maptable.</li>
 <li>A <code class="docutils literal"><span class="pre">mapfile_drs</span></code> attribute can be added to your project section to organize related mapfiles.</li>
+<li>Make sure the <code class="docutils literal"><span class="pre">dataset_id</span></code> and the <code class="docutils literal"><span class="pre">directory_format</span></code> options reflect your directory structure accordingly.</li>
 </ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Feel free to submit your own <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> in order to add it to the GitHub repository and make
+it available trough <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code> command-line.</p>
+</div>
 </div>
 </div>
 
@@ -183,7 +224,7 @@ document</a>.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="fetch-ini.html" class="btn btn-neutral float-right" title="Fetch ESGF configuration INI files" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Generic usage" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -217,7 +258,7 @@ document</a>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.0',
+            VERSION:'2.7.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

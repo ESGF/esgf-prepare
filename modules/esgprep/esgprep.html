@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.esgprep &mdash; esgprep 2.7.0 documentation</title>
+  <title>esgprep.esgprep &mdash; esgprep 2.7.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.0 documentation" href="../../index.html"/>
+    <link rel="top" title="esgprep 2.7.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -86,7 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../fetch-ini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../check-vocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../credits.html">Credits</a></li>
@@ -157,7 +157,7 @@
 <span class="kn">from</span> <span class="nn">utils.utils</span> <span class="k">import</span> <span class="n">init_logging</span><span class="p">,</span> <span class="n">keyval_converter</span>
 
 <span class="c1"># Program version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;2.7.0&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2017</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-</span><span class="si">%d</span><span class="s2">-%m&quot;</span><span class="p">))</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;2.7.2&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2017</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-</span><span class="si">%d</span><span class="s2">-%m&quot;</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="get_args"><a class="viewcode-back" href="../../autodoc.html#esgprep.esgprep.get_args">[docs]</a><span class="k">def</span> <span class="nf">get_args</span><span class="p">():</span>
@@ -180,15 +180,11 @@
     <span class="n">main</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        The ESGF publication process requires a strong and effective|n</span>
-<span class="s2">        data management. &quot;esgprep&quot; allows data providers to easily|n</span>
-<span class="s2">        prepare their data before publishing to an ESGF node.|n|n</span>
-
-<span class="s2">        &quot;esgprep&quot; provides python command-lines covering several |n</span>
-<span class="s2">        steps of ESGF publication workflow: |n|n</span>
-
-<span class="s2">        i. Fetch proper configuration files from ESGF GitHub|n</span>
-<span class="s2">           repository,|n|n</span>
+<span class="s2">        The ESGF publication process requires a strong and effective data management. &quot;esgprep&quot; allows data providers</span>
+<span class="s2">        to easily prepare their data before publishing to an ESGF node. &quot;esgprep&quot; provides python command-lines</span>
+<span class="s2">        covering several steps of ESGF publication workflow:|n|n</span>
+<span class="s2">        </span>
+<span class="s2">        i. Fetch proper configuration files from ESGF GitHub repository,|n|n</span>
 
 <span class="s2">        ii. Data Reference Syntax management,|n|n</span>
 
@@ -196,13 +192,7 @@
 
 <span class="s2">        iv. Generate mapfiles.|n|n</span>
 
-<span class="s2">        The &quot;esgprep&quot; toolbox is based on the ESGF data node|n</span>
-<span class="s2">        configuration files called &quot;esg.ini&quot;.  It requires that |n</span>
-<span class="s2">        those configuration files are correctly built and declares|n</span>
-<span class="s2">        all required attributes following recommended best practices.|n|n</span>
-
-<span class="s2">        See full documentation and references at|n</span>
-<span class="s2">        http://is-enes-data.github.io/esgf-prepare/.|n</span>
+<span class="s2">        See full documentation and references at http://is-enes-data.github.io/esgf-prepare/.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -246,9 +236,9 @@
 
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-i&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;/esg/config/esgcet/.&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;/esg/config/esgcet&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;/esg/config/esgcet/.&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;/esg/config/esgcet&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Initialization/configuration directory containing|n</span>
 <span class="s2">        &quot;esg.ini&quot; and &quot;esg.&lt;project&gt;.ini&quot; files.|n</span>
@@ -278,35 +268,13 @@
         <span class="s1">&#39;fetch-ini&#39;</span><span class="p">,</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep fetch-ini&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-
-<span class="s2">        The ESGF publishing client and most of other ESGF tool rely |n</span>
-<span class="s2">        on configuration files of different kinds, that are the|n</span>
-<span class="s2">        primary means of configuring the ESGF publisher.|n|n</span>
-
-<span class="s2">        - The &quot;esg.ini&quot; file gathers all required information to|n</span>
-<span class="s2">        configure the datanode regarding to data publication (e.g.,|n</span>
-<span class="s2">        PostgreSQL access, THREDDS configuration, etc.).|n|n</span>
-
-<span class="s2">        - The &quot;esg.&lt;project_id&gt;.ini&quot; files declare all facets and|n</span>
-<span class="s2">        allowed values according to the Data Reference Syntax (DRS)|n</span>
-<span class="s2">        and the controlled vocabularies of the corresponding|n</span>
-<span class="s2">        project.|n|n</span>
-
-<span class="s2">        - The &quot;esgcet_models_table.txt&quot; declares the models and their|n</span>
-<span class="s2">          descriptions among the projects.|n|n</span>
-
-<span class="s2">        - The &quot;&lt;project_id&gt;_handler.py&quot; are Python methods to guide|n</span>
-<span class="s2">          the publisher in metadata harvesting.|n|n</span>
-
-<span class="s2">        &quot;esgprep fetch-ini&quot; allows you to properly download, configure|n</span>
-<span class="s2">        and deploy these configuration files hosted on a GitHub|n</span>
-<span class="s2">        repository.|n|n</span>
-
-<span class="s2">        Keep in mind that the fetched files have to be reviewed to|n</span>
-<span class="s2">        ensure a correct configuration of your publication.|n|n</span>
-
-<span class="s2">        The supply configuration directory is used to write the files|n</span>
-<span class="s2">        retrieved from GitHub.|n|n</span>
+<span class="s2">        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that </span>
+<span class="s2">        are the primary means of configuring the ESGF publisher. The &quot;esg.&lt;project_id&gt;.ini&quot; files declare all facets</span>
+<span class="s2">        and allowed values according to the Data Reference Syntax (DRS) and the controlled vocabularies of the</span>
+<span class="s2">        corresponding project. &quot;esgprep fetch-ini&quot; allows you to properly download and deploy those configuration files</span>
+<span class="s2">        hosted on a GitHub repository. Keep in mind that the fetched files have to be reviewed to ensure a correct</span>
+<span class="s2">        configuration of your publication. The supplied configuration directory is used to write the files retrieved</span>
+<span class="s2">        from GitHub.|n|n</span>
 
 <span class="s2">        The default values are displayed next to the corresponding flags.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
@@ -373,14 +341,10 @@
         <span class="s1">&#39;check-vocab&#39;</span><span class="p">,</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep check-vocab&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        The data management/preparation relies on the ESGF node configuration files. These &quot;esg.&lt;project&gt;.ini&quot; files</span>
-<span class="s2">        declares the Data Reference Syntax (DRS) and the controlled vocabularies of each project.|n|n</span>
-
-<span class="s2">        In the case that your data already follows the appropriate directory structure, you may want to check that all</span>
-<span class="s2">        values of each facet are correctly declared in the &quot;esg.&lt;project_id&gt;.ini&quot; sections.|n|n</span>
-
-<span class="s2">        &quot;esgprep check-vocab&quot; allows you to easily check the configuration file attributes by scanning your data tree.</span>
-<span class="s2">        It requires that your directory structure strictly follows the project DRS including the version facet.|n|n</span>
+<span class="s2">        In the case that your data already follows the appropriate directory structure, you may want to check that all </span>
+<span class="s2">        values of each facet are correctly declared in the &quot;esg.&lt;project_id&gt;.ini&quot; sections. &quot;esgprep check-vocab&quot; </span>
+<span class="s2">        allows you to easily check the configuration file attributes by scanning your data tree. It requires that your </span>
+<span class="s2">        directory structure strictly follows the project DRS including the dataset version.|n|n</span>
 
 <span class="s2">        The default values are displayed next to the corresponding flags.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
@@ -435,10 +399,10 @@
 <span class="s2">        The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a</span>
 <span class="s2">        proper publication on ESGF node. &quot;esgprep drs&quot; command is designed to help ESGF datanode managers to prepare</span>
 <span class="s2">        incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of</span>
-<span class="s2">        publication-level datasets to minimise disk usage.|n|n</span>
+<span class="s2">        publication-level datasets to minimise disk usage. Only CMORized netCDF files are supported as incoming</span>
+<span class="s2">        files.|n|n</span>
 
-<span class="s2">        Only CMORized netCDF files are supported as incoming files.</span>
-
+<span class="s2">        The default values are displayed next to the corresponding flags.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
@@ -516,12 +480,26 @@
         <span class="s1">&#39;--copy&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Copy incoming files into the DRS tree. Default is moving files.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Copy incoming files into the DRS tree.|n</span>
+<span class="s2">        Default is moving files.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--link&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Hard link incoming files to the DRS tree. Default is moving files.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Hard link incoming files to the DRS tree.|n</span>
+<span class="s2">        Default is moving files.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--symlink&#39;</span><span class="p">,</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Symbolic link incoming files to the DRS tree.|n</span>
+<span class="s2">        Default is moving files.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--filter&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&quot;*.nc&quot;&#39;</span><span class="p">,</span>
@@ -565,13 +543,7 @@
 <span class="s2">        5. Your directory structure has to strictly follows the tree fixed by the DRS including the version facet.|n</span>
 <span class="s2">        6. To store ONE mapfile PER dataset is strongly recommended.|n|n</span>
 
-<span class="s2">        &quot;esgprep mapfile&quot; allows you to easily generate ESGF mapfiles upon local ESGF datanode or not. It implies that</span>
-<span class="s2">        your directory structure strictly follows the project DRS including the version facet.|n|n</span>
-
-<span class="s2">        Exit status:|n</span>
-<span class="s2">        [0]: Successful scanning of all files encountered,|n</span>
-<span class="s2">        [1]: No valid data or files have been found and no mapfile was produced,|n</span>
-<span class="s2">        [2]: A mapfile was produced but some files were skipped.|n|n</span>
+<span class="s2">        &quot;esgprep mapfile&quot; allows you to easily generate ESGF mapfiles upon local ESGF datanode or not.|n|n</span>
 
 <span class="s2">        The default values are displayed next to the corresponding flags.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
@@ -609,7 +581,8 @@
 <span class="s2">        (in YYYYDDMM) will be substituted where found. If |n</span>
 <span class="s2">        </span><span class="si">{dataset_id}</span><span class="s2"> is not present in mapfile name, then all |n</span>
 <span class="s2">        datasets will be written to a single mapfile, overriding |n</span>
-<span class="s2">        the default behavior of producing ONE mapfile PER dataset.</span>
+<span class="s2">        the default behavior of producing ONE mapfile PER|n</span>
+<span class="s2">        dataset.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--outdir&#39;</span><span class="p">,</span>
@@ -617,9 +590,9 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;mapfiles&#39;</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Mapfile(s) output directory. A &quot;mapfile_drs&quot; can be defined |n</span>
-<span class="s2">        per each project section in INI files and joined to build a |n</span>
-<span class="s2">        mapfiles tree.</span>
+<span class="s2">        Mapfile(s) output directory. A &quot;mapfile_drs&quot; can be|n</span>
+<span class="s2">        defined per project section in INI files and joined to|n</span>
+<span class="s2">        build a mapfiles tree.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">mapfile</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -640,8 +613,8 @@
 <span class="s2">        Generates mapfile(s) scanning datasets with the|n</span>
 <span class="s2">        corresponding version number only. It takes priority over|n</span>
 <span class="s2">        --all-versions. If directly specified in positional|n</span>
-<span class="s2">        argument, use the version number from supplied directory and|n</span>
-<span class="s2">        disables --all-versions and --latest-symlink.</span>
+<span class="s2">        argument, use the version number from supplied directory|n</span>
+<span class="s2">        and disables --all-versions and --latest-symlink.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--latest-symlink&#39;</span><span class="p">,</span>
@@ -649,28 +622,43 @@
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Generates mapfile(s) following latest symlinks only. This|n</span>
-<span class="s2">        sets the </span><span class="si">{version}</span><span class="s2"> token to &quot;latest&quot; into the mapfile name,|n</span>
-<span class="s2">        but picked up the pointed version to build the dataset|n</span>
-<span class="s2">        identifier (if --no-version is disabled).</span>
+<span class="s2">        sets the </span><span class="si">{version}</span><span class="s2"> token to &quot;latest&quot; into the mapfile|n</span>
+<span class="s2">        name, but picked up the pointed version to build the|n</span>
+<span class="s2">        dataset identifier (if --no-version is disabled).</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--no-version&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Does not includes DRS version into the dataset identifier.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Does not includes DRS version into the dataset|n</span>
+<span class="s2">        identifier.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--no-checksum&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Does not include files checksums into the mapfile(s).&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--not-ignored&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;FACET_KEY&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        One or more facet key(s) to not ignored. This excludes|n</span>
+<span class="s2">        the corresponding facet from the default ignored list.|n</span>
+<span class="s2">        Useful in case of differences between|n</span>
+<span class="s2">        &quot;directory_format&quot; and &quot;dataset_id&quot; patterns.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--filter&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&quot;*.nc&quot;&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;*.nc&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Filter files matching the regular expression (default only|n</span>
-<span class="s2">        scan netCDF files). Uniw wildcards are supported.</span>
+<span class="s2">        Filter files matching the regular expression (default|n</span>
+<span class="s2">        only scan netCDF files). Uniw wildcards are supported.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--tech-notes-url&#39;</span><span class="p">,</span>
@@ -699,17 +687,17 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Number of maximal threads to simultaneously process several|n</span>
-<span class="s2">        files (useful if checksum calculation is enabled). Set to|n</span>
-<span class="s2">        one seems sequential processing.</span>
+<span class="s2">        Number of maximal threads to simultaneously process|n</span>
+<span class="s2">        several files (useful if checksum calculation is|n</span>
+<span class="s2">        enabled). Set to one seems sequential processing.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--no-cleanup&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Disables output directory cleanup prior to mapfile process.|n</span>
-<span class="s2">        This is recommended if several &quot;esgprep mapfile&quot; instances |n</span>
-<span class="s2">        run with the same output directory.</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Disables output directory cleanup prior to mapfile|n</span>
+<span class="s2">        process. This is recommended if several &quot;esgprep mapfile&quot;|n</span>
+<span class="s2">        instances run with the same output directory.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">main</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span></div>
@@ -778,7 +766,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.7.0',
+            VERSION:'2.7.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

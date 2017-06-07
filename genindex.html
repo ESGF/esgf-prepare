@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; esgprep 2.7.0 documentation</title>
+  <title>Index &mdash; esgprep 2.7.2 documentation</title>
   
 
   
@@ -31,7 +31,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.0 documentation" href="index.html"/> 
+    <link rel="top" title="esgprep 2.7.2 documentation" href="index.html"/> 
 
   
   <script src="static/js/modernizr.min.js"></script>
@@ -86,7 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
@@ -152,7 +152,6 @@
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
- | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -555,6 +554,10 @@
   <dt><a href="autodoc.html#esgprep.utils.exceptions.MisdeclaredOption">MisdeclaredOption</a>
   </dt>
 
+      
+  <dt><a href="autodoc.html#esgprep.utils.exceptions.MissingPatternKey">MissingPatternKey</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
@@ -664,25 +667,11 @@
   </dl></td>
 </tr></table>
 
-<h2 id="Q">Q</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="autodoc.html#esgprep.fetchini.main.query_yes_no">query_yes_no() (in module esgprep.fetchini.main)</a>
-  </dt>
-
-  </dl></td>
-</tr></table>
-
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="autodoc.html#esgprep.utils.parser.CfgParser.read">read() (esgprep.utils.parser.CfgParser method)</a>
-  </dt>
-
-      
-  <dt><a href="autodoc.html#esgprep.utils.exceptions.regexp_diagnosis">regexp_diagnosis() (in module esgprep.utils.exceptions)</a>
   </dt>
 
   </dl></td>
@@ -726,10 +715,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="autodoc.html#esgprep.fetchini.main.target_handlers">target_handlers() (in module esgprep.fetchini.main)</a>
-  </dt>
-
-      
   <dt><a href="autodoc.html#esgprep.fetchini.main.target_projects">target_projects() (in module esgprep.fetchini.main)</a>
   </dt>
 
@@ -737,12 +722,12 @@
   <dt><a href="autodoc.html#esgprep.utils.utils.Tqdm">Tqdm (class in esgprep.utils.utils)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="autodoc.html#esgprep.utils.parser.CfgParser.translate_dataset_format">translate_dataset_format() (esgprep.utils.parser.CfgParser method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="autodoc.html#esgprep.utils.parser.CfgParser.translate_directory_format">translate_directory_format() (esgprep.utils.parser.CfgParser method)</a>
   </dt>
@@ -871,7 +856,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.0',
+            VERSION:'2.7.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

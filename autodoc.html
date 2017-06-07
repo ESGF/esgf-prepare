@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.7.0 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.7.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.0 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.2 documentation" href="index.html"/>
         <link rel="prev" title="Changelog" href="log.html"/> 
 
   
@@ -86,7 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
@@ -194,34 +194,6 @@
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="esgprep.fetchini.main.query_yes_no">
-<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">query_yes_no</code><span class="sig-paren">(</span><em>question</em>, <em>default='no'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#query_yes_no"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.query_yes_no" title="Permalink to this definition">¶</a></dt>
-<dd><p>Asks a yes/no question via raw_input() and return their answer.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>question</strong> (<em>str</em>) &#8211; The question string that is presented to the user</li>
-<li><strong>default</strong> (<em>str</em>) &#8211; The default answer is the string if the user just hits the carriage return.
-If None an answer is required.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The answer True or False</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>boolean</em></p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If invalid default answer</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="function">
 <dt id="esgprep.fetchini.main.github_connector">
 <code class="descclassname">esgprep.fetchini.main.</code><code class="descname">github_connector</code><span class="sig-paren">(</span><em>repository</em>, <em>username=None</em>, <em>password=None</em>, <em>team=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#github_connector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.github_connector" title="Permalink to this definition">¶</a></dt>
@@ -348,30 +320,6 @@ If None an answer is required.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="esgprep.fetchini.main.target_handlers">
-<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">target_handlers</code><span class="sig-paren">(</span><em>gh</em>, <em>projects=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#target_handlers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.target_handlers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the available handlers id from GitHub esg.*.ini files.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>gh</strong> (<em>github3.GitHub.repository</em>) &#8211; A <a class="reference internal" href="#esgprep.fetchini.main.github_connector" title="esgprep.fetchini.main.github_connector"><code class="xref py py-func docutils literal"><span class="pre">github_connector()</span></code></a> instance</li>
-<li><strong>projects</strong> (<em>list</em>) &#8211; Desired project ids</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The target projects</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>list</em></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
 <dt id="esgprep.fetchini.main.do_fetching">
 <code class="descclassname">esgprep.fetchini.main.</code><code class="descname">do_fetching</code><span class="sig-paren">(</span><em>f</em>, <em>remote_checksum</em>, <em>keep</em>, <em>overwrite</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#do_fetching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.do_fetching" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True or False depending on decision schema</p>
@@ -443,7 +391,6 @@ If None an answer is required.</li>
 <div><ul class="simple">
 <li>Checks if output directory exists,</li>
 <li>Checks if configuration already exists in output directory,</li>
-<li>Asks confirmation if necessary,</li>
 <li>Tests the corresponding GitHub URL,</li>
 <li>Gets the GitHub URL,</li>
 <li>Writes response into INI file.</li>
@@ -2079,6 +2026,12 @@ If &#8220;down&#8221; argument is True calls usual <code class="docutils literal
 </dd></dl>
 
 <dl class="exception">
+<dt id="esgprep.utils.exceptions.MissingPatternKey">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.exceptions.</code><code class="descname">MissingPatternKey</code><span class="sig-paren">(</span><em>keys</em>, <em>pattern</em>, <em>section</em>, <em>config_paths</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/exceptions.html#MissingPatternKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.exceptions.MissingPatternKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when facet cannot be deduce to rebuild the submitted pattern.</p>
+</dd></dl>
+
+<dl class="exception">
 <dt id="esgprep.utils.exceptions.DirectoryNotMatch">
 <em class="property">exception </em><code class="descclassname">esgprep.utils.exceptions.</code><code class="descname">DirectoryNotMatch</code><span class="sig-paren">(</span><em>path</em>, <em>directory_format</em>, <em>section</em>, <em>config_paths</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/exceptions.html#DirectoryNotMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.exceptions.DirectoryNotMatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised when a directory does not match the regex format.</p>
@@ -2101,14 +2054,6 @@ If &#8220;down&#8221; argument is True calls usual <code class="docutils literal
 <em class="property">exception </em><code class="descclassname">esgprep.utils.exceptions.</code><code class="descname">KeyNotFound</code><span class="sig-paren">(</span><em>key</em>, <em>keys=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/exceptions.html#KeyNotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.exceptions.KeyNotFound" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised when a class key is not found.
 Print list of available keys if submitted.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.exceptions.regexp_diagnosis">
-<code class="descclassname">esgprep.utils.exceptions.</code><code class="descname">regexp_diagnosis</code><span class="sig-paren">(</span><em>pattern</em>, <em>strng</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/exceptions.html#regexp_diagnosis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.exceptions.regexp_diagnosis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a pattern and a string (which is known not to match), returns a report
-showing how much of the regexp matches, in order to help identify where the 
-regexp is incorrect.</p>
 </dd></dl>
 
 <p><em>Module author: Levavasseur Guillaume (CNRS/IPSL) &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;jussieu&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>jussieu<span>&#46;</span>fr</a>&gt;</em></p>
@@ -2154,7 +2099,7 @@ regexp is incorrect.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.0',
+            VERSION:'2.7.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

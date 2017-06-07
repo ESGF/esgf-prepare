@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generation mapfiles for ESGF publication &mdash; esgprep 2.7.0 documentation</title>
+  <title>Generation mapfiles for ESGF publication &mdash; esgprep 2.7.2 documentation</title>
   
 
   
@@ -30,9 +30,9 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.0 documentation" href="index.html"/>
-        <link rel="next" title="Generic usage" href="usage.html"/>
-        <link rel="prev" title="Check CV from configuration INI files" href="check-vocab.html"/> 
+    <link rel="top" title="esgprep 2.7.2 documentation" href="index.html"/>
+        <link rel="next" title="Frequently asked questions" href="faq.html"/>
+        <link rel="prev" title="Check CV against configuration INI files" href="check-vocab.html"/> 
 
   
   <script src="static/js/modernizr.min.js"></script>
@@ -84,25 +84,24 @@
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV from configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Generation mapfiles for ESGF publication</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#default-mapfile-generation">Default mapfile generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mapfile-without-files-checksums">Mapfile without files checksums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mapfile-without-drs-versions">Mapfile without DRS versions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mapfile-name-using-tokens">Mapfile name using tokens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#to-an-output-directory">To an output directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#organize-your-mapfiles">Organize your mapfiles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#walking-through-latest-directories-only">Walking through <em>latest</em> directories only</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#walking-through-a-particular-version-only">Walking through a particular version only</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#walking-through-all-versions">Walking through all versions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#add-technical-notes">Add technical notes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#change-the-number-of-threads">Change the number of threads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overwrite-the-dataset-identifier">Overwrite the dataset identifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#enforce-facet-checking">Enforce facet checking</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="log.html">Changelog</a></li>
@@ -155,316 +154,144 @@
 <span id="mapfiles"></span><h1>Generation mapfiles for ESGF publication<a class="headerlink" href="#generation-mapfiles-for-esgf-publication" title="Permalink to this headline">¶</a></h1>
 <p>The publication process on the ESGF nodes requires <em>mapfiles</em>. Mapfiles are text files where each line
 describes a file to publish, using the following format:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">dataset_ID</span> <span class="o">|</span> <span class="n">absolute_path</span> <span class="o">|</span> <span class="n">size_bytes</span> <span class="p">[</span> <span class="o">|</span> <span class="n">option</span><span class="o">=</span><span class="n">value</span> <span class="p">]</span>
-</pre></div>
-</div>
-<p><code class="docutils literal"><span class="pre">mapfile</span></code> is a flexible command-line allowing you to easily generate mapfiles, whether run on the local ESGF data node or elsewhere.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last"><code class="docutils literal"><span class="pre">esgprep</span></code> requires that your directory structure strictly follows the tree fixed by the project&#8217;s <em>Data
-Reference Syntax</em> (DRS) <strong>including the version facet</strong>.</p>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">All the following examples can be combined safely.</p>
-</div>
+<p><code class="docutils literal"><span class="pre">dataset_ID</span> <span class="pre">|</span> <span class="pre">absolute_path</span> <span class="pre">|</span> <span class="pre">size_bytes</span> <span class="pre">[</span> <span class="pre">|</span> <span class="pre">option=value</span> <span class="pre">]</span></code></p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>All values have to be pipe-separated.</li>
+<li>The dataset identifier, the absolute path and the size (in bytes) are required.</li>
+<li>Adding the version number to the dataset identifier is strongly recommended to publish in a in bulk.</li>
+<li>Strongly recommended optional values are:</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">mod_time</span></code>: last modification date of the file (since Unix EPOCH time, i.e., seconds since January, 1st, 1970),</li>
+<li><code class="docutils literal"><span class="pre">checksum</span></code>: file checksum,</li>
+<li><code class="docutils literal"><span class="pre">checksum_type</span></code>: checksum type (MD5 or the default SHA256).</li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li>Your directory structure has to strictly follows the tree fixed by the DRS including the version facet.</li>
+<li>To store ONE mapfile PER dataset is strongly recommended.</li>
+</ol>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code> is a flexible command-line allowing you to easily generate mapfiles</p>
 <div class="section" id="default-mapfile-generation">
 <h2>Default mapfile generation<a class="headerlink" href="#default-mapfile-generation" title="Permalink to this headline">¶</a></h2>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The default behavior is to pickup the latest version in the DRS.</p>
-</div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This required a date version format (e.g., v20151023).</p>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; -v
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat dataset_ID.v*.map
-dataset_ID1.vYYYYMMDD
-dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID2.vYYYYMMDD.map
-dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID3.vYYYYMMDD.map
-dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+<p>The default behavior is to pick up the latest version in the DRS. This required version with a date format
+(e.g., v20151023). If the version is directly specified in positional argument, the version number from supplied
+directory is used.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/
 </pre></div>
 </div>
 </div>
 <div class="section" id="mapfile-without-files-checksums">
 <h2>Mapfile without files checksums<a class="headerlink" href="#mapfile-without-files-checksums" title="Permalink to this headline">¶</a></h2>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The <code class="docutils literal"><span class="pre">-v</span></code> raises the tracebacks of thread-processes (default is the &#8220;silent&#8221; mode).</p>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --no-checksum
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat dataset_ID.v*.map
-dataset_ID1.vYYYYMMDD.map
-dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1
-
-dataset_ID2.vYYYYMMDD.map
-dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2
-
-dataset_ID3.vYYYYMMDD.map
-dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3
+<p>Because this could be time consuming <code class="docutils literal"><span class="pre">--no-checksum</span></code> allows you not include the file checksum into your mapfile(s).</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
 </pre></div>
 </div>
 </div>
 <div class="section" id="mapfile-without-drs-versions">
 <h2>Mapfile without DRS versions<a class="headerlink" href="#mapfile-without-drs-versions" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --no-version
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat dataset_ID.v*.map
-dataset_ID1.vYYYYMMDD.map
-dataset_ID1 <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID2.vYYYYMMDD.map
-dataset_ID2 <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID3.vYYYYMMDD.map
-dataset_ID3 <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-version
 </pre></div>
 </div>
 </div>
 <div class="section" id="mapfile-name-using-tokens">
 <h2>Mapfile name using tokens<a class="headerlink" href="#mapfile-name-using-tokens" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">If <code class="docutils literal"><span class="pre">{dataset_id}</span></code> is not present in the mapfile name, then all datasets will be written to a single
-mapfile, overriding the default behavior of producing ONE mapfile PER dataset.</p>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The extension <code class="docutils literal"><span class="pre">.map</span></code> is added in any case.</p>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --mapfile <span class="o">{</span>dataset_id<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID1.job_id &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID2.job_id &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID3.job_id &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat dataset_ID*.job_id.map
-dataset_ID1.job_id.map
-dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID2.job_id.map
-dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID3.job_id.map
-dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --mapfile <span class="o">{</span>date<span class="o">}</span>
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO &lt;date&gt; &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO &lt;date&gt; &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO &lt;date&gt; &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat &lt;date&gt;.map
-dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-</pre></div>
-</div>
-</div>
-<div class="section" id="to-an-output-directory">
-<h2>To an output directory<a class="headerlink" href="#to-an-output-directory" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --outdir /path/to/mapfiles/
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat /path/to/mapfiles/dataset_ID*.v*.map
-dataset_ID1.vYYYYMMDD.map
-dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID2.vYYYYMMDD.map
-dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID3.vYYYYMMDD.map
-dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+<p>The mapfile name is composed by the dataset ID and the dataset version dot-separated. Another template
+can be specified for the output mapfile(s) name using several tokens. Substrings <code class="docutils literal"><span class="pre">{dataset_id}</span></code>, <code class="docutils literal"><span class="pre">{version}</span></code>,
+<code class="docutils literal"><span class="pre">{job_id}</span></code> or <code class="docutils literal"><span class="pre">{date}</span></code> (in YYYYDDMM) will be substituted where found. If <code class="docutils literal"><span class="pre">{dataset_id}</span></code> is not present in mapfile
+name, then all datasets will be written to a single mapfile, overriding the default behavior of producing ONE mapfile
+PER dataset.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile <span class="o">{</span>dataset_id<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
+$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile <span class="o">{</span>date<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
+$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile MY_MAPFILE.<span class="o">{</span>version<span class="o">}</span>.<span class="o">{</span>date<span class="o">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="organize-your-mapfiles">
 <h2>Organize your mapfiles<a class="headerlink" href="#organize-your-mapfiles" title="Permalink to this headline">¶</a></h2>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">A <code class="docutils literal"><span class="pre">mapfile_drs</span></code> attribute can be added into the corresponding project section of the configuration files.
-In the same way as the <code class="docutils literal"><span class="pre">directory_format</span></code> it defines a tree depending on the facets. Each mapfile is then
-written into the corresponding output directory.</p>
+<p>The mapfile(s)are generated into a <code class="docutils literal"><span class="pre">mapfile</span></code> folder created in your working directory (if exists). This can be
+changed by submitting an output directory for your mapfiles.</p>
+<p>In addition, a <code class="docutils literal"><span class="pre">mapfile_drs</span></code> attribute can be added into the corresponding project section of the configuration INI
+file(s) (see <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">Configuration</span></a>). In the same way as the <code class="docutils literal"><span class="pre">directory_format</span></code> it defines a tree depending on the
+facets. Each mapfile is then written into the corresponding output directory. This <code class="docutils literal"><span class="pre">mapfile_drs</span></code> directory structure
+will be added to the output directory if submitted.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --outdir /PATH/TO/MY_MAPFILES/
+</pre></div>
 </div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The <code class="docutils literal"><span class="pre">mapfile_drs</span></code> directory structure is added to the root output directory submitted by the flag
-<code class="docutils literal"><span class="pre">--outdir</span></code>.</p>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --outdir /path/to/mapfiles/
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID1.vYYYYMMDD.map
-dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-$&gt; cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID2.vYYYYMMDD.map
-dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-$&gt; cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID3.vYYYYMMDD.map
-dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+<p>The output directory is cleaned up prior to mapfile process to avoid uncomplete mapfiles. In the case of several
+<code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code> instances run with the same output directory it is recommended to disable the cleanup:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-cleanup
 </pre></div>
 </div>
 </div>
 <div class="section" id="walking-through-latest-directories-only">
 <h2>Walking through <em>latest</em> directories only<a class="headerlink" href="#walking-through-latest-directories-only" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">If the version is directly specified in positional argument, the version number from supplied directory
-is used.</p>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --latest-symlink
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID1.latest &lt;-- /path/to/scan/.../latest/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID2.latest &lt;-- /path/to/scan/.../latest/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID3.latest &lt;-- /path/to/scan/.../latest/.../file3.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat dataset_ID*.latest.map
-dataset_ID1.latest.map
-dataset_ID1.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../latest/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID2.latest.map
-dataset_ID2.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../latest/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID3.latest.map
-dataset_ID3.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../latest/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --latest-symlink
 </pre></div>
 </div>
 </div>
 <div class="section" id="walking-through-a-particular-version-only">
 <h2>Walking through a particular version only<a class="headerlink" href="#walking-through-a-particular-version-only" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">By default <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code> pick up the latest version only.</p>
-</div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">If the version is directly specified in positional argument, the version number from supplied directory
-is used.</p>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --version &lt;version&gt;
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID1.v&lt;version&gt; &lt;-- /path/to/scan/.../v&lt;version&gt;/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID2.v&lt;version&gt; &lt;-- /path/to/scan/.../v&lt;version&gt;/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID3.v&lt;version&gt; &lt;-- /path/to/scan/.../v&lt;version&gt;/.../file3.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat dataset_ID*.v&lt;version&gt;.map
-dataset_ID1.v&lt;version&gt;.map
-dataset_ID1.v&lt;version&gt; <span class="p">|</span> /path/to/scan/.../v&lt;version&gt;/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID2.v&lt;version&gt;.map
-dataset_ID2.v&lt;version&gt; <span class="p">|</span> /path/to/scan/.../v&lt;version&gt;/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID3.v&lt;version&gt;.map
-dataset_ID3.v&lt;version&gt; <span class="p">|</span> /path/to/scan/.../v&lt;version&gt;/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --version VERSION
 </pre></div>
 </div>
 </div>
 <div class="section" id="walking-through-all-versions">
 <h2>Walking through all versions<a class="headerlink" href="#walking-through-all-versions" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --all-versions
+</pre></div>
+</div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">This disables <code class="docutils literal"><span class="pre">--no-version</span></code>.</p>
 </div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">If the version is directly specified in positional argument, the version number from supplied directory
-is used.</p>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --all-versions
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID.v1 &lt;-- /path/to/scan/.../v1/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID.v1 &lt;-- /path/to/scan/.../v1/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID.v2 &lt;-- /path/to/scan/.../v2/.../file1.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat dataset_ID*.v<span class="se">\*</span>.map
-dataset_ID.v1.map
-dataset_ID.v1 <span class="p">|</span> /path/to/scan/.../v1/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-dataset_ID.v1 <span class="p">|</span> /path/to/scan/.../v1/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-
-dataset_ID.v2.map
-dataset_ID.v2 <span class="p">|</span> /path/to/scan/.../v2/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-</pre></div>
-</div>
 </div>
 <div class="section" id="add-technical-notes">
 <h2>Add technical notes<a class="headerlink" href="#add-technical-notes" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --tech-notes-url &lt;url&gt; --tech-notes-title &lt;title&gt;
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID.vYYYYMMDD &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat dataset_ID*.vYYYYMMDD.map
-dataset_ID.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256 <span class="p">|</span> <span class="nv">dataset_tech_notes</span><span class="o">=</span>&lt;url&gt; <span class="p">|</span> <span class="nv">dataset_tech_notes_title</span><span class="o">=</span>&lt;title&gt;
-dataset_ID.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256 <span class="p">|</span> <span class="nv">dataset_tech_notes</span><span class="o">=</span>&lt;url&gt; <span class="p">|</span> <span class="nv">dataset_tech_notes_title</span><span class="o">=</span>&lt;title&gt;
-dataset_ID.vYYYYMMDD <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256 <span class="p">|</span> <span class="nv">dataset_tech_notes</span><span class="o">=</span>&lt;url&gt; <span class="p">|</span> <span class="nv">dataset_tech_notes_title</span><span class="o">=</span>&lt;title&gt;
-</pre></div>
-</div>
-</div>
-<div class="section" id="change-the-number-of-threads">
-<h2>Change the number of threads<a class="headerlink" href="#change-the-number-of-threads" title="Permalink to this headline">¶</a></h2>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><code class="docutils literal"><span class="pre">--max-threads</span></code> set to one corresponds to a sequential file processing.</p>
-</div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --max-threads &lt;integer&gt;
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --tech-notes-url URL --tech-notes-title TITLE
 </pre></div>
 </div>
 </div>
 <div class="section" id="overwrite-the-dataset-identifier">
 <h2>Overwrite the dataset identifier<a class="headerlink" href="#overwrite-the-dataset-identifier" title="Permalink to this headline">¶</a></h2>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --dataset DATASET_NAME
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
 <p class="last">All files will belong to the specified dataset, regardless of the DRS.</p>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile /path/to/scan --project &lt;project_id&gt; --dataset &lt;dataset_ID_test&gt;
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan started
-YYYY/MM/DD HH:MM:SS INFO dataset_ID_test &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID_test &lt;-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-YYYY/MM/DD HH:MM:SS INFO dataset_ID_test &lt;-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-YYYY/MM/DD HH:MM:SS <span class="nv">INFO</span> <span class="o">==</span>&gt; Scan completed <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>
-
-$&gt; cat dataset_ID_test.map
-dataset_ID_test <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file1.nc <span class="p">|</span> size1 <span class="p">|</span> mod_time1 <span class="p">|</span> checksum1 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-dataset_ID_test <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file2.nc <span class="p">|</span> size2 <span class="p">|</span> mod_time2 <span class="p">|</span> checksum2 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
-dataset_ID_test <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.nc <span class="p">|</span> size3 <span class="p">|</span> mod_time3 <span class="p">|</span> checksum3 <span class="p">|</span> <span class="nv">checksum_type</span><span class="o">=</span>SHA256
+</div>
+<div class="section" id="enforce-facet-checking">
+<h2>Enforce facet checking<a class="headerlink" href="#enforce-facet-checking" title="Permalink to this headline">¶</a></h2>
+<p>The following facets are always ignored during facet checking:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">root</span></code></li>
+<li><code class="docutils literal"><span class="pre">project</span></code></li>
+<li><code class="docutils literal"><span class="pre">filename</span></code></li>
+<li><code class="docutils literal"><span class="pre">variable</span></code></li>
+<li><code class="docutils literal"><span class="pre">version</span></code></li>
+<li><code class="docutils literal"><span class="pre">period_start</span></code></li>
+<li><code class="docutils literal"><span class="pre">period_end</span></code>.</li>
+</ul>
+</div></blockquote>
+<p>Indeed those facets are historically not a part of the configuration INI file(s). All allowed values are so not
+enumerated through very long list(s). Nevertheless one or more of those facet(s) should be resolved against the
+configuration file(s), this could be useful in case of differences between <code class="docutils literal"><span class="pre">directory_format</span></code> and <code class="docutils literal"><span class="pre">dataset_id</span></code>
+patterns.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --not-ignored FACEY_KEY
+$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --not-ignored FACEY_KEY1 FACET_KEY2
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For instance, the <code class="docutils literal"><span class="pre">var</span></code> facet in obs4MIPs <code class="docutils literal"><span class="pre">dataset_id</span></code> pattern must be deduced from
+the <code class="docutils literal"><span class="pre">directory_format</span></code> using the <code class="docutils literal"><span class="pre">variable</span></code> facet. Consequently, you can use <code class="docutils literal"><span class="pre">--not-ignored</span> <span class="pre">variable</span></code> to
+resolve this facet from the appropriate maptable.</p>
 </div>
 </div>
 </div>
@@ -476,10 +303,10 @@ dataset_ID_test <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.n
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="usage.html" class="btn btn-neutral float-right" title="Generic usage" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="faq.html" class="btn btn-neutral float-right" title="Frequently asked questions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="check-vocab.html" class="btn btn-neutral" title="Check CV from configuration INI files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="check-vocab.html" class="btn btn-neutral" title="Check CV against configuration INI files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -510,7 +337,7 @@ dataset_ID_test <span class="p">|</span> /path/to/scan/.../vYYYYMMDD/.../file3.n
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.0',
+            VERSION:'2.7.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
