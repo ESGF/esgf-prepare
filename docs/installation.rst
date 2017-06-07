@@ -37,7 +37,7 @@ Installation from GitHub
 4. The ``esgprep`` command-line is ready.
 
 .. warning:: To run ``esgprep`` you have to be logged into a machine which mounts the filesystem hosting the data to
-publish.
+   publish.
 
 Dependencies and requirements
 *****************************

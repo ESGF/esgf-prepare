@@ -28,6 +28,8 @@ type under the ``[default]`` section. Edit the file to set the Shell command lin
     [default]
     checksum = sha256sum | SHA256
 
+.. note:: If ``esg.ini`` is unfound, the default is SHA256.
+
 ``esg.<project_id>.ini``
 ************************
 

@@ -41,15 +41,11 @@ def get_args():
     main = argparse.ArgumentParser(
         prog='esgprep',
         description="""
-        The ESGF publication process requires a strong and effective|n
-        data management. "esgprep" allows data providers to easily|n
-        prepare their data before publishing to an ESGF node.|n|n
-
-        "esgprep" provides python command-lines covering several |n
-        steps of ESGF publication workflow: |n|n
-
-        i. Fetch proper configuration files from ESGF GitHub|n
-           repository,|n|n
+        The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers
+        to easily prepare their data before publishing to an ESGF node. "esgprep" provides python command-lines
+        covering several steps of ESGF publication workflow:|n|n
+        
+        i. Fetch proper configuration files from ESGF GitHub repository,|n|n
 
         ii. Data Reference Syntax management,|n|n
 
@@ -57,8 +53,7 @@ def get_args():
 
         iv. Generate mapfiles.|n|n
 
-        See full documentation and references at|n
-        http://is-enes-data.github.io/esgf-prepare/.|n
+        See full documentation and references at http://is-enes-data.github.io/esgf-prepare/.
         """,
         formatter_class=MultilineFormatter,
         add_help=False,
@@ -134,28 +129,13 @@ def get_args():
         'fetch-ini',
         prog='esgprep fetch-ini',
         description="""
-
-        The ESGF publishing client and most of other ESGF tool rely |n
-        on configuration files of different kinds, that are the|n
-        primary means of configuring the ESGF publisher.|n|n
-
-        - The "esg.ini" file gathers all required information to|n
-        configure the datanode regarding to data publication (e.g.,|n
-        PostgreSQL access, THREDDS configuration, etc.).|n|n
-
-        - The "esg.<project_id>.ini" files declare all facets and|n
-        allowed values according to the Data Reference Syntax (DRS)|n
-        and the controlled vocabularies of the corresponding|n
-        project.|n|n
-
-        "esgprep fetch-ini" allows you to properly download and deploy|n
-        these configuration files hosted on a GitHub repository.|n|n
-
-        Keep in mind that the fetched files have to be reviewed to|n
-        ensure a correct configuration of your publication.|n|n
-
-        The supply configuration directory is used to write the files|n
-        retrieved from GitHub.|n|n
+        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that 
+        are the primary means of configuring the ESGF publisher. The "esg.<project_id>.ini" files declare all facets
+        and allowed values according to the Data Reference Syntax (DRS) and the controlled vocabularies of the
+        corresponding project. "esgprep fetch-ini" allows you to properly download and deploy those configuration files
+        hosted on a GitHub repository. Keep in mind that the fetched files have to be reviewed to ensure a correct
+        configuration of your publication. The supplied configuration directory is used to write the files retrieved
+        from GitHub.|n|n
 
         The default values are displayed next to the corresponding flags.
         """,
@@ -222,14 +202,10 @@ def get_args():
         'check-vocab',
         prog='esgprep check-vocab',
         description="""
-        The data management/preparation relies on the ESGF node configuration files. These "esg.<project>.ini" files
-        declares the Data Reference Syntax (DRS) and the controlled vocabularies of each project.|n|n
-
-        In the case that your data already follows the appropriate directory structure, you may want to check that all
-        values of each facet are correctly declared in the "esg.<project_id>.ini" sections.|n|n
-
-        "esgprep check-vocab" allows you to easily check the configuration file attributes by scanning your data tree.
-        It requires that your directory structure strictly follows the project DRS including the version facet.|n|n
+        In the case that your data already follows the appropriate directory structure, you may want to check that all 
+        values of each facet are correctly declared in the "esg.<project_id>.ini" sections. "esgprep check-vocab" 
+        allows you to easily check the configuration file attributes by scanning your data tree. It requires that your 
+        directory structure strictly follows the project DRS including the dataset version.|n|n
 
         The default values are displayed next to the corresponding flags.
         """,
@@ -284,10 +260,10 @@ def get_args():
         The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a
         proper publication on ESGF node. "esgprep drs" command is designed to help ESGF datanode managers to prepare
         incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of
-        publication-level datasets to minimise disk usage.|n|n
+        publication-level datasets to minimise disk usage. Only CMORized netCDF files are supported as incoming
+        files.|n|n
 
-        Only CMORized netCDF files are supported as incoming files.
-
+        The default values are displayed next to the corresponding flags.
         """,
         formatter_class=MultilineFormatter,
         help="""
@@ -428,13 +404,7 @@ def get_args():
         5. Your directory structure has to strictly follows the tree fixed by the DRS including the version facet.|n
         6. To store ONE mapfile PER dataset is strongly recommended.|n|n
 
-        "esgprep mapfile" allows you to easily generate ESGF mapfiles upon local ESGF datanode or not. It implies that
-        your directory structure strictly follows the project DRS including the version facet.|n|n
-
-        Exit status:|n
-        [0]: Successful scanning of all files encountered,|n
-        [1]: No valid data or files have been found and no mapfile was produced,|n
-        [2]: A mapfile was produced but some files were skipped.|n|n
+        "esgprep mapfile" allows you to easily generate ESGF mapfiles upon local ESGF datanode or not.|n|n
 
         The default values are displayed next to the corresponding flags.
         """,

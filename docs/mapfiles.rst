@@ -5,298 +5,149 @@ Generation mapfiles for ESGF publication
 
 The publication process on the ESGF nodes requires *mapfiles*. Mapfiles are text files where each line
 describes a file to publish, using the following format:
-::
 
-   dataset_ID | absolute_path | size_bytes [ | option=value ]
+``dataset_ID | absolute_path | size_bytes [ | option=value ]``
 
-``mapfile`` is a flexible command-line allowing you to easily generate mapfiles, whether run on the local ESGF data node or elsewhere.
+ 1. All values have to be pipe-separated.
+ 2. The dataset identifier, the absolute path and the size (in bytes) are required.
+ 3. Adding the version number to the dataset identifier is strongly recommended to publish in a in bulk.
+ 4. Strongly recommended optional values are:
 
-.. warning:: ``esgprep`` requires that your directory structure strictly follows the tree fixed by the project's *Data
-   Reference Syntax* (DRS) **including the version facet**.
+  - ``mod_time``: last modification date of the file (since Unix EPOCH time, i.e., seconds since January, 1st, 1970),
+  - ``checksum``: file checksum,
+  - ``checksum_type``: checksum type (MD5 or the default SHA256).
 
+ 5. Your directory structure has to strictly follows the tree fixed by the DRS including the version facet.
+ 6. To store ONE mapfile PER dataset is strongly recommended.
 
-.. note:: All the following examples can be combined safely.
+``esgprep mapfile`` is a flexible command-line allowing you to easily generate mapfiles
 
 Default mapfile generation
 **************************
 
-.. note:: The default behavior is to pickup the latest version in the DRS.
-
-.. warning:: This required a date version format (e.g., v20151023).
+The default behavior is to pick up the latest version in the DRS. This required version with a date format
+(e.g., v20151023). If the version is directly specified in positional argument, the version number from supplied
+directory is used.
 
 .. code-block:: bash
 
-   $> esgprep mapfile /path/to/scan --project <project_id> -v
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
-
-   $> cat dataset_ID.v*.map
-   dataset_ID1.vYYYYMMDD
-   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
-
-   dataset_ID2.vYYYYMMDD.map
-   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
-
-   dataset_ID3.vYYYYMMDD.map
-   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/
 
 Mapfile without files checksums
 *******************************
 
-.. note:: The ``-v`` raises the tracebacks of thread-processes (default is the "silent" mode).
+Because this could be time consuming ``--no-checksum`` allows you not include the file checksum into your mapfile(s).
 
 .. code-block:: bash
 
-   $> esgprep mapfile /path/to/scan --project <project_id> --no-checksum
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
-
-   $> cat dataset_ID.v*.map
-   dataset_ID1.vYYYYMMDD.map
-   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1
-
-   dataset_ID2.vYYYYMMDD.map
-   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2
-
-   dataset_ID3.vYYYYMMDD.map
-   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
 
 Mapfile without DRS versions
 ****************************
 
 .. code-block:: bash
 
-   $> esgprep mapfile /path/to/scan --project <project_id> --no-version
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
-
-   $> cat dataset_ID.v*.map
-   dataset_ID1.vYYYYMMDD.map
-   dataset_ID1 | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
-
-   dataset_ID2.vYYYYMMDD.map
-   dataset_ID2 | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
-
-   dataset_ID3.vYYYYMMDD.map
-   dataset_ID3 | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-version
 
 Mapfile name using tokens
 *************************
 
-.. warning:: If ``{dataset_id}`` is not present in the mapfile name, then all datasets will be written to a single
-   mapfile, overriding the default behavior of producing ONE mapfile PER dataset.
-
-.. note:: The extension ``.map`` is added in any case.
-
-.. code-block:: bash
-
-   $> esgprep mapfile /path/to/scan --project <project_id> --mapfile {dataset_id}.{job_id}
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.job_id <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.job_id <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.job_id <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
-
-   $> cat dataset_ID*.job_id.map
-   dataset_ID1.job_id.map
-   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
-
-   dataset_ID2.job_id.map
-   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
-
-   dataset_ID3.job_id.map
-   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
-
-   $> esgprep mapfile /path/to/scan --project <project_id> --mapfile {date}
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO <date> <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO <date> <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO <date> <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
-
-   $> cat <date>.map
-   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
-   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
-   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
-
-To an output directory
-**********************
+The mapfile name is composed by the dataset ID and the dataset version dot-separated. Another template
+can be specified for the output mapfile(s) name using several tokens. Substrings ``{dataset_id}``, ``{version}``,
+``{job_id}`` or ``{date}`` (in YYYYDDMM) will be substituted where found. If ``{dataset_id}`` is not present in mapfile
+name, then all datasets will be written to a single mapfile, overriding the default behavior of producing ONE mapfile
+PER dataset.
 
 .. code-block:: bash
 
-   $> esgprep mapfile /path/to/scan --project <project_id> --outdir /path/to/mapfiles/
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
-
-   $> cat /path/to/mapfiles/dataset_ID*.v*.map
-   dataset_ID1.vYYYYMMDD.map
-   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
-
-   dataset_ID2.vYYYYMMDD.map
-   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
-
-   dataset_ID3.vYYYYMMDD.map
-   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile {dataset_id}.{job_id}
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile {date}.{job_id}
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile MY_MAPFILE.{version}.{date}
 
 Organize your mapfiles
 **********************
 
-.. note:: A ``mapfile_drs`` attribute can be added into the corresponding project section of the configuration files.
-   In the same way as the ``directory_format`` it defines a tree depending on the facets. Each mapfile is then
-   written into the corresponding output directory.
+The mapfile(s)are generated into a ``mapfile`` folder created in your working directory (if exists). This can be
+changed by submitting an output directory for your mapfiles.
 
-.. warning:: The ``mapfile_drs`` directory structure is added to the root output directory submitted by the flag
-   ``--outdir``.
+In addition, a ``mapfile_drs`` attribute can be added into the corresponding project section of the configuration INI
+file(s) (see :ref:`configuration`). In the same way as the ``directory_format`` it defines a tree depending on the
+facets. Each mapfile is then written into the corresponding output directory. This ``mapfile_drs`` directory structure
+will be added to the output directory if submitted.
 
 .. code-block:: bash
 
-   $> esgprep mapfile /path/to/scan --project <project_id> --outdir /path/to/mapfiles/
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file3.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --outdir /PATH/TO/MY_MAPFILES/
 
-   $> cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID1.vYYYYMMDD.map
-   dataset_ID1.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
+The output directory is cleaned up prior to mapfile process to avoid uncomplete mapfiles. In the case of several
+``esgprep mapfile`` instances run with the same output directory it is recommended to disable the cleanup:
 
-   $> cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID2.vYYYYMMDD.map
-   dataset_ID2.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
+.. code-block:: bash
 
-   $> cat /path/to/mapfiles/facet1/facet2/facet3/dataset_ID3.vYYYYMMDD.map
-   dataset_ID3.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
-
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-cleanup
 
 Walking through *latest* directories only
 *****************************************
 
-.. warning:: If the version is directly specified in positional argument, the version number from supplied directory
-   is used.
-
 .. code-block:: bash
 
-   $> esgprep mapfile /path/to/scan --project <project_id> --latest-symlink
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.latest <-- /path/to/scan/.../latest/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.latest <-- /path/to/scan/.../latest/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.latest <-- /path/to/scan/.../latest/.../file3.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
-
-   $> cat dataset_ID*.latest.map
-   dataset_ID1.latest.map
-   dataset_ID1.vYYYYMMDD | /path/to/scan/.../latest/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
-
-   dataset_ID2.latest.map
-   dataset_ID2.vYYYYMMDD | /path/to/scan/.../latest/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
-
-   dataset_ID3.latest.map
-   dataset_ID3.vYYYYMMDD | /path/to/scan/.../latest/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --latest-symlink
 
 Walking through a particular version only
 *****************************************
 
-.. warning:: By default ``esgprep mapfile`` pick up the latest version only.
-
-.. warning:: If the version is directly specified in positional argument, the version number from supplied directory
-   is used.
-
 .. code-block:: bash
 
-   $> esgprep mapfile /path/to/scan --project <project_id> --version <version>
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID1.v<version> <-- /path/to/scan/.../v<version>/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID2.v<version> <-- /path/to/scan/.../v<version>/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID3.v<version> <-- /path/to/scan/.../v<version>/.../file3.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
-
-   $> cat dataset_ID*.v<version>.map
-   dataset_ID1.v<version>.map
-   dataset_ID1.v<version> | /path/to/scan/.../v<version>/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
-
-   dataset_ID2.v<version>.map
-   dataset_ID2.v<version> | /path/to/scan/.../v<version>/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
-
-   dataset_ID3.v<version>.map
-   dataset_ID3.v<version> | /path/to/scan/.../v<version>/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --version VERSION
 
 Walking through all versions
 ****************************
 
-.. warning:: This disables ``--no-version``.
-
-.. warning:: If the version is directly specified in positional argument, the version number from supplied directory
-   is used.
-
 .. code-block:: bash
 
-   $> esgprep mapfile /path/to/scan --project <project_id> --all-versions
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID.v1 <-- /path/to/scan/.../v1/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID.v1 <-- /path/to/scan/.../v1/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID.v2 <-- /path/to/scan/.../v2/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --all-versions
 
-   $> cat dataset_ID*.v\*.map
-   dataset_ID.v1.map
-   dataset_ID.v1 | /path/to/scan/.../v1/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
-   dataset_ID.v1 | /path/to/scan/.../v1/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
-
-   dataset_ID.v2.map
-   dataset_ID.v2 | /path/to/scan/.../v2/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
+.. warning:: This disables ``--no-version``.
 
 Add technical notes
 *******************
 
 .. code-block:: bash
 
-   $> esgprep mapfile /path/to/scan --project <project_id> --tech-notes-url <url> --tech-notes-title <title>
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID.vYYYYMMDD <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
-
-   $> cat dataset_ID*.vYYYYMMDD.map
-   dataset_ID.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256 | dataset_tech_notes=<url> | dataset_tech_notes_title=<title>
-   dataset_ID.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256 | dataset_tech_notes=<url> | dataset_tech_notes_title=<title>
-   dataset_ID.vYYYYMMDD | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256 | dataset_tech_notes=<url> | dataset_tech_notes_title=<title>
-
-Change the number of threads
-****************************
-
-.. note:: ``--max-threads`` set to one corresponds to a sequential file processing.
-
-.. code-block:: bash
-
-   $> esgprep mapfile /path/to/scan --project <project_id> --max-threads <integer>
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --tech-notes-url URL --tech-notes-title TITLE
 
 Overwrite the dataset identifier
 ********************************
 
-.. note:: All files will belong to the specified dataset, regardless of the DRS.
+.. code-block:: bash
+
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --dataset DATASET_NAME
+
+.. warning:: All files will belong to the specified dataset, regardless of the DRS.
+
+Enforce facet checking
+**********************
+
+The following facets are always ignored during facet checking:
+
+ - ``root``
+ - ``project``
+ - ``filename``
+ - ``variable``
+ - ``version``
+ - ``period_start``
+ - ``period_end``.
+
+Indeed those facets are historically not a part of the configuration INI file(s). All allowed values are so not
+enumerated through very long list(s). Nevertheless one or more of those facet(s) should be resolved against the
+configuration file(s), this could be useful in case of differences between ``directory_format`` and ``dataset_id``
+patterns.
 
 .. code-block:: bash
 
-   $> esgprep mapfile /path/to/scan --project <project_id> --dataset <dataset_ID_test>
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan started
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID_test <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID_test <-- /path/to/scan/.../vYYYYMMDD/.../file2.nc
-   YYYY/MM/DD HH:MM:SS INFO dataset_ID_test <-- /path/to/scan/.../vYYYYMMDD/.../file1.nc
-   YYYY/MM/DD HH:MM:SS INFO ==> Scan completed (3 files)
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --not-ignored FACEY_KEY
+    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --not-ignored FACEY_KEY1 FACET_KEY2
 
-   $> cat dataset_ID_test.map
-   dataset_ID_test | /path/to/scan/.../vYYYYMMDD/.../file1.nc | size1 | mod_time1 | checksum1 | checksum_type=SHA256
-   dataset_ID_test | /path/to/scan/.../vYYYYMMDD/.../file2.nc | size2 | mod_time2 | checksum2 | checksum_type=SHA256
-   dataset_ID_test | /path/to/scan/.../vYYYYMMDD/.../file3.nc | size3 | mod_time3 | checksum3 | checksum_type=SHA256
+.. note:: For instance, the ``var`` facet in obs4MIPs ``dataset_id`` pattern must be deduced from
+    the ``directory_format`` using the ``variable`` facet. Consequently, you can use ``--not-ignored variable`` to
+    resolve this facet from the appropriate maptable.
