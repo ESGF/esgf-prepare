@@ -11,6 +11,7 @@ in a way that minimises disk usage.
 .. warning:: Only CMORized netCDF files are supported as incoming files.
 
 Several ``esgprep drs`` actions are available to manage your local archive:
+
  - ``list`` lists publication-level datasets,
  - ``tree`` displays the final DRS tree,
  - ``todo`` shows file operations pending for the next version,
@@ -18,6 +19,7 @@ Several ``esgprep drs`` actions are available to manage your local archive:
 
 ``esgprep drs`` deduces the excepted DRS by scanning the incoming files and checking the facets against the
 corresponding ``esg.<project>.ini`` file. The DRS facets values are deduced from:
+
  1. The command-line using ``--set facet=value``. This flag can be used several times to set several facets values.
  2. The filename pattern using the ``filename_format`` from the ``esg.<project>.ini``.
  3. The NetCDF global attributes by picking the attribute with the nearest name of the facet key.
