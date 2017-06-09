@@ -3,24 +3,58 @@
 Generic usage
 =============
 
+.. note:: All the following arguments can be safely combined and add to the subcommand arguments.
+
 Check the help
 **************
 
 .. code-block:: bash
 
-   $> esgprep -h
-   $> esgprep SUBCOMMAND -h
+    $> esgprep -h
+    $> esgprep SUBCOMMAND -h
+
+Check the version
+*****************
+
+.. code-block:: bash
+
+    $> esgprep -V
+
+Run the test suite
+******************
+
+.. warning::
+    Not available for the time being.
+
+.. code-block:: bash
+
+    $> esgprep --test
+    $> esgprep SUBCOMMAND --test
+
+Add verbosity
+*************
+
+Some progress bars informs you about the processing statut of the different subcommands. You can switch to a more
+verbose mode displaying each step.
+
+.. code-block:: bash
+
+    $> esgprep SUBCOMMAND -v
+
+.. warning::
+    The verbose mode is silently actived in the case of a logfile (i.e., no progress bars).
+
 
 Specify the project
 *******************
 
-The ``--project`` argument is used to parse the corresponding configuration file. It is **always required**
+The ``--project`` argument is used to parse the corresponding configuration INI file. It is **always required**
 (except for ``fetch-ini`` subcommand). This argument is case-sensitive and has to correspond to a section name of
 the configuration file(s).
 
 .. code-block:: bash
 
-   $> esgprep SUBCOMMAND --project PROJECT_ID
+    $> esgprep SUBCOMMAND --project PROJECT_ID
 
 Submit a configuration directory
 ********************************
@@ -31,24 +65,12 @@ fetch and read the configuration files.
 
 .. code-block:: bash
 
-   $> esgprep SUBCOMMAND -i /path/to/config/
+    $> esgprep SUBCOMMAND -i /PATH/TO/CONFIG/
 
 .. note::
-   In the case of ``fetch-ini`` subcommand, if you're not on an ESGF node and ``/esg/config/esgcet`` doesn't exist,
-   the configuration file(s) are fetched into an ``ini`` folder in your working directory.
+    In the case of ``fetch-ini`` subcommand, if you're not on an ESGF node and ``/esg/config/esgcet`` doesn't exist,
+    the configuration file(s) are fetched into an ``ini`` folder in your working directory.
 
-Add verbosity
-*************
-
-Some progress bars informs you about the processing statut of the different subcommands. You can switch to a more
-verbose mode displaying each step.
-
-.. code-block:: bash
-
-   $> esgprep SUBCOMMAND -v
-
-.. warning::
-   The verbose mode is silently actived in the case of a logfile (i.e., no progress bars).
 
 Use a logfile
 *************
@@ -56,14 +78,34 @@ Use a logfile
 All errors and exceptions are logged into a file named ``esgprep-YYYYMMDD-HHMMSS-PID.err``.
 Other information are logged into a file named ``esgprep-YYYYMMDD-HHMMSS-PID.log`` only if ``--log`` is submitted.
 If not, the standard output is used following the verbose mode.
-By default, the logifles are stored in a ``logs`` folder made in your current working directory (if not exists).
-It can be changed by adding a logfile directory to the flag.
+By default, the logfiles are stored in a ``logs`` folder created in your current working directory (if not exists).
+It can be changed by adding a optional logfile directory to the flag.
 
 .. code-block:: bash
 
-   $> esgprep SUBCOMMAND --log
-   $> esgprep SUBCOMMAND --log /path/to/logdir
+    $> esgprep SUBCOMMAND --log
+    $> esgprep SUBCOMMAND --log /PATH/TO/LOGDIR/
 
-.. note:: The logfile directory is optional.
+Use a filter
+************
 
+Most of ``esgprep`` subcommand will scan your local archive to achieve proper data management. In such a scan, you can
+filter the files found to process by using a regular expression. The default is to only consdier NetCDF files
+(i.e., with a ``.nc`` extension).
 
+.. code-block:: bash
+
+    $> esgprep SUBCOMMAND --filter ".*\.nc$"
+
+.. warning:: ``esgprep fetch-ini`` does not allow this feature.
+
+Use multiprocessing
+*******************
+
+``esgprep`` uses a multiprocessing interface. This is useful to process a large amount of data, especially in the case
+of ``drs`` and ``mapfile`` subcommands with file checksum computation. Set the number of maximal threads to
+simultaneously process several files (4 threads is the default and one seems sequential processing).
+
+.. code-block:: bash
+
+    $> esgprep SUBCOMMAND --max-threads 4
