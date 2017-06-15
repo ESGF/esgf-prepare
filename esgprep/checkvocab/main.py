@@ -10,6 +10,7 @@
 import logging
 import os
 import sys
+import re
 
 from tqdm import tqdm
 
@@ -104,7 +105,7 @@ def get_facet_values_from_tree(ctx, dsets, facets):
         try:
             attributes = re.match(ctx.pattern, dset).groupdict()
         except:
-            raise DirectoryNotMatch(os.path.realpath(dset), ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
+            raise DirectoryNotMatch(dset, ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
         # Each facet is ensured to be included into "attributes" from matching
         for facet in facets:
             used_values[facet].add(attributes[facet])
