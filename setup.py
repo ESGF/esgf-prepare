@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 
 setup(name='esgprep',
-      version='2.7.4',
+      version='2.7.5',
       description='Toolbox to prepare data for ESGF publication',
       author='Levavasseur Guillaume',
       author_email='glipsl@ipsl.fr',
@@ -16,7 +16,7 @@ setup(name='esgprep',
                         'github3.py==0.9.5',
                         'uritemplate.py==2.0.0',
                         'fuzzywuzzy==0.15.0',
-                        'netCDF4==1.2.0',
+                        'netCDF4==1.2.8',
                         'hurry.filesize==0.9',
                         'treelib==1.3.5',
                         'tqdm==4.11.2'],
