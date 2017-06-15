@@ -10,6 +10,7 @@
 import logging
 import os
 import sys
+import re
 
 from tqdm import tqdm
 
