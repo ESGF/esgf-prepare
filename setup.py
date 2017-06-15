@@ -29,7 +29,7 @@ setup(name='esgprep',
                    'Intended Audience :: System Administrators',
                    'Natural Language :: English',
                    'Operating System :: Unix',
-                   'Programming Language :: Python :: 2.5',
+                   'Programming Language :: Python :: 2.5+',
                    'Topic :: Scientific/Engineering',
                    'Topic :: Software Development :: Build Tools']
       )
