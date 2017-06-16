@@ -1,6 +1,0 @@
-ERROR      2017-06-16 17:28:30,101 Matching failed to deduce DRS attributes.
-<path: '/prodigfs/esgf/mirror/CMIP5/output1/BCC/bcc-csm1-1/1pctCO2/mon/atmos/Amon/r1i1p1/v1_1/tas/toto.nc'>
-<format: '(?P<root>[\w./-]+)/(?P<project>[\w.-]+)/(?P<product>[\w.-]+)/(?P<institute>[\w.-]+)/(?P<model>[\w.-]+)/(?P<experiment>[\w.-]+)/(?P<time_frequency>[\w.-]+)/(?P<realm>[\w.-]+)/(?P<cmor_table>[\w.-]+)/(?P<ensemble>[\w.-]+)/(?P<version>v[\d]+|latest)/(?P<variable>[\w.-]+)/(?P<filename>[\w.-]+)$'>
-<section: 'project:cmip5'>
-<config file: '/home/glipsl/work/esgf-config/publisher-configs/ini/esg.ini'>
-<config file: '/home/glipsl/work/esgf-config/publisher-configs/ini/esg.cmip5.ini'>
