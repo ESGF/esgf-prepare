@@ -10,6 +10,7 @@
 import logging
 import os
 import pickle
+import re
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -34,7 +35,6 @@ class ProcessingContext(object):
     def __init__(self, args):
         self.directory = args.directory
         self.root = os.path.normpath(args.root)
-        self.file_filter = args.include_file_filter
         self.set_values = {}
         if args.set_value:
             self.set_values = dict(args.set_value)
@@ -83,7 +83,7 @@ def yield_inputs(ctx):
         for root, _, filenames in utils.walk(directory, followlinks=True):
             for filename in filenames:
                 ffp = os.path.join(root, filename)
-                if os.path.isfile(ffp) and not re.match(ctx.file_filter, filename):
+                if os.path.isfile(ffp) and not re.match('^[!.].*\.nc$', filename):
                     yield ffp, ctx
 
 

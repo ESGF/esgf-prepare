@@ -240,13 +240,23 @@ def get_args():
         required=True,
         help="""Required lower-cased project name.""")
     checkvocab.add_argument(
-        '--filter',
+        '--ignore-dir-filter',
+        metavar="PYTHON_REGEX",
         type=str,
-        default="[!.]*.nc",
+        default='^.*/(files|latest|\.\w*).*$',
         help="""
-        Filter files matching the regular expression (default only|n
-        support not-hidden netCDF files). Regular expression syntax|n
-        is defined by the Python "re" module.
+        Filter directories NON-matching the regular expression.|n
+        Default ignore paths with hidden folder(s) and/or|n
+        including "/files/" or "/latest/" patterns.
+        """)
+    checkvocab.add_argument(
+        '--include-file-filter',
+        metavar="PYTHON_REGEX",
+        type=str,
+        default='^[!.].*\.nc$',
+        help="""
+        Filter files matching the regular expression.|n
+        Default only include not hidden NetCDF files.
         """)
 
     ###############################
@@ -359,15 +369,6 @@ def get_args():
         help = """
         Symbolic link incoming files to the DRS tree.|n
         Default is moving files.
-        """)
-    drs.add_argument(
-        '--filter',
-        type=str,
-        default='[!.]*.nc',
-        help="""
-        Filter files matching the regular expression (default only|n
-        support not-hidden netCDF files). Regular expression syntax|n
-        is defined by the Python "re" module.
         """)
     drs.add_argument(
         '--max-threads',
@@ -525,7 +526,7 @@ def get_args():
         '--include-file-filter',
         metavar="PYTHON_REGEX",
         type=str,
-        default='^[!\.].*\.nc$',
+        default='^[!.].*\.nc$',
         help="""
         Filter files matching the regular expression.|n
         Default only include not hidden NetCDF files.
