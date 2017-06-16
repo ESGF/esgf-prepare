@@ -241,13 +241,12 @@ def get_args():
         help="""Required lower-cased project name.""")
     checkvocab.add_argument(
         '--filter',
-        metavar=r'".*\.nc$"',
         type=str,
-        default=r'.*\.nc$',
+        default="[!.]*.nc",
         help="""
         Filter files matching the regular expression (default only|n
-        support netCDF files). Regular expression syntax is defined|n
-        by the Python "re" module.
+        support not-hidden netCDF files). Regular expression syntax|n
+        is defined by the Python "re" module.
         """)
 
     ###############################
@@ -363,12 +362,12 @@ def get_args():
         """)
     drs.add_argument(
         '--filter',
-        metavar='"*.nc"',
         type=str,
-        default='*.nc',
+        default='[!.]*.nc',
         help="""
         Filter files matching the regular expression (default only|n
-        support netCDF files). Unix wildcards are supported.
+        support not-hidden netCDF files). Regular expression syntax|n
+        is defined by the Python "re" module.
         """)
     drs.add_argument(
         '--max-threads',
@@ -513,13 +512,23 @@ def get_args():
         "directory_format" and "dataset_id" patterns.
         """)
     mapfile.add_argument(
-        '--filter',
-        metavar='"*.nc"',
+        '--ignore-dir-filter',
+        metavar="PYTHON_REGEX",
         type=str,
-        default='*.nc',
+        default='^.*/(files|latest|\.\w*).*$',
         help="""
-        Filter files matching the regular expression (default|n
-        only scan netCDF files). Uniw wildcards are supported.
+        Filter directories NON-matching the regular expression.|n
+        Default ignore paths with hidden folder(s) and/or|n
+        including "/files/" or "/latest/" patterns.
+        """)
+    mapfile.add_argument(
+        '--include-file-filter',
+        metavar="PYTHON_REGEX",
+        type=str,
+        default='^[!\.].*\.nc$',
+        help="""
+        Filter files matching the regular expression.|n
+        Default only include not hidden NetCDF files.
         """)
     mapfile.add_argument(
         '--tech-notes-url',
@@ -556,7 +565,8 @@ def get_args():
         '--no-cleanup',
         action='store_true',
         default=False,
-        help="""Disables output directory cleanup prior to mapfile|n
+        help="""
+        Disables output directory cleanup prior to mapfile|n
         process. This is recommended if several "esgprep mapfile"|n
         instances run with the same output directory.
         """)

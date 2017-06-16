@@ -32,7 +32,8 @@ class ProcessingContext(object):
 
     def __init__(self, args):
         self.project = args.project
-        self.filter = args.filter
+        self.dir_filter = args.ignore_dir_filter
+        self.file_filter = args.include_file_filter
         self.project_section = 'project:{0}'.format(args.project)
         self.cfg = parser.CfgParser(args.i, section=self.project_section)
         if args.directory:
@@ -71,10 +72,10 @@ def yield_files_from_tree(ctx):
     """
     for directory in ctx.directory:
         for root, _, filenames in utils.walk(directory, followlinks=True):
-            if '/files/' not in root:
+            if not re.match(ctx.dir_filter, root):
                 for filename in filenames:
                     ffp = os.path.join(root, filename)
-                    if os.path.isfile(ffp) and re.match(ctx.filter, filename) is not None:
+                    if os.path.isfile(ffp) and not re.match(ctx.file_filter, filename):
                         yield ffp
 
 
@@ -91,10 +92,10 @@ def get_facet_values_from_tree(ctx, dsets, facets):
     """
     used_values = dict((facet, set()) for facet in facets)
     # Get the number of files to scan
-    nfiles = sum(1 for _ in utils.Tqdm(yield_files_from_tree(ctx),
-                                       desc='Collecting files'.ljust(LEN_MSG),
-                                       unit='files',
-                                       file=sys.stdout))
+    nfiles = sum(1 for _ in tqdm(yield_files_from_tree(ctx),
+                                 desc='Collecting files'.ljust(LEN_MSG),
+                                 unit=' files',
+                                 file=sys.stdout))
     for dset in tqdm(dsets,
                      desc='Harvesting facets values from DRS tree'.ljust(LEN_MSG),
                      total=nfiles,
@@ -125,17 +126,17 @@ def get_facet_values_from_dataset_list(ctx, dsets, facets):
     """
     used_values = dict((facet, set()) for facet in facets)
     # Get the number of files to scan
-    nids = sum(1 for _ in utils.Tqdm(yield_datasets_from_file(ctx),
-                                     desc='Collecting datasets'.ljust(LEN_MSG),
-                                     unit='files',
-                                     file=sys.stdout))
-    for dset in utils.Tqdm(dsets,
-                           desc='Harvesting facets values from dataset list'.ljust(LEN_MSG),
-                           total=nids,
-                           bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                           ncols=100,
-                           unit='dataset ids',
-                           file=sys.stdout):
+    nids = sum(1 for _ in tqdm(yield_datasets_from_file(ctx),
+                               desc='Collecting datasets'.ljust(LEN_MSG),
+                               unit=' files',
+                               file=sys.stdout))
+    for dset in tqdm(dsets,
+                     desc='Harvesting facets values from dataset list'.ljust(LEN_MSG),
+                     total=nids,
+                     bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                     ncols=100,
+                     unit='dataset ids',
+                     file=sys.stdout):
         try:
             attributes = re.match(ctx.pattern, dset).groupdict()
         except:

@@ -53,7 +53,8 @@ class ProcessingContext(object):
         self.version = None
         if args.version:
             self.version = 'v{0}'.format(args.version)
-        self.filter = args.filter
+        self.dir_filter = args.ignore_dir_filter
+        self.file_filter = args.include_file_filter
         self.project = args.project
         self.project_section = 'project:{0}'.format(args.project)
         self.cfg = parser.CfgParser(args.i, self.project_section)
@@ -95,12 +96,15 @@ def yield_inputs(ctx):
                 break
             else:
                 regex = re.compile('/'.join(regex.pattern.split('/')[:-1]))
+        # Change directory filter to walk through latest symlink only
+        if ctx.latest:
+            ctx.dir_filter = '^((?!/latest/).)*$'
         # Walk trough the DRS tree
         for root, _, filenames in utils.walk(directory, followlinks=True):
-            if '/files/' not in root:
+            if not re.match(ctx.dir_filter, root):
                 for filename in filenames:
                     ffp = os.path.join(root, filename)
-                    if os.path.isfile(ffp) and fnmatch.fnmatchcase(filename, ctx.filter):
+                    if os.path.isfile(ffp) and not re.match(ctx.file_filter, filename):
                         yield ffp, ctx
 
 
@@ -351,10 +355,10 @@ def main(args):
     # If not verbose mode or log, print a progress bar on standard output
     if args.pbar:
         # Get the number of files to scan
-        nfiles = sum(1 for _ in utils.Tqdm(yield_inputs(ctx),
-                                           desc='Collecting files'.ljust(LEN_MSG),
-                                           unit='files',
-                                           file=sys.stdout))
+        nfiles = sum(1 for _ in tqdm(yield_inputs(ctx),
+                                     desc='Collecting files'.ljust(LEN_MSG),
+                                     unit=' files',
+                                     file=sys.stdout))
         mapfiles = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
                                     desc='Mapfile(s) generation'.ljust(LEN_MSG),
                                     total=nfiles,

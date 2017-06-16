@@ -33,5 +33,9 @@ class FetchiniTest(unittest.TestCase):
 
 
 def run():
+    """
+    Run test suite
+
+    """
     testsuite = unittest.TestLoader().discover('.')
     unittest.TextTestRunner().run(testsuite)

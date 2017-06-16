@@ -7,7 +7,6 @@
 
 """
 
-import fnmatch
 import logging
 import os
 import pickle
@@ -35,7 +34,7 @@ class ProcessingContext(object):
     def __init__(self, args):
         self.directory = args.directory
         self.root = os.path.normpath(args.root)
-        self.filter = args.filter
+        self.file_filter = args.include_file_filter
         self.set_values = {}
         if args.set_value:
             self.set_values = dict(args.set_value)
@@ -84,7 +83,7 @@ def yield_inputs(ctx):
         for root, _, filenames in utils.walk(directory, followlinks=True):
             for filename in filenames:
                 ffp = os.path.join(root, filename)
-                if os.path.isfile(ffp) and fnmatch.fnmatchcase(filename, ctx.filter):
+                if os.path.isfile(ffp) and not re.match(ctx.file_filter, filename):
                     yield ffp, ctx
 
 
@@ -264,10 +263,10 @@ def main(args):
         # Process supplied files
         if args.pbar:
             # Get the number of files to scan
-            nfiles = sum(1 for _ in utils.Tqdm(yield_inputs(ctx),
-                                               desc='Collecting files'.ljust(LEN_MSG),
-                                               unit='files',
-                                               file=sys.stdout))
+            nfiles = sum(1 for _ in tqdm(yield_inputs(ctx),
+                                         desc='Collecting files'.ljust(LEN_MSG),
+                                         unit=' files',
+                                         file=sys.stdout))
             results = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
                                        desc='Scanning incoming files'.ljust(LEN_MSG),
                                        total=nfiles,
