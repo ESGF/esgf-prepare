@@ -105,11 +105,11 @@ def get_facet_values_from_tree(ctx, dsets, facets):
                      file=sys.stdout):
         try:
             attributes = re.match(ctx.pattern, dset).groupdict()
+            # Each facet is ensured to be included into "attributes" from matching
+            for facet in facets:
+                used_values[facet].add(attributes[facet])
         except:
-            raise DirectoryNotMatch(dset, ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
-        # Each facet is ensured to be included into "attributes" from matching
-        for facet in facets:
-            used_values[facet].add(attributes[facet])
+            logging.error(DirectoryNotMatch(dset, ctx.pattern, ctx.project_section, ctx.cfg.read_paths))
     return used_values
 
 
@@ -139,11 +139,11 @@ def get_facet_values_from_dataset_list(ctx, dsets, facets):
                      file=sys.stdout):
         try:
             attributes = re.match(ctx.pattern, dset).groupdict()
+            # Each facet is ensured to be included into "attributes" from matching
+            for facet in facets:
+                used_values[facet].add(attributes[facet])
         except:
-            raise DatasetNotMatch(dset, ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
-        # Each facet is ensured to be included into "attributes" from matching
-        for facet in facets:
-            used_values[facet].add(attributes[facet])
+            logging.error(DatasetNotMatch(dset, ctx.pattern, ctx.project_section, ctx.cfg.read_paths))
     return used_values
 
 
@@ -253,5 +253,9 @@ def main(args):
     facet_values_config = get_facet_values_from_config(ctx.cfg, ctx.project_section, ctx.facets)
     # Compare values from tree against values from configuration file
     any_disallowed = compare_values(ctx.project, list(ctx.facets), facet_values_found, facet_values_config)
+    # Print error log if exists
+    if os.path.exists(logging.getLogger().handlers[0].baseFilename):
+        print('{0}: {1}'.format('Scan errors logged to'.ljust(LEN_MSG),
+                                logging.getLogger().handlers[0].baseFilename))
     if any_disallowed:
         sys.exit(1)
