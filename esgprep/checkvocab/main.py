@@ -241,6 +241,7 @@ def main(args):
     """
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
+    exit_status = 0
     if args.directory:
         # Walk trough DRS to get all dataset roots
         dsets = yield_files_from_tree(ctx)
@@ -257,5 +258,7 @@ def main(args):
     if os.path.exists(logging.getLogger().handlers[0].baseFilename):
         print('{0}: {1}'.format('Scan errors logged to'.ljust(LEN_MSG),
                                 logging.getLogger().handlers[0].baseFilename))
+        exit_status = 1
     if any_disallowed:
-        sys.exit(1)
+        exit_status = 1
+    sys.exit(exit_status)
