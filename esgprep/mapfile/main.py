@@ -247,7 +247,7 @@ def in_version_scope(fh, ctx):
         return True
     else:
         # Find latest version
-        versions = [v for v in os.listdir(fh.ffp.split(path_version)[0]) if re.compile(r'v[\d]+').search(v)]
+        versions = [v for v in os.listdir(fh.ffp.split(path_version)[0]) if re.compile(r'^v[\d]+$').search(v)]
         latest_version = sorted(versions)[-1]
         # If follow the latest symlink only, ensure that version facet is 'latest'
         if ctx.latest:
@@ -359,13 +359,16 @@ def main(args):
                                      desc='Collecting files'.ljust(LEN_MSG),
                                      unit=' files',
                                      file=sys.stdout))
-        mapfiles = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
-                                    desc='Mapfile(s) generation'.ljust(LEN_MSG),
-                                    total=nfiles,
-                                    bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                                    ncols=100,
-                                    unit='files',
-                                    file=sys.stdout)]
+        if nfiles == 0:
+            mapfiles = []
+        else:
+            mapfiles = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
+                                        desc='Mapfile(s) generation'.ljust(LEN_MSG),
+                                        total=nfiles,
+                                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                                        ncols=100,
+                                        unit='files',
+                                        file=sys.stdout)]
     else:
         mapfiles = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
     # Close threads pool

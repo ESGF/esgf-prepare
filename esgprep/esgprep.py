@@ -243,7 +243,7 @@ def get_args():
         '--ignore-dir-filter',
         metavar="PYTHON_REGEX",
         type=str,
-        default='^.*/(files|latest|\.\w*).*$',
+        default='^.*/(files|latest|\.[\w]*).*$',
         help="""
         Filter directories NON-matching the regular expression.|n
         Default ignore paths with hidden folder(s) and/or|n
@@ -516,7 +516,7 @@ def get_args():
         '--ignore-dir-filter',
         metavar="PYTHON_REGEX",
         type=str,
-        default='^.*/(files|latest|\.\w*).*$',
+        default='^.*/(files|latest|\.[\w]*).*$',
         help="""
         Filter directories NON-matching the regular expression.|n
         Default ignore paths with hidden folder(s) and/or|n
