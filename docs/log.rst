@@ -9,9 +9,11 @@ Changelog
 | 2017-05-09 | 2.7     | | Major review from Alan Iwi (CEDA).                                                |
 |            |         | | Improve logger management.                                                        |
 |            |         | | Improve all outputs.                                                              |
+|            |         | | Improve file discovery.                                                           |
 |            |         | | Remove ``esg.ini`` fetching and ``fetch-ini`` code simplified .                   |
 |            |         | | Add ``--set-*``, ``--symlink`` features and ``drs`` result recording.             |
 |            |         | | Add ``--no-cleanup`` features to ``mapfile`` command.                             |
+|            |         | | Add filters features to ``check-vocab`` and ``mapfile`` commands.                 |
 +------------+---------+-------------------------------------------------------------------------------------+
 | 2016-09-27 | 2.5     | | Improvement of ``fetch-ini`` command to fetch all configuration files.            |
 |            |         | | Small refactoring.                                                                |

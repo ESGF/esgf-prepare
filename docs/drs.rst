@@ -146,3 +146,16 @@ make a comparison on filenames.
 .. code-block:: bash
 
     $> esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
+
+Exit status
+***********
+
+ * Status = 0
+    All the files have been successfully scanned and the DRS tree properly generated.
+ * Status = 1
+    No files found. No DRS tree can be built.
+ * Status = 2
+    Some scan errors occured. Some files have been skipped or failed during the scan potentially leading to an
+    incomplete DRS tree. See the error logfile.
+ * Status = 3
+    All the files have been skipped or failed during the scan leading to no DRS tree. See the error logfile.

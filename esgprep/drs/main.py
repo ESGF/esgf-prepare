@@ -319,5 +319,5 @@ def main(args):
             print('{0}: {1} (see {2})'.format('Scan errors'.ljust(23),
                                               len(results),
                                               logging.getLogger().handlers[0].baseFilename))
-        logging.warning('==> All files have been ignored or have failed leading to no mapfile.')
+        logging.warning('==> All files have been ignored or have failed leading to no DRS tree.')
         sys.exit(3)

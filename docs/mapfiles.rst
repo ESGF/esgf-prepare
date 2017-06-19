@@ -151,3 +151,16 @@ patterns.
 .. note:: For instance, the ``var`` facet in obs4MIPs ``dataset_id`` pattern must be deduced from
     the ``directory_format`` using the ``variable`` facet. Consequently, you can use ``--not-ignored variable`` to
     resolve this facet from the appropriate maptable.
+
+Exit status
+***********
+
+ * Status = 0
+    All the files have been successfully scanned and the mapfile(s) properly generated.
+ * Status = 1
+    No files found. No mapfile(s) generated.
+ * Status = 2
+    Some scan errors occured. Some files have been skipped or failed during the scan potentially leading to incomplete
+    mapfiles. See the error logfile.
+ * Status = 3
+    All the files have been skipped or failed during the scan leading to no mapfile(s). See the error logfile.
