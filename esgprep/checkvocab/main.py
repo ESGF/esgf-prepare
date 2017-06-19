@@ -90,6 +90,7 @@ def get_facet_values_from_tree(ctx, dsets, facets):
     :rtype: *dict*
 
     """
+    scan_errors = 0
     used_values = dict((facet, set()) for facet in facets)
     # Get the number of files to scan
     nfiles = sum(1 for _ in tqdm(yield_files_from_tree(ctx),
@@ -110,7 +111,12 @@ def get_facet_values_from_tree(ctx, dsets, facets):
                 used_values[facet].add(attributes[facet])
         except:
             logging.error(DirectoryNotMatch(dset, ctx.pattern, ctx.project_section, ctx.cfg.read_paths))
-    return used_values
+            scan_errors += 1
+    if scan_errors > 0:
+        print('{0}: {1} (see {2})'.format('Scan errors'.ljust(LEN_MSG),
+                                          scan_errors,
+                                          logging.getLogger().handlers[0].baseFilename))
+    return used_values, scan_errors
 
 
 def get_facet_values_from_dataset_list(ctx, dsets, facets):
@@ -124,6 +130,7 @@ def get_facet_values_from_dataset_list(ctx, dsets, facets):
     :rtype: *dict*
 
     """
+    scan_errors = 0
     used_values = dict((facet, set()) for facet in facets)
     # Get the number of files to scan
     nids = sum(1 for _ in tqdm(yield_datasets_from_file(ctx),
@@ -144,7 +151,12 @@ def get_facet_values_from_dataset_list(ctx, dsets, facets):
                 used_values[facet].add(attributes[facet])
         except:
             logging.error(DatasetNotMatch(dset, ctx.pattern, ctx.project_section, ctx.cfg.read_paths))
-    return used_values
+            scan_errors += 1
+    if scan_errors > 0:
+        print('{0}: {1} (see {2})'.format('Scan errors'.ljust(LEN_MSG),
+                                          scan_errors,
+                                          logging.getLogger().handlers[0].baseFilename))
+    return used_values, scan_errors
 
 
 def get_facet_values_from_config(cfg, section, facets):
@@ -225,7 +237,6 @@ def compare_values(project, facets, used_values, declared_values):
                                                                   logging.getLogger().handlers[0].baseFilename))
     return any_undeclared
 
-
 def main(args):
     """
     Main process that:
@@ -241,24 +252,20 @@ def main(args):
     """
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
-    exit_status = 0
     if args.directory:
         # Walk trough DRS to get all dataset roots
         dsets = yield_files_from_tree(ctx)
         # Get facets values used by DRS tree
-        facet_values_found = get_facet_values_from_tree(ctx, dsets, list(ctx.facets))
+        facet_values_found, scan_errors = get_facet_values_from_tree(ctx, dsets, list(ctx.facets))
     else:
         dsets = yield_datasets_from_file(ctx)
-        facet_values_found = get_facet_values_from_dataset_list(ctx, dsets, list(ctx.facets))
+        facet_values_found, scan_errors = get_facet_values_from_dataset_list(ctx, dsets, list(ctx.facets))
     # Get facets values declared in configuration file
     facet_values_config = get_facet_values_from_config(ctx.cfg, ctx.project_section, ctx.facets)
     # Compare values from tree against values from configuration file
-    any_disallowed = compare_values(ctx.project, list(ctx.facets), facet_values_found, facet_values_config)
-    # Print error log if exists
-    if os.path.exists(logging.getLogger().handlers[0].baseFilename):
-        print('{0}: {1}'.format('Scan errors logged to'.ljust(LEN_MSG),
-                                logging.getLogger().handlers[0].baseFilename))
-        exit_status = 1
-    if any_disallowed:
-        exit_status = 1
-    sys.exit(exit_status)
+    any_undeclared = compare_values(ctx.project, list(ctx.facets), facet_values_found, facet_values_config)
+    # Exit status
+    if scan_errors:
+        sys.exit(1)
+    if any_undeclared:
+        sys.exit(2)
