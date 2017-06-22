@@ -246,8 +246,10 @@ def get_args():
         default='^.*/(files|latest|\.[\w]*).*$',
         help="""
         Filter directories NON-matching the regular expression.|n
-        Default ignore paths with hidden folder(s) and/or|n
-        including "/files/" or "/latest/" patterns.
+        Default ignore paths with folder name(s) starting with "."|n
+        and/or including "/files/" or "/latest/" patterns.|n
+        (Regular expression must match from start of path; prefix with|n
+        .* if required.)
         """)
     checkvocab.add_argument(
         '--include-file-filter',
@@ -256,7 +258,8 @@ def get_args():
         default='^[!.].*\.nc$',
         help="""
         Filter files matching the regular expression.|n
-        Default only include not hidden NetCDF files.
+        Default only include NetCDF files (with names not|n
+        starting with ".").
         """)
 
     ###############################
@@ -519,8 +522,10 @@ def get_args():
         default='^.*/(files|latest|\.[\w]*).*$',
         help="""
         Filter directories NON-matching the regular expression.|n
-        Default ignore paths with hidden folder(s) and/or|n
-        including "/files/" or "/latest/" patterns.
+        Default ignore paths with folder name(s) starting with "."|n
+        and/or including "/files/" or "/latest/" patterns.|n
+        (Regular expression must match from start of path; prefix with|n
+        .* if required.)
         """)
     mapfile.add_argument(
         '--include-file-filter',
@@ -529,7 +534,8 @@ def get_args():
         default='^[!.].*\.nc$',
         help="""
         Filter files matching the regular expression.|n
-        Default only include not hidden NetCDF files.
+        Default only include NetCDF files (with names not|n
+        starting with ".").
         """)
     mapfile.add_argument(
         '--tech-notes-url',
