@@ -45,7 +45,7 @@ class ProcessingContext(object):
         self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
 
 
-def yield_datasets_from_file(ctx):
+def yield_datasets_from_file(dataset_list, dataset_pattern='((\.v|#)[0-9]+)?\s*$'):
     """
     Yields datasets to process from a text file.  Each line may contain the dataset with optional 
     appended .v<version> or #<version>, and only the part without the version is returned.
@@ -55,13 +55,13 @@ def yield_datasets_from_file(ctx):
     :rtype: *iter*
     
     """
-    trailing = re.compile("((\.v|#)[0-9]+)?\s*$")  # re for optional version and any whitespace
-    with open(ctx.dataset_list) as f:
+    trailing = re.compile(dataset_pattern)  # re for optional version and any whitespace
+    with open(dataset_list) as f:
         for line in f:
             yield trailing.sub("", line)
 
 
-def yield_files_from_tree(ctx):
+def yield_files_from_tree(directory, dir_filter='^.*/(files|latest|\.[\w]*).*$', file_filter='^[!.].*\.nc$'):
     """
     Yields datasets to process. The file full path is returned to match the whole directory format.
 
@@ -70,12 +70,12 @@ def yield_files_from_tree(ctx):
     :rtype: *iter*
 
     """
-    for directory in ctx.directory:
+    for directory in directory:
         for root, _, filenames in utils.walk(directory, followlinks=True):
-            if not re.match(ctx.dir_filter, root):
+            if not re.match(dir_filter, root):
                 for filename in filenames:
                     ffp = os.path.join(root, filename)
-                    if os.path.isfile(ffp) and not re.match(ctx.file_filter, filename):
+                    if os.path.isfile(ffp) and not re.match(file_filter, filename):
                         yield ffp
 
 
@@ -254,11 +254,11 @@ def main(args):
     ctx = ProcessingContext(args)
     if args.directory:
         # Walk trough DRS to get all dataset roots
-        dsets = yield_files_from_tree(ctx)
+        dsets = yield_files_from_tree(ctx.directory, ctx.dir_filter, ctx.file_filter)
         # Get facets values used by DRS tree
         facet_values_found, scan_errors = get_facet_values_from_tree(ctx, dsets, list(ctx.facets))
     else:
-        dsets = yield_datasets_from_file(ctx)
+        dsets = yield_datasets_from_file(ctx.dataset_list)
         facet_values_found, scan_errors = get_facet_values_from_dataset_list(ctx, dsets, list(ctx.facets))
     # Get facets values declared in configuration file
     facet_values_config = get_facet_values_from_config(ctx.cfg, ctx.project_section, ctx.facets)

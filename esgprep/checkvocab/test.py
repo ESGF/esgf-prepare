@@ -8,6 +8,7 @@
 """
 
 import unittest
+import esgprep.checkvocab
 from esgprep.checkvocab.main import *
 from esgprep.checkvocab.constants import *
 from esgprep.checkvocab.exceptions import *
@@ -26,22 +27,23 @@ class CheckVocabTest(unittest.TestCase):
         }
         self.excpected_output = {
             1: ['my.dataset.id',
-                'my.dataset.id.'
-                'my.dataset.id.v1'
+                'my.dataset.id.',
+                'my.dataset.id.v1',
                 'my.dataset.id.v20140405',
                 'my.dataset.id#v20120305']
         }
+
+    def test_yield_files_from_tree(self):
+        pass
 
     def test_yield_datasets_from_file(self):
         """
         Tests dataset ID parsing from an input file.
 
         """
-        args = []
-        ctx = ProcessingContext()
-        yield_datasets_from_file(self.ctx)
-
-        self.assertIsInstance(repo, GitHubRepository)
+        input = os.path.join(os.path.dirname(esgprep.checkvocab.__file__), self.input[1])
+        dsets = yield_datasets_from_file(input)
+        self.assertEqual(list(dsets).sort(), list(self.excpected_output[1]).sort())
 
 
 def run():
