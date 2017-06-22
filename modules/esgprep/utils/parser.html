@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.parser &mdash; esgprep 2.7.4 documentation</title>
+  <title>esgprep.utils.parser &mdash; esgprep 2.7.6 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.4 documentation" href="../../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="esgprep 2.7.6 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -80,7 +86,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
@@ -104,8 +113,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">esgprep</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">esgprep</a>
+        
       </nav>
 
 
@@ -118,19 +129,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-      
-    <li>esgprep.utils.parser</li>
+        
+      <li>esgprep.utils.parser</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -163,7 +191,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="n">section</span><span class="p">)</span>
 
@@ -220,7 +248,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;esg.ini&#39;</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">section</span><span class="p">:</span>
             <span class="c1"># If the section is not &quot;[project:.*]&quot;, only read esg.ini</span>
-            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">r&#39;project:.*&#39;</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span> <span class="ow">and</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;project:.*&#39;</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span> <span class="ow">and</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
                 <span class="n">project</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;project:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))):</span>
                     <span class="k">raise</span> <span class="n">NoConfigFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">)))</span>
@@ -247,18 +275,18 @@
         <span class="c1"># Start translation</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;directory_format&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;\.&#39;</span><span class="p">,</span> <span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">r&#39;\.&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">,</span> <span class="s1">r&#39;\.&#39;</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
         <span class="c1"># Translate %(root)s variable if exists but not required. Can include the project name.</span>
-        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\((root)\)s&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">):</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\((root)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;(?P&lt;\1&gt;[\w./-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((root)\)s&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">):</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((root)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[\w./-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="c1"># Include specific facet patterns</span>
         <span class="k">for</span> <span class="n">facet</span><span class="p">,</span> <span class="n">facet_regex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_patterns</span><span class="p">(</span><span class="n">section</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\((</span><span class="si">{0}</span><span class="s1">)\)s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">)),</span> <span class="n">facet_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((</span><span class="si">{0}</span><span class="s1">)\)s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">)),</span> <span class="n">facet_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="c1"># Constraint on %(version)s number</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\((version)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;(?P&lt;\1&gt;v[\d]+|latest)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((version)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;v[\d]+|latest)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="c1"># Translate all patterns matching %(name)s</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/(?P&lt;filename&gt;[\w.-]+)$&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CfgParser.translate_dataset_format"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.translate_dataset_format">[docs]</a>    <span class="k">def</span> <span class="nf">translate_dataset_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
@@ -272,15 +300,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;dataset_id&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;\.&#39;</span><span class="p">,</span> <span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">r&#39;\.&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">,</span> <span class="s1">r&#39;\.&#39;</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
         <span class="c1"># Include specific facet patterns</span>
         <span class="k">for</span> <span class="n">facet</span><span class="p">,</span> <span class="n">facet_regex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_patterns</span><span class="p">(</span><span class="n">section</span><span class="p">)</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\((</span><span class="si">{0}</span><span class="s1">)\)s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">)),</span> <span class="n">facet_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((</span><span class="si">{0}</span><span class="s1">)\)s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">)),</span> <span class="n">facet_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="c1"># Constraint on %(version)s number</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\((version)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;(?P&lt;\1&gt;v[\d]+|latest)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((version)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;v[\d]+|latest)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="c1"># Translate all patterns matching %(name)s</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pattern</span></div>
 
 <div class="viewcode-block" id="CfgParser.translate_filename_format"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.translate_filename_format">[docs]</a>    <span class="k">def</span> <span class="nf">translate_filename_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
@@ -295,14 +323,14 @@
         <span class="c1"># Start translation</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;filename_format&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;\.&#39;</span><span class="p">,</span> <span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">r&#39;\.&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">,</span> <span class="s1">r&#39;\.&#39;</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
         <span class="c1"># Translate all patterns matching [.*] as optional pattern</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;\[(.*)\]&#39;</span><span class="p">),</span> <span class="s1">r&#39;(\1)?&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\[(.*)\]&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(\1)?&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="c1"># Remove underscore from latest mandatory pattern to allow optional brackets</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\(([^()]*)\)s\(&#39;</span><span class="p">),</span> <span class="s1">r&#39;(?P&lt;\1&gt;[^-_]+)(&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s\(&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[^-_]+)(&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="c1"># Translate all patterns matching %(name)s</span>
-        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CfgParser.get_facets"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_facets">[docs]</a>    <span class="k">def</span> <span class="nf">get_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">ignored</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -314,7 +342,7 @@
 <span class="sd">        :rtype: *set*</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">facets</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">facets</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">ignored</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">facets</span> <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignored</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -520,11 +548,11 @@
             <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># Translate all patterns matching %(digit)s</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\((digit)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;[\d]+&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((digit)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;[\d]+&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="c1"># Translate all patterns matching %(string)s</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\((string)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;[\w]+&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((string)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;[\w]+&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="c1"># Translate all patterns matching %(facet)s</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="s1">r&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CfgParser.get_patterns"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_patterns">[docs]</a>    <span class="k">def</span> <span class="nf">get_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
@@ -610,7 +638,7 @@
 <span class="sd">    :returns: &#39;from&#39; and &#39;to&#39; tuples representing the keys for the mapping</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">header_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;map\s*\((?P&lt;from_keys&gt;[^(:)]*):(?P&lt;to_keys&gt;[^(:)]*)\)&#39;</span><span class="p">)</span>
+    <span class="n">header_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;map\s*\((?P&lt;from_keys&gt;[^(:)]*):(?P&lt;to_keys&gt;[^(:)]*)\)&#39;</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">header_pattern</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">InvalidMapHeader</span><span class="p">(</span><span class="n">header_pattern</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
@@ -648,6 +676,9 @@
 </pre></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -678,10 +709,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.4',
+            VERSION:'2.7.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../../static/jquery.js"></script>

@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Changelog &mdash; esgprep 2.7.4 documentation</title>
+  <title>Changelog &mdash; esgprep 2.7.6 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.4 documentation" href="index.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="esgprep 2.7.6 documentation" href="index.html"/>
         <link rel="next" title="Code documentation" href="autodoc.html"/>
         <link rel="prev" title="Credits" href="credits.html"/> 
 
@@ -41,6 +46,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -81,7 +87,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
@@ -105,8 +114,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">esgprep</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+        
       </nav>
 
 
@@ -115,23 +126,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Changelog</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Changelog</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="sources/log.txt" rel="nofollow"> View page source</a>
+            
+            <a href="sources/log.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -158,9 +186,11 @@
 <div class="line">Major review from Alan Iwi (CEDA).</div>
 <div class="line">Improve logger management.</div>
 <div class="line">Improve all outputs.</div>
+<div class="line">Improve file discovery.</div>
 <div class="line">Remove <code class="docutils literal"><span class="pre">esg.ini</span></code> fetching and <code class="docutils literal"><span class="pre">fetch-ini</span></code> code simplified .</div>
 <div class="line">Add <code class="docutils literal"><span class="pre">--set-*</span></code>, <code class="docutils literal"><span class="pre">--symlink</span></code> features and <code class="docutils literal"><span class="pre">drs</span></code> result recording.</div>
 <div class="line">Add <code class="docutils literal"><span class="pre">--no-cleanup</span></code> features to <code class="docutils literal"><span class="pre">mapfile</span></code> command.</div>
+<div class="line">Add filters features to <code class="docutils literal"><span class="pre">check-vocab</span></code> and <code class="docutils literal"><span class="pre">mapfile</span></code> commands.</div>
 </div>
 </td>
 </tr>
@@ -261,7 +291,7 @@
 <td>0.3.1</td>
 <td><div class="first last line-block">
 <div class="line">Improve logging.</div>
-<div class="line">Includes developer&#8217;s entry point.</div>
+<div class="line">Includes developer’s entry point.</div>
 </div>
 </td>
 </tr>
@@ -296,15 +326,18 @@
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="autodoc.html" class="btn btn-neutral float-right" title="Code documentation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="autodoc.html" class="btn btn-neutral float-right" title="Code documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="credits.html" class="btn btn-neutral" title="Credits" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="credits.html" class="btn btn-neutral" title="Credits" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -335,10 +368,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.4',
+            VERSION:'2.7.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="static/jquery.js"></script>

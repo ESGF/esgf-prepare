@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.7.4 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.7.6 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.4 documentation" href="index.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="esgprep 2.7.6 documentation" href="index.html"/>
         <link rel="prev" title="Changelog" href="log.html"/> 
 
   
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -80,7 +86,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
@@ -114,8 +123,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">esgprep</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+        
       </nav>
 
 
@@ -124,23 +135,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Code documentation</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Code documentation</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="sources/autodoc.txt" rel="nofollow"> View page source</a>
+            
+            <a href="sources/autodoc.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -203,10 +231,10 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>username</strong> &#8211; The GitHub login (optional)</li>
-<li><strong>password</strong> &#8211; The GitHub password (optional)</li>
-<li><strong>team</strong> &#8211; The GitHub team to connect (optional)</li>
-<li><strong>repository</strong> &#8211; The GitHub repository to reach</li>
+<li><strong>username</strong> – The GitHub login (optional)</li>
+<li><strong>password</strong> – The GitHub password (optional)</li>
+<li><strong>team</strong> – The GitHub team to connect (optional)</li>
+<li><strong>repository</strong> – The GitHub repository to reach</li>
 </ul>
 </td>
 </tr>
@@ -217,8 +245,8 @@
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> &#8211; If the GitHub connection fails because of invalid inputs</li>
-<li><strong>Error</strong> &#8211; If the GitHub connection fails because of API rate limit exceeded</li>
+<li><strong>Error</strong> – If the GitHub connection fails because of invalid inputs</li>
+<li><strong>Error</strong> – If the GitHub connection fails because of API rate limit exceeded</li>
 </ul>
 </td>
 </tr>
@@ -232,8 +260,8 @@
 <dd><p>Backup a local file following different modes:</p>
 <blockquote>
 <div><ul class="simple">
-<li>&#8220;one_version&#8221; renames the existing file in its source directory adding a &#8221;.bkp&#8221; extension to the filename.</li>
-<li>&#8220;keep_versions&#8221; moves the existing file in a child directory called &#8220;bkp&#8221; and add a timestamp to the filename.</li>
+<li>“one_version” renames the existing file in its source directory adding a “.bkp” extension to the filename.</li>
+<li>“keep_versions” moves the existing file in a child directory called “bkp” and add a timestamp to the filename.</li>
 </ul>
 </div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
@@ -241,8 +269,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>f</strong> (<em>str</em>) &#8211; The file to backup</li>
-<li><strong>mode</strong> (<em>str</em>) &#8211; The backup mode to follow</li>
+<li><strong>f</strong> (<em>str</em>) – The file to backup</li>
+<li><strong>mode</strong> (<em>str</em>) – The backup mode to follow</li>
 </ul>
 </td>
 </tr>
@@ -259,8 +287,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outfile</strong> (<em>str</em>) &#8211; The output file</li>
-<li><strong>content</strong> (<em>github3.GitHub.repository.contents</em>) &#8211; The GitHub content</li>
+<li><strong>outfile</strong> (<em>str</em>) – The output file</li>
+<li><strong>content</strong> (<em>github3.GitHub.repository.contents</em>) – The GitHub content</li>
 </ul>
 </td>
 </tr>
@@ -277,8 +305,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>gh</strong> (<em>github3.GitHub.repository</em>) &#8211; A <a class="reference internal" href="#esgprep.fetchini.main.github_connector" title="esgprep.fetchini.main.github_connector"><code class="xref py py-func docutils literal"><span class="pre">github_connector()</span></code></a> instance</li>
-<li><strong>path</strong> (<em>str</em>) &#8211; The remote file or directory path</li>
+<li><strong>gh</strong> (<em>github3.GitHub.repository</em>) – A <a class="reference internal" href="#esgprep.fetchini.main.github_connector" title="esgprep.fetchini.main.github_connector"><code class="xref py py-func docutils literal"><span class="pre">github_connector()</span></code></a> instance</li>
+<li><strong>path</strong> (<em>str</em>) – The remote file or directory path</li>
 </ul>
 </td>
 </tr>
@@ -288,7 +316,7 @@
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>github3.GitHub.repository.contents</em></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the GitHub request returns empty content</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> – If the GitHub request returns empty content</p>
 </td>
 </tr>
 </tbody>
@@ -304,8 +332,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>gh</strong> (<em>github3.GitHub.repository</em>) &#8211; A <a class="reference internal" href="#esgprep.fetchini.main.github_connector" title="esgprep.fetchini.main.github_connector"><code class="xref py py-func docutils literal"><span class="pre">github_connector()</span></code></a> instance</li>
-<li><strong>projects</strong> (<em>list</em>) &#8211; Desired project ids</li>
+<li><strong>gh</strong> (<em>github3.GitHub.repository</em>) – A <a class="reference internal" href="#esgprep.fetchini.main.github_connector" title="esgprep.fetchini.main.github_connector"><code class="xref py py-func docutils literal"><span class="pre">github_connector()</span></code></a> instance</li>
+<li><strong>projects</strong> (<em>list</em>) – Desired project ids</li>
 </ul>
 </td>
 </tr>
@@ -328,10 +356,10 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>f</strong> (<em>str</em>) &#8211; The file to test</li>
-<li><strong>remote_checksum</strong> (<em>str</em>) &#8211; The remote file checksum</li>
-<li><strong>overwrite</strong> (<em>boolean</em>) &#8211; True if overwrite existing files</li>
-<li><strong>keep</strong> (<em>boolean</em>) &#8211; True if keep existing files</li>
+<li><strong>f</strong> (<em>str</em>) – The file to test</li>
+<li><strong>remote_checksum</strong> (<em>str</em>) – The remote file checksum</li>
+<li><strong>overwrite</strong> (<em>boolean</em>) – True if overwrite existing files</li>
+<li><strong>keep</strong> (<em>boolean</em>) – True if keep existing files</li>
 </ul>
 </td>
 </tr>
@@ -348,12 +376,12 @@
 <dl class="function">
 <dt id="esgprep.fetchini.main.githash">
 <code class="descclassname">esgprep.fetchini.main.</code><code class="descname">githash</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#githash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.githash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes Git checksum (as called by &#8220;git hash-object&#8221;) of a file</p>
+<dd><p>Makes Git checksum (as called by “git hash-object”) of a file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> &#8211; </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> – </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The SHA1 sum</td>
 </tr>
@@ -370,12 +398,12 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>gh</strong> (<em>github3.repos</em>) &#8211; The GitHub repository connector</li>
-<li><strong>outdir</strong> (<em>str</em>) &#8211; The output directory</li>
-<li><strong>path</strong> (<em>str</em>) &#8211; The GitHub path of the remote file</li>
-<li><strong>backup_mode</strong> (<em>str</em>) &#8211; The backup mode</li>
-<li><strong>keep</strong> (<em>boolean</em>) &#8211; True to keep existing files</li>
-<li><strong>overwrite</strong> (<em>boolean</em>) &#8211; True to overwrite existing files</li>
+<li><strong>gh</strong> (<em>github3.repos</em>) – The GitHub repository connector</li>
+<li><strong>outdir</strong> (<em>str</em>) – The output directory</li>
+<li><strong>path</strong> (<em>str</em>) – The GitHub path of the remote file</li>
+<li><strong>backup_mode</strong> (<em>str</em>) – The backup mode</li>
+<li><strong>keep</strong> (<em>boolean</em>) – True to keep existing files</li>
+<li><strong>overwrite</strong> (<em>boolean</em>) – True to overwrite existing files</li>
 </ul>
 </td>
 </tr>
@@ -400,7 +428,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; Parsed command-line arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Parsed command-line arguments</td>
 </tr>
 </tbody>
 </table>
@@ -449,7 +477,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; Parsed command-line arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Parsed command-line arguments</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The processing context</td>
 </tr>
@@ -468,7 +496,7 @@ through the DRS tree follows the symlinks.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) &#8211; The processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) – The processing context</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Attach the processing context to a file to process as an iterator of tuples</td>
 </tr>
@@ -487,9 +515,9 @@ through the DRS tree follows the symlinks.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ffp</strong> (<em>str</em>) &#8211; The file full path</li>
-<li><strong>checksum_client</strong> (<em>str</em>) &#8211; Shell command line for checksum</li>
-<li><strong>checksum_type</strong> (<em>str</em>) &#8211; Checksum type</li>
+<li><strong>ffp</strong> (<em>str</em>) – The file full path</li>
+<li><strong>checksum_client</strong> (<em>str</em>) – Shell command line for checksum</li>
+<li><strong>checksum_type</strong> (<em>str</em>) – Checksum type</li>
 </ul>
 </td>
 </tr>
@@ -499,7 +527,7 @@ through the DRS tree follows the symlinks.</p>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>str</em></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the checksum fails</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> – If the checksum fails</p>
 </td>
 </tr>
 </tbody>
@@ -514,7 +542,7 @@ through the DRS tree follows the symlinks.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputs</strong> (<em>tuple</em>) &#8211; A tuple with the file path and the processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputs</strong> (<em>tuple</em>) – A tuple with the file path and the processing context</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <a class="reference internal" href="#esgprep.drs.main.process" title="esgprep.drs.main.process"><code class="xref py py-func docutils literal"><span class="pre">process()</span></code></a> call</td>
 </tr>
@@ -543,8 +571,8 @@ through the DRS tree follows the symlinks.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ffp</strong> (<em>str</em>) &#8211; The file full path</li>
-<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.drs.main.ProcessingContext" title="esgprep.drs.main.ProcessingContext"><em>esgprep.drs.main.ProcessingContext</em></a>) &#8211; The processing context</li>
+<li><strong>ffp</strong> (<em>str</em>) – The file full path</li>
+<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.drs.main.ProcessingContext" title="esgprep.drs.main.ProcessingContext"><em>esgprep.drs.main.ProcessingContext</em></a>) – The processing context</li>
 </ul>
 </td>
 </tr>
@@ -567,12 +595,12 @@ through the DRS tree follows the symlinks.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>args</strong> (<em>argparse.Namespace</em>) &#8211; The submitted arguments</li>
-<li><strong>old_args</strong> (<em>argparse.Namespace</em>) &#8211; The recorded arguments</li>
+<li><strong>args</strong> (<em>argparse.Namespace</em>) – The submitted arguments</li>
+<li><strong>old_args</strong> (<em>argparse.Namespace</em>) – The recorded arguments</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If one argument differs</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> – If one argument differs</p>
 </td>
 </tr>
 </tbody>
@@ -596,7 +624,7 @@ through the DRS tree follows the symlinks.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; Parsed command-line arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Parsed command-line arguments</td>
 </tr>
 </tbody>
 </table>
@@ -666,7 +694,7 @@ through the DRS tree follows the symlinks.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) &#8211; The <code class="docutils literal"><span class="pre">argparse</span></code> to translate</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) – The <code class="docutils literal"><span class="pre">argparse</span></code> to translate</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding command-line flag name</td>
 </tr>
@@ -699,7 +727,7 @@ through the DRS tree follows the symlinks.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; Parsed command-line arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Parsed command-line arguments</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The processing context</td>
 </tr>
@@ -711,18 +739,24 @@ through the DRS tree follows the symlinks.</p>
 
 <dl class="function">
 <dt id="esgprep.checkvocab.main.yield_datasets_from_file">
-<code class="descclassname">esgprep.checkvocab.main.</code><code class="descname">yield_datasets_from_file</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/checkvocab/main.html#yield_datasets_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.checkvocab.main.yield_datasets_from_file" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.checkvocab.main.</code><code class="descname">yield_datasets_from_file</code><span class="sig-paren">(</span><em>dataset_list</em>, <em>dataset_pattern=’((\.v|#)[0-9]+)?\s*$’</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/checkvocab/main.html#yield_datasets_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.checkvocab.main.yield_datasets_from_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Yields datasets to process from a text file.  Each line may contain the dataset with optional 
 appended .v&lt;version&gt; or #&lt;version&gt;, and only the part without the version is returned.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.checkvocab.main.ProcessingContext" title="esgprep.checkvocab.main.ProcessingContext"><em>esgprep.checkvocab.main.ProcessingContext</em></a>) &#8211; The processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dataset_list</strong> (<em>str</em>) – The dataset list path</li>
+<li><strong>dataset_pattern</strong> (<em>str</em>) – The regular expression to control the dataset ID pattern</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The dataset ID with or without version</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The dataset ID with or without version</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>iter</em></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>iter</em></p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -730,17 +764,24 @@ appended .v&lt;version&gt; or #&lt;version&gt;, and only the part without the ve
 
 <dl class="function">
 <dt id="esgprep.checkvocab.main.yield_files_from_tree">
-<code class="descclassname">esgprep.checkvocab.main.</code><code class="descname">yield_files_from_tree</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/checkvocab/main.html#yield_files_from_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.checkvocab.main.yield_files_from_tree" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.checkvocab.main.</code><code class="descname">yield_files_from_tree</code><span class="sig-paren">(</span><em>directory</em>, <em>dir_filter=’^.*/(files|latest|\.[\w]*).*$’</em>, <em>file_filter=’^[!.].*\.nc$’</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/checkvocab/main.html#yield_files_from_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.checkvocab.main.yield_files_from_tree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Yields datasets to process. The file full path is returned to match the whole directory format.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.checkvocab.main.ProcessingContext" title="esgprep.checkvocab.main.ProcessingContext"><em>esgprep.checkvocab.main.ProcessingContext</em></a>) &#8211; The processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>directory</strong> (<em>list</em>) – THe directory list to parse</li>
+<li><strong>dir_filter</strong> (<em>str</em>) – The regular expression to ignore the root paths NON-matching the pattern</li>
+<li><strong>file_filter</strong> (<em>str</em>) – The regular expression to include the filenames matching the pattern</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The file full path of the DRS tree</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The file full path of the DRS tree</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>iter</em></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>iter</em></p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -755,9 +796,9 @@ appended .v&lt;version&gt; or #&lt;version&gt;, and only the part without the ve
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.checkvocab.main.ProcessingContext" title="esgprep.checkvocab.main.ProcessingContext"><em>esgprep.checkvocab.main.ProcessingContext</em></a>) &#8211; The processing context</li>
-<li><strong>dsets</strong> (<em>iter</em>) &#8211; The dataset part of the DRS tree</li>
-<li><strong>facets</strong> (<em>list</em>) &#8211; The facets list</li>
+<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.checkvocab.main.ProcessingContext" title="esgprep.checkvocab.main.ProcessingContext"><em>esgprep.checkvocab.main.ProcessingContext</em></a>) – The processing context</li>
+<li><strong>dsets</strong> (<em>iter</em>) – The dataset part of the DRS tree</li>
+<li><strong>facets</strong> (<em>list</em>) – The facets list</li>
 </ul>
 </td>
 </tr>
@@ -780,9 +821,9 @@ appended .v&lt;version&gt; or #&lt;version&gt;, and only the part without the ve
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.checkvocab.main.ProcessingContext" title="esgprep.checkvocab.main.ProcessingContext"><em>esgprep.checkvocab.main.ProcessingContext</em></a>) &#8211; The processing context</li>
-<li><strong>dsets</strong> (<em>iter</em>) &#8211; The dataset part of the DRS tree</li>
-<li><strong>facets</strong> (<em>list</em>) &#8211; The facets list</li>
+<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.checkvocab.main.ProcessingContext" title="esgprep.checkvocab.main.ProcessingContext"><em>esgprep.checkvocab.main.ProcessingContext</em></a>) – The processing context</li>
+<li><strong>dsets</strong> (<em>iter</em>) – The dataset part of the DRS tree</li>
+<li><strong>facets</strong> (<em>list</em>) – The facets list</li>
 </ul>
 </td>
 </tr>
@@ -805,9 +846,9 @@ appended .v&lt;version&gt; or #&lt;version&gt;, and only the part without the ve
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cfg</strong> (<a class="reference internal" href="#esgprep.utils.parser.CfgParser" title="esgprep.utils.parser.CfgParser"><em>CfgParser</em></a>) &#8211; The configuration file parser</li>
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>facets</strong> (<em>set</em>) &#8211; The set of facets to check</li>
+<li><strong>cfg</strong> (<a class="reference internal" href="#esgprep.utils.parser.CfgParser" title="esgprep.utils.parser.CfgParser"><em>CfgParser</em></a>) – The configuration file parser</li>
+<li><strong>section</strong> (<em>str</em>) – The section name to parse</li>
+<li><strong>facets</strong> (<em>set</em>) – The set of facets to check</li>
 </ul>
 </td>
 </tr>
@@ -830,10 +871,10 @@ appended .v&lt;version&gt; or #&lt;version&gt;, and only the part without the ve
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>project</strong> (<em>str</em>) &#8211; The project ID</li>
-<li><strong>facets</strong> (<em>list</em>) &#8211; The facets list</li>
-<li><strong>used_values</strong> (<em>dict</em>) &#8211; Dictionary of sets of used values from DRS tree</li>
-<li><strong>declared_values</strong> (<em>dict</em>) &#8211; Dictionary of sets of  declared values from the configuration file</li>
+<li><strong>project</strong> (<em>str</em>) – The project ID</li>
+<li><strong>facets</strong> (<em>list</em>) – The facets list</li>
+<li><strong>used_values</strong> (<em>dict</em>) – Dictionary of sets of used values from DRS tree</li>
+<li><strong>declared_values</strong> (<em>dict</em>) – Dictionary of sets of  declared values from the configuration file</li>
 </ul>
 </td>
 </tr>
@@ -864,7 +905,7 @@ appended .v&lt;version&gt; or #&lt;version&gt;, and only the part without the ve
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; Parsed command-line arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Parsed command-line arguments</td>
 </tr>
 </tbody>
 </table>
@@ -901,7 +942,7 @@ appended .v&lt;version&gt; or #&lt;version&gt;, and only the part without the ve
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; Parsed command-line arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Parsed command-line arguments</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The processing context</td>
 </tr>
@@ -922,7 +963,7 @@ picked up as with <code class="docutils literal"><span class="pre">--version</sp
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) &#8211; The processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) – The processing context</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Attach the processing context to a file to process as an iterator of tuples</td>
 </tr>
@@ -940,7 +981,7 @@ picked up as with <code class="docutils literal"><span class="pre">--version</sp
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputs</strong> (<em>tuple</em>) &#8211; A tuple with the file path and the processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputs</strong> (<em>tuple</em>) – A tuple with the file path and the processing context</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <a class="reference internal" href="#esgprep.mapfile.main.process" title="esgprep.mapfile.main.process"><code class="xref py py-func docutils literal"><span class="pre">process()</span></code></a> call</td>
 </tr>
@@ -956,8 +997,8 @@ picked up as with <code class="docutils literal"><span class="pre">--version</sp
 <dd><p>Builds the mapfile full path depending on:</p>
 <blockquote>
 <div><ul class="simple">
-<li>the &#8211;mapfile name using tokens,</li>
-<li>the &#8211;outdir output directory.</li>
+<li>the –mapfile name using tokens,</li>
+<li>the –outdir output directory.</li>
 </ul>
 </div></blockquote>
 <p>The output directory can be deduced from file attributes in the case of a mapfile DRS.
@@ -968,10 +1009,10 @@ is the current working directory).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>attributes</strong> (<em>dict</em>) &#8211; The facets values deduces from file full path</li>
-<li><strong>dataset_id</strong> (<em>str</em>) &#8211; The corresponding dataset id</li>
-<li><strong>dataset_version</strong> (<em>str</em>) &#8211; The corresponding dataset version</li>
-<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) &#8211; The processing context</li>
+<li><strong>attributes</strong> (<em>dict</em>) – The facets values deduces from file full path</li>
+<li><strong>dataset_id</strong> (<em>str</em>) – The corresponding dataset id</li>
+<li><strong>dataset_version</strong> (<em>str</em>) – The corresponding dataset version</li>
+<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) – The processing context</li>
 </ul>
 </td>
 </tr>
@@ -994,13 +1035,13 @@ is the current working directory).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dataset_id</strong> (<em>str</em>) &#8211; The corresponding dataset id</li>
-<li><strong>dataset_version</strong> (<em>str</em>) &#8211; The corresponding dataset version</li>
-<li><strong>ffp</strong> (<em>str</em>) &#8211; The file full path</li>
-<li><strong>size</strong> (<em>str</em>) &#8211; The file size</li>
-<li><strong>mtime</strong> (<em>str</em>) &#8211; The last modification time</li>
-<li><strong>csum</strong> (<em>str</em>) &#8211; The file checksum</li>
-<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) &#8211; The processing context</li>
+<li><strong>dataset_id</strong> (<em>str</em>) – The corresponding dataset id</li>
+<li><strong>dataset_version</strong> (<em>str</em>) – The corresponding dataset version</li>
+<li><strong>ffp</strong> (<em>str</em>) – The file full path</li>
+<li><strong>size</strong> (<em>str</em>) – The file size</li>
+<li><strong>mtime</strong> (<em>str</em>) – The last modification time</li>
+<li><strong>csum</strong> (<em>str</em>) – The file checksum</li>
+<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) – The processing context</li>
 </ul>
 </td>
 </tr>
@@ -1019,16 +1060,16 @@ is the current working directory).</p>
 <code class="descclassname">esgprep.mapfile.main.</code><code class="descname">insert_mapfile_entry</code><span class="sig-paren">(</span><em>outfile</em>, <em>entry</em>, <em>ffp</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#insert_mapfile_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.insert_mapfile_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inserts a mapfile entry using the <code class="docutils literal"><span class="pre">with</span></code> statement dealing with multiple threads.
 It generates a lockfile to avoid that several threads write on the same file at the same time.
-A LockFile is acquired and released after writing. Acquiring LockFile is timeouted if it&#8217;s locked by other thread.
+A LockFile is acquired and released after writing. Acquiring LockFile is timeouted if it’s locked by other thread.
 Each process adds one line to the appropriate mapfile</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outfile</strong> (<em>str</em>) &#8211; The output mapfile full path</li>
-<li><strong>entry</strong> (<em>str</em>) &#8211; The mapfile entry to write</li>
-<li><strong>ffp</strong> (<em>str</em>) &#8211; The file full path</li>
+<li><strong>outfile</strong> (<em>str</em>) – The output mapfile full path</li>
+<li><strong>entry</strong> (<em>str</em>) – The mapfile entry to write</li>
+<li><strong>ffp</strong> (<em>str</em>) – The file full path</li>
 </ul>
 </td>
 </tr>
@@ -1046,8 +1087,8 @@ This depends on the different version flags on the command-line.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>fh</strong> (<a class="reference internal" href="#esgprep.mapfile.handler.File" title="esgprep.mapfile.handler.File"><em>esgprep.mapfile.handler.File</em></a>) &#8211; The file handler</li>
-<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) &#8211; The processing context</li>
+<li><strong>fh</strong> (<a class="reference internal" href="#esgprep.mapfile.handler.File" title="esgprep.mapfile.handler.File"><em>esgprep.mapfile.handler.File</em></a>) – The file handler</li>
+<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) – The processing context</li>
 </ul>
 </td>
 </tr>
@@ -1080,8 +1121,8 @@ This depends on the different version flags on the command-line.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ffp</strong> (<em>str</em>) &#8211; The file full path</li>
-<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) &#8211; The processing context</li>
+<li><strong>ffp</strong> (<em>str</em>) – The file full path</li>
+<li><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) – The processing context</li>
 </ul>
 </td>
 </tr>
@@ -1104,7 +1145,7 @@ Incomplete mapfiles from a previous run are silently removed.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>directory</strong> (<em>str</em>) &#8211; The directory to clean</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>directory</strong> (<em>str</em>) – The directory to clean</td>
 </tr>
 </tbody>
 </table>
@@ -1128,7 +1169,7 @@ Incomplete mapfiles from a previous run are silently removed.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; Parsed command-line arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Parsed command-line arguments</td>
 </tr>
 </tbody>
 </table>
@@ -1157,13 +1198,13 @@ The submitted key can refer to <code class="docutils literal"><span class="pre">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) &#8211; The key</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) – The key</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding value</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em> or <em>list</em> or <em>dict</em> depending on the key</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If unknown key</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If unknown key</td>
 </tr>
 </tbody>
 </table>
@@ -1185,9 +1226,9 @@ the directory_format regex pattern. The project facet is added in any case with 
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) &#8211; The processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) – The processing context</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If the file full path does not match the <code class="docutils literal"><span class="pre">directory_format</span></code> pattern/regex</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If the file full path does not match the <code class="docutils literal"><span class="pre">directory_format</span></code> pattern/regex</td>
 </tr>
 </tbody>
 </table>
@@ -1196,7 +1237,7 @@ the directory_format regex pattern. The project facet is added in any case with 
 <dl class="method">
 <dt id="esgprep.mapfile.handler.File.get_dataset_id">
 <code class="descname">get_dataset_id</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.get_dataset_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.get_dataset_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds the dataset identifier. If the dataset name is not specified (i.e., &#8211;dataset flag is None), it:</p>
+<dd><p>Builds the dataset identifier. If the dataset name is not specified (i.e., –dataset flag is None), it:</p>
 <blockquote>
 <div><ul class="simple">
 <li>Checks each value which the facet is found in dataset_id AND attributes keys,</li>
@@ -1208,13 +1249,13 @@ the directory_format regex pattern. The project facet is added in any case with 
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) &#8211; The processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) – The processing context</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The dataset identifier</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If a facet cannot be checked</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If a facet cannot be checked</td>
 </tr>
 </tbody>
 </table>
@@ -1224,12 +1265,12 @@ the directory_format regex pattern. The project facet is added in any case with 
 <dt id="esgprep.mapfile.handler.File.get_dataset_version">
 <code class="descname">get_dataset_version</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.get_dataset_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.get_dataset_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the dataset version. If the version facet cannot be deduced from full path
-(e.g., with &#8211;latest-symlink flag), it follows the symlink to complete the DRS attributes.</p>
+(e.g., with –latest-symlink flag), it follows the symlink to complete the DRS attributes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) &#8211; The processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.mapfile.main.ProcessingContext" title="esgprep.mapfile.main.ProcessingContext"><em>esgprep.mapfile.main.ProcessingContext</em></a>) – The processing context</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The dataset version</td>
 </tr>
@@ -1248,8 +1289,8 @@ the directory_format regex pattern. The project facet is added in any case with 
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>checksum_client</strong> (<em>str</em>) &#8211; Shell command line for checksum</li>
-<li><strong>checksum_type</strong> (<em>str</em>) &#8211; Checksum type</li>
+<li><strong>checksum_client</strong> (<em>str</em>) – Shell command line for checksum</li>
+<li><strong>checksum_type</strong> (<em>str</em>) – Checksum type</li>
 </ul>
 </td>
 </tr>
@@ -1259,7 +1300,7 @@ the directory_format regex pattern. The project facet is added in any case with 
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>str</em></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the checksum fails</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> – If the checksum fails</p>
 </td>
 </tr>
 </tbody>
@@ -1329,8 +1370,8 @@ the directory_format regex pattern. The project facet is added in any case with 
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>str</em>) &#8211; The directory path of configuration files</li>
-<li><strong>section</strong> (<em>str</em>) &#8211; The section to parse (if not all ini files are read)</li>
+<li><strong>path</strong> (<em>str</em>) – The directory path of configuration files</li>
+<li><strong>section</strong> (<em>str</em>) – The section to parse (if not all ini files are read)</li>
 </ul>
 </td>
 </tr>
@@ -1341,8 +1382,8 @@ the directory_format regex pattern. The project facet is added in any case with 
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> &#8211; If no configuration file exists</li>
-<li><strong>Error</strong> &#8211; If the configuration file parsing fails</li>
+<li><strong>Error</strong> – If no configuration file exists</li>
+<li><strong>Error</strong> – If the configuration file parsing fails</li>
 </ul>
 </td>
 </tr>
@@ -1359,7 +1400,7 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> (<em>str</em>) – The section name to parse</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding <code class="docutils literal"><span class="pre">re</span></code> pattern</td>
 </tr>
@@ -1376,7 +1417,7 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> (<em>str</em>) – The section name to parse</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding <code class="docutils literal"><span class="pre">re</span></code> pattern</td>
 </tr>
@@ -1393,7 +1434,7 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> (<em>str</em>) – The section name to parse</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding <code class="docutils literal"><span class="pre">re</span></code> pattern</td>
 </tr>
@@ -1404,7 +1445,7 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <dl class="method">
 <dt id="esgprep.utils.parser.CfgParser.get_facets">
 <code class="descname">get_facets</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>ignored=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#CfgParser.get_facets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.CfgParser.get_facets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the set of facets declared into &#8220;<em>_format&#8221; attributes in the configuration file.
+<dd><p>Returns the set of facets declared into “<em>_format” attributes in the configuration file.
 :param str section: The section name to parse
 :param str option: The option to get facet names
 :param list ignored: The list of facets to ignored
@@ -1421,12 +1462,12 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>pairs</strong> (<em>dict</em>) &#8211; A dictionary of {key: value} to check</li>
+<li><strong>section</strong> (<em>str</em>) – The section name to parse</li>
+<li><strong>pairs</strong> (<em>dict</em>) – A dictionary of {key: value} to check</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the value is missing in the corresponding options list</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> – If the value is missing in the corresponding options list</p>
 </td>
 </tr>
 </tbody>
@@ -1442,8 +1483,8 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
+<li><strong>section</strong> (<em>str</em>) – The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) – The option to get available values</li>
 </ul>
 </td>
 </tr>
@@ -1453,7 +1494,7 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>list</em> or <em>re.RegexObject</em></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the option is missing</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> – If the option is missing</p>
 </td>
 </tr>
 </tbody>
@@ -1469,8 +1510,8 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
+<li><strong>section</strong> (<em>str</em>) – The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) – The option to get available values</li>
 </ul>
 </td>
 </tr>
@@ -1481,8 +1522,8 @@ in the configuration file. This can be passed to the Python <code class="docutil
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> &#8211; If the section does not exist</li>
-<li><strong>Error</strong> &#8211; If the option does not exist</li>
+<li><strong>Error</strong> – If the section does not exist</li>
+<li><strong>Error</strong> – If the option does not exist</li>
 </ul>
 </td>
 </tr>
@@ -1499,9 +1540,9 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
-<li><strong>field_id</strong> (<em>int</em>) &#8211; The field number starting from 1 (if not return the tuple)</li>
+<li><strong>section</strong> (<em>str</em>) – The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) – The option to get available values</li>
+<li><strong>field_id</strong> (<em>int</em>) – The field number starting from 1 (if not return the tuple)</li>
 </ul>
 </td>
 </tr>
@@ -1512,9 +1553,9 @@ in the configuration file. This can be passed to the Python <code class="docutil
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> &#8211; If the section does not exist</li>
-<li><strong>Error</strong> &#8211; If the option does not exist</li>
-<li><strong>Error</strong> &#8211; If the options table is misdeclared</li>
+<li><strong>Error</strong> – If the section does not exist</li>
+<li><strong>Error</strong> – If the option does not exist</li>
+<li><strong>Error</strong> – If the options table is misdeclared</li>
 </ul>
 </td>
 </tr>
@@ -1531,9 +1572,9 @@ in the configuration file. This can be passed to the Python <code class="docutil
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
-<li><strong>key</strong> (<em>str</em>) &#8211; The key to get the value</li>
+<li><strong>section</strong> (<em>str</em>) – The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) – The option to get available values</li>
+<li><strong>key</strong> (<em>str</em>) – The key to get the value</li>
 </ul>
 </td>
 </tr>
@@ -1544,10 +1585,10 @@ in the configuration file. This can be passed to the Python <code class="docutil
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> &#8211; If the section does not exist</li>
-<li><strong>Error</strong> &#8211; If the option does not exist</li>
-<li><strong>Error</strong> &#8211; If the key does not exist</li>
-<li><strong>Error</strong> &#8211; If the options table is misdeclared</li>
+<li><strong>Error</strong> – If the section does not exist</li>
+<li><strong>Error</strong> – If the option does not exist</li>
+<li><strong>Error</strong> – If the key does not exist</li>
+<li><strong>Error</strong> – If the options table is misdeclared</li>
 </ul>
 </td>
 </tr>
@@ -1565,9 +1606,9 @@ If no key submitted, the option name has to be <code class="docutils literal"><s
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
-<li><strong>key</strong> (<em>str</em>) &#8211; The key to get the values</li>
+<li><strong>section</strong> (<em>str</em>) – The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) – The option to get available values</li>
+<li><strong>key</strong> (<em>str</em>) – The key to get the values</li>
 </ul>
 </td>
 </tr>
@@ -1578,9 +1619,9 @@ If no key submitted, the option name has to be <code class="docutils literal"><s
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> &#8211; If the section does not exist</li>
-<li><strong>Error</strong> &#8211; If the option does not exist</li>
-<li><strong>Error</strong> &#8211; If the related key is not in the source/destination keys of the maptable</li>
+<li><strong>Error</strong> – If the section does not exist</li>
+<li><strong>Error</strong> – If the option does not exist</li>
+<li><strong>Error</strong> – If the related key is not in the source/destination keys of the maptable</li>
 </ul>
 </td>
 </tr>
@@ -1598,9 +1639,9 @@ The option name has to be <code class="docutils literal"><span class="pre">&lt;k
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>option</strong> (<em>str</em>) &#8211; The option to get the value</li>
-<li><strong>pairs</strong> (<em>dict</em>) &#8211; A dictionary of {from_key: value} to input the maptable</li>
+<li><strong>section</strong> (<em>str</em>) – The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) – The option to get the value</li>
+<li><strong>pairs</strong> (<em>dict</em>) – A dictionary of {from_key: value} to input the maptable</li>
 </ul>
 </td>
 </tr>
@@ -1611,9 +1652,9 @@ The option name has to be <code class="docutils literal"><span class="pre">&lt;k
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> &#8211; If the section does not exist</li>
-<li><strong>Error</strong> &#8211; If the option does not exist</li>
-<li><strong>Error</strong> &#8211; If the key values are not in the destination keys of the maptable</li>
+<li><strong>Error</strong> – If the section does not exist</li>
+<li><strong>Error</strong> – If the option does not exist</li>
+<li><strong>Error</strong> – If the key values are not in the destination keys of the maptable</li>
 </ul>
 </td>
 </tr>
@@ -1631,8 +1672,8 @@ The option name has to be <code class="docutils literal"><span class="pre">&lt;a
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</li>
-<li><strong>option</strong> (<em>str</em>) &#8211; The option to get available values</li>
+<li><strong>section</strong> (<em>str</em>) – The section name to parse</li>
+<li><strong>option</strong> (<em>str</em>) – The option to get available values</li>
 </ul>
 </td>
 </tr>
@@ -1643,8 +1684,8 @@ The option name has to be <code class="docutils literal"><span class="pre">&lt;a
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> &#8211; If the section does not exist</li>
-<li><strong>Error</strong> &#8211; If the option does not exist</li>
+<li><strong>Error</strong> – If the section does not exist</li>
+<li><strong>Error</strong> – If the option does not exist</li>
 </ul>
 </td>
 </tr>
@@ -1660,7 +1701,7 @@ The option name has to be <code class="docutils literal"><span class="pre">&lt;a
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> (<em>str</em>) &#8211; The section name to parse</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> (<em>str</em>) – The section name to parse</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dictionary of {option: pattern}</td>
 </tr>
@@ -1674,15 +1715,15 @@ The option name has to be <code class="docutils literal"><span class="pre">&lt;a
 
 <dl class="function">
 <dt id="esgprep.utils.parser.split_line">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">split_line</code><span class="sig-paren">(</span><em>line</em>, <em>sep='|'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#split_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.split_line" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.utils.parser.</code><code class="descname">split_line</code><span class="sig-paren">(</span><em>line</em>, <em>sep=’|’</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#split_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.split_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Split a line into fields removing trailing and leading characters.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>line</strong> (<em>str</em>) &#8211; String line to split</li>
-<li><strong>sep</strong> (<em>str</em>) &#8211; Separator character</li>
+<li><strong>line</strong> (<em>str</em>) – String line to split</li>
+<li><strong>sep</strong> (<em>str</em>) – Separator character</li>
 </ul>
 </td>
 </tr>
@@ -1695,16 +1736,16 @@ The option name has to be <code class="docutils literal"><span class="pre">&lt;a
 
 <dl class="function">
 <dt id="esgprep.utils.parser.build_line">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">build_line</code><span class="sig-paren">(</span><em>fields</em>, <em>sep=' | '</em>, <em>length=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#build_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.build_line" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.utils.parser.</code><code class="descname">build_line</code><span class="sig-paren">(</span><em>fields</em>, <em>sep=’ | ‘</em>, <em>length=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#build_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.build_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build a line from fields adding trailing and leading characters.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>fields</strong> (<em>tuple</em>) &#8211; Tuple of ordered fields</li>
-<li><strong>sep</strong> (<em>str</em>) &#8211; Separator character</li>
-<li><strong>length</strong> (<em>tuple</em>) &#8211; The fields length</li>
+<li><strong>fields</strong> (<em>tuple</em>) – Tuple of ordered fields</li>
+<li><strong>sep</strong> (<em>str</em>) – Separator character</li>
+<li><strong>length</strong> (<em>tuple</em>) – The fields length</li>
 </ul>
 </td>
 </tr>
@@ -1726,19 +1767,19 @@ The option name has to be <code class="docutils literal"><span class="pre">&lt;a
 
 <dl class="function">
 <dt id="esgprep.utils.parser.split_record">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">split_record</code><span class="sig-paren">(</span><em>option</em>, <em>sep='|'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#split_record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.split_record" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.utils.parser.</code><code class="descname">split_record</code><span class="sig-paren">(</span><em>option</em>, <em>sep=’|’</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#split_record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.split_record" title="Permalink to this definition">¶</a></dt>
 <dd><p>Split a multi-line record in a configuration file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>option</strong> (<em>str</em>) &#8211; Option in the configuration file.</li>
-<li><strong>sep</strong> (<em>str</em>) &#8211; Separator character.</li>
+<li><strong>option</strong> (<em>str</em>) – Option in the configuration file.</li>
+<li><strong>sep</strong> (<em>str</em>) – Separator character.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of the form [[field1A, field2A, ...], [field1B, field2B, ...]]</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of the form [[field1A, field2A, …], [field1B, field2B, …]]</p>
 </td>
 </tr>
 </tbody>
@@ -1754,9 +1795,9 @@ A map header defines the mapping between two sets of facets id.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>header</strong> (<em>str</em>) &#8211; Header line of multi-line map</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>header</strong> (<em>str</em>) – Header line of multi-line map</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">&#8216;from&#8217; and &#8216;to&#8217; tuples representing the keys for the mapping</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">‘from’ and ‘to’ tuples representing the keys for the mapping</td>
 </tr>
 </tbody>
 </table>
@@ -1764,19 +1805,19 @@ A map header defines the mapping between two sets of facets id.</p>
 
 <dl class="function">
 <dt id="esgprep.utils.parser.split_map">
-<code class="descclassname">esgprep.utils.parser.</code><code class="descname">split_map</code><span class="sig-paren">(</span><em>option</em>, <em>sep='|'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#split_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.split_map" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.utils.parser.</code><code class="descname">split_map</code><span class="sig-paren">(</span><em>option</em>, <em>sep=’|’</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#split_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.split_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Split a multi-line map in a configuration file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>option</strong> (<em>str</em>) &#8211; Option in the configuration file</li>
-<li><strong>sep</strong> (<em>str</em>) &#8211; Separator character</li>
+<li><strong>option</strong> (<em>str</em>) – Option in the configuration file</li>
+<li><strong>sep</strong> (<em>str</em>) – Separator character</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dictionary mapping the &#8216;from&#8217; tuples to the &#8216;to&#8217; tuples</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dictionary mapping the ‘from’ tuples to the ‘to’ tuples</p>
 </td>
 </tr>
 </tbody>
@@ -1813,13 +1854,13 @@ A map header defines the mapping between two sets of facets id.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) &#8211; The path list to check</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) – The path list to check</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The same path list</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If one of the directory does not exist</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If one of the directory does not exist</td>
 </tr>
 </tbody>
 </table>
@@ -1844,7 +1885,7 @@ A map header defines the mapping between two sets of facets id.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If invalid version format</td>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If invalid version format</td>
 </tr>
 </tbody>
 </table>
@@ -1865,18 +1906,6 @@ A map header defines the mapping between two sets of facets id.</p>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="esgprep.utils.utils.Tqdm">
-<em class="property">class </em><code class="descclassname">esgprep.utils.utils.</code><code class="descname">Tqdm</code><span class="sig-paren">(</span><em>iterable=None</em>, <em>desc=None</em>, <em>total=None</em>, <em>leave=True</em>, <em>file=&lt;open file '&lt;stderr&gt;'</em>, <em>mode 'w'&gt;</em>, <em>ncols=None</em>, <em>mininterval=0.1</em>, <em>maxinterval=10.0</em>, <em>miniters=None</em>, <em>ascii=None</em>, <em>disable=False</em>, <em>unit='it'</em>, <em>unit_scale=False</em>, <em>dynamic_ncols=False</em>, <em>smoothing=0.3</em>, <em>bar_format=None</em>, <em>initial=0</em>, <em>position=None</em>, <em>postfix=None</em>, <em>gui=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/utils.html#Tqdm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.utils.Tqdm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overwritte tqdm.tqdm.format_meter() method to format counter without total paramter.</p>
-<dl class="staticmethod">
-<dt id="esgprep.utils.utils.Tqdm.format_meter">
-<em class="property">static </em><code class="descname">format_meter</code><span class="sig-paren">(</span><em>n</em>, <em>total</em>, <em>elapsed</em>, <em>ncols=None</em>, <em>prefix=''</em>, <em>ascii=False</em>, <em>unit='it'</em>, <em>unit_scale=False</em>, <em>rate=None</em>, <em>bar_format=None</em>, <em>postfix=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/utils.html#Tqdm.format_meter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.utils.Tqdm.format_meter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Re-formet counter in case of unknown total</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="function">
 <dt id="esgprep.utils.utils.keyval_converter">
 <code class="descclassname">esgprep.utils.utils.</code><code class="descname">keyval_converter</code><span class="sig-paren">(</span><em>pair</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/utils.html#keyval_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.utils.keyval_converter" title="Permalink to this definition">¶</a></dt>
@@ -1885,13 +1914,13 @@ A map header defines the mapping between two sets of facets id.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pair</strong> (<em>str</em>) &#8211; The key/value pair to check</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pair</strong> (<em>str</em>) – The key/value pair to check</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The pairs if allowed</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>list</em></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If invalid pair syntax</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If invalid pair syntax</td>
 </tr>
 </tbody>
 </table>
@@ -1899,7 +1928,7 @@ A map header defines the mapping between two sets of facets id.</p>
 
 <dl class="function">
 <dt id="esgprep.utils.utils.init_logging">
-<code class="descclassname">esgprep.utils.utils.</code><code class="descname">init_logging</code><span class="sig-paren">(</span><em>log</em>, <em>verbose=False</em>, <em>level='INFO'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/utils.html#init_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.utils.init_logging" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.utils.utils.</code><code class="descname">init_logging</code><span class="sig-paren">(</span><em>log</em>, <em>verbose=False</em>, <em>level=’INFO’</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/utils.html#init_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.utils.init_logging" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initiates the logging configuration (output, date/message formatting).
 If a directory is submitted the logfile name is unique and formatted as follows:
 <code class="docutils literal"><span class="pre">name-YYYYMMDD-HHMMSS-JOBID.log``If</span> <span class="pre">``None</span></code> the standard output is used.</p>
@@ -1908,9 +1937,9 @@ If a directory is submitted the logfile name is unique and formatted as follows:
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>log</strong> (<em>str</em>) &#8211; The logfile directory.</li>
-<li><strong>verbose</strong> (<em>boolean</em>) &#8211; Verbose mode.</li>
-<li><strong>level</strong> (<em>str</em>) &#8211; The log level.</li>
+<li><strong>log</strong> (<em>str</em>) – The logfile directory.</li>
+<li><strong>verbose</strong> (<em>boolean</em>) – Verbose mode.</li>
+<li><strong>level</strong> (<em>str</em>) – The log level.</li>
 </ul>
 </td>
 </tr>
@@ -1921,8 +1950,8 @@ If a directory is submitted the logfile name is unique and formatted as follows:
 <dl class="function">
 <dt id="esgprep.utils.utils.walk">
 <code class="descclassname">esgprep.utils.utils.</code><code class="descname">walk</code><span class="sig-paren">(</span><em>root</em>, <em>downstream=True</em>, <em>followlinks=False</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/utils.html#walk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.utils.walk" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper from <code class="docutils literal"><span class="pre">os.walk</span></code> able to handle &#8220;downstream&#8221; and &#8220;upstream&#8221; tree parsing.
-If &#8220;down&#8221; argument is True calls usual <code class="docutils literal"><span class="pre">os.walk</span></code>.
+<dd><p>A wrapper from <code class="docutils literal"><span class="pre">os.walk</span></code> able to handle “downstream” and “upstream” tree parsing.
+If “down” argument is True calls usual <code class="docutils literal"><span class="pre">os.walk</span></code>.
 :param string root: The directory to start walking
 :param boolean downstream: Walking the downstream tree if True
 :param boolean followlinks: If True to visit directories pointed to by symlinks (only if down is True)
@@ -2062,13 +2091,16 @@ Print list of available keys if submitted.</p>
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="log.html" class="btn btn-neutral" title="Changelog" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="log.html" class="btn btn-neutral" title="Changelog" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -2099,10 +2131,11 @@ Print list of available keys if submitted.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.4',
+            VERSION:'2.7.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="static/jquery.js"></script>

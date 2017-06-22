@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Manage local data through the DRS &mdash; esgprep 2.7.4 documentation</title>
+  <title>Manage local data through the DRS &mdash; esgprep 2.7.6 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.4 documentation" href="index.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="esgprep 2.7.6 documentation" href="index.html"/>
         <link rel="next" title="Check CV against configuration INI files" href="check-vocab.html"/>
         <link rel="prev" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/> 
 
@@ -41,6 +46,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -81,7 +87,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
@@ -97,6 +106,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#change-the-migration-mode">Change the migration mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade">Run the DRS upgrade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#disable-checkum-comparison">Disable checkum comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV against configuration INI files</a></li>
@@ -117,8 +127,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">esgprep</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+        
       </nav>
 
 
@@ -127,23 +139,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Manage local data through the DRS</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Manage local data through the DRS</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="sources/drs.txt" rel="nofollow"> View page source</a>
+            
+            <a href="sources/drs.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -263,7 +292,7 @@ tree. At this step, no file are moved or copy to the final DRS.</p>
 <p><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> allows different file migration mode.
 Default is to move the files from the incomping path to the root directory. Use <code class="docutils literal"><span class="pre">--copy</span></code> to make hard copies,
 <code class="docutils literal"><span class="pre">--link</span></code> to make hard links or <code class="docutils literal"><span class="pre">--symlink</span></code> to make symbolic links from the incoming path. We recommend to use
-<code class="docutils literal"><span class="pre">--link</span></code> and remove the incoming directory after DRS checking. This doesn&#8217;t affect the symbolic link skeleton used
+<code class="docutils literal"><span class="pre">--link</span></code> and remove the incoming directory after DRS checking. This doesn’t affect the symbolic link skeleton used
 for the dataset versioning.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/ --copy
 $&gt; esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/ --link
@@ -293,19 +322,50 @@ make a comparison on filenames.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="exit-status">
+<h2>Exit status<a class="headerlink" href="#exit-status" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="first docutils">
+<dt>Status = 0</dt>
+<dd>All the files have been successfully scanned and the DRS tree properly generated.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Status = 1</dt>
+<dd>No files found. No DRS tree can be built.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Status = 2</dt>
+<dd>Some scan errors occured. Some files have been skipped or failed during the scan potentially leading to an
+incomplete DRS tree. See the error logfile.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Status = 3</dt>
+<dd>All the files have been skipped or failed during the scan leading to no DRS tree. See the error logfile.</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</div>
 </div>
 
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="check-vocab.html" class="btn btn-neutral float-right" title="Check CV against configuration INI files" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="check-vocab.html" class="btn btn-neutral float-right" title="Check CV against configuration INI files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="fetch-ini.html" class="btn btn-neutral" title="Fetch ESGF configuration INI files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="fetch-ini.html" class="btn btn-neutral" title="Fetch ESGF configuration INI files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -336,10 +396,11 @@ make a comparison on filenames.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.4',
+            VERSION:'2.7.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="static/jquery.js"></script>

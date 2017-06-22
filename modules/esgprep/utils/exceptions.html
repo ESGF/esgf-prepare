@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.exceptions &mdash; esgprep 2.7.4 documentation</title>
+  <title>esgprep.utils.exceptions &mdash; esgprep 2.7.6 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.4 documentation" href="../../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="esgprep 2.7.6 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -80,7 +86,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
@@ -104,8 +113,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">esgprep</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">esgprep</a>
+        
       </nav>
 
 
@@ -118,19 +129,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-      
-    <li>esgprep.utils.exceptions</li>
+        
+      <li>esgprep.utils.exceptions</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -157,7 +185,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Empty configuration parser.&quot;</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NoConfigFile"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.NoConfigFile">[docs]</a><span class="k">class</span> <span class="nc">NoConfigFile</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -169,7 +197,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_path</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No such file&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NoConfigSection"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.NoConfigSection">[docs]</a><span class="k">class</span> <span class="nc">NoConfigSection</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -182,7 +210,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NoConfigOption"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.NoConfigOption">[docs]</a><span class="k">class</span> <span class="nc">NoConfigOption</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -196,7 +224,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NoConfigOptions"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.NoConfigOptions">[docs]</a><span class="k">class</span> <span class="nc">NoConfigOptions</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -210,7 +238,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NoConfigValue"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.NoConfigValue">[docs]</a><span class="k">class</span> <span class="nc">NoConfigValue</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -225,7 +253,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NoConfigKey"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.NoConfigKey">[docs]</a><span class="k">class</span> <span class="nc">NoConfigKey</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -240,7 +268,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NoConfigVariable"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.NoConfigVariable">[docs]</a><span class="k">class</span> <span class="nc">NoConfigVariable</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -255,7 +283,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MisdeclaredOption"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.MisdeclaredOption">[docs]</a><span class="k">class</span> <span class="nc">MisdeclaredOption</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -271,7 +299,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NoNetCDFAttribute"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.NoNetCDFAttribute">[docs]</a><span class="k">class</span> <span class="nc">NoNetCDFAttribute</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -287,7 +315,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No global attribute: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NoNetCDFVariable"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.NoNetCDFVariable">[docs]</a><span class="k">class</span> <span class="nc">NoNetCDFVariable</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -299,7 +327,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No variable: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="InvalidMapHeader"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.InvalidMapHeader">[docs]</a><span class="k">class</span> <span class="nc">InvalidMapHeader</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -311,7 +339,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Invalid map header: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;pattern: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="InvalidMapEntry"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.InvalidMapEntry">[docs]</a><span class="k">class</span> <span class="nc">InvalidMapEntry</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -322,7 +350,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Map entry does not match header: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DuplicatedMapEntry"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.DuplicatedMapEntry">[docs]</a><span class="k">class</span> <span class="nc">DuplicatedMapEntry</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -333,7 +361,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Map has duplicated entries: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MissingPatternKey"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.MissingPatternKey">[docs]</a><span class="k">class</span> <span class="nc">MissingPatternKey</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -349,7 +377,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DirectoryNotMatch"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.DirectoryNotMatch">[docs]</a><span class="k">class</span> <span class="nc">DirectoryNotMatch</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -365,7 +393,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DatasetNotMatch"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.DatasetNotMatch">[docs]</a><span class="k">class</span> <span class="nc">DatasetNotMatch</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -381,7 +409,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FilenameNotMatch"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.FilenameNotMatch">[docs]</a><span class="k">class</span> <span class="nc">FilenameNotMatch</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -397,7 +425,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;section: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">config_path</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;config file: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="KeyNotFound"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.exceptions.KeyNotFound">[docs]</a><span class="k">class</span> <span class="nc">KeyNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -411,9 +439,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No key: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;Available keys: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">keys</span><span class="p">))</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 </pre></div>
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
@@ -445,10 +476,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.4',
+            VERSION:'2.7.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../../static/jquery.js"></script>

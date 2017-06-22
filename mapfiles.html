@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generation mapfiles for ESGF publication &mdash; esgprep 2.7.4 documentation</title>
+  <title>Generation mapfiles for ESGF publication &mdash; esgprep 2.7.6 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.4 documentation" href="index.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="esgprep 2.7.6 documentation" href="index.html"/>
         <link rel="next" title="Frequently asked questions" href="faq.html"/>
         <link rel="prev" title="Check CV against configuration INI files" href="check-vocab.html"/> 
 
@@ -41,6 +46,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -81,7 +87,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
@@ -100,6 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#add-technical-notes">Add technical notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overwrite-the-dataset-identifier">Overwrite the dataset identifier</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#enforce-facet-checking">Enforce facet checking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
@@ -118,8 +128,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">esgprep</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+        
       </nav>
 
 
@@ -128,23 +140,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Generation mapfiles for ESGF publication</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Generation mapfiles for ESGF publication</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="sources/mapfiles.txt" rel="nofollow"> View page source</a>
+            
+            <a href="sources/mapfiles.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -294,19 +323,50 @@ the <code class="docutils literal"><span class="pre">directory_format</span></co
 resolve this facet from the appropriate maptable.</p>
 </div>
 </div>
+<div class="section" id="exit-status">
+<h2>Exit status<a class="headerlink" href="#exit-status" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="first docutils">
+<dt>Status = 0</dt>
+<dd>All the files have been successfully scanned and the mapfile(s) properly generated.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Status = 1</dt>
+<dd>No files found. No mapfile(s) generated.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Status = 2</dt>
+<dd>Some scan errors occured. Some files have been skipped or failed during the scan potentially leading to incomplete
+mapfiles. See the error logfile.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Status = 3</dt>
+<dd>All the files have been skipped or failed during the scan leading to no mapfile(s). See the error logfile.</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</div>
 </div>
 
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="faq.html" class="btn btn-neutral float-right" title="Frequently asked questions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="faq.html" class="btn btn-neutral float-right" title="Frequently asked questions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="check-vocab.html" class="btn btn-neutral" title="Check CV against configuration INI files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="check-vocab.html" class="btn btn-neutral" title="Check CV against configuration INI files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -337,10 +397,11 @@ resolve this facet from the appropriate maptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.4',
+            VERSION:'2.7.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="static/jquery.js"></script>

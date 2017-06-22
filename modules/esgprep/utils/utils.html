@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.utils &mdash; esgprep 2.7.4 documentation</title>
+  <title>esgprep.utils.utils &mdash; esgprep 2.7.6 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.4 documentation" href="../../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="esgprep 2.7.6 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -80,7 +86,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
@@ -104,8 +113,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">esgprep</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">esgprep</a>
+        
       </nav>
 
 
@@ -118,19 +129,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-      
-    <li>esgprep.utils.utils</li>
+        
+      <li>esgprep.utils.utils</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -150,8 +178,6 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">HelpFormatter</span><span class="p">,</span> <span class="n">ArgumentTypeError</span><span class="p">,</span> <span class="n">Action</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
@@ -168,7 +194,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog</span><span class="p">):</span>
         <span class="c1"># Overload the HelpFormatter class.</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">MultilineFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">max_help_position</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MultilineFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">max_help_position</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_fill_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">indent</span><span class="p">):</span>
         <span class="c1"># Rewrites the _fill_text method to support multiline description.</span>
@@ -210,8 +236,8 @@
             <span class="n">checked_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory_checker</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">checked_vals</span><span class="p">)</span>
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="DirectoryChecker.directory_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.DirectoryChecker.directory_checker">[docs]</a>    <span class="k">def</span> <span class="nf">directory_checker</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="DirectoryChecker.directory_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.DirectoryChecker.directory_checker">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">directory_checker</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if the supplied directory exists. The path is normalized without trailing slash.</span>
 
@@ -241,8 +267,8 @@
         <span class="n">checked_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_checker</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">checked_val</span><span class="p">)</span>
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="VersionChecker.version_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.VersionChecker.version_checker">[docs]</a>    <span class="k">def</span> <span class="nf">version_checker</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
+<div class="viewcode-block" id="VersionChecker.version_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.VersionChecker.version_checker">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">version_checker</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks the version format from command-line.</span>
 
@@ -252,7 +278,7 @@
 <span class="sd">        :raises Error: If invalid version format</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;^[\d]{1,8}$&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^[\d]{1,8}$&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">version</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -283,140 +309,6 @@
         <span class="k">return</span> <span class="n">log_record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span></div></div>
 
 
-<div class="viewcode-block" id="Tqdm"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.Tqdm">[docs]</a><span class="k">class</span> <span class="nc">Tqdm</span><span class="p">(</span><span class="n">tqdm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Overwritte tqdm.tqdm.format_meter() method to format counter without total paramter.</span>
-<span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="Tqdm.format_meter"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.Tqdm.format_meter">[docs]</a>    <span class="k">def</span> <span class="nf">format_meter</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="n">elapsed</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-                     <span class="n">ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;it&#39;</span><span class="p">,</span> <span class="n">unit_scale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                     <span class="n">bar_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">postfix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Re-formet counter in case of unknown total</span>
-<span class="sd">        </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">_unich</span> <span class="o">=</span> <span class="n">unichr</span>
-        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
-            <span class="n">_unich</span> <span class="o">=</span> <span class="nb">chr</span>
-        <span class="c1"># sanity check: total</span>
-        <span class="k">if</span> <span class="n">total</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">total</span><span class="p">:</span>
-            <span class="n">total</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="n">format_interval</span> <span class="o">=</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">format_interval</span>
-        <span class="n">elapsed_str</span> <span class="o">=</span> <span class="n">format_interval</span><span class="p">(</span><span class="n">elapsed</span><span class="p">)</span>
-
-        <span class="c1"># if unspecified, attempt to use rate = average speed</span>
-        <span class="c1"># (we allow manual override since predicting time is an arcane art)</span>
-        <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">elapsed</span><span class="p">:</span>
-            <span class="n">rate</span> <span class="o">=</span> <span class="n">n</span> <span class="o">/</span> <span class="n">elapsed</span>
-        <span class="n">inv_rate</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">rate</span> <span class="k">if</span> <span class="p">(</span><span class="n">rate</span> <span class="ow">and</span> <span class="p">(</span><span class="n">rate</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">format_sizeof</span> <span class="o">=</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">format_sizeof</span>
-        <span class="n">rate_fmt</span> <span class="o">=</span> <span class="p">((</span><span class="n">format_sizeof</span><span class="p">(</span><span class="n">inv_rate</span> <span class="k">if</span> <span class="n">inv_rate</span> <span class="k">else</span> <span class="n">rate</span><span class="p">)</span>
-                     <span class="k">if</span> <span class="n">unit_scale</span> <span class="k">else</span>
-                     <span class="s1">&#39;</span><span class="si">{0:5.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inv_rate</span> <span class="k">if</span> <span class="n">inv_rate</span> <span class="k">else</span> <span class="n">rate</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="n">rate</span> <span class="k">else</span> <span class="s1">&#39;?&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;s&#39;</span> <span class="k">if</span> <span class="n">inv_rate</span> <span class="k">else</span> <span class="n">unit</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="n">unit</span> <span class="k">if</span> <span class="n">inv_rate</span> <span class="k">else</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">unit_scale</span><span class="p">:</span>
-            <span class="n">n_fmt</span> <span class="o">=</span> <span class="n">format_sizeof</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-            <span class="n">total_fmt</span> <span class="o">=</span> <span class="n">format_sizeof</span><span class="p">(</span><span class="n">total</span><span class="p">)</span> <span class="k">if</span> <span class="n">total</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">n_fmt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-            <span class="n">total_fmt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">total</span><span class="p">)</span>
-
-        <span class="c1"># total is known: we can predict some stats</span>
-        <span class="k">if</span> <span class="n">total</span><span class="p">:</span>
-            <span class="c1"># fractional and percentage progress</span>
-            <span class="n">frac</span> <span class="o">=</span> <span class="n">n</span> <span class="o">/</span> <span class="n">total</span>
-            <span class="n">percentage</span> <span class="o">=</span> <span class="n">frac</span> <span class="o">*</span> <span class="mi">100</span>
-
-            <span class="n">remaining_str</span> <span class="o">=</span> <span class="n">format_interval</span><span class="p">((</span><span class="n">total</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="n">rate</span><span class="p">)</span> \
-                <span class="k">if</span> <span class="n">rate</span> <span class="k">else</span> <span class="s1">&#39;?&#39;</span>
-
-            <span class="c1"># format the stats displayed to the left and right sides of the bar</span>
-            <span class="n">l_bar</span> <span class="o">=</span> <span class="p">(</span><span class="n">prefix</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{0:3.0f}</span><span class="s1">%|&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">percentage</span><span class="p">)</span>
-            <span class="n">r_bar</span> <span class="o">=</span> <span class="s1">&#39;| </span><span class="si">{0}</span><span class="s1">/</span><span class="si">{1}</span><span class="s1"> [</span><span class="si">{2}</span><span class="s1">&lt;</span><span class="si">{3}</span><span class="s1">, </span><span class="si">{4}{5}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">n_fmt</span><span class="p">,</span> <span class="n">total_fmt</span><span class="p">,</span> <span class="n">elapsed_str</span><span class="p">,</span> <span class="n">remaining_str</span><span class="p">,</span> <span class="n">rate_fmt</span><span class="p">,</span>
-                <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">postfix</span> <span class="k">if</span> <span class="n">postfix</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">ncols</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">l_bar</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_bar</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-
-            <span class="k">if</span> <span class="n">bar_format</span><span class="p">:</span>
-                <span class="c1"># Custom bar formatting</span>
-                <span class="c1"># Populate a dict with all available progress indicators</span>
-                <span class="n">bar_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span>
-                            <span class="s1">&#39;n_fmt&#39;</span><span class="p">:</span> <span class="n">n_fmt</span><span class="p">,</span>
-                            <span class="s1">&#39;total&#39;</span><span class="p">:</span> <span class="n">total</span><span class="p">,</span>
-                            <span class="s1">&#39;total_fmt&#39;</span><span class="p">:</span> <span class="n">total_fmt</span><span class="p">,</span>
-                            <span class="s1">&#39;percentage&#39;</span><span class="p">:</span> <span class="n">percentage</span><span class="p">,</span>
-                            <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">rate</span> <span class="k">if</span> <span class="n">inv_rate</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">inv_rate</span><span class="p">,</span>
-                            <span class="s1">&#39;rate_noinv&#39;</span><span class="p">:</span> <span class="n">rate</span><span class="p">,</span>
-                            <span class="s1">&#39;rate_noinv_fmt&#39;</span><span class="p">:</span> <span class="p">((</span><span class="n">format_sizeof</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span>
-                                                <span class="k">if</span> <span class="n">unit_scale</span> <span class="k">else</span>
-                                                <span class="s1">&#39;</span><span class="si">{0:5.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rate</span><span class="p">))</span>
-                                               <span class="k">if</span> <span class="n">rate</span> <span class="k">else</span> <span class="s1">&#39;?&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">unit</span> <span class="o">+</span> <span class="s1">&#39;/s&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;rate_fmt&#39;</span><span class="p">:</span> <span class="n">rate_fmt</span><span class="p">,</span>
-                            <span class="s1">&#39;elapsed&#39;</span><span class="p">:</span> <span class="n">elapsed_str</span><span class="p">,</span>
-                            <span class="s1">&#39;remaining&#39;</span><span class="p">:</span> <span class="n">remaining_str</span><span class="p">,</span>
-                            <span class="s1">&#39;l_bar&#39;</span><span class="p">:</span> <span class="n">l_bar</span><span class="p">,</span>
-                            <span class="s1">&#39;r_bar&#39;</span><span class="p">:</span> <span class="n">r_bar</span><span class="p">,</span>
-                            <span class="s1">&#39;desc&#39;</span><span class="p">:</span> <span class="n">prefix</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;postfix&#39;</span><span class="p">:</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">postfix</span> <span class="k">if</span> <span class="n">postfix</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                            <span class="c1"># &#39;bar&#39;: full_bar  # replaced by procedure below</span>
-                            <span class="p">}</span>
-
-                <span class="c1"># Interpolate supplied bar format with the dict</span>
-                <span class="k">if</span> <span class="s1">&#39;</span><span class="si">{bar}</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">bar_format</span><span class="p">:</span>
-                    <span class="c1"># Format left/right sides of the bar, and format the bar</span>
-                    <span class="c1"># later in the remaining space (avoid breaking display)</span>
-                    <span class="n">l_bar_user</span><span class="p">,</span> <span class="n">r_bar_user</span> <span class="o">=</span> <span class="n">bar_format</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{bar}</span><span class="s1">&#39;</span><span class="p">)</span>
-                    <span class="n">l_bar</span> <span class="o">=</span> <span class="n">l_bar_user</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">bar_args</span><span class="p">)</span>
-                    <span class="n">r_bar</span> <span class="o">=</span> <span class="n">r_bar_user</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">bar_args</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># Else no progress bar, we can just format and return</span>
-                    <span class="k">return</span> <span class="n">bar_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">bar_args</span><span class="p">)</span>
-
-            <span class="c1"># Formatting progress bar</span>
-            <span class="c1"># space available for bar&#39;s display</span>
-            <span class="n">n_bars</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">l_bar</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">r_bar</span><span class="p">))</span> <span class="k">if</span> <span class="n">ncols</span> \
-                <span class="k">else</span> <span class="mi">10</span>
-
-            <span class="c1"># format bar depending on availability of unicode/ascii chars</span>
-            <span class="k">if</span> <span class="n">ascii</span><span class="p">:</span>
-                <span class="n">bar_length</span><span class="p">,</span> <span class="n">frac_bar_length</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span>
-                    <span class="nb">int</span><span class="p">(</span><span class="n">frac</span> <span class="o">*</span> <span class="n">n_bars</span> <span class="o">*</span> <span class="mi">10</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
-
-                <span class="n">bar</span> <span class="o">=</span> <span class="s1">&#39;#&#39;</span> <span class="o">*</span> <span class="n">bar_length</span>
-                <span class="n">frac_bar</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">48</span> <span class="o">+</span> <span class="n">frac_bar_length</span><span class="p">)</span> <span class="k">if</span> <span class="n">frac_bar_length</span> \
-                    <span class="k">else</span> <span class="s1">&#39; &#39;</span>
-
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">bar_length</span><span class="p">,</span> <span class="n">frac_bar_length</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">frac</span> <span class="o">*</span> <span class="n">n_bars</span> <span class="o">*</span> <span class="mi">8</span><span class="p">),</span> <span class="mi">8</span><span class="p">)</span>
-
-                <span class="n">bar</span> <span class="o">=</span> <span class="n">_unich</span><span class="p">(</span><span class="mh">0x2588</span><span class="p">)</span> <span class="o">*</span> <span class="n">bar_length</span>
-                <span class="n">frac_bar</span> <span class="o">=</span> <span class="n">_unich</span><span class="p">(</span><span class="mh">0x2590</span> <span class="o">-</span> <span class="n">frac_bar_length</span><span class="p">)</span> \
-                    <span class="k">if</span> <span class="n">frac_bar_length</span> <span class="k">else</span> <span class="s1">&#39; &#39;</span>
-
-            <span class="c1"># whitespace padding</span>
-            <span class="k">if</span> <span class="n">bar_length</span> <span class="o">&lt;</span> <span class="n">n_bars</span><span class="p">:</span>
-                <span class="n">full_bar</span> <span class="o">=</span> <span class="n">bar</span> <span class="o">+</span> <span class="n">frac_bar</span> <span class="o">+</span> \
-                           <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_bars</span> <span class="o">-</span> <span class="n">bar_length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">full_bar</span> <span class="o">=</span> <span class="n">bar</span> <span class="o">+</span> \
-                           <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_bars</span> <span class="o">-</span> <span class="n">bar_length</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
-            <span class="c1"># Piece together the bar parts</span>
-            <span class="k">return</span> <span class="n">l_bar</span> <span class="o">+</span> <span class="n">full_bar</span> <span class="o">+</span> <span class="n">r_bar</span>
-
-        <span class="c1"># no total: no progressbar, ETA, just progress stats</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">prefix</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">n_fmt</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">postfix</span> <span class="k">if</span> <span class="n">postfix</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span></div></div>
-
-
 <div class="viewcode-block" id="keyval_converter"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.utils.keyval_converter">[docs]</a><span class="k">def</span> <span class="nf">keyval_converter</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks the key value syntax.</span>
@@ -427,7 +319,7 @@
 <span class="sd">    :raises Error: If invalid pair syntax</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;([^=]+)=([^=]+)(?:,|$)&#39;</span><span class="p">)</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([^=]+)=([^=]+)(?:,|$)&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Bad argument syntax: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -467,7 +359,7 @@
             <span class="n">stream_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">stream_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">()</span>
-    <span class="n">stream_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">level</span><span class="p">])</span>
+    <span class="n">stream_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">level</span><span class="p">])</span>
     <span class="n">stream_handler</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">LogFilter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">))</span>
     <span class="n">stream_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">stream_handler</span><span class="p">)</span></div>
@@ -509,6 +401,9 @@
 </pre></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -539,10 +434,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.4',
+            VERSION:'2.7.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../../static/jquery.js"></script>

@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.checkvocab.main &mdash; esgprep 2.7.4 documentation</title>
+  <title>esgprep.checkvocab.main &mdash; esgprep 2.7.6 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.4 documentation" href="../../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="esgprep 2.7.6 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -80,7 +86,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
@@ -104,8 +113,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">esgprep</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">esgprep</a>
+        
       </nav>
 
 
@@ -118,19 +129,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-      
-    <li>esgprep.checkvocab.main</li>
+        
+      <li>esgprep.checkvocab.main</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -149,6 +177,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 
@@ -170,7 +199,8 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir_filter</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">ignore_dir_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">include_file_filter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project_section</span> <span class="o">=</span> <span class="s1">&#39;project:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">CfgParser</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
@@ -182,37 +212,40 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">)</span><span class="o">.</span><span class="n">groupindex</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">IGNORED_KEYS</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="yield_datasets_from_file"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.yield_datasets_from_file">[docs]</a><span class="k">def</span> <span class="nf">yield_datasets_from_file</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+<div class="viewcode-block" id="yield_datasets_from_file"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.yield_datasets_from_file">[docs]</a><span class="k">def</span> <span class="nf">yield_datasets_from_file</span><span class="p">(</span><span class="n">dataset_list</span><span class="p">,</span> <span class="n">dataset_pattern</span><span class="o">=</span><span class="s1">&#39;((\.v|#)[0-9]+)?\s*$&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Yields datasets to process from a text file.  Each line may contain the dataset with optional </span>
 <span class="sd">    appended .v&lt;version&gt; or #&lt;version&gt;, and only the part without the version is returned.</span>
-<span class="sd">    </span>
-<span class="sd">    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context</span>
+
+<span class="sd">    :param str dataset_list: The dataset list path</span>
+<span class="sd">    :param str dataset_pattern: The regular expression to control the dataset ID pattern</span>
 <span class="sd">    :returns: The dataset ID with or without version</span>
 <span class="sd">    :rtype: *iter*</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">trailing</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;((\.v|#)[0-9]+)?\s*$&quot;</span><span class="p">)</span>  <span class="c1"># re for optional version and any whitespace</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">dataset_list</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">trailing</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">dataset_pattern</span><span class="p">)</span>  <span class="c1"># re for optional version and any whitespace</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dataset_list</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">trailing</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="yield_files_from_tree"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.yield_files_from_tree">[docs]</a><span class="k">def</span> <span class="nf">yield_files_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+<div class="viewcode-block" id="yield_files_from_tree"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.yield_files_from_tree">[docs]</a><span class="k">def</span> <span class="nf">yield_files_from_tree</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">dir_filter</span><span class="o">=</span><span class="s1">&#39;^.*/(files|latest|\.[\w]*).*$&#39;</span><span class="p">,</span> <span class="n">file_filter</span><span class="o">=</span><span class="s1">&#39;^[!.].*\.nc$&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Yields datasets to process. The file full path is returned to match the whole directory format.</span>
 
-<span class="sd">    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context</span>
+<span class="sd">    :param list directory: THe directory list to parse</span>
+<span class="sd">    :param str dir_filter: The regular expression to ignore the root paths NON-matching the pattern</span>
+<span class="sd">    :param str file_filter: The regular expression to include the filenames matching the pattern</span>
 <span class="sd">    :returns: The file full path of the DRS tree</span>
 <span class="sd">    :rtype: *iter*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">directory</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="k">if</span> <span class="s1">&#39;/files/&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">root</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">dir_filter</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
                     <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">file_filter</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
                         <span class="k">yield</span> <span class="n">ffp</span></div>
 
 
@@ -227,12 +260,13 @@
 <span class="sd">    :rtype: *dict*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scan_errors</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">used_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">facet</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span> <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">)</span>
     <span class="c1"># Get the number of files to scan</span>
-    <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">Tqdm</span><span class="p">(</span><span class="n">yield_files_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">),</span>
-                                       <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Collecting files&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                                       <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
-                                       <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
+    <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">yield_files_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dir_filter</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">file_filter</span><span class="p">),</span>
+                                 <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Collecting files&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                 <span class="n">unit</span><span class="o">=</span><span class="s1">&#39; files&#39;</span><span class="p">,</span>
+                                 <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dsets</span><span class="p">,</span>
                      <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Harvesting facets values from DRS tree&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
                      <span class="n">total</span><span class="o">=</span><span class="n">nfiles</span><span class="p">,</span>
@@ -242,12 +276,17 @@
                      <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">dset</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+            <span class="c1"># Each facet is ensured to be included into &quot;attributes&quot; from matching</span>
+            <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
+                <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">DirectoryNotMatch</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dset</span><span class="p">),</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="c1"># Each facet is ensured to be included into &quot;attributes&quot; from matching</span>
-        <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
-            <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">used_values</span></div>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">DirectoryNotMatch</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">))</span>
+            <span class="n">scan_errors</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">scan_errors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Scan errors&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                          <span class="n">scan_errors</span><span class="p">,</span>
+                                          <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">used_values</span><span class="p">,</span> <span class="n">scan_errors</span></div>
 
 
 <div class="viewcode-block" id="get_facet_values_from_dataset_list"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.get_facet_values_from_dataset_list">[docs]</a><span class="k">def</span> <span class="nf">get_facet_values_from_dataset_list</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="n">facets</span><span class="p">):</span>
@@ -261,27 +300,33 @@
 <span class="sd">    :rtype: *dict*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scan_errors</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">used_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">facet</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span> <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">)</span>
     <span class="c1"># Get the number of files to scan</span>
-    <span class="n">nids</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">Tqdm</span><span class="p">(</span><span class="n">yield_datasets_from_file</span><span class="p">(</span><span class="n">ctx</span><span class="p">),</span>
-                                     <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Collecting datasets&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                                     <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
-                                     <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">Tqdm</span><span class="p">(</span><span class="n">dsets</span><span class="p">,</span>
-                           <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Harvesting facets values from dataset list&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                           <span class="n">total</span><span class="o">=</span><span class="n">nids</span><span class="p">,</span>
-                           <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
-                           <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                           <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;dataset ids&#39;</span><span class="p">,</span>
-                           <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
+    <span class="n">nids</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">yield_datasets_from_file</span><span class="p">(</span><span class="n">ctx</span><span class="p">),</span>
+                               <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Collecting datasets&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                               <span class="n">unit</span><span class="o">=</span><span class="s1">&#39; files&#39;</span><span class="p">,</span>
+                               <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dsets</span><span class="p">,</span>
+                     <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Harvesting facets values from dataset list&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                     <span class="n">total</span><span class="o">=</span><span class="n">nids</span><span class="p">,</span>
+                     <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
+                     <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                     <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;dataset ids&#39;</span><span class="p">,</span>
+                     <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">dset</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+            <span class="c1"># Each facet is ensured to be included into &quot;attributes&quot; from matching</span>
+            <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
+                <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">DatasetNotMatch</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="c1"># Each facet is ensured to be included into &quot;attributes&quot; from matching</span>
-        <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
-            <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">used_values</span></div>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">DatasetNotMatch</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">))</span>
+            <span class="n">scan_errors</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">scan_errors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Scan errors&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
+                                          <span class="n">scan_errors</span><span class="p">,</span>
+                                          <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">used_values</span><span class="p">,</span> <span class="n">scan_errors</span></div>
 
 
 <div class="viewcode-block" id="get_facet_values_from_config"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.get_facet_values_from_config">[docs]</a><span class="k">def</span> <span class="nf">get_facet_values_from_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">facets</span><span class="p">):</span>
@@ -380,20 +425,26 @@
     <span class="n">ctx</span> <span class="o">=</span> <span class="n">ProcessingContext</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
         <span class="c1"># Walk trough DRS to get all dataset roots</span>
-        <span class="n">dsets</span> <span class="o">=</span> <span class="n">yield_files_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="n">dsets</span> <span class="o">=</span> <span class="n">yield_files_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dir_filter</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">file_filter</span><span class="p">)</span>
         <span class="c1"># Get facets values used by DRS tree</span>
-        <span class="n">facet_values_found</span> <span class="o">=</span> <span class="n">get_facet_values_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">))</span>
+        <span class="n">facet_values_found</span><span class="p">,</span> <span class="n">scan_errors</span> <span class="o">=</span> <span class="n">get_facet_values_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">dsets</span> <span class="o">=</span> <span class="n">yield_datasets_from_file</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
-        <span class="n">facet_values_found</span> <span class="o">=</span> <span class="n">get_facet_values_from_dataset_list</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">))</span>
+        <span class="n">dsets</span> <span class="o">=</span> <span class="n">yield_datasets_from_file</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">dataset_list</span><span class="p">)</span>
+        <span class="n">facet_values_found</span><span class="p">,</span> <span class="n">scan_errors</span> <span class="o">=</span> <span class="n">get_facet_values_from_dataset_list</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">))</span>
     <span class="c1"># Get facets values declared in configuration file</span>
     <span class="n">facet_values_config</span> <span class="o">=</span> <span class="n">get_facet_values_from_config</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span>
     <span class="c1"># Compare values from tree against values from configuration file</span>
-    <span class="n">any_disallowed</span> <span class="o">=</span> <span class="n">compare_values</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">),</span> <span class="n">facet_values_found</span><span class="p">,</span> <span class="n">facet_values_config</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">any_disallowed</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+    <span class="n">any_undeclared</span> <span class="o">=</span> <span class="n">compare_values</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">),</span> <span class="n">facet_values_found</span><span class="p">,</span> <span class="n">facet_values_config</span><span class="p">)</span>
+    <span class="c1"># Exit status</span>
+    <span class="k">if</span> <span class="n">scan_errors</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">any_undeclared</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
 </pre></div>
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
@@ -425,10 +476,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.4',
+            VERSION:'2.7.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../../static/jquery.js"></script>

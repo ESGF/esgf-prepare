@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.esgprep &mdash; esgprep 2.7.4 documentation</title>
+  <title>esgprep.esgprep &mdash; esgprep 2.7.6 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.4 documentation" href="../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="esgprep 2.7.6 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -80,7 +86,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Generic usage</a></li>
@@ -104,8 +113,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">esgprep</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">esgprep</a>
+        
       </nav>
 
 
@@ -118,19 +129,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>esgprep.esgprep</li>
+        
+      <li>esgprep.esgprep</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -157,7 +185,7 @@
 <span class="kn">from</span> <span class="nn">utils.utils</span> <span class="k">import</span> <span class="n">init_logging</span><span class="p">,</span> <span class="n">keyval_converter</span>
 
 <span class="c1"># Program version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;2.7.4&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2017</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-</span><span class="si">%d</span><span class="s2">-%m&quot;</span><span class="p">))</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;2.7.6&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2017</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-</span><span class="si">%d</span><span class="s2">-%m&quot;</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="get_args"><a class="viewcode-back" href="../../autodoc.html#esgprep.esgprep.get_args">[docs]</a><span class="k">def</span> <span class="nf">get_args</span><span class="p">():</span>
@@ -379,14 +407,26 @@
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Required lower-cased project name.&quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--filter&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">r&#39;&quot;.*\.nc$&quot;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--ignore-dir-filter&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PYTHON_REGEX&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">r&#39;.*\.nc$&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;^.*/(files|latest|\.[\w]*).*$&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Filter files matching the regular expression (default only|n</span>
-<span class="s2">        support netCDF files). Regular expression syntax is defined|n</span>
-<span class="s2">        by the Python &quot;re&quot; module.</span>
+<span class="s2">        Filter directories NON-matching the regular expression.|n</span>
+<span class="s2">        Default ignore paths with folder name(s) starting with|n</span>
+<span class="s2">        &quot;.&quot; and/or including &quot;/files/&quot; or &quot;/latest/&quot; patterns.|n</span>
+<span class="s2">        (Regular expression must match from start of path; prefix|n</span>
+<span class="s2">        with &quot;.*&quot; if required.)</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--include-file-filter&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PYTHON_REGEX&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;^[!.].*\.nc$&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Filter files matching the regular expression.|n</span>
+<span class="s2">        Default only include NetCDF files (with names not|n</span>
+<span class="s2">        starting with &quot;.&quot;).</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
 
     <span class="c1">###############################</span>
@@ -499,15 +539,6 @@
         <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Symbolic link incoming files to the DRS tree.|n</span>
 <span class="s2">        Default is moving files.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--filter&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&quot;*.nc&quot;&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;*.nc&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Filter files matching the regular expression (default only|n</span>
-<span class="s2">        support netCDF files). Unix wildcards are supported.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--max-threads&#39;</span><span class="p">,</span>
@@ -652,13 +683,26 @@
 <span class="s2">        &quot;directory_format&quot; and &quot;dataset_id&quot; patterns.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--filter&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&quot;*.nc&quot;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--ignore-dir-filter&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PYTHON_REGEX&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;*.nc&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;^.*/(files|latest|\.[\w]*).*$&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Filter files matching the regular expression (default|n</span>
-<span class="s2">        only scan netCDF files). Uniw wildcards are supported.</span>
+<span class="s2">        Filter directories NON-matching the regular expression.|n</span>
+<span class="s2">        Default ignore paths with folder name(s) starting with|n</span>
+<span class="s2">        &quot;.&quot; and/or including &quot;/files/&quot; or &quot;/latest/&quot; patterns.|n</span>
+<span class="s2">        (Regular expression must match from start of path; prefix|n</span>
+<span class="s2">        with &quot;.*&quot; if required.)</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--include-file-filter&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PYTHON_REGEX&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;^[!.].*\.nc$&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Filter files matching the regular expression.|n</span>
+<span class="s2">        Default only include NetCDF files (with names not|n</span>
+<span class="s2">        starting with &quot;.&quot;).</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--tech-notes-url&#39;</span><span class="p">,</span>
@@ -695,7 +739,8 @@
         <span class="s1">&#39;--no-cleanup&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Disables output directory cleanup prior to mapfile|n</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Disables output directory cleanup prior to mapfile|n</span>
 <span class="s2">        process. This is recommended if several &quot;esgprep mapfile&quot;|n</span>
 <span class="s2">        instances run with the same output directory.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
@@ -731,10 +776,13 @@
 
 
 <span class="c1"># Main entry point for stand-alone call.</span>
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">run</span><span class="p">()</span>
 </pre></div>
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
@@ -766,10 +814,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.7.4',
+            VERSION:'2.7.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../static/jquery.js"></script>

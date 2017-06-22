@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuration &mdash; esgprep 2.7.4 documentation</title>
+  <title>Configuration &mdash; esgprep 2.7.6 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="esgprep 2.7.4 documentation" href="index.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="esgprep 2.7.6 documentation" href="index.html"/>
         <link rel="next" title="Generic usage" href="usage.html"/>
         <link rel="prev" title="Installation" href="installation.html"/> 
 
@@ -41,6 +46,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -81,7 +87,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#location">Location</a></li>
@@ -110,8 +119,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">esgprep</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+        
       </nav>
 
 
@@ -120,23 +131,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Configuration</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Configuration</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="sources/configuration.txt" rel="nofollow"> View page source</a>
+            
+            <a href="sources/configuration.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -202,7 +230,7 @@ document</a>:</p>
 <li>All facets of the <code class="docutils literal"><span class="pre">dataset_id</span></code> are not necessarily found in the <code class="docutils literal"><span class="pre">directory_format</span></code>.</li>
 <li>All common facets to the <code class="docutils literal"><span class="pre">dataset_id</span></code> and the <code class="docutils literal"><span class="pre">directory_format</span></code> must have the same name.</li>
 <li>If a facet is missing in <code class="docutils literal"><span class="pre">directory_format</span></code> to allow the <code class="docutils literal"><span class="pre">dataset_id</span></code> filling, declare the appropriate <code class="docutils literal"><span class="pre">facet_map</span></code>. The maptable uses the value of a declared facet to map the value of another missing facet in the <code class="docutils literal"><span class="pre">directory_format</span></code>.</li>
-<li>The missing facet has to be declared as a &#8220;destination&#8221; key (i.e., on the right of the colon).</li>
+<li>The missing facet has to be declared as a “destination” key (i.e., on the right of the colon).</li>
 <li>Duplicated lines cannot occur in a maptable.</li>
 <li>A facet has to have at least one options list or maptable.</li>
 <li>A <code class="docutils literal"><span class="pre">mapfile_drs</span></code> attribute can be added to your project section to organize related mapfiles.</li>
@@ -219,15 +247,18 @@ it available trough <code class="docutils literal"><span class="pre">esgprep</sp
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="usage.html" class="btn btn-neutral float-right" title="Generic usage" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Generic usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -258,10 +289,11 @@ it available trough <code class="docutils literal"><span class="pre">esgprep</sp
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.4',
+            VERSION:'2.7.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="static/jquery.js"></script>
