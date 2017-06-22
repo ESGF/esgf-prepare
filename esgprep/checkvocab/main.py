@@ -49,8 +49,9 @@ def yield_datasets_from_file(dataset_list, dataset_pattern='((\.v|#)[0-9]+)?\s*$
     """
     Yields datasets to process from a text file.  Each line may contain the dataset with optional 
     appended .v<version> or #<version>, and only the part without the version is returned.
-    
-    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context
+
+    :param str dataset_list: The dataset list path
+    :param str dataset_pattern: The regular expression to control the dataset ID pattern
     :returns: The dataset ID with or without version
     :rtype: *iter*
     
@@ -65,7 +66,9 @@ def yield_files_from_tree(directory, dir_filter='^.*/(files|latest|\.[\w]*).*$',
     """
     Yields datasets to process. The file full path is returned to match the whole directory format.
 
-    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context
+    :param list directory: THe directory list to parse
+    :param str dir_filter: The regular expression to ignore the root paths NON-matching the pattern
+    :param str file_filter: The regular expression to include the filenames matching the pattern
     :returns: The file full path of the DRS tree
     :rtype: *iter*
 
@@ -93,7 +96,7 @@ def get_facet_values_from_tree(ctx, dsets, facets):
     scan_errors = 0
     used_values = dict((facet, set()) for facet in facets)
     # Get the number of files to scan
-    nfiles = sum(1 for _ in tqdm(yield_files_from_tree(ctx),
+    nfiles = sum(1 for _ in tqdm(yield_files_from_tree(ctx.directory, ctx.dir_filter, ctx.file_filter),
                                  desc='Collecting files'.ljust(LEN_MSG),
                                  unit=' files',
                                  file=sys.stdout))
@@ -236,6 +239,7 @@ def compare_values(project, facets, used_values, declared_values):
         print('Please update "esg.{0}.ini" following: {1}'.format(project,
                                                                   logging.getLogger().handlers[0].baseFilename))
     return any_undeclared
+
 
 def main(args):
     """

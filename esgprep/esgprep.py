@@ -246,10 +246,10 @@ def get_args():
         default='^.*/(files|latest|\.[\w]*).*$',
         help="""
         Filter directories NON-matching the regular expression.|n
-        Default ignore paths with folder name(s) starting with "."|n
-        and/or including "/files/" or "/latest/" patterns.|n
-        (Regular expression must match from start of path; prefix with|n
-        .* if required.)
+        Default ignore paths with folder name(s) starting with|n
+        "." and/or including "/files/" or "/latest/" patterns.|n
+        (Regular expression must match from start of path; prefix|n
+        with ".*" if required.)
         """)
     checkvocab.add_argument(
         '--include-file-filter',
@@ -522,10 +522,10 @@ def get_args():
         default='^.*/(files|latest|\.[\w]*).*$',
         help="""
         Filter directories NON-matching the regular expression.|n
-        Default ignore paths with folder name(s) starting with "."|n
-        and/or including "/files/" or "/latest/" patterns.|n
-        (Regular expression must match from start of path; prefix with|n
-        .* if required.)
+        Default ignore paths with folder name(s) starting with|n
+        "." and/or including "/files/" or "/latest/" patterns.|n
+        (Regular expression must match from start of path; prefix|n
+        with ".*" if required.)
         """)
     mapfile.add_argument(
         '--include-file-filter',
