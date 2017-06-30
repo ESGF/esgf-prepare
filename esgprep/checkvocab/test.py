@@ -33,7 +33,7 @@ class CheckVocabTest(unittest.TestCase):
                 'my.dataset.id#v20120305']
         }
 
-    def test_yield_files_from_tree(self):
+    def test_remove(self):
         pass
 
     def test_yield_datasets_from_file(self):

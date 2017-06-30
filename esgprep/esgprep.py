@@ -14,8 +14,8 @@ import unittest
 from datetime import datetime
 from importlib import import_module
 
-from utils.utils import MultilineFormatter, DirectoryChecker, VersionChecker
-from utils.utils import init_logging, keyval_converter
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter
+from utils.utils import init_logging
 
 # Program version
 __version__ = 'v{0} {1}'.format('2.7.6', datetime(year=2017, month=6, day=16).strftime("%Y-%d-%m"))

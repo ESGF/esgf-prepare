@@ -19,7 +19,7 @@ from lockfile import LockFile
 from tqdm import tqdm
 
 from constants import *
-from esgprep.utils import parser, utils
+from esgprep.utils.config import CfgParser
 from esgprep.utils.exceptions import *
 from handler import File
 
@@ -57,7 +57,7 @@ class ProcessingContext(object):
         self.file_filter = args.include_file_filter
         self.project = args.project
         self.project_section = 'project:{0}'.format(args.project)
-        self.cfg = parser.CfgParser(args.i, self.project_section)
+        self.cfg = CfgParser(args.i, self.project_section)
         if args.no_checksum:
             self.checksum_client, self.checksum_type = None, None
         elif self.cfg.has_option('DEFAULT', 'checksum'):
@@ -100,7 +100,7 @@ def yield_inputs(ctx):
         if ctx.latest:
             ctx.dir_filter = '^((?!/latest/).)*$'
         # Walk trough the DRS tree
-        for root, _, filenames in utils.walk(directory, followlinks=True):
+        for root, _, filenames in os.walk(directory, followlinks=True):
             if not re.match(ctx.dir_filter, root):
                 for filename in filenames:
                     ffp = os.path.join(root, filename)

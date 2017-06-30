@@ -8,7 +8,7 @@
 """
 
 # Progress bar message length
-LEN_MSG = 42
+LEN_MSG = 36
 
 # Status messages
 STATUS = {0: 'ALL USED VALUES ARE PROPERLY DECLARED',

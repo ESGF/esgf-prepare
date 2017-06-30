@@ -8,16 +8,15 @@
 """
 
 import logging
-import os
-import sys
 import re
-
+import sys
 from tqdm import tqdm
 
 from esgprep.checkvocab.constants import *
-from esgprep.utils import parser, utils
+from esgprep.utils.config import CfgParser, split_map_header
 from esgprep.utils.constants import *
 from esgprep.utils.exceptions import *
+from esgprep.utils.collectors import PathCollector, DatasetCollector
 
 
 class ProcessingContext(object):
@@ -35,7 +34,7 @@ class ProcessingContext(object):
         self.dir_filter = args.ignore_dir_filter
         self.file_filter = args.include_file_filter
         self.project_section = 'project:{0}'.format(args.project)
-        self.cfg = parser.CfgParser(args.i, section=self.project_section)
+        self.cfg = CfgParser(args.i, section=self.project_section)
         if args.directory:
             self.directory = args.directory
             self.pattern = self.cfg.translate_directory_format(self.project_section)
@@ -45,49 +44,12 @@ class ProcessingContext(object):
         self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
 
 
-def yield_datasets_from_file(dataset_list, dataset_pattern='((\.v|#)[0-9]+)?\s*$'):
+def get_facet_values_from_source(ctx, collector, facets):
     """
-    Yields datasets to process from a text file.  Each line may contain the dataset with optional 
-    appended .v<version> or #<version>, and only the part without the version is returned.
-
-    :param str dataset_list: The dataset list path
-    :param str dataset_pattern: The regular expression to control the dataset ID pattern
-    :returns: The dataset ID with or without version
-    :rtype: *iter*
-    
-    """
-    trailing = re.compile(dataset_pattern)  # re for optional version and any whitespace
-    with open(dataset_list) as f:
-        for line in f:
-            yield trailing.sub("", line)
-
-
-def yield_files_from_tree(directory, dir_filter='^.*/(files|latest|\.[\w]*).*$', file_filter='^[!.].*\.nc$'):
-    """
-    Yields datasets to process. The file full path is returned to match the whole directory format.
-
-    :param list directory: THe directory list to parse
-    :param str dir_filter: The regular expression to ignore the root paths NON-matching the pattern
-    :param str file_filter: The regular expression to include the filenames matching the pattern
-    :returns: The file full path of the DRS tree
-    :rtype: *iter*
-
-    """
-    for directory in directory:
-        for root, _, filenames in utils.walk(directory, followlinks=True):
-            if not re.match(dir_filter, root):
-                for filename in filenames:
-                    ffp = os.path.join(root, filename)
-                    if os.path.isfile(ffp) and not re.match(file_filter, filename):
-                        yield ffp
-
-
-def get_facet_values_from_tree(ctx, dsets, facets):
-    """
-    Returns all used values of each facet from the DRS tree, according to the supplied directories.
+    Returns all used values of each facet according to the supplied directories or list of datasets.
 
     :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context
-    :param iter dsets: The dataset part of the DRS tree
+    :param esgprep.utils.collector.Collector collector: The file or dataset collector
     :param list facets: The facets list
     :returns: The declared values of each facet
     :rtype: *dict*
@@ -95,17 +57,16 @@ def get_facet_values_from_tree(ctx, dsets, facets):
     """
     scan_errors = 0
     used_values = dict((facet, set()) for facet in facets)
-    # Get the number of files to scan
-    nfiles = sum(1 for _ in tqdm(yield_files_from_tree(ctx.directory, ctx.dir_filter, ctx.file_filter),
-                                 desc='Collecting files'.ljust(LEN_MSG),
-                                 unit=' files',
-                                 file=sys.stdout))
-    for dset in tqdm(dsets,
-                     desc='Harvesting facets values from DRS tree'.ljust(LEN_MSG),
-                     total=nfiles,
-                     bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+    if collector.__class__.__name__ == 'FileCollector':
+        source_type = 'files'
+    else:
+        source_type = 'datasets'
+    print('Collecting {0}...\r'.format(source_type)),
+    for dset in tqdm(collector,
+                     desc='Harvesting facets values from source'.format(source_type).ljust(LEN_MSG),
+                     total=len(collector),
+                     bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} ' + source_type,
                      ncols=100,
-                     unit='files',
                      file=sys.stdout):
         try:
             attributes = re.match(ctx.pattern, dset).groupdict()
@@ -114,46 +75,6 @@ def get_facet_values_from_tree(ctx, dsets, facets):
                 used_values[facet].add(attributes[facet])
         except:
             logging.error(DirectoryNotMatch(dset, ctx.pattern, ctx.project_section, ctx.cfg.read_paths))
-            scan_errors += 1
-    if scan_errors > 0:
-        print('{0}: {1} (see {2})'.format('Scan errors'.ljust(LEN_MSG),
-                                          scan_errors,
-                                          logging.getLogger().handlers[0].baseFilename))
-    return used_values, scan_errors
-
-
-def get_facet_values_from_dataset_list(ctx, dsets, facets):
-    """
-    Returns all used values of each facet from the supplied of dataset IDs.
-
-    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context
-    :param iter dsets: The dataset part of the DRS tree
-    :param list facets: The facets list
-    :returns: The declared values of each facet
-    :rtype: *dict*
-
-    """
-    scan_errors = 0
-    used_values = dict((facet, set()) for facet in facets)
-    # Get the number of files to scan
-    nids = sum(1 for _ in tqdm(yield_datasets_from_file(ctx),
-                               desc='Collecting datasets'.ljust(LEN_MSG),
-                               unit=' files',
-                               file=sys.stdout))
-    for dset in tqdm(dsets,
-                     desc='Harvesting facets values from dataset list'.ljust(LEN_MSG),
-                     total=nids,
-                     bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                     ncols=100,
-                     unit='dataset ids',
-                     file=sys.stdout):
-        try:
-            attributes = re.match(ctx.pattern, dset).groupdict()
-            # Each facet is ensured to be included into "attributes" from matching
-            for facet in facets:
-                used_values[facet].add(attributes[facet])
-        except:
-            logging.error(DatasetNotMatch(dset, ctx.pattern, ctx.project_section, ctx.cfg.read_paths))
             scan_errors += 1
     if scan_errors > 0:
         print('{0}: {1} (see {2})'.format('Scan errors'.ljust(LEN_MSG),
@@ -183,7 +104,7 @@ def get_facet_values_from_config(cfg, section, facets):
         except NoConfigOptions:
             for option in cfg.get_options_from_list(section, 'maps'):
                 maptable = cfg.get(section, option)
-                from_keys, _ = parser.split_map_header(maptable.split('\n')[0])
+                from_keys, _ = split_map_header(maptable.split('\n')[0])
                 if facet in from_keys:
                     declared_values[facet] = set(cfg.get_options_from_map(section, option, facet))
         finally:
@@ -257,13 +178,15 @@ def main(args):
     # Instantiate processing context from command-line arguments or SYNDA job dictionary
     ctx = ProcessingContext(args)
     if args.directory:
-        # Walk trough DRS to get all dataset roots
-        dsets = yield_files_from_tree(ctx.directory, ctx.dir_filter, ctx.file_filter)
-        # Get facets values used by DRS tree
-        facet_values_found, scan_errors = get_facet_values_from_tree(ctx, dsets, list(ctx.facets))
+        # The source is a list of directories
+        # Instanciate file collector to walk through the tree
+        collector = PathCollector(ctx.directory, ctx.dir_filter, ctx.file_filter)
     else:
-        dsets = yield_datasets_from_file(ctx.dataset_list)
-        facet_values_found, scan_errors = get_facet_values_from_dataset_list(ctx, dsets, list(ctx.facets))
+        # The source is a list of files (i.e., several dataset lists)
+        # Instanciate dataset collector to parse the files
+        collector = DatasetCollector(ctx.dataset_list)
+    # Get facets values used by the source
+    facet_values_found, scan_errors = get_facet_values_from_source(ctx, collector, list(ctx.facets))
     # Get facets values declared in configuration file
     facet_values_config = get_facet_values_from_config(ctx.cfg, ctx.project_section, ctx.facets)
     # Compare values from tree against values from configuration file

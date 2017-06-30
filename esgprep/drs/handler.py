@@ -335,13 +335,14 @@ class DRSTree(Tree):
         self.d_lengths = [max([len(i) for i in self.paths.keys()]), 20, 20, 16, 16]
         self.d_lengths.append(sum(self.d_lengths) + 2)
 
-    def create_leaf(self, nodes, leaf, src, mode):
+    def create_leaf(self, nodes, leaf, label, src, mode):
         """
         Creates all upstream nodes to a DRS leaf.
         The :func:`esgprep.drs.handler.DRSLeaf` class is added to data leaf nodes.
 
         :param list nodes: The list of nodes tag to the leaf
-        :param str leaf: The leaf tag
+        :param str leaf: The leaf name
+        :param str label: The leaf label
         :param str src: The source of the leaf
         :param str mode: The migration mode (e.g., 'copy', 'move', etc.)
 
@@ -351,18 +352,23 @@ class DRSTree(Tree):
             node_id = os.path.join(*nodes[:i + 1])
             try:
                 if i == 0:
-                    self.create_node(nodes[i], node_id)
+                    self.create_node(tag=nodes[i],
+                                     identifier=node_id)
                 elif i == len(nodes) - 1:
                     parent_node_id = os.path.join(*nodes[:i])
-                    self.create_node(nodes[i], node_id,
+                    self.create_node(tag=label,
+                                     identifier=node_id,
                                      parent=parent_node_id,
                                      data=DRSLeaf(src=src,
                                                   dst=node_id.split(LINK_SEPARATOR)[0],
                                                   mode=mode))
                 else:
                     parent_node_id = os.path.join(*nodes[:i])
-                    self.create_node(nodes[i], node_id, parent=parent_node_id)
+                    self.create_node(tag=nodes[i],
+                                     identifier=node_id,
+                                     parent=parent_node_id)
             except DuplicatedNodeIdError:
+                # Mandatory to recursively generated the tree
                 pass
 
     def leaves(self, root=None):

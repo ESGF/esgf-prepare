@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 from esgprep.drs.constants import *
 from esgprep.drs.exceptions import *
-from esgprep.utils import parser, utils
+from esgprep.utils.config import CfgParser
 from handler import File, DRSTree, DRSPath
 
 
@@ -55,7 +55,7 @@ class ProcessingContext(object):
         self.version = args.version
         DRSPath.VERSION = 'v{0}'.format(args.version)
         self.project_section = 'project:{0}'.format(args.project)
-        self.cfg = parser.CfgParser(args.i, self.project_section)
+        self.cfg = CfgParser(args.i, self.project_section)
         if args.no_checksum:
             self.checksum_client, self.checksum_type = None, None
         elif self.cfg.has_option('DEFAULT', 'checksum'):
@@ -80,7 +80,7 @@ def yield_inputs(ctx):
     """
     for directory in ctx.directory:
         # Walk trough the submitted tree
-        for root, _, filenames in utils.walk(directory, followlinks=True):
+        for root, _, filenames in os.walk(directory, followlinks=True):
             for filename in filenames:
                 ffp = os.path.join(root, filename)
                 if os.path.isfile(ffp) and not re.match('^[!.].*\.nc$', filename):
@@ -157,7 +157,27 @@ def process(ffp, ctx):
     parts = fh.get_drs_parts(ctx)
     # Instanciate file DRS path handler
     fph = DRSPath(parts)
-    # Instanciate dataset DRS path handler
+    # Add file DRS path to Tree
+    src = ['..'] * len(fph.items(d_part=False))
+    src.extend(fph.items(d_part=False, latest=True, file=True))
+    src.append(fh.filename)
+    ctx.tree.create_leaf(nodes=fph.items(root=True),
+                         leaf=fh.filename,
+                         label='{0}{1}{2}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
+                         src=os.path.join(*src),
+                         mode='symlink')
+    # Add "latest" node for symlink
+    ctx.tree.create_leaf(nodes=fph.items(f_part=False, version=False, root=True),
+                         leaf='latest',
+                         label='{0}{1}{2}'.format('latest', LINK_SEPARATOR, fph.v_upgrade),
+                         src=fph.v_upgrade,
+                         mode='symlink')
+    # Add "files" node to Tree
+    ctx.tree.create_leaf(nodes=fph.items(file=True, root=True),
+                         leaf=fh.filename,
+                         label=fh.filename,
+                         src=fh.ffp,
+                         mode=ctx.mode)
     # If a latest version already exists
     if fph.v_latest:
         # Latest version should be older than upgrade version
@@ -173,36 +193,19 @@ def process(ffp, ctx):
             if latest_checksum == current_checksum:
                 raise DuplicatedFile(latest_file, fh.ffp)
         # Walk through the latest dataset version
-        for root, _, filenames in utils.walk(os.path.join(fph.path(f_part=False, latest=True, root=True))):
+        for root, _, filenames in os.walk(os.path.join(fph.path(f_part=False, latest=True, root=True))):
             for filename in filenames:
                 # Add latest files as tree leaves with version to upgrade instead of latest version
                 # i.e., copy latest dataset leaves to Tree
                 if filename != fh.filename:
                     src = os.readlink(os.path.join(root, filename))
                     ctx.tree.create_leaf(nodes=fph.items(root=True),
-                                         leaf='{0}{1}{2}'.format(filename, LINK_SEPARATOR, src),
+                                         leaf=filename,
+                                         label='{0}{1}{2}'.format(filename, LINK_SEPARATOR, src),
                                          src=src,
                                          mode='symlink')
     else:
         fph.v_latest = 'Initial'
-    # Add file DRS path to Tree
-    src = ['..'] * len(fph.items(d_part=False))
-    src.extend(fph.items(d_part=False, latest=True, file=True))
-    src.append(fh.filename)
-    ctx.tree.create_leaf(nodes=fph.items(root=True),
-                         leaf='{0}{1}{2}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
-                         src=os.path.join(*src),
-                         mode='symlink')
-    # Add "latest" node for symlink
-    ctx.tree.create_leaf(nodes=fph.items(f_part=False, version=False, root=True),
-                         leaf='{0}{1}{2}'.format('latest', LINK_SEPARATOR, fph.v_upgrade),
-                         src=fph.v_upgrade,
-                         mode='symlink')
-    # Add "files" node to Tree
-    ctx.tree.create_leaf(nodes=fph.items(file=True, root=True),
-                         leaf=fh.filename,
-                         src=fh.ffp,
-                         mode=ctx.mode)
     # Record entry for list()
     incoming = {'src': ffp,
                 'dst': fph.path(root=True),
