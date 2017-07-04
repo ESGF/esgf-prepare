@@ -18,7 +18,7 @@ from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, k
 from utils.utils import init_logging
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.7.7', datetime(year=2017, month=6, day=30).strftime("%Y-%d-%m"))
+__version__ = 'v{0} {1}'.format('2.7.8', datetime(year=2017, month=7, day=3).strftime("%Y-%d-%m"))
 
 
 def get_args():

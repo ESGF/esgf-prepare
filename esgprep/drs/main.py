@@ -232,7 +232,69 @@ def check_args(args, old_args):
     """
     for k in set(args.__dict__) - set(IGNORED_ARGS):
         if args.__dict__[k] != old_args.__dict__[k]:
-            raise MultipleContextParameter(k, args.__dict__[k], old_args.__dict__[k])
+            logging.warning('Submitted value of "{0}" argument is different from recorded one:'
+                            ' "{1}" instead of "{2}". File scan re-run...'.format(k,
+                                                                                  args.__dict__[k],
+                                                                                  old_args.__dict__[k]))
+            return False
+    return True
+
+
+def load_context():
+    """
+    Loads a tree context backed up from previous ``esgprep drs list``run.
+
+    :returns: The tree context
+    :rtype: *tuple*
+    """
+    with open('/tmp/DRSTree.pkl', 'rb') as f:
+        logging.warning('Load previous tree context')
+        return pickle.load(f), pickle.load(f), pickle.load(f)
+
+
+def backup_context(args, tree, results):
+    """
+    Records a tree context for later usage with other command lines.
+
+    :param ArgumentParser args: Parsed command-line arguments
+    :param esgprep.drs.handler.DRSTree tree: The DRS tree recorded
+    :param list results: The file scan result
+
+    """
+    # Backup DRS Tree for later usage with other command lines
+    with open(TREE_CTX, 'wb') as f:
+        pickle.dump(args, f)
+        pickle.dump(tree, f)
+        pickle.dump(results, f)
+        logging.warning('Tree context recorded for next usage')
+
+
+def run(ctx, pool, progress_bar):
+    """
+    Runs the file scan and tree building.
+
+    :param esgprep.drs.main.ProcessingContext ctx: The processing context
+    :param multiprocessing.Pool pool: The pool of workers to run
+    :param boolean progress_bar: True to display the progress bar
+    :returns: The file scan result
+    :rtype: *list*
+
+    """
+    if progress_bar:
+        # Get the number of files to scan
+        nfiles = sum(1 for _ in tqdm(yield_inputs(ctx),
+                                     desc='Collecting files'.ljust(LEN_MSG),
+                                     unit=' files',
+                                     file=sys.stdout))
+        return [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
+                                desc='Scanning incoming files'.ljust(LEN_MSG),
+                                total=nfiles,
+                                bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                                ncols=100,
+                                unit='files',
+                                file=sys.stdout)]
+    else:
+        return [x for x in pool.imap(wrapper, yield_inputs(ctx))]
 
 
 def main(args):
@@ -253,39 +315,20 @@ def main(args):
     logging.info('==> Scan started')
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.threads))
-    if ctx.action != 'list' and os.path.isfile('/tmp/DRSTree.pkl'):
-        # Load 'DRSTree.pkl' if already exists
-        with open('/tmp/DRSTree.pkl', 'rb') as f:
-            old_args = pickle.load(f)
-            ctx.tree = pickle.load(f)
-            results = pickle.load(f)
-        logging.warning('Previous DRS tree loaded')
+    # Load tree context if already exists
+    if os.path.isfile(TREE_CTX):
+        old_args, ctx.tree, results = load_context()
         # Ensure that processing context is similar to previous step
-        check_args(args, old_args)
+        if not check_args(args, old_args):
+            # If the tree context is different, silently redo the supplied files processing.
+            results = run(ctx, pool, args.pbar)
+        else:
+            args = old_args
     else:
         # Process supplied files
-        if args.pbar:
-            # Get the number of files to scan
-            nfiles = sum(1 for _ in tqdm(yield_inputs(ctx),
-                                         desc='Collecting files'.ljust(LEN_MSG),
-                                         unit=' files',
-                                         file=sys.stdout))
-            results = [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
-                                       desc='Scanning incoming files'.ljust(LEN_MSG),
-                                       total=nfiles,
-                                       bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                                       ncols=100,
-                                       unit='files',
-                                       file=sys.stdout)]
-        else:
-            results = [x for x in pool.imap(wrapper, yield_inputs(ctx))]
-    if ctx.action == 'list':
-        # Backup DRS Tree for later usage with other command lines
-        with open('/tmp/DRSTree.pkl', 'wb') as f:
-            pickle.dump(args, f)
-            pickle.dump(ctx.tree, f)
-            pickle.dump(results, f)
-        logging.warning('DRS tree recorded for next usage')
+        results = run(ctx, pool, args.pbar)
+    # Backup tree context for later usage with other command lines
+    backup_context(args, ctx.tree, results)
     # Close threads pool
     pool.close()
     pool.join()
