@@ -16,6 +16,10 @@ class Collector(object):
     """
     Base collector class to yield all regular NetCDF files.
 
+    :param list sources: The list of sources to parse
+    :returns: The data collector
+    :rtype: *iter*
+
     """
     def __init__(self, sources):
         self.sources = sources
@@ -44,9 +48,12 @@ class PathCollector(Collector):
     """
     Collector class to yield files from a list of direcotries to parse.
 
+    :param str dir_filter: The regular expression to exclude directories from the collection
+    :param str file_filter: The regular expression to include files in the collection
+
     """
-    def __init__(self, directories, dir_filter='^.*/(files|latest|\.[\w]*).*$', file_filter='^[!.].*\.nc$'):
-        super(PathCollector, self).__init__(directories)
+    def __init__(self, dir_filter='^.*/(files|latest|\.[\w]*).*$', file_filter='^[!.].*\.nc$', *args, **kwargs):
+        super(PathCollector, self).__init__(*args, **kwargs)
         self.dir_filter = dir_filter
         self.file_filter = file_filter
 
@@ -65,7 +72,6 @@ class PathCollector(Collector):
                         ffp = os.path.join(root, filename)
                         if os.path.isfile(ffp) and not match(self.file_filter, filename):
                             yield ffp
-
 
     #TODO: Add version finder on path for mapfile walker
 

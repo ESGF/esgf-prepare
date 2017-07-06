@@ -10,7 +10,6 @@
 import logging
 import os
 import pickle
-import re
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -18,6 +17,7 @@ from tqdm import tqdm
 
 from esgprep.drs.constants import *
 from esgprep.drs.exceptions import *
+from esgprep.utils.collectors import Collector
 from esgprep.utils.config import CfgParser
 from handler import File, DRSTree, DRSPath
 
@@ -68,23 +68,19 @@ class ProcessingContext(object):
         self.tree = DRSTree(self.root, self.version, self.mode)
 
 
-def yield_inputs(ctx):
+def yield_inputs(ctx, collector):
     """
     Yields all files to process within tuples with the processing context. The file walking
     through the DRS tree follows the symlinks.
 
     :param esgprep.mapfile.main.ProcessingContext ctx: The processing context
+    :param esgprep.utils.collector.Collector collector: The file collector
     :returns: Attach the processing context to a file to process as an iterator of tuples
     :rtype: *iter*
 
     """
-    for directory in ctx.directory:
-        # Walk trough the submitted tree
-        for root, _, filenames in os.walk(directory, followlinks=True):
-            for filename in filenames:
-                ffp = os.path.join(root, filename)
-                if os.path.isfile(ffp) and not re.match('^[!.].*\.nc$', filename):
-                    yield ffp, ctx
+    for ffp in collector:
+        yield ffp, ctx
 
 
 def checksum(ffp, checksum_type, checksum_client):
@@ -280,21 +276,18 @@ def run(ctx, pool, progress_bar):
     :rtype: *list*
 
     """
+    # Instanciate file collector to walk through the tree
+    collector = Collector(ctx.directory)
     if progress_bar:
-        # Get the number of files to scan
-        nfiles = sum(1 for _ in tqdm(yield_inputs(ctx),
-                                     desc='Collecting files'.ljust(LEN_MSG),
-                                     unit=' files',
-                                     file=sys.stdout))
-        return [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx)),
+        print('Collecting files...\r'),
+        return [x for x in tqdm(pool.imap(wrapper, yield_inputs(ctx, collector)),
                                 desc='Scanning incoming files'.ljust(LEN_MSG),
-                                total=nfiles,
+                                total=len(collector),
                                 bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
                                 ncols=100,
-                                unit='files',
                                 file=sys.stdout)]
     else:
-        return [x for x in pool.imap(wrapper, yield_inputs(ctx))]
+        return [x for x in pool.imap(wrapper, yield_inputs(ctx, collector))]
 
 
 def main(args):
@@ -317,13 +310,13 @@ def main(args):
     pool = ThreadPool(int(ctx.threads))
     # Load tree context if already exists
     if os.path.isfile(TREE_CTX):
-        old_args, ctx.tree, results = load_context()
+        old_args, old_tree, old_results = load_context()
         # Ensure that processing context is similar to previous step
         if not check_args(args, old_args):
             # If the tree context is different, silently redo the supplied files processing.
             results = run(ctx, pool, args.pbar)
         else:
-            args = old_args
+            args, ctx.tree, results = old_args, old_tree, old_results
     else:
         # Process supplied files
         results = run(ctx, pool, args.pbar)
