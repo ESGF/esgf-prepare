@@ -309,7 +309,7 @@ def main(args):
     # Start threads pool over files list in supplied directory
     pool = ThreadPool(int(ctx.threads))
     # Load tree context if already exists
-    if os.path.isfile(TREE_CTX):
+    if ctx.action != 'list' and os.path.isfile(TREE_CTX):
         old_args, old_tree, old_results = load_context()
         # Ensure that processing context is similar to previous step
         if not check_args(args, old_args):
