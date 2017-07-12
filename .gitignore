@@ -1,6 +1,12 @@
+###################
 # Python compiled #
 ###################
 *.pyc
 *.pyo
 build
 dist
+
+############
+# PyCharme #
+############
+.idea

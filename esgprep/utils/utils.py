@@ -10,8 +10,12 @@
 # Module imports
 import logging
 import os
+import pickle
 import re
+import sys
 from datetime import datetime
+
+from tqdm import tqdm
 
 
 class LogFilter(object):
@@ -98,6 +102,36 @@ def match(pattern, string):
     return True if re.match(re.compile(pattern), string) else False
 
 
+def load(path):
+    """
+    Loads data from Pickle file.
+
+    :param str path: The Pickle file path
+    :returns: The data stored in the Pickle file
+    :rtype: *object*
+
+    """
+    with open(path, 'rb') as f:
+        while True:
+            if f.read(1) == b'':
+                return
+            f.seek(-1, 1)
+            yield pickle.load(f)
+
+
+def store(path, data):
+    """
+    Stores data into a Pickle file.
+
+    :param str path: The Pickle file path
+    :param *list* data: The list of data objects
+
+    """
+    with open(path, 'wb') as f:
+        for i in range(len(data)):
+            pickle.dump(data[i], f)
+
+
 def cmd_exists(cmd):
     """
     Checks if a Shell command exists.
@@ -110,3 +144,23 @@ def cmd_exists(cmd):
         os.access(os.path.join(path, cmd), os.X_OK)
         for path in os.environ["PATH"].split(os.pathsep)
     )
+
+
+def as_pbar(iterable, desc, units, total=None):
+    """
+    Build progress pbar if desired
+
+    :param *iterable* iterable: An iterable object
+    :param str desc: The progress bar description
+    :param str units: The progress bar units
+    :param int total: The number of iterations
+    :returns: The progress bar object as a list
+    :rtype: *tqdm.tqdm* or *iter*
+
+    """
+    return tqdm(iterable,
+                desc=desc,
+                total=total or len(iterable),
+                bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} ' + units,
+                ncols=100,
+                file=sys.stdout)

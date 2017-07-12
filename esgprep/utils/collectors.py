@@ -9,6 +9,7 @@
 
 # Module imports
 import os
+
 from esgprep.utils.utils import match, remove
 
 
@@ -21,8 +22,10 @@ class Collector(object):
     :rtype: *iter*
 
     """
-    def __init__(self, sources):
+
+    def __init__(self, sources, data=None):
         self.sources = sources
+        self.data = data
         assert isinstance(self.sources, list)
 
     def __iter__(self):
@@ -31,7 +34,7 @@ class Collector(object):
                 for filename in filenames:
                     ffp = os.path.join(root, filename)
                     if os.path.isfile(ffp) and not match('^[!.].*\.nc$', filename):
-                        yield ffp
+                        yield self.attach(ffp)
 
     def __len__(self):
         """
@@ -43,6 +46,17 @@ class Collector(object):
         """
         return sum(1 for _ in self.__iter__())
 
+    def attach(self, to):
+        """
+        Attach a "data" object to the each item.
+
+        :param str to: The iterator item.
+        :returns: The item and the data
+        :rtype: *tuple*
+
+        """
+        return (to, self.data) if self.data else to
+
 
 class PathCollector(Collector):
     """
@@ -52,6 +66,7 @@ class PathCollector(Collector):
     :param str file_filter: The regular expression to include files in the collection
 
     """
+
     def __init__(self, dir_filter='^.*/(files|latest|\.[\w]*).*$', file_filter='^[!.].*\.nc$', *args, **kwargs):
         super(PathCollector, self).__init__(*args, **kwargs)
         self.dir_filter = dir_filter
@@ -71,14 +86,16 @@ class PathCollector(Collector):
                     for filename in filenames:
                         ffp = os.path.join(root, filename)
                         if os.path.isfile(ffp) and not match(self.file_filter, filename):
-                            yield ffp
-    #TODO: Add version finder on path for mapfile walker
+                            yield self.attach(ffp)
+        # TODO: Add version finder on path for mapfile walker
+
 
 class DatasetCollector(Collector):
     """
     Collector class to yield datasets from a list of files to read.
 
     """
+
     def __iter__(self):
         """
         Yields datasets to process from a text file. Each line may contain the dataset with optional
@@ -91,4 +108,4 @@ class DatasetCollector(Collector):
         for source in self.sources:
             with open(source) as f:
                 for line in f:
-                    yield remove('((\.v|#)[0-9]+)?\s*$', line)
+                    yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', line))

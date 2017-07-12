@@ -17,10 +17,7 @@ UNIX_COMMAND = {'symlink': 'ln -s',
                 'move': 'mv'}
 
 # Command-line parameter to ignore
-IGNORED_ARGS = ['action', 'v', 'h', 'log', 'max_threads', 'log', 'no_checksum', 'pbar']
-
-# Progress bar message length
-LEN_MSG = 23
+CONTROLLED_ARGS = ['set_values', 'set_keys', 'mode', 'version']
 
 # Tree context file
-TREE_CTX = '/tmp/DRSTree.pkl'
+TREE_FILE = '/tmp/DRSTree.pkl'

@@ -11,11 +11,10 @@ import logging
 import re
 import sys
 
-from tqdm import tqdm
-
 from esgprep.utils.collectors import PathCollector, DatasetCollector
 from esgprep.utils.config import SectionParser
 from esgprep.utils.constants import *
+from esgprep.utils.utils import as_pbar
 
 
 class ProcessingContext(object):
@@ -60,7 +59,8 @@ class ProcessingContext(object):
         # Get the facet keys from pattern
         self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
         # Init progress bar
-        self.sources = self.make_pbar(self.sources)
+        if self.pbar:
+            self.sources = as_pbar(self.sources, desc='Harvesting facets values from source', units=self.source_type)
         return self
 
     def __exit__(self, *exc):
@@ -74,22 +74,3 @@ class ProcessingContext(object):
             print('Please update "esg.{}.ini" following: {}'.format(self.project,
                                                                     logging.getLogger().handlers[0].baseFilename))
             sys.exit(2)
-
-    def make_pbar(self, iterable):
-        """
-        Build progress pbar if desired
-
-        :returns: The progress bar object as a list
-        :rtype: *tqdm.tqdm* or *iter*
-
-        """
-        if self.pbar:
-            return tqdm(iterable,
-                        desc='Harvesting facets values from source',
-                        total=len(iterable),
-                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} ' + self.source_type,
-                        ncols=100,
-                        unit='files',
-                        file=sys.stdout)
-        else:
-            return iterable

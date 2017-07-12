@@ -127,7 +127,7 @@ def main(args):
             # Set full url
             url = ctx.url.format(INI_FILE.format(project))
             # Set output file full path
-            outfile = os.path.join(ctx.ini_dir, INI_FILE.format(project))
+            outfile = os.path.join(ctx.config_dir, INI_FILE.format(project))
             # Get GitHub file content
             r = gh_request_content(url=url, auth=ctx.auth)
             sha = r.json()['sha']

@@ -10,13 +10,12 @@
 import logging
 import os
 import re
-import sys
 from exceptions import *
 
 from requests.auth import HTTPBasicAuth
-from tqdm import tqdm
 
 from constants import *
+from esgprep.utils.utils import as_pbar
 from utils import gh_request_content
 
 
@@ -38,7 +37,7 @@ class ProcessingContext(object):
         self.backup_mode = args.b
         self.gh_user = args.gh_user
         self.gh_password = args.gh_password
-        self.ini_dir = os.path.realpath(os.path.normpath(args.i))
+        self.config_dir = os.path.realpath(os.path.normpath(args.i))
         self.url = GITHUB_FILE_API
         if args.devel:
             self.url += '?ref=devel'
@@ -51,31 +50,13 @@ class ProcessingContext(object):
         # Init the project list to retrieve
         self.targets = self.target_projects()
         # Init progress bar
-        self.targets = self.make_pbar(self.targets)
+        if self.pbar:
+            self.targets = as_pbar(self.targets, desc='Fetching "esg.<project>.ini"', units='files')
         return self
 
     def __exit__(self, *exc):
         # Default is sys.exit(0)
         pass  # Errors?
-
-    def make_pbar(self, iterable):
-        """
-        Build progress pbar if desired
-
-        :returns: The progress bar object as a list
-        :rtype: *tqdm.tqdm* or *iter*
-
-        """
-        if self.pbar:
-            return tqdm(iterable,
-                        desc='Fetching "esg.<project>.ini"',
-                        total=len(iterable),
-                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
-                        ncols=100,
-                        unit='files',
-                        file=sys.stdout)
-        else:
-            return iterable
 
     def authenticate(self):
         """
@@ -96,15 +77,15 @@ class ProcessingContext(object):
          - If not ESGF node and args.i = other -> if not exists make it
 
         """
-        if not os.path.isdir(self.ini_dir):
+        if not os.path.isdir(self.config_dir):
             try:
-                os.makedirs(self.ini_dir)
-                logging.warning('{} created'.format(self.ini_dir))
+                os.makedirs(self.config_dir)
+                logging.warning('{} created'.format(self.config_dir))
             except OSError:
-                self.ini_dir = '{}/ini'.format(os.getcwd())
-                if not os.path.isdir(self.ini_dir):
-                    os.makedirs(self.ini_dir)
-                    logging.warning('{} created'.format(self.ini_dir))
+                self.config_dir = '{}/ini'.format(os.getcwd())
+                if not os.path.isdir(self.config_dir):
+                    os.makedirs(self.config_dir)
+                    logging.warning('{} created'.format(self.config_dir))
 
     def target_projects(self):
         """
