@@ -10,3 +10,4 @@ dist
 # PyCharme #
 ############
 .idea
+.DS_Store
