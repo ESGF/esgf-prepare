@@ -5,6 +5,7 @@
 *.pyo
 build
 dist
+*.egg-info
 
 ############
 # PyCharme #
