@@ -1,0 +1,19 @@
+Metadata-Version: 1.1
+Name: esgprep
+Version: 2.7.9
+Summary: Toolbox to prepare data for ESGF publication
+Home-page: https://github.com/IS-ENES-Data/esgf-prepare
+Author: Levavasseur Guillaume
+Author-email: glipsl@ipsl.fr
+License: UNKNOWN
+Description: UNKNOWN
+Platform: Unix
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: System Administrators
+Classifier: Natural Language :: English
+Classifier: Operating System :: Unix
+Classifier: Programming Language :: Python
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Software Development :: Build Tools

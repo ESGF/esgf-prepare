@@ -11,14 +11,14 @@ import argparse
 import os
 import sys
 import unittest
-from datetime import datetime
 from importlib import import_module
 
 from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter
 from utils.utils import init_logging
+from utils.constants import *
 
 # Program version
-__version__ = 'v{0} {1}'.format('2.7.8', datetime(year=2017, month=7, day=3).strftime("%Y-%d-%m"))
+__version__ = 'v{} {}'.format(VERSION, datetime.now().strftime("%Y-%d-%m"))
 
 
 def get_args():
@@ -40,48 +40,28 @@ def get_args():
     #############################
     main = argparse.ArgumentParser(
         prog='esgprep',
-        description="""
-        The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers
-        to easily prepare their data before publishing to an ESGF node. "esgprep" provides python command-lines
-        covering several steps of ESGF publication workflow:|n|n
-        
-        i. Fetch proper configuration files from ESGF GitHub repository,|n|n
-
-        ii. Data Reference Syntax management,|n|n
-
-        iii. Check DRS vocabulary against configuration files,|n|n
-
-        iv. Generate mapfiles.|n|n
-
-        See full documentation and references at http://is-enes-data.github.io/esgf-prepare/.
-        """,
+        description=PROGRAM_DESC,
         formatter_class=MultilineFormatter,
         add_help=False,
-        epilog="""
-        Developed by:|n
-        Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.fr)|n
-        Berger, K. (DKRZ - berger@dkrz.de)|n
-        Iwi, A. (STFC/CEDA - alan.iwi@stfc.ac.uk)|n
-        Stephens, A. (STFC/CEDA - ag.stephens@stfc.ac.uk)
-        """)
-    main._optionals.title = "Optional arguments"
-    main._positionals.title = "Positional arguments"
+        epilog=EPILOG)
+    main._optionals.title = OPTIONAL
+    main._positionals.title = POSITIONAL
     main.add_argument(
         '-h', '--help',
         action='help',
-        help="""Show this help message and exit.""")
+        help=HELP)
     main.add_argument(
         '--test',
         action='store_true',
         default=False,
-        help="""Run the full test suite.""")
+        help=TEST_HELP['program'])
     main.add_argument(
         '-V',
         action='version',
-        version='%(prog)s ({0})'.format(__version__),
-        help="""Program version.""")
+        version='%(prog)s ({})'.format(__version__),
+        help=VERSION_HELP)
     subparsers = main.add_subparsers(
-        title='Tools as subcommands',
+        title=SUBCOMMANDS,
         dest='cmd',
         metavar='',
         help='')
@@ -93,34 +73,31 @@ def get_args():
     parent.add_argument(
         '-h', '--help',
         action='help',
-        help="""Show this help message and exit.""")
+        help=HELP)
 
     parent.add_argument(
         '-i',
         metavar='/esg/config/esgcet',
         action=DirectoryChecker,
         default='/esg/config/esgcet',
-        help="""
-        Initialization/configuration directory containing|n
-        "esg.ini" and "esg.<project>.ini" files.|n
-        If not specified, the usual datanode directory|n
-        is used.
-        """)
+        help=INI_HELP)
     parent.add_argument(
         '--log',
         metavar='CWD',
         type=str,
-        const='{0}/logs'.format(os.getcwd()),
+        const='{}/logs'.format(os.getcwd()),
         nargs='?',
-        help="""
-        Logfile directory.|n
-        If not, standard output is used.
-        """)
+        help=LOG_HELP)
     parent.add_argument(
         '-v',
         action='store_true',
         default=False,
-        help="""Verbose mode.""")
+        help=VERBOSE_HELP)
+    parent.add_argument(
+        '--test',
+        action='store_true',
+        default=False,
+        help=TEST_HELP['parent'])
 
     #####################################
     # Subparser for "esgprep fetch-ini" #
@@ -128,46 +105,30 @@ def get_args():
     fetchini = subparsers.add_parser(
         'fetch-ini',
         prog='esgprep fetch-ini',
-        description="""
-        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that 
-        are the primary means of configuring the ESGF publisher. The "esg.<project_id>.ini" files declare all facets
-        and allowed values according to the Data Reference Syntax (DRS) and the controlled vocabularies of the
-        corresponding project. "esgprep fetch-ini" allows you to properly download and deploy those configuration files
-        hosted on a GitHub repository. Keep in mind that the fetched files have to be reviewed to ensure a correct
-        configuration of your publication. The supplied configuration directory is used to write the files retrieved
-        from GitHub.|n|n
-
-        The default values are displayed next to the corresponding flags.
-        """,
+        description=FETCHINI_DESC,
         formatter_class=MultilineFormatter,
-        help="""
-        Fetch INI files from GitHub.|n
-        See "esgprep fetch-ini -h" for full help.
-        """,
+        help=FETCHINI_HELP,
         add_help=False,
         parents=[parent])
-    fetchini._optionals.title = "Optional arguments"
-    fetchini._positionals.title = "Positional arguments"
+    fetchini._optionals.title = OPTIONAL
+    fetchini._positionals.title = POSITIONAL
     fetchini.add_argument(
         '--project',
         metavar='PROJECT_ID',
         type=str,
         nargs='+',
-        help="""
-        One or more lower-cased project name(s).|n
-        If not, all "esg.*.ini" are fetched.
-        """)
+        help=PROJECT_HELP['fetch-ini'])
     group = fetchini.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '-k',
         action='store_true',
         default=False,
-        help="""Ignore and keep existing file(s) without prompting.""")
+        help=KEEP_HELP)
     group.add_argument(
         '-o',
         action='store_true',
         default=False,
-        help="""Ignore and overwrite existing file(s) without prompting.""")
+        help=OVERWRITE_HELP)
     fetchini.add_argument(
         '-b',
         metavar='one_version',
@@ -175,25 +136,22 @@ def get_args():
         type=str,
         nargs='?',
         const='one_version',
-        help="""
-        Backup mode of existing files.|n
-        "one_version" renames an existing file in its source|n
-        directory adding a ".bkp" extension to the filename.|n
-        "keep_versions" moves an existing file to a child|n
-        directory called "bkp" and add a timestamp to the filename.|n
-        If no mode specified, "one_version" is the default.|n
-        If not specified, no backup.
-        """)
+        help=BACKUP_HELP)
     fetchini.add_argument(
         '--gh-user',
         metavar='USERNAME',
         type=str,
-        help="""GitHub username.""")
+        help=GITHUB_USER_HELP)
     fetchini.add_argument(
         '--gh-password',
         metavar='PASSWORD',
         type=str,
-        help="""GitHub password.""")
+        help=GITHUB_PASSWORD_HELP)
+    fetchini.add_argument(
+        '--devel',
+        action='store_true',
+        default=False,
+        help=DEVEL_HELP)
 
     #######################################
     # Subparser for "esgprep check-vocab" #
@@ -201,66 +159,43 @@ def get_args():
     checkvocab = subparsers.add_parser(
         'check-vocab',
         prog='esgprep check-vocab',
-        description="""
-        In the case that your data already follows the appropriate directory structure, you may want to check that all 
-        values of each facet are correctly declared in the "esg.<project_id>.ini" sections. "esgprep check-vocab" 
-        allows you to easily check the configuration file attributes by scanning your data tree. It requires that your 
-        directory structure strictly follows the project DRS including the dataset version.|n|n
-
-        The default values are displayed next to the corresponding flags.
-        """,
+        description=CHECKVOCAB_DESC,
         formatter_class=MultilineFormatter,
-        help="""
-        Checks configuration file vocabulary.|n
-        See "esgprep check-vocab -h" for full help.
-        """,
+        help=CHECKVOCAB_HELP,
         add_help=False,
         parents=[parent])
-    checkvocab._optionals.title = "Optional arguments"
-    checkvocab._positionals.title = "Positional arguments"
+    checkvocab._optionals.title = OPTIONAL
+    checkvocab._positionals.title = POSITIONAL
     group = checkvocab.add_mutually_exclusive_group(required=True)
     group.add_argument(
         '--directory',
         metavar='PATH',
         action=DirectoryChecker,
         nargs='+',
-        help="""
-        One or more directories to recursively scan.|n
-        Unix wildcards are allowed.
-        """)
+        help=DIRECTORY_HELP['check-vocab'])
     group.add_argument(
         '--dataset-list',
         metavar='TXT_FILE',
         type=str,
-        help="""File containing list of dataset IDs.""")
+        help=DATASET_LIST_HELP)
     checkvocab.add_argument(
         '--project',
         metavar='PROJECT_ID',
         type=str,
         required=True,
-        help="""Required lower-cased project name.""")
+        help=PROJECT_HELP['check-vocab'])
     checkvocab.add_argument(
         '--ignore-dir-filter',
         metavar="PYTHON_REGEX",
         type=str,
         default='^.*/(files|latest|\.[\w]*).*$',
-        help="""
-        Filter directories NON-matching the regular expression.|n
-        Default ignore paths with folder name(s) starting with|n
-        "." and/or including "/files/" or "/latest/" patterns.|n
-        (Regular expression must match from start of path; prefix|n
-        with ".*" if required.)
-        """)
+        help=IGNORE_DIR_FILTER_HELP)
     checkvocab.add_argument(
         '--include-file-filter',
         metavar="PYTHON_REGEX",
         type=str,
         default='^[!.].*\.nc$',
-        help="""
-        Filter files matching the regular expression.|n
-        Default only include NetCDF files (with names not|n
-        starting with ".").
-        """)
+        help=INCLUDE_FILE_FILTER_HELP)
 
     ###############################
     # Subparser for "esgprep drs" #
@@ -268,121 +203,81 @@ def get_args():
     drs = subparsers.add_parser(
         'drs',
         prog='esgprep drs',
-        description="""
-        The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a
-        proper publication on ESGF node. "esgprep drs" command is designed to help ESGF datanode managers to prepare
-        incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of
-        publication-level datasets to minimise disk usage. Only CMORized netCDF files are supported as incoming
-        files.|n|n
-
-        The default values are displayed next to the corresponding flags.
-        """,
+        description=DRS_DESC,
         formatter_class=MultilineFormatter,
-        help="""
-        Manages the Data Reference Syntax on your filesystem.|n
-        See "esgprep drs -h" for full help.
-        """,
+        help=DRS_HELP,
         add_help=False,
         parents=[parent])
-    drs._optionals.title = "Optional arguments"
-    drs._positionals.title = "Positional arguments"
+    drs._optionals.title = OPTIONAL
+    drs._positionals.title = POSITIONAL
     drs.add_argument(
         'action',
         choices=['list', 'tree', 'todo', 'upgrade'],
         metavar='action',
         type=str,
-        help="""
-        DRS action:|n
-        - "list" lists publication-level datasets,|n
-        - "tree" displays the final DRS tree,|n
-        - "todo" shows file operations pending for the next version,|n
-        - "upgrade" makes changes to upgrade datasets to the next version.
-        """)
+        help=ACTION_HELP)
     drs.add_argument(
         'directory',
         action=DirectoryChecker,
         nargs='+',
-        help="""
-        One or more directories to recursively scan.|n
-        Unix wildcards are allowed.""")
+        help=DIRECTORY_HELP['drs'])
     drs.add_argument(
         '--project',
         metavar='PROJECT_ID',
         type=str,
         required=True,
-        help="""Required lower-cased project name.""")
+        help=PROJECT_HELP['drs'])
     drs.add_argument(
         '--root',
         metavar='CWD',
         action=DirectoryChecker,
         default=os.getcwd(),
-        help="""Root directory to build the DRS.""")
+        help=ROOT_HELP)
     drs.add_argument(
         '--version',
         metavar=datetime.now().strftime("%Y%m%d"),
         action=VersionChecker,
         default=datetime.now().strftime('%Y%m%d'),
-        help="""Set the version number for all scanned files.""")
+        help=SET_VERSION_HELP['drs'])
     drs.add_argument(
         '--set-value',
         metavar='FACET_KEY=VALUE',
         type=keyval_converter,
         action='append',
-        help="""
-        Set a facet value.|n
-        Duplicate the flag to set several facet values.|n
-        This overwrites facet auto-detection.
-        """)
+        help=SET_VALUE_HELP)
     drs.add_argument(
         '--set-key',
         metavar='FACET_KEY=ATTRIBUTE',
         type=keyval_converter,
         action='append',
-        help="""
-        Map one a facet key with a NetCDF attribute name.|n
-        Duplicate the flag to map several facet keys.|n
-        This overwrites facet auto-detection.
-        """)
+        help=SET_KEY_HELP)
     drs.add_argument(
         '--no-checksum',
         action='store_true',
         default=False,
-        help="""Does not include files checksums for version comparison.""")
+        help=NO_CHECKSUM_HELP['drs'])
     group = drs.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--copy',
         action='store_true',
         default=False,
-        help="""
-        Copy incoming files into the DRS tree.|n
-        Default is moving files.
-        """)
+        help=COPY_HELP)
     group.add_argument(
         '--link',
         action='store_true',
         default=False,
-        help="""
-        Hard link incoming files to the DRS tree.|n
-        Default is moving files.
-        """)
+        help=LINK_HELP)
     group.add_argument(
         '--symlink',
-        action = 'store_true',
-        default = False,
-        help = """
-        Symbolic link incoming files to the DRS tree.|n
-        Default is moving files.
-        """)
+        action='store_true',
+        default=False,
+        help=SYMLINK_HELP)
     drs.add_argument(
         '--max-threads',
         metavar=4,
         type=int,
         default=4,
-        help="""
-        Number of maximal threads to simultaneously process several|n
-        files (useful if checksum calculation is enabled). Set to|n
-        one seems sequential processing.
-        """)
+        help=MAX_THREADS_HELP)
 
     ###################################
     # Subparser for "esgprep mapfile" #
@@ -390,193 +285,107 @@ def get_args():
     mapfile = subparsers.add_parser(
         'mapfile',
         prog='esgprep mapfile',
-        description="""
-        The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes
-        a file to publish on the following format:|n|n
-
-        dataset_ID | absolute_path | size_bytes [ | option=value ]|n|n
-
-        1. All values have to be pipe-separated.|n
-        2. The dataset identifier, the absolute path and the size (in bytes) are required.|n
-        3. Adding the version number to the dataset identifier is strongly recommended to publish in a in bulk.|n
-        4. Strongly recommended optional values are:|n
-         - mod_time: last modification date of the file (since Unix EPOCH time, i.e., seconds since January, 1st,
-         1970),|n
-         - checksum: file checksum,|n
-         - checksum_type: checksum type (MD5 or the default SHA256).|n
-        5. Your directory structure has to strictly follows the tree fixed by the DRS including the version facet.|n
-        6. To store ONE mapfile PER dataset is strongly recommended.|n|n
-
-        "esgprep mapfile" allows you to easily generate ESGF mapfiles upon local ESGF datanode or not.|n|n
-
-        The default values are displayed next to the corresponding flags.
-        """,
+        description=MAPFILE_DESC,
         formatter_class=MultilineFormatter,
-        help="""
-        Generates ESGF mapfiles.|n
-        See "esgprep mapfile -h" for full help.
-        """,
+        help=MAPFILE_HELP,
         add_help=False,
         parents=[parent])
-    mapfile._optionals.title = "Optional arguments"
-    mapfile._positionals.title = "Positional arguments"
+    mapfile._optionals.title = OPTIONAL
+    mapfile._positionals.title = POSITIONAL
     mapfile.add_argument(
         'directory',
         action=DirectoryChecker,
         nargs='+',
-        help="""
-        One or more directories to recursively scan.|n
-        Unix wildcards are allowed.
-        """)
+        help=DIRECTORY_HELP['mapfile'])
     mapfile.add_argument(
         '--project',
         metavar='PROJECT_ID',
         type=str,
         required=True,
-        help="""Required lower-cased project name.""")
+        help=PROJECT_HELP['mapfile'])
     mapfile.add_argument(
         '--mapfile',
         metavar='{dataset_id}.{version}.map',
         type=str,
         default='{dataset_id}.{version}.map',
-        help="""
-        Specifies template for the output mapfile(s) name.|n
-        Substrings {dataset_id}, {version}, {job_id} or {date} |n
-        (in YYYYDDMM) will be substituted where found. If |n
-        {dataset_id} is not present in mapfile name, then all |n
-        datasets will be written to a single mapfile, overriding |n
-        the default behavior of producing ONE mapfile PER|n
-        dataset.
-        """)
+        help=MAPFILE_NAME_HELP)
     mapfile.add_argument(
         '--outdir',
         metavar='CWD/mapfiles',
         type=str,
         default=os.path.join(os.getcwd(), 'mapfiles'),
-        help="""
-        Mapfile(s) output directory. A "mapfile_drs" can be|n
-        defined per project section in INI files and joined to|n
-        build a mapfiles tree.
-        """)
+        help=OUTDIR_HELP)
     group = mapfile.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--all-versions',
         action='store_true',
         default=False,
-        help="""
-        Generates mapfile(s) with all versions found in the|n
-        directory recursively scanned (default is to pick up only|n
-        the latest one).|n
-        It disables --no-version.
-        """)
+        help=ALL_VERSIONS_HELP)
     group.add_argument(
         '--version',
         metavar=datetime.now().strftime("%Y%m%d"),
         type=VersionChecker,
-        help="""
-        Generates mapfile(s) scanning datasets with the|n
-        corresponding version number only. It takes priority over|n
-        --all-versions. If directly specified in positional|n
-        argument, use the version number from supplied directory|n
-        and disables --all-versions and --latest-symlink.
-        """)
+        help=SET_VERSION_HELP['mapfile'])
     group.add_argument(
         '--latest-symlink',
         action='store_true',
         default=False,
-        help="""
-        Generates mapfile(s) following latest symlinks only. This|n
-        sets the {version} token to "latest" into the mapfile|n
-        name, but picked up the pointed version to build the|n
-        dataset identifier (if --no-version is disabled).
-        """)
+        help=LATEST_SYMLINK_HELP)
     mapfile.add_argument(
         '--no-version',
         action='store_true',
         default=False,
-        help="""
-        Does not includes DRS version into the dataset|n
-        identifier.
-        """)
+        help=NO_VERSION_HELP)
     mapfile.add_argument(
         '--no-checksum',
         action='store_true',
         default=False,
-        help="""Does not include files checksums into the mapfile(s).""")
+        help=NO_CHECKSUM_HELP['mapfile'])
     mapfile.add_argument(
         '--not-ignored',
         metavar='FACET_KEY',
         type=str,
         nargs='+',
         default=[],
-        help="""
-        One or more facet key(s) to not ignored. This excludes|n
-        the corresponding facet from the default ignored list.|n
-        Useful in case of differences between|n
-        "directory_format" and "dataset_id" patterns.
-        """)
+        help=NOT_IGNORED_HELP)
     mapfile.add_argument(
         '--ignore-dir-filter',
         metavar="PYTHON_REGEX",
         type=str,
         default='^.*/(files|latest|\.[\w]*).*$',
-        help="""
-        Filter directories NON-matching the regular expression.|n
-        Default ignore paths with folder name(s) starting with|n
-        "." and/or including "/files/" or "/latest/" patterns.|n
-        (Regular expression must match from start of path; prefix|n
-        with ".*" if required.)
-        """)
+        help=IGNORE_DIR_FILTER_HELP)
     mapfile.add_argument(
         '--include-file-filter',
         metavar="PYTHON_REGEX",
         type=str,
         default='^[!.].*\.nc$',
-        help="""
-        Filter files matching the regular expression.|n
-        Default only include NetCDF files (with names not|n
-        starting with ".").
-        """)
+        help=INCLUDE_FILE_FILTER_HELP)
     mapfile.add_argument(
         '--tech-notes-url',
         metavar='URL',
         type=str,
-        help="""
-        URL of the technical notes to be associated with each|n
-        dataset.
-        """)
+        help=TECH_NOTES_URL_HELP)
     mapfile.add_argument(
         '--tech-notes-title',
         metavar='TITLE',
         type=str,
-        help="""Technical notes title for display.""")
+        help=TECH_NOTES_TITLE_HELP)
     mapfile.add_argument(
         '--dataset',
         metavar='DATASET_ID',
         type=str,
-        help="""
-        String name of the dataset. If specified, all files will|n
-        belong to the specified dataset, regardless of the DRS.
-        """)
+        help=DATASET_HELP)
     mapfile.add_argument(
         '--max-threads',
         metavar=4,
         type=int,
         default=4,
-        help="""
-        Number of maximal threads to simultaneously process|n
-        several files (useful if checksum calculation is|n
-        enabled). Set to one seems sequential processing.
-        """)
+        help=MAX_THREADS_HELP)
     mapfile.add_argument(
         '--no-cleanup',
         action='store_true',
         default=False,
-        help="""
-        Disables output directory cleanup prior to mapfile|n
-        process. This is recommended if several "esgprep mapfile"|n
-        instances run with the same output directory.
-        """)
+        help=NO_CLEANUP_HELP)
 
     return main.parse_args()
 
@@ -588,9 +397,9 @@ def run():
     """
     # Get command-line arguments
     args = get_args()
-    # Initialize logger
+    # Initialize logger depending on log and verbose mode
     init_logging(log=args.log, verbose=args.v)
-    # Print progress bar
+    # Print progress bar if no log and no verbose mode
     setattr(args, 'pbar', True if not args.log and not args.v else False)
     # Run subcommand
     if args.test and not args.cmd:
@@ -601,13 +410,14 @@ def run():
     else:
         submodule = args.cmd.lower().replace('-', '')
         if args.test:
-            test = import_module('.test', package='esgprep.{0}'.format(submodule))
+            test = import_module('.test', package='esgprep.{}'.format(submodule))
             test.run()
         else:
-            main = import_module('.main', package='esgprep.{0}'.format(submodule))
+            main = import_module('.main', package='esgprep.{}'.format(submodule))
             main.main(args)
-
 
 # Main entry point for stand-alone call.
 if __name__ == "__main__":
+    # PyCharm workaround
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     run()

@@ -7,40 +7,50 @@
 
 """
 
-from ConfigParser import ConfigParser, NoSectionError
 import os
 import re
 import string
-from glob import glob
+from ConfigParser import ConfigParser
 
 from esgprep.utils.exceptions import *
 
 
-class CfgParser(ConfigParser):
+class SectionParser(ConfigParser):
     """
     Custom ConfigParser class to parse ESGF .ini files from a source directory.
+    Parse a configuration section (mandatory).
 
     """
 
-    def __init__(self, directory, section=None):
+    def __init__(self, directory, section):
         ConfigParser.__init__(self)
-        self.read_paths = list()
-        self.parse(directory, section=section)
+        self.files = list()
+        self.section = section
+        self.parse(directory)
 
-    def options(self, section, defaults=True, **kwargs):
+    def parse(self, path):
         """
-        Can get options() with/without defaults.
+        Parses the configuration files.
+
+        :param str path: The directory path of configuration files
+        :returns: The configuration file parser
+        :rtype: *CfgParser*
+        :raises Error: If no configuration file exists
+        :raises Error: If no configuration section exist
+        :raises Error: If the configuration file parsing fails
 
         """
-        try:
-            opts = self._sections[section].copy()
-        except KeyError:
-            raise NoSectionError(section)
-        if defaults:
-            opts.update(self._defaults)
-        if '__name__' in opts:
-            del opts['__name__']
-        return opts.keys()
+        # If the section is not "[project:.*]", only read esg.ini
+        self.read(os.path.join(path, 'esg.ini'))
+        if re.match(r'project:.*', self.section) and self.section not in self.sections():
+            project = self.section.split('project:')[1]
+            if not os.path.isfile(os.path.join(path, 'esg.{}.ini'.format(project))):
+                raise NoConfigFile(os.path.join(path, 'esg.{}.ini'.format(project)))
+            self.read(os.path.join(path, 'esg.{}.ini'.format(project)))
+            if self.section not in self.sections():
+                raise NoConfigSection(self.section, self.files)
+        if not self:
+            raise EmptyConfigFile(self.files)
 
     def read(self, filenames):
         """
@@ -56,104 +66,42 @@ class CfgParser(ConfigParser):
                 continue
             self._read(fp, filename)
             fp.close()
-            self.read_paths.append(filename)
+            self.files.append(filename)
 
-    def sections(self):
+    def sections(self, default=True):
         """
-        Returns the list of section names, including [DEFAULT]
-
-        """
-        return self._sections.keys() + ['DEFAULT']
-
-    def parse(self, path, section):
-        """
-        Parses the configuration files. If no section is submitted, all INI files are read.
-
-        :param str path: The directory path of configuration files
-        :param str section: The section to parse (if not all ini files are read)
-        :returns: The configuration file parser
-        :rtype: *CfgParser*
-        :raises Error: If no configuration file exists
-        :raises Error: If the configuration file parsing fails
+        Returns the list of section names with/without [DEFAULT]
 
         """
-        self.read(os.path.join(path, 'esg.ini'))
-        if section:
-            # If the section is not "[project:.*]", only read esg.ini
-            if re.match(r'project:.*', section) and section not in self.sections():
-                project = section.split('project:')[1]
-                if not os.path.isfile(os.path.join(path, 'esg.{0}.ini'.format(project))):
-                    raise NoConfigFile(os.path.join(path, 'esg.{0}.ini'.format(project)))
-                self.read(os.path.join(path, 'esg.{0}.ini'.format(project)))
-                if section not in self.sections():
-                    raise NoConfigSection(section, self.read_paths)
+        if default:
+            return self._sections.keys() + ['DEFAULT']
         else:
-            paths = glob(os.path.join(path, 'esg*.ini'))
-            if not paths:
-                raise NoConfigFile(os.path.join(path, 'esg*.ini'))
-            self.read(paths)
-        if not self:
-            raise EmptyConfigFile(self.read_paths)
+            return self._sections.keys()
 
-    def translate_directory_format(self, section):
+    def options(self, defaults=True):
         """
-        Return a regular expression associated with the ``directory_format`` option
+        Returns the list of options names into the section with/without defaults.
+
+        """
+        opts = self._sections[self.section].copy()
+        if defaults:
+            opts.update(self._defaults)
+        if '__name__' in opts:
+            del opts['__name__']
+        return opts.keys()
+
+    def translate(self, option):
+        """
+        Return a regular expression associated with a ``pattern_format`` option
         in the configuration file. This can be passed to the Python ``re`` methods.
 
-        :param str section: The section name to parse
         :returns: The corresponding ``re`` pattern
 
         """
+        if option not in self.options():
+            raise NoConfigOption(option, self.section, self.files)
+        pattern = self.get(self.section, option, raw=True).strip()
         # Start translation
-        pattern = self.get(section, 'directory_format', raw=True).strip()
-        pattern = pattern.replace('\.', '__ESCAPE_DOT__')
-        pattern = pattern.replace('.', r'\.')
-        pattern = pattern.replace('__ESCAPE_DOT__', r'\.')
-        # Translate %(root)s variable if exists but not required. Can include the project name.
-        if re.compile(r'%\((root)\)s').search(pattern):
-            pattern = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern)
-        # Include specific facet patterns
-        for facet, facet_regex in self.get_patterns(section).items():
-            pattern = re.sub(re.compile(r'%\(({0})\)s'.format(facet)), facet_regex.pattern, pattern)
-        # Constraint on %(version)s number
-        pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
-        # Translate all patterns matching %(name)s
-        pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
-        return '{0}/(?P<filename>[\w.-]+)$'.format(pattern)
-
-    def translate_dataset_format(self, section):
-        """
-        Return a regular expression associated with the ``dataset_id`` option
-        in the configuration file. This can be passed to the Python ``re`` methods.
-
-        :param str section: The section name to parse
-        :returns: The corresponding ``re`` pattern
-
-        """
-        pattern = self.get(section, 'dataset_id', raw=True).strip()
-        pattern = pattern.replace('\.', '__ESCAPE_DOT__')
-        pattern = pattern.replace('.', r'\.')
-        pattern = pattern.replace('__ESCAPE_DOT__', r'\.')
-        # Include specific facet patterns
-        for facet, facet_regex in self.get_patterns(section).iteritems():
-            pattern = re.sub(re.compile(r'%\(({0})\)s'.format(facet)), facet_regex.pattern, pattern)
-        # Constraint on %(version)s number
-        pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
-        # Translate all patterns matching %(name)s
-        pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
-        return pattern
-
-    def translate_filename_format(self, section):
-        """
-        Return a regular expression filters associated with the ``directory_format`` option
-        in the configuration file. This can be passed to the Python ``re`` methods.
-
-        :param str section: The section name to parse
-        :returns: The corresponding ``re`` pattern
-
-        """
-        # Start translation
-        pattern = self.get(section, 'filename_format', raw=True).strip()
         pattern = pattern.replace('\.', '__ESCAPE_DOT__')
         pattern = pattern.replace('.', r'\.')
         pattern = pattern.replace('__ESCAPE_DOT__', r'\.')
@@ -161,75 +109,83 @@ class CfgParser(ConfigParser):
         pattern = re.sub(re.compile(r'\[(.*)\]'), r'(\1)?', pattern)
         # Remove underscore from latest mandatory pattern to allow optional brackets
         pattern = re.sub(re.compile(r'%\(([^()]*)\)s\('), r'(?P<\1>[^-_]+)(', pattern)
+        # Translate %(root)s variable if exists but not required. Can include the project name.
+        if re.compile(r'%\((root)\)s').search(pattern):
+            pattern = re.sub(re.compile(r'%\((root)\)s'), r'(?P<\1>[\w./-]+)', pattern)
+        # Include specific facet patterns
+        for facet, facet_regex in self.get_patterns().items():
+            pattern = re.sub(re.compile(r'%\(({})\)s'.format(facet)), facet_regex.pattern, pattern)
+        # Constraint on %(version)s number
+        pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
         # Translate all patterns matching %(name)s
-        return re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
+        pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
+        if option == 'directory_format':
+            return '{}/(?P<filename>[\w.-]+)$'.format(pattern)
+        else:
+            return pattern
 
-    def get_facets(self, section, option, ignored=None):
+    def get_facets(self, option, ignored=None):
         """
         Returns the set of facets declared into "*_format" attributes in the configuration file.
-        :param str section: The section name to parse
         :param str option: The option to get facet names
         :param list ignored: The list of facets to ignored
         :returns: The collection of facets
         :rtype: *set*
 
         """
-        facets = re.findall(re.compile(r'%\(([^()]*)\)s'), self.get(section, option, raw=True))
+        facets = re.findall(re.compile(r'%\(([^()]*)\)s'), self.get(self.section, option, raw=True))
         if ignored:
             return [f for f in facets if f not in ignored]
         else:
             return facets
 
-    def check_options(self, section, pairs):
+    def check_options(self, pairs):
         """
         Checks a {key: value} pairs against the corresponding options from the configuration file.
 
-        :param str section: The section name to parse
         :param dict pairs: A dictionary of {key: value} to check
         :raises Error: If the value is missing in the corresponding options list
 
         """
         for key in pairs.keys():
-            options, option = self.get_options(section, key)
+            options, option = self.get_options(key)
             try:
                 # get_options returned a list
                 if pairs[key] not in options:
-                    raise NoConfigValue(pairs[key], option, section, self.read_paths)
+                    raise NoConfigValue(pairs[key], option, self.section, self.files)
             except TypeError:
                 # get_options returned a regex from pattern
                 if not options.match(pairs[key]):
-                    raise NoConfigValue(pairs[key], option, section, self.read_paths)
+                    raise NoConfigValue(pairs[key], option, self.section, self.files)
                 else:
-                    self.check_options(section, options.match(pairs[key]).groupdict())
+                    self.check_options(options.match(pairs[key]).groupdict())
 
-    def get_options(self, section, option):
+    def get_options(self, option):
         """
         Returns the list of attribute options.
 
-        :param str section: The section name to parse
         :param str option: The option to get available values
         :returns: The option values
         :rtype: *list* or *re.RegexObject*
         :raises Error: If the option is missing
 
         """
-        if self.has_option(section, '{0}_options'.format(option)):
-            option = '{0}_options'.format(option)
-            return self.get_options_from_list(section, option), option
-        elif self.has_option(section, '{0}_map'.format(option)):
-            option = '{0}_map'.format(option)
-            return self.get_options_from_map(section, option), option
-        elif self.has_option(section, '{0}_pattern'.format(option)):
-            option = '{0}_pattern'.format(option)
-            return self.get_options_from_pattern(section, option), option
+        if self.has_option(self.section, '{}_options'.format(option)):
+            option = '{}_options'.format(option)
+            return self.get_options_from_list(option), option
+        elif self.has_option(self.section, '{}_map'.format(option)):
+            option = '{}_map'.format(option)
+            return self.get_options_from_map(option), option
+        elif self.has_option(self.section, '{}_pattern'.format(option)):
+            option = '{}_pattern'.format(option)
+            return self.get_options_from_pattern(option), option
         else:
-            raise NoConfigOptions(option, section, self.read_paths)
+            raise NoConfigOptions(option, self.section, self.files)
 
-    def get_options_from_list(self, section, option):
+    def get_options_from_list(self, option):
         """
         Returns the list of option values from options list.
 
-        :param str section: The section name to parse
         :param str option: The option to get available values
         :returns: The option values
         :rtype: *list*
@@ -237,21 +193,18 @@ class CfgParser(ConfigParser):
         :raises Error: If the option does not exist
 
         """
-        if section not in self.sections():
-            raise NoConfigSection(section, self.read_paths)
-        if not self.has_option(section, option):
-            raise NoConfigOption(option, section, self.read_paths)
+        if not self.has_option(self.section, option):
+            raise NoConfigOption(option, self.section, self.files)
         if option.rsplit('_options')[0] == 'experiment':
-            options = self.get_options_from_table(section, option, field_id=2)
+            options = self.get_options_from_table(option, field_id=2)
         else:
-            options = split_line(self.get(section, option), sep=',')
+            options = split_line(self.get(self.section, option), sep=',')
         return options
 
-    def get_options_from_table(self, section, option, field_id=None):
+    def get_options_from_table(self, option, field_id=None):
         """
         Returns the list of options from options table (i.e., <field1> | <field2> | <field3> | etc.).
 
-        :param str section: The section name to parse
         :param str option: The option to get available values
         :param int field_id: The field number starting from 1 (if not return the tuple)
         :returns: The option values
@@ -261,11 +214,9 @@ class CfgParser(ConfigParser):
         :raises Error: If the options table is misdeclared
 
         """
-        if section not in self.sections():
-            raise NoConfigSection(section, self.read_paths)
-        if not self.has_option(section, option):
-            raise NoConfigOption(option, section, self.read_paths)
-        option_lines = split_line(self.get(section, option).lstrip(), sep='\n')
+        if not self.has_option(self.section, option):
+            raise NoConfigOption(option, self.section, self.files)
+        option_lines = split_line(self.get(self.section, option).lstrip(), sep='\n')
         if len(option_lines) == 1 and not option_lines[0]:
             return list()
         try:
@@ -274,14 +225,13 @@ class CfgParser(ConfigParser):
             else:
                 options = [tuple(option) for option in map(lambda x: split_line(x), option_lines)]
         except:
-            raise MisdeclaredOption(option, section, self.read_paths, reason="Wrong syntax")
+            raise MisdeclaredOption(option, self.section, self.files, reason="Wrong syntax")
         return options
 
-    def get_options_from_pairs(self, section, option, key):
+    def get_options_from_pairs(self, option, key):
         """
         Returns the list of option values from pairs table (i.e., <key> | <value>).
 
-        :param str section: The section name to parse
         :param str option: The option to get available values
         :param str key: The key to get the value
         :returns: The key value
@@ -292,26 +242,23 @@ class CfgParser(ConfigParser):
         :raises Error: If the options table is misdeclared
 
         """
-        if section not in self.sections():
-            raise NoConfigSection(section, self.read_paths)
-        if not self.has_option(section, option):
-            raise NoConfigOption(option, section, self.read_paths)
-        options_lines = split_line(self.get(section, option), sep='\n')
+        if not self.has_option(self.section, option):
+            raise NoConfigOption(option, self.section, self.files)
+        options_lines = split_line(self.get(self.section, option), sep='\n')
         try:
             options = dict((k, v) for k, v in map(lambda x: split_line(x), options_lines[1:]))
         except:
-            raise MisdeclaredOption(option, section, self.read_paths, reason="Wrong syntax")
+            raise MisdeclaredOption(option, self.section, self.files, reason="Wrong syntax")
         try:
             return options[key]
         except KeyError:
-            raise NoConfigKey(key, option, section, self.read_paths)
+            raise NoConfigKey(key, option, self.section, self.files)
 
-    def get_options_from_map(self, section, option, key=None):
+    def get_options_from_map(self, option, key=None):
         """
         Returns the list of option values from maptable.
         If no key submitted, the option name has to be ``<key>_map``.
 
-        :param str section: The section name to parse
         :param str option: The option to get available values
         :param str key: The key to get the values
         :returns: The option values
@@ -321,24 +268,21 @@ class CfgParser(ConfigParser):
         :raises Error: If the related key is not in the source/destination keys of the maptable
 
         """
-        if section not in self.sections():
-            raise NoConfigSection(section, self.read_paths)
-        if not self.has_option(section, option):
-            raise NoConfigOption(option, section, self.read_paths)
+        if not self.has_option(self.section, option):
+            raise NoConfigOption(option, self.section, self.files)
         if not key:
             key = option.split('_map')[0]
-        from_keys, to_keys, value_map = split_map(self.get(section, option))
+        from_keys, to_keys, value_map = split_map(self.get(self.section, option))
         if key in from_keys:
             return list(set([value[from_keys.index(key)] for value in value_map.keys()]))
         else:
             return list(set([value[to_keys.index(key)] for value in value_map.values()]))
 
-    def get_option_from_map(self, section, option, pairs):
+    def get_option_from_map(self, option, pairs):
         """
         Returns the destination values corresponding to key values from maptable.
         The option name has to be ``<key>_map``. The key has to be in the destination keys of the maptable header.
 
-        :param str section: The section name to parse
         :param str option: The option to get the value
         :param dict pairs: A dictionary of {from_key: value} to input the maptable
         :returns: The corresponding option value
@@ -348,25 +292,22 @@ class CfgParser(ConfigParser):
         :raises Error: If the key values are not in the destination keys of the maptable
 
         """
-        if section not in self.sections():
-            raise NoConfigSection(section, self.read_paths)
-        if not self.has_option(section, option):
-            raise NoConfigOption(option, section, self.read_paths)
-        from_keys, to_keys, value_map = split_map(self.get(section, option))
+        if not self.has_option(self.section, option):
+            raise NoConfigOption(option, self.section, self.files)
+        from_keys, to_keys, value_map = split_map(self.get(self.section, option))
         key = option.split('_map')[0]
         if key not in to_keys:
-            raise MisdeclaredOption(option, section, self.read_paths,
-                                    reason="'{0}' has to be in 'destination key'".format(key))
+            raise MisdeclaredOption(option, self.section, self.files,
+                                    reason="'{}' has to be in 'destination key'".format(key))
         from_values = tuple(pairs[k] for k in from_keys)
         to_values = value_map[from_values]
         return to_values[to_keys.index(key)]
 
-    def get_options_from_pattern(self, section, option):
+    def get_options_from_pattern(self, option):
         """
         Returns the expanded regex from ``key_pattern``.
         The option name has to be ``<attr>_pattern``.
 
-        :param str section: The section name to parse
         :param str option: The option to get available values
         :returns: The expanded regex
         :rtype: *re.RegexObject*
@@ -374,11 +315,9 @@ class CfgParser(ConfigParser):
         :raises Error: If the option does not exist
 
         """
-        if section not in self.sections():
-            raise NoConfigSection(section, self.read_paths)
-        if not self.has_option(section, option):
-            raise NoConfigOption(option, section, self.read_paths)
-        pattern = self.get(section, option, raw=True)
+        if not self.has_option(self.section, option):
+            raise NoConfigOption(option, self.section, self.files)
+        pattern = self.get(self.section, option, raw=True)
         # Translate all patterns matching %(digit)s
         pattern = re.sub(re.compile(r'%\((digit)\)s'), r'[\d]+', pattern)
         # Translate all patterns matching %(string)s
@@ -387,19 +326,18 @@ class CfgParser(ConfigParser):
         pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
         return re.compile(pattern)
 
-    def get_patterns(self, section):
+    def get_patterns(self):
         """
         Get all ``key_patterns`` options declared into the project section.
 
-        :param str section: The section name to parse
         :returns: A dictionary of {option: pattern}
         :rtype: *dict*
 
         """
         patterns = dict()
-        for option in self.options(section, defaults=False):
+        for option in self.options(defaults=False):
             if '_pattern' in option and option != 'version_pattern':
-                patterns[option] = self.get_options_from_pattern(section, option)
+                patterns[option] = self.get_options_from_pattern(option)
         return patterns
 
 

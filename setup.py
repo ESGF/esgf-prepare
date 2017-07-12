@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
+from esgprep.utils.constants import VERSION
 
 setup(name='esgprep',
-      version='2.7.8',
+      version=VERSION,
       description='Toolbox to prepare data for ESGF publication',
       author='Levavasseur Guillaume',
       author_email='glipsl@ipsl.fr',
@@ -13,8 +14,6 @@ setup(name='esgprep',
       include_package_data=True,
       install_requires=['lockfile>=0.12.2',
                         'requests>=2.17.3',
-                        'github3.py>=0.9.5',
-                        'uritemplate.py>=2.0.0',
                         'fuzzywuzzy>=0.15.0',
                         'netCDF4<=1.2.8,>=1.2.0',
                         'hurry.filesize>=0.9',
@@ -33,3 +32,4 @@ setup(name='esgprep',
                    'Topic :: Scientific/Engineering',
                    'Topic :: Software Development :: Build Tools']
       )
+

@@ -11,7 +11,6 @@ import unittest
 from esgprep.fetchini.main import *
 from esgprep.fetchini.constants import *
 from esgprep.fetchini.exceptions import *
-from github3.github import Repository as GitHubRepository
 
 
 class FetchiniTest(unittest.TestCase):

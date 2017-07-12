@@ -11,14 +11,10 @@ import logging
 import os
 import re
 from collections import OrderedDict
-from datetime import datetime
 
 from fuzzywuzzy import fuzz, process
 from hurry.filesize import size
 from netCDF4 import Dataset
-from shutil import copy2 as copy
-from shutil import move
-from os import link, symlink
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
 
@@ -87,13 +83,13 @@ class File(object):
             nc.close()
         except IOError:
             raise InvalidNetCDFFile(self.ffp)
-        # Get attributes from filename, overwritting existing ones
+        # Get attributes from filename, overwriting existing ones
         try:
             # re.search() method is required to search through the entire string.
             self.attributes.update(re.search(ctx.pattern, self.filename).groupdict())
         except:
-            raise FilenameNotMatch(self.filename, ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
-        # Get attributes from command-line, overwritting exsiting ones
+            raise FilenameNotMatch(self.filename, ctx.pattern, ctx.cfg.section, ctx.cfg.files)
+        # Get attributes from command-line, overwriting existing ones
         self.attributes.update(ctx.set_values)
         # Set version to None
         self.attributes['root'] = ctx.root
@@ -101,9 +97,7 @@ class File(object):
         self.attributes['version'] = None
         # Only required to build proper DRS
         try:
-            self.attributes['project'] = ctx.cfg.get_options_from_pairs(ctx.project_section,
-                                                                        'category_defaults',
-                                                                        'project')
+            self.attributes['project'] = ctx.cfg.get_options_from_pairs('category_defaults', 'project')
         except:
             self.attributes['project'] = ctx.project.lower()
 
@@ -130,18 +124,16 @@ class File(object):
         # the DRS attributes are completed from esg.<project>.ini maptables, or with the most
         # similar NetCDF attribute.
         for facet in set(ctx.facets).intersection(self.attributes.keys()) - set(IGNORED_KEYS):
-            ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
+            ctx.cfg.check_options({facet: self.attributes[facet]})
         for facet in set(ctx.facets).difference(self.attributes.keys()) - set(IGNORED_KEYS):
             try:
-                self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
-                                                                     '{0}_map'.format(facet),
-                                                                     self.attributes)
+                self.attributes[facet] = ctx.cfg.get_option_from_map('{}_map'.format(facet), self.attributes)
             except:
                 if facet in ctx.set_keys.keys():
                     try:
                         # Rename attribute key
                         self.attributes[facet] = self.attributes.pop(ctx.set_keys[facet])
-                        ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
+                        ctx.cfg.check_options({facet: self.attributes[facet]})
                     except KeyError:
                         raise NoNetCDFAttribute(ctx.set_keys[facet], self.ffp)
                 else:
@@ -151,13 +143,13 @@ class File(object):
                         # Rename attribute key
                         self.attributes[facet] = self.attributes.pop(key)
                         if ctx.verbose:
-                            logging.warning('Consider "{0}" attribute instead of "{1}" facet'.format(key, facet))
-                        ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
+                            logging.warning('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
+                        ctx.cfg.check_options({facet: self.attributes[facet]})
                     else:
                         raise NoConfigVariable(facet,
-                                               ctx.cfg.get(ctx.project_section, 'directory_format', raw=True).strip(),
-                                               ctx.project_section,
-                                               ctx.cfg.read_paths)
+                                               ctx.cfg.get(ctx.cfg.section, 'directory_format', raw=True).strip(),
+                                               ctx.cfg.section,
+                                               ctx.cfg.files)
         return OrderedDict(zip(ctx.facets, [self.attributes[facet] for facet in ctx.facets]))
 
 
@@ -167,7 +159,7 @@ class DRSPath(object):
 
     """
     # Root directory to start DRS as constant
-    VERSION = 'v{0}'.format(datetime.now().strftime('%Y%m%d'))
+    TREE_VERSION = 'v{}'.format(datetime.now().strftime('%Y%m%d'))
 
     def __init__(self, parts):
         # Retrieve the dataset directory parts
@@ -175,14 +167,14 @@ class DRSPath(object):
         # Retrieve the file directory parts
         self.f_parts = OrderedDict(parts.items()[parts.keys().index('version') + 1:])
         # Retrieve the upgrade version
-        self.v_upgrade = DRSPath.VERSION
+        self.v_upgrade = DRSPath.TREE_VERSION
         # If the dataset path is not equivalent to the file diretcory (e.g., CMIP5 like)
         # Get the physical files version
         self.v_latest = self.get_latest_version()
         if self.path(f_part=False) != self.path():
-            self.v_files = OrderedDict({'variable': '{0}_{1}'.format(self.get('variable'), self.v_upgrade[1:])})
+            self.v_files = OrderedDict({'variable': '{}_{}'.format(self.get('variable'), self.v_upgrade[1:])})
         else:
-            self.v_files = OrderedDict({'data': 'd{0}'.format(self.v_upgrade[1:])})
+            self.v_files = OrderedDict({'data': 'd{}'.format(self.v_upgrade[1:])})
 
     def get(self, key):
         """
@@ -292,16 +284,16 @@ class DRSLeaf(object):
 
         """
         # Make directory for destination path if not exist
-        print('{0} {1}'.format('mkdir -p', os.path.dirname(self.dst)))
+        print('{} {}'.format('mkdir -p', os.path.dirname(self.dst)))
         if not todo_only:
             try:
                 os.makedirs(os.path.dirname(self.dst))
             except OSError:
                 pass
-        print('{0} {1} {2}'.format(UNIX_COMMAND[self.mode], self.src, self.dst))
+        print('{} {} {}'.format(UNIX_COMMAND[self.mode], self.src, self.dst))
         # Unlink symbolic link if already exists
         if self.mode == 'symlink' and os.path.exists(self.dst):
-            print('{0} {1}'.format('unlink', self.dst))
+            print('{} {}'.format('unlink', self.dst))
             if not todo_only:
                 os.unlink(self.dst)
         # Make upgrade depending on the migration mode
@@ -391,11 +383,11 @@ class DRSTree(Tree):
 
         """
         print(''.center(self.d_lengths[-1], '='))
-        print('{0}{1}->{2}{3}{4}'.format('Publication level'.center(self.d_lengths[0]),
-                                         'Latest version'.center(self.d_lengths[1]),
-                                         'Upgrade version'.center(self.d_lengths[2]),
-                                         'Files to upgrade'.rjust(self.d_lengths[3]),
-                                         'Upgrade size'.rjust(self.d_lengths[4])))
+        print('{}{}->{}{}{}'.format('Publication level'.center(self.d_lengths[0]),
+                                    'Latest version'.center(self.d_lengths[1]),
+                                    'Upgrade version'.center(self.d_lengths[2]),
+                                    'Files to upgrade'.rjust(self.d_lengths[3]),
+                                    'Upgrade size'.rjust(self.d_lengths[4])))
         print(''.center(self.d_lengths[-1], '-'))
         for dset_path, incomings in self.paths.items():
             dset_dir, dset_version = os.path.dirname(dset_path), os.path.basename(dset_path)
@@ -403,11 +395,11 @@ class DRSTree(Tree):
             files_number = len(incomings)
             latest_version = sorted([incoming['latest'] for incoming in incomings])[-1]
             total_size = size(sum([incoming['size'] for incoming in incomings]))
-            print('{0}{1}->{2}{3}{4}'.format(publication_level.ljust(self.d_lengths[0]),
-                                             latest_version.center(self.d_lengths[1]),
-                                             dset_version.center(self.d_lengths[2]),
-                                             str(files_number).rjust(self.d_lengths[3]),
-                                             total_size.rjust(self.d_lengths[4])))
+            print('{}{}->{}{}{}'.format(publication_level.ljust(self.d_lengths[0]),
+                                        latest_version.center(self.d_lengths[1]),
+                                        dset_version.center(self.d_lengths[2]),
+                                        str(files_number).rjust(self.d_lengths[3]),
+                                        total_size.rjust(self.d_lengths[4])))
         print(''.center(self.d_lengths[-1], '='))
 
     def tree(self):
@@ -430,7 +422,7 @@ class DRSTree(Tree):
 
     def upgrade(self, todo_only=False):
         """
-        Upgrads the whole DRS tree.
+        Upgrades the whole DRS tree.
 
         :param boolean todo_only: Only print Unix command-line to do
 

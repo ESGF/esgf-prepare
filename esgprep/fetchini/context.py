@@ -1,0 +1,127 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+    :platform: Unix
+    :synopsis: Processing context used in this module.
+
+"""
+
+import logging
+import os
+import re
+import sys
+from exceptions import *
+
+from requests.auth import HTTPBasicAuth
+from tqdm import tqdm
+
+from constants import *
+from utils import gh_request_content
+
+
+class ProcessingContext(object):
+    """
+    Encapsulates the processing context/information for main process.
+
+    :param ArgumentParser args: Parsed command-line arguments
+    :returns: The processing context
+    :rtype: *ProcessingContext*
+
+    """
+
+    def __init__(self, args):
+        self.pbar = args.pbar
+        self.projects = args.project
+        self.keep = args.k
+        self.overwrite = args.o
+        self.backup_mode = args.b
+        self.gh_user = args.gh_user
+        self.gh_password = args.gh_password
+        self.ini_dir = os.path.realpath(os.path.normpath(args.i))
+        self.url = GITHUB_FILE_API
+        if args.devel:
+            self.url += '?ref=devel'
+
+    def __enter__(self):
+        # Init GitHub authentication
+        self.auth = self.authenticate()
+        # Init output directory
+        self.make_ini_dir()
+        # Init the project list to retrieve
+        self.targets = self.target_projects()
+        # Init progress bar
+        self.targets = self.make_pbar(self.targets)
+        return self
+
+    def __exit__(self, *exc):
+        # Default is sys.exit(0)
+        pass  # Errors?
+
+    def make_pbar(self, iterable):
+        """
+        Build progress pbar if desired
+
+        :returns: The progress bar object as a list
+        :rtype: *tqdm.tqdm* or *iter*
+
+        """
+        if self.pbar:
+            return tqdm(iterable,
+                        desc='Fetching "esg.<project>.ini"',
+                        total=len(iterable),
+                        bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                        ncols=100,
+                        unit='files',
+                        file=sys.stdout)
+        else:
+            return iterable
+
+    def authenticate(self):
+        """
+        Build GitHub HTTP authenticator
+
+        :returns: The HTTP authenticator
+        :rtype: *requests.auth.HTTPBasicAuth*
+
+        """
+        return HTTPBasicAuth(self.gh_user, self.gh_password) if self.gh_user and self.gh_password else None
+
+    def make_ini_dir(self):
+        """
+        Build the output directory following:
+         - If ESGF node and args.i = /esg/config/esgcet -> exists
+         - If not ESGF node and args.i = /esg/config/esgcet -> doesn't exist -> use $PWD/ini instead
+         - If ESGF node and args.i = other -> if not exists make it
+         - If not ESGF node and args.i = other -> if not exists make it
+
+        """
+        if not os.path.isdir(self.ini_dir):
+            try:
+                os.makedirs(self.ini_dir)
+                logging.warning('{} created'.format(self.ini_dir))
+            except OSError:
+                self.ini_dir = '{}/ini'.format(os.getcwd())
+                if not os.path.isdir(self.ini_dir):
+                    os.makedirs(self.ini_dir)
+                    logging.warning('{} created'.format(self.ini_dir))
+
+    def target_projects(self):
+        """
+        Gets the available projects id from GitHub esg.*.ini files.
+        Make the intersection with the desired projects to fetch.
+
+        :returns: The target projects
+        :rtype: *list*
+
+        """
+        pattern = 'esg\.(.+?)\.ini'
+        r = gh_request_content(self.url.format(''), auth=self.auth)
+        files = [content['name'] for content in r.json()]
+        p_avail = set([re.search(pattern, x).group(1) for x in files if re.search(pattern, x)])
+        if self.projects:
+            p = set(self.projects)
+            p_avail = p_avail.intersection(p)
+            if p.difference(p_avail):
+                logging.warning("Unavailable project(s): {}".format(', '.join(p.difference(p_avail))))
+        return list(p_avail)

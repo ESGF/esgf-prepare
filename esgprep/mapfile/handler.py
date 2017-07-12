@@ -9,11 +9,11 @@
 
 import os
 import re
+from ConfigParser import InterpolationMissingOptionError
 
 from esgprep.mapfile.exceptions import *
 from esgprep.utils.constants import *
 from esgprep.utils.exceptions import *
-from ConfigParser import InterpolationMissingOptionError
 
 
 class File(object):
@@ -70,7 +70,7 @@ class File(object):
             # Only required to build proper dataset_id
             self.attributes['project'] = ctx.project.lower()
         except:
-            raise DirectoryNotMatch(self.ffp, ctx.pattern, ctx.project_section, ctx.cfg.read_paths)
+            raise DirectoryNotMatch(self.ffp, ctx.pattern, ctx.cfg.section, ctx.cfg.files)
 
     def get_dataset_id(self, ctx):
         """
@@ -94,24 +94,22 @@ class File(object):
         ignored_keys = set(IGNORED_KEYS) - set(ctx.not_ignored)
         if not ctx.dataset:
             for facet in set(ctx.facets).intersection(self.attributes.keys()) - ignored_keys:
-                ctx.cfg.check_options(ctx.project_section, {facet: self.attributes[facet]})
+                ctx.cfg.check_options({facet: self.attributes[facet]})
             for facet in set(ctx.facets).difference(self.attributes.keys()) - ignored_keys:
                 try:
-                    self.attributes[facet] = ctx.cfg.get_option_from_map(ctx.project_section,
-                                                                         '{0}_map'.format(facet),
-                                                                         self.attributes)
+                    self.attributes[facet] = ctx.cfg.get_option_from_map('{}_map'.format(facet), self.attributes)
                 except:
                     raise NoConfigVariable(facet,
-                                           ctx.cfg.get(ctx.project_section, 'directory_format', raw=True).strip(),
-                                           ctx.project_section,
-                                           ctx.cfg.read_paths)
+                                           ctx.cfg.get(ctx.cfg.section, 'directory_format', raw=True).strip(),
+                                           ctx.cfg.section,
+                                           ctx.cfg.files)
             try:
-                dataset_id = ctx.cfg.get(ctx.project_section, 'dataset_id', 0, self.attributes)
+                dataset_id = ctx.cfg.get(ctx.cfg.section, 'dataset_id', 0, self.attributes)
             except InterpolationMissingOptionError:
                 raise MissingPatternKey(self.attributes.keys(),
-                                        ctx.cfg.get(ctx.project_section, 'dataset_id', 1),
-                                        ctx.project_section,
-                                        ctx.cfg.read_paths)
+                                        ctx.cfg.get(ctx.cfg.section, 'dataset_id', 1),
+                                        ctx.cfg.section,
+                                        ctx.cfg.files)
         else:
             dataset_id = ctx.dataset
         return dataset_id
@@ -145,7 +143,7 @@ class File(object):
         if not checksum_client:
             return None
         try:
-            shell = os.popen("{0} {1} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, self.ffp))
+            shell = os.popen("{} {} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, self.ffp))
             return shell.readline()[:-1]
         except:
             raise ChecksumFail(self.ffp, checksum_type)

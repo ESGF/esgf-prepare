@@ -19,7 +19,8 @@ from lockfile import LockFile
 from tqdm import tqdm
 
 from constants import *
-from esgprep.utils.config import CfgParser
+from esgprep.utils.config import SectionParser
+from esgprep.utils.utils import cmd_exists
 from esgprep.utils.exceptions import *
 from handler import File
 
@@ -33,7 +34,6 @@ class ProcessingContext(object):
     :rtype: *ProcessingContext*
 
     """
-
     def __init__(self, args):
         self.directory = args.directory
         self.outmap = args.mapfile
@@ -52,20 +52,22 @@ class ProcessingContext(object):
             self.no_version = False
         self.version = None
         if args.version:
-            self.version = 'v{0}'.format(args.version)
+            self.version = 'v{}'.format(args.version)
         self.dir_filter = args.ignore_dir_filter
         self.file_filter = args.include_file_filter
         self.project = args.project
-        self.project_section = 'project:{0}'.format(args.project)
-        self.cfg = CfgParser(args.i, self.project_section)
+        _cfg = SectionParser(args.i, 'DEFAULT')
+        self.cfg = SectionParser(args.i, 'project:{}'.format(args.project))
         if args.no_checksum:
             self.checksum_client, self.checksum_type = None, None
-        elif self.cfg.has_option('DEFAULT', 'checksum'):
-            self.checksum_client, self.checksum_type = self.cfg.get_options_from_table('DEFAULT', 'checksum')[0]
+        elif _cfg.has_option('DEFAULT', 'checksum'):
+            self.checksum_client, self.checksum_type = _cfg.get_options_from_table('checksum')[0]
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             self.checksum_client, self.checksum_type = 'sha256sum', 'SHA256'
-        self.facets = self.cfg.get_facets(self.project_section, 'dataset_id')
-        self.pattern = self.cfg.translate_directory_format(self.project_section)
+        if self.checksum_client and not cmd_exists(self.checksum_client):
+            raise ChecksumClientNotFound(self.checksum_client)
+        self.facets = self.cfg.get_facets('dataset_id')
+        self.pattern = self.cfg.translate('directory_format')
 
 
 def yield_inputs(ctx):
@@ -124,9 +126,9 @@ def wrapper(inputs):
     except Exception as e:
         # Use verbosity to raise the whole threads traceback errors
         if not ctx.verbose:
-            logging.error('{0} skipped\n{1}: {2}'.format(ffp, e.__class__.__name__, e.message))
+            logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         else:
-            logging.exception('{0} failed'.format(ffp))
+            logging.exception('{} failed'.format(ffp))
         return None
 
 
@@ -151,9 +153,9 @@ def get_output_mapfile(attributes, dataset_id, dataset_version, ctx):
     """
     # Deduce output directory from --outdir of 'mapfile_drs'
     outdir = os.path.realpath(ctx.outdir)
-    if ctx.cfg.has_option(ctx.project_section, 'mapfile_drs'):
+    if ctx.cfg.has_option(ctx.cfg.section, 'mapfile_drs'):
         outdir = os.path.join(os.path.realpath(ctx.outdir),
-                              ctx.cfg.get(ctx.project_section, 'mapfile_drs', 0, attributes))
+                              ctx.cfg.get(ctx.cfg.section, 'mapfile_drs', 0, attributes))
     # Create output directory if not exists, catch OSError instead
     try:
         os.makedirs(outdir)
@@ -195,17 +197,17 @@ def generate_mapfile_entry(dataset_id, dataset_version, ffp, size, mtime, csum, 
     line = [dataset_id]
     # Add version number to dataset identifier if --no-version flag is disabled
     if dataset_version:
-        line = ['{0}#{1}'.format(dataset_id, dataset_version[1:])]
+        line = ['{}#{}'.format(dataset_id, dataset_version[1:])]
     line.append(ffp)
     line.append(str(size))
-    line.append('mod_time={0}'.format(str(mtime)))
+    line.append('mod_time={}'.format(str(mtime)))
     if ctx.checksum_client:
-        line.append('checksum={0}'.format(csum))
-        line.append('checksum_type={0}'.format(ctx.checksum_type))
+        line.append('checksum={}'.format(csum))
+        line.append('checksum_type={}'.format(ctx.checksum_type))
     if ctx.notes_url:
-        line.append('dataset_tech_notes={0}'.format(ctx.notes_url))
+        line.append('dataset_tech_notes={}'.format(ctx.notes_url))
     if ctx.notes_title:
-        line.append('dataset_tech_notes_title={0}'.format(ctx.notes_title))
+        line.append('dataset_tech_notes_title={}'.format(ctx.notes_title))
     return ' | '.join(line) + '\n'
 
 
@@ -225,7 +227,7 @@ def insert_mapfile_entry(outfile, entry, ffp):
     with lock:
         with open(outfile, 'a+') as mapfile:
             mapfile.write(entry)
-    logging.info('{0} <-- {1}'.format(os.path.splitext(os.path.basename(outfile))[0], ffp))
+    logging.info('{} <-- {}'.format(os.path.splitext(os.path.basename(outfile))[0], ffp))
 
 
 def in_version_scope(fh, ctx):
@@ -324,9 +326,9 @@ def clean(directory):
 
     """
     for root, _, filenames in os.walk(directory):
-        for filename in fnmatch.filter(filenames, '*{0}'.format(WORKING_EXTENSION)):
+        for filename in fnmatch.filter(filenames, '*{}'.format(WORKING_EXTENSION)):
             os.remove(os.path.join(root, filename))
-    logging.info('{0} cleaned'.format(directory))
+    logging.info('{} cleaned'.format(directory))
 
 
 def main(args):
@@ -380,10 +382,10 @@ def main(args):
     # Print number of files out of the version scope if exist
     if oovs:
         if args.pbar:
-            print('{0}: {1} ({2})'.format('File(s) skipped'.ljust(LEN_MSG),
-                                          oovs,
-                                          'out of version scope'))
-        logging.info('{0} file(s) skipped (out of the version scope)'.format(oovs))
+            print('{}: {} ({})'.format('File(s) skipped'.ljust(LEN_MSG),
+                                       oovs,
+                                       'out of version scope'))
+        logging.info('{} file(s) skipped (out of the version scope)'.format(oovs))
     # Decline outputs depending on the scan results
     # Raise errors when one or several files have been skipped or failed
     if all(mapfiles) and any(mapfiles):
@@ -394,11 +396,11 @@ def main(args):
             os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
         # Print number of generated mapfiles
         if args.pbar:
-            print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(LEN_MSG),
-                                              len(set(mapfiles)),
-                                              ctx.outdir))
-        logging.info('{0} mapfile(s) generated'.format(len(set(mapfiles))))
-        logging.info('==> Scan completed ({0} file(s) scanned)'.format(len(mapfiles)))
+            print('{}: {} (see {})'.format('Mapfile(s) generated'.ljust(LEN_MSG),
+                                           len(set(mapfiles)),
+                                           ctx.outdir))
+        logging.info('{} mapfile(s) generated'.format(len(set(mapfiles))))
+        logging.info('==> Scan completed ({} file(s) scanned)'.format(len(mapfiles)))
         sys.exit(0)
     elif all(mapfiles) and not any(mapfiles):
         # Mapfiles list is empty = no files scanned/found
@@ -412,24 +414,24 @@ def main(args):
         for mapfile in [x for x in set(mapfiles) if x is not None]:
             os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
         if args.pbar:
-            print('{0}: {1} (see {2})'.format('Mapfile(s) generated'.ljust(LEN_MSG),
-                                              len(set(filter(None, mapfiles))),
-                                              ctx.outdir))
-        logging.info('{0} mapfile(s) generated'.format(len(set(filter(None, mapfiles)))))
+            print('{}: {} (see {})'.format('Mapfile(s) generated'.ljust(LEN_MSG),
+                                           len(set(filter(None, mapfiles))),
+                                           ctx.outdir))
+        logging.info('{} mapfile(s) generated'.format(len(set(filter(None, mapfiles)))))
         # Print number of scan errors
         if args.pbar:
-            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(LEN_MSG),
-                                              mapfiles.count(None),
-                                              logging.getLogger().handlers[0].baseFilename))
-        logging.warning('{0} file(s) have been skipped'.format(mapfiles.count(None)))
-        logging.info('==> Scan completed ({0} file(s) scanned)'.format(len(mapfiles)))
+            print('{}: {} (see {})'.format('Scan errors'.ljust(LEN_MSG),
+                                           mapfiles.count(None),
+                                           logging.getLogger().handlers[0].baseFilename))
+        logging.warning('{} file(s) have been skipped'.format(mapfiles.count(None)))
+        logging.info('==> Scan completed ({} file(s) scanned)'.format(len(mapfiles)))
         sys.exit(2)
     elif not all(mapfiles) and not any(mapfiles):
         # Mapfiles list contains only None values = all files have been skipped or failed during the scan
         # Print number of scan errors
         if args.pbar:
-            print('{0}: {1} (see {2})'.format('Scan errors'.ljust(LEN_MSG),
-                                              len(mapfiles),
-                                              logging.getLogger().handlers[0].baseFilename))
+            print('{}: {} (see {})'.format('Scan errors'.ljust(LEN_MSG),
+                                           len(mapfiles),
+                                           logging.getLogger().handlers[0].baseFilename))
         logging.warning('==> All files have been ignored or have failed leading to no mapfile.')
         sys.exit(3)

@@ -1,0 +1,3 @@
+[console_scripts]
+esgprep = esgprep.esgprep:run
+

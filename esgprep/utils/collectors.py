@@ -72,9 +72,7 @@ class PathCollector(Collector):
                         ffp = os.path.join(root, filename)
                         if os.path.isfile(ffp) and not match(self.file_filter, filename):
                             yield ffp
-
     #TODO: Add version finder on path for mapfile walker
-
 
 class DatasetCollector(Collector):
     """

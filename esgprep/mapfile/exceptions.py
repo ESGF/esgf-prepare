@@ -16,7 +16,7 @@ class ChecksumFail(Exception):
 
     def __init__(self, path, checksum_type=None):
         self.msg = "Checksum failed."
-        self.msg += "\n<file: '{0}'>".format(path)
+        self.msg += "\n<file: '{}'>".format(path)
         if checksum_type:
-            self.msg += "\n<checksum type: '{0}'>".format(checksum_type)
+            self.msg += "\n<checksum type: '{}'>".format(checksum_type)
         super(self.__class__, self).__init__(self.msg)

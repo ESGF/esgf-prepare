@@ -45,7 +45,7 @@ def init_logging(log, verbose=False, level='INFO'):
     """
     logging.getLogger("github3").setLevel(logging.CRITICAL)  # Disables logging message from github3 library
     logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
-    logname = 'esgprep-{0}-{1}'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
+    logname = 'esgprep-{}-{}'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
     formatter = logging.Formatter(fmt='%(levelname)-10s %(asctime)s %(message)s')
     if log:
         if not os.path.isdir(log):
@@ -54,12 +54,12 @@ def init_logging(log, verbose=False, level='INFO'):
     else:
         logfile = os.path.join(os.getcwd(), logname)
     logging.getLogger().setLevel(logging.DEBUG)
-    error_handler = logging.FileHandler(filename='{0}.err'.format(logfile), delay=True)
+    error_handler = logging.FileHandler(filename='{}.err'.format(logfile), delay=True)
     error_handler.setLevel(logging.ERROR)
     error_handler.setFormatter(formatter)
     logging.getLogger().addHandler(error_handler)
     if log:
-        stream_handler = logging.FileHandler(filename='{0}.log'.format(logfile), delay=True)
+        stream_handler = logging.FileHandler(filename='{}.log'.format(logfile), delay=True)
     else:
         if verbose:
             stream_handler = logging.StreamHandler()
@@ -96,3 +96,17 @@ def match(pattern, string):
 
     """
     return True if re.match(re.compile(pattern), string) else False
+
+
+def cmd_exists(cmd):
+    """
+    Checks if a Shell command exists.
+
+    :returns: True if exists.
+    :rtype: *boolean*
+
+    """
+    return any(
+        os.access(os.path.join(path, cmd), os.X_OK)
+        for path in os.environ["PATH"].split(os.pathsep)
+    )

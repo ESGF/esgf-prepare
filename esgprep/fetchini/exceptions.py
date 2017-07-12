@@ -8,29 +8,50 @@
 """
 
 
-class GitHubConnectionError(Exception):
+class GitHubUnauthorized(Exception):
     """
-    Raised when the GitHub connection fails.
-
-    """
-
-    def __init__(self, error_msg, repository, username=None, password=None, team=None):
-        if "API rate limit exceeded" in error_msg:
-            error_msg = "API rate limit exceeded. Please try again in 60 minutes or submit GitHub user/password."
-        self.msg = "GitHub access denied: {0}".format(error_msg)
-        self.msg += "\n<username: '{0}'>".format(username)
-        self.msg += "\n<password: '{0}'>".format(password)
-        self.msg += "\n<team: '{0}'>".format(team)
-        self.msg += "\n<repository: '{0}'>".format(repository.lower())
-        super(self.__class__, self).__init__(self.msg)
-
-
-class GitHubNoContent(Exception):
-    """
-    Raised when the GitHub request returns empty content.
+    Raised when no read access on GitHub repo.
 
     """
 
     def __init__(self, uri):
-        self.msg = "No content from '{0}'".format(uri)
+        self.msg = "Unauthorized to read this GitHub repository."
+        self.msg += "\n<url: '{}'>".format(uri)
+        super(self.__class__, self).__init__(self.msg)
+
+
+class GitHubAPIRateLimit(Exception):
+    """
+    Raised when GitHub API rate limit exceeded.
+
+    """
+
+    def __init__(self, uri):
+        self.msg = "GitHub access denied: API rate limit exceeded. " \
+                   "Please try again in 60 minutes or submit GitHub user/password."
+        self.msg += "\n<url: '{}'>".format(uri)
+        super(self.__class__, self).__init__(self.msg)
+
+
+class GitHubFileNotFound(Exception):
+    """
+    Raised when no file found on GitHub repo.
+
+    """
+
+    def __init__(self, uri):
+        self.msg = "File not found on GitHub."
+        self.msg += "\n<url: '{}'>".format(uri)
+        super(self.__class__, self).__init__(self.msg)
+
+
+class GitHubConnectionError(Exception):
+    """
+    Raised when the GitHub request fails.
+
+    """
+
+    def __init__(self, uri):
+        self.msg = "GitHub connection error."
+        self.msg += "\n<url: '{}'>".format(uri)
         super(self.__class__, self).__init__(self.msg)
