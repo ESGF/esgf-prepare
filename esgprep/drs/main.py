@@ -69,6 +69,22 @@ def process(collector_input):
         parts = fh.get_drs_parts(ctx)
         # Instantiate file DRS path handler
         fph = DRSPath(parts)
+        # If a latest version already exists make some checks FIRST to stop files to not process
+        if fph.v_latest:
+            # Latest version should be older than upgrade version
+            if int(DRSPath.TREE_VERSION[1:]) <= int(fph.v_latest[1:]):
+                raise OlderUpgrade(DRSPath.TREE_VERSION, fph.v_latest)
+            # Check latest files
+            if ctx.checksum_client:
+                # Pickup the latest file version
+                latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
+                # Compute checksums and compare between latest (if exists) and upgrade file versions
+                if os.path.exists(latest_file):
+                    latest_checksum = checksum(latest_file, ctx.checksum_type, ctx.checksum_client)
+                    current_checksum = checksum(fh.ffp, ctx.checksum_type, ctx.checksum_client)
+                    if latest_checksum == current_checksum:
+                        raise DuplicatedFile(latest_file, fh.ffp)
+        # Start the tree generation
         # Add file DRS path to Tree
         src = ['..'] * len(fph.items(d_part=False))
         src.extend(fph.items(d_part=False, latest=True, file_folder=True))
@@ -90,21 +106,8 @@ def process(collector_input):
                              label=fh.filename,
                              src=fh.ffp,
                              mode=ctx.mode)
-        # If a latest version already exists
+        # Walk through the latest dataset version
         if fph.v_latest:
-            # Latest version should be older than upgrade version
-            if int(DRSPath.TREE_VERSION[1:]) <= int(fph.v_latest[1:]):
-                raise OlderUpgrade(DRSPath.TREE_VERSION, fph.v_latest)
-            # Check latest files
-            if ctx.checksum_client:
-                # Pickup the latest file version
-                latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
-                # Compute checksums and compare between latest and upgrade versions
-                latest_checksum = checksum(latest_file, ctx.checksum_type, ctx.checksum_client)
-                current_checksum = checksum(fh.ffp, ctx.checksum_type, ctx.checksum_client)
-                if latest_checksum == current_checksum:
-                    raise DuplicatedFile(latest_file, fh.ffp)
-            # Walk through the latest dataset version
             for root, _, filenames in os.walk(os.path.join(fph.path(f_part=False, latest=True, root=True))):
                 for filename in filenames:
                     # Add latest files as tree leaves with version to upgrade instead of latest version

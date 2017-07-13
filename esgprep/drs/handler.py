@@ -282,6 +282,8 @@ class DRSLeaf(object):
         :raises Error: If any IO action fails
 
         """
+        # TODO: Check user read / write permissions on ROOT and INCOMING folder.
+        # TODO: Make migration test prior to upgrade to avoid any OSError.
         # Make directory for destination path if not exist
         print('{} {}'.format('mkdir -p', os.path.dirname(self.dst)))
         if not todo_only:

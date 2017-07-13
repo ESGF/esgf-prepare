@@ -125,7 +125,7 @@ class NoConfigVariable(ConfigException):
     """
 
     def __init__(self, option, pattern):
-        self.msg = "Pattern not found in regular expression. Should be added or declared through a maptable."
+        self.msg = "Pattern not found in regular expression (try to add a maptable)"
         self.msg += "\n<pattern: '%({})s'>".format(option)
         self.msg += "\n<format: '{}'>".format(pattern)
         super(self.__class__, self).__init__(self.msg)
@@ -190,7 +190,7 @@ class MissingPatternKey(ConfigException):
     """
 
     def __init__(self, keys, pattern):
-        self.msg = 'Missing facet key(s) for pattern resolution. Try to use "--not-ignored" argument.'
+        self.msg = 'Missing facet key(s) for pattern resolution (try to use "--not-ignored" argument)'
         self.msg += "\n<found keys: '{}'>".format(keys)
         self.msg += "\n<pattern: '{}'>".format(pattern)
         super(self.__class__, self).__init__(self.msg)
@@ -203,7 +203,7 @@ class ExpressionNotMatch(ConfigException):
     """
 
     def __init__(self, string, pattern):
-        self.msg = "Pattern resolution failed."
+        self.msg = "Pattern resolution failed"
         self.msg += "\n<value: '{}'>".format(string)
         self.msg += "\n<pattern: '{}'>".format(pattern)
         super(self.__class__, self).__init__(self.msg)

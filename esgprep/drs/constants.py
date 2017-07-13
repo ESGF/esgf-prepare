@@ -26,7 +26,7 @@ UNIX_COMMAND = {'symlink': symlink,
                 'move': move}
 
 # Command-line parameter to ignore
-CONTROLLED_ARGS = ['set_values', 'set_keys', 'mode', 'version']
+CONTROLLED_ARGS = ['directory', 'set_values', 'set_keys', 'mode', 'version']
 
 # Tree context file
 TREE_FILE = '/tmp/DRSTree.pkl'

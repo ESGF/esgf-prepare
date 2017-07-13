@@ -33,7 +33,7 @@ class GitHubUnauthorized(GitHubException):
     """
 
     def __init__(self):
-        self.msg = "GitHub permission denied."
+        self.msg = "GitHub permission denied"
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -44,7 +44,7 @@ class GitHubAPIRateLimit(GitHubException):
     """
 
     def __init__(self):
-        self.msg = "GitHub API rate limit exceeded. Please try again in 60 minutes or submit GitHub user/password."
+        self.msg = "GitHub API rate limit exceeded (try again in 60 minutes or submit GitHub user/password)"
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -66,5 +66,5 @@ class GitHubConnectionError(GitHubException):
     """
 
     def __init__(self):
-        self.msg = "GitHub connection error."
+        self.msg = "GitHub connection error"
         super(self.__class__, self).__init__(self.msg)

@@ -62,12 +62,12 @@ class ProcessingContext(object):
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename
 
     def __enter__(self):
+        # Get checksum client
+        self.checksum_client, self.checksum_type = self.get_checksum_client()
         # Init configuration parser
         self.cfg = SectionParser(self.config_dir, section='project:{}'.format(self.project))
         self.facets = self.cfg.get_facets('directory_format')
         self.pattern = self.cfg.translate('filename_format')
-        # Get checksum client
-        self.checksum_client, self.checksum_type = self.get_checksum_client()
         # Init DRS tree
         self.tree = DRSTree(self.root, self.version, self.mode)
         # Disable file scan if a previous DRS tree have generated using same context and no "list" action
@@ -113,6 +113,7 @@ class ProcessingContext(object):
     def get_checksum_client(self):
         """
         Gets the checksum client to use.
+        Be careful to Exception constants by reading two different sections.
 
         :returns: The checksum client
         :rtype: *str*
@@ -141,9 +142,9 @@ class ProcessingContext(object):
         """
         for k in CONTROLLED_ARGS:
             if self.__getattribute__(k) != old_args[k]:
-                logging.warning('Submitted value of "{}" argument is different from recorded one:'
-                                ' "{}" instead of "{}". File scan re-run...'.format(k,
-                                                                                    self.__getattribute__(k),
-                                                                                    old_args.__dict__[k]))
+                logging.warning('"{}" argument has changed: "{}" instead of "{}". '
+                                'File scan re-run...'.format(k,
+                                                             self.__getattribute__(k),
+                                                             old_args[k]))
                 return False
         return True

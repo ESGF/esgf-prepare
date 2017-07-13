@@ -402,8 +402,8 @@ def run():
     # Print progress bar if no log and no verbose mode
     setattr(args, 'pbar', True if not args.log and not args.v else False)
     # Run subcommand
-    if args.test and not args.cmd:
-        print('"esgprep" test suite is not available. Coming soon!')
+    if args.test:
+        print('"esgprep" test suite not available. Coming soon!')
         exit()
         testsuite = unittest.TestLoader().discover('.')
         unittest.TextTestRunner().run(testsuite)

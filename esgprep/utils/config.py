@@ -24,10 +24,19 @@ class SectionParser(ConfigParser):
 
     def __init__(self, directory, section):
         ConfigParser.__init__(self)
-        self.files = list()
+        self.reset()
         ConfigException.SECTION = section
+        self.files = list()
         self.section = section
         self.parse(directory)
+
+    def reset(self):
+        """
+        Resets exception constants
+
+        """
+        ConfigException.FILES = []
+        ConfigException.SECTION = None
 
     def parse(self, path):
         """

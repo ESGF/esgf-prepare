@@ -15,7 +15,7 @@ class DuplicatedDataset(Exception):
     """
 
     def __init__(self, version, path):
-        self.msg = "Dataset already exists."
+        self.msg = "Dataset already exists"
         self.msg += "\n<version: '{}'>".format(version)
         self.msg += "\n<path: '{}'>".format(path)
         super(self.__class__, self).__init__(self.msg)
@@ -28,7 +28,7 @@ class OlderUpgrade(Exception):
     """
 
     def __init__(self, version, latest):
-        self.msg = "Upgrade version is older than latest version."
+        self.msg = "Upgrade version is older than latest version"
         self.msg += "\n<upgrade version: '{}'>".format(version)
         self.msg += "\n<latest  version: '{}'>".format(latest)
         super(self.__class__, self).__init__(self.msg)
