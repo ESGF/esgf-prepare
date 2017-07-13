@@ -11,7 +11,6 @@ import os
 import re
 from ConfigParser import InterpolationMissingOptionError
 
-from esgprep.mapfile.exceptions import *
 from esgprep.utils.constants import *
 from esgprep.utils.exceptions import *
 
@@ -70,7 +69,7 @@ class File(object):
             # Only required to build proper dataset_id
             self.attributes['project'] = ctx.project.lower()
         except:
-            raise DirectoryNotMatch(self.ffp, ctx.pattern, ctx.cfg.section, ctx.cfg.files)
+            raise ExpressionNotMatch(self.ffp, ctx.pattern)
 
     def get_dataset_id(self, ctx):
         """
@@ -100,16 +99,12 @@ class File(object):
                     self.attributes[facet] = ctx.cfg.get_option_from_map('{}_map'.format(facet), self.attributes)
                 except:
                     raise NoConfigVariable(facet,
-                                           ctx.cfg.get(ctx.cfg.section, 'directory_format', raw=True).strip(),
-                                           ctx.cfg.section,
-                                           ctx.cfg.files)
+                                           ctx.cfg.get(ctx.cfg.section, 'directory_format', raw=True).strip())
             try:
                 dataset_id = ctx.cfg.get(ctx.cfg.section, 'dataset_id', 0, self.attributes)
             except InterpolationMissingOptionError:
                 raise MissingPatternKey(self.attributes.keys(),
-                                        ctx.cfg.get(ctx.cfg.section, 'dataset_id', 1),
-                                        ctx.cfg.section,
-                                        ctx.cfg.files)
+                                        ctx.cfg.get(ctx.cfg.section, 'dataset_id', 1))
         else:
             dataset_id = ctx.dataset
         return dataset_id

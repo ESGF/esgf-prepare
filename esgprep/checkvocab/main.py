@@ -40,7 +40,7 @@ def main(args):
                 for facet in ctx.facets:
                     source_values[facet].add(attributes[facet])
             except AttributeError:
-                logging.error(DirectoryNotMatch(source, ctx.pattern, ctx.cfg.section, ctx.cfg.read_paths))
+                logging.error(ExpressionNotMatch(source, ctx.pattern))
                 ctx.scan_errors += 1
         # Get facets values declared in configuration file
         config_values = {}
@@ -58,7 +58,7 @@ def main(args):
                         config_values[facet] = set(ctx.cfg.get_options_from_map(option, facet))
             finally:
                 if facet not in config_values.keys():
-                    raise NoConfigOptions(facet, ctx.cfg.section, ctx.cfg.read_paths)
+                    raise NoConfigOptions(facet)
         # Compare values from sources against values from configuration file
         print(''.center(WIDTH, '='))
         print('{} :: {}'.format('Facet'.ljust(FACET_WIDTH), 'Status'.rjust(STATUS_WIDTH)))

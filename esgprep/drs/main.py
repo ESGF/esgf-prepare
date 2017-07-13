@@ -13,6 +13,7 @@ import os
 from context import ProcessingContext
 from esgprep.drs.constants import *
 from esgprep.drs.exceptions import *
+from esgprep.utils.exceptions import *
 from esgprep.utils.utils import load, store, as_pbar
 from handler import File, DRSPath
 
@@ -70,7 +71,7 @@ def process(collector_input):
         fph = DRSPath(parts)
         # Add file DRS path to Tree
         src = ['..'] * len(fph.items(d_part=False))
-        src.extend(fph.items(d_part=False, latest=True, file=True))
+        src.extend(fph.items(d_part=False, latest=True, file_folder=True))
         src.append(fh.filename)
         ctx.tree.create_leaf(nodes=fph.items(root=True),
                              leaf=fh.filename,
@@ -84,7 +85,7 @@ def process(collector_input):
                              src=fph.v_upgrade,
                              mode='symlink')
         # Add "files" node to Tree
-        ctx.tree.create_leaf(nodes=fph.items(file=True, root=True),
+        ctx.tree.create_leaf(nodes=fph.items(file_folder=True, root=True),
                              leaf=fh.filename,
                              label=fh.filename,
                              src=fh.ffp,
@@ -93,7 +94,7 @@ def process(collector_input):
         if fph.v_latest:
             # Latest version should be older than upgrade version
             if int(DRSPath.TREE_VERSION[1:]) <= int(fph.v_latest[1:]):
-                raise OlderUpgrade(DRSPath.TREE_VERSION, fph.v_latest, fph.path(f_part=False, version=False))
+                raise OlderUpgrade(DRSPath.TREE_VERSION, fph.v_latest)
             # Check latest files
             if ctx.checksum_client:
                 # Pickup the latest file version
@@ -153,7 +154,8 @@ def main(args):
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
         if not ctx.scan:
-            reader = load(TREE_FILE); _ = reader.next()
+            reader = load(TREE_FILE)
+            _ = reader.next()
             ctx.tree = reader.next()
             ctx.scan_err_log = reader.next()
             results = reader.next()

@@ -88,7 +88,7 @@ class File(object):
             # re.search() method is required to search through the entire string.
             self.attributes.update(re.search(ctx.pattern, self.filename).groupdict())
         except:
-            raise FilenameNotMatch(self.filename, ctx.pattern, ctx.cfg.section, ctx.cfg.files)
+            raise ExpressionNotMatch(self.filename, ctx.pattern)
         # Get attributes from command-line, overwriting existing ones
         self.attributes.update(ctx.set_values)
         # Set version to None
@@ -98,7 +98,7 @@ class File(object):
         # Only required to build proper DRS
         try:
             self.attributes['project'] = ctx.cfg.get_options_from_pairs('category_defaults', 'project')
-        except:
+        except NoConfigOption:
             self.attributes['project'] = ctx.project.lower()
 
     def get_drs_parts(self, ctx):
@@ -128,7 +128,7 @@ class File(object):
         for facet in set(ctx.facets).difference(self.attributes.keys()) - set(IGNORED_KEYS):
             try:
                 self.attributes[facet] = ctx.cfg.get_option_from_map('{}_map'.format(facet), self.attributes)
-            except:
+            except NoConfigOption:
                 if facet in ctx.set_keys.keys():
                     try:
                         # Rename attribute key
@@ -147,9 +147,7 @@ class File(object):
                         ctx.cfg.check_options({facet: self.attributes[facet]})
                     else:
                         raise NoConfigVariable(facet,
-                                               ctx.cfg.get(ctx.cfg.section, 'directory_format', raw=True).strip(),
-                                               ctx.cfg.section,
-                                               ctx.cfg.files)
+                                               ctx.cfg.get(ctx.cfg.section, 'directory_format', raw=True).strip())
         return OrderedDict(zip(ctx.facets, [self.attributes[facet] for facet in ctx.facets]))
 
 
@@ -158,7 +156,8 @@ class DRSPath(object):
     Handler providing methods to deal with paths.
 
     """
-    # Root directory to start DRS as constant
+    # Default DRS tree version
+    # Modified on the ProcessingContext instance
     TREE_VERSION = 'v{}'.format(datetime.now().strftime('%Y%m%d'))
 
     def __init__(self, parts):
@@ -194,7 +193,7 @@ class DRSPath(object):
         else:
             raise KeyNotFound(key, self.d_parts.keys() + self.f_parts.keys())
 
-    def items(self, d_part=True, f_part=True, version=True, file=False, latest=False, root=False):
+    def items(self, d_part=True, f_part=True, version=True, file_folder=False, latest=False, root=False):
         """
         Itemizes the facet values along the DRS path.
         Flags can be combine to obtain different behaviors.
@@ -202,7 +201,7 @@ class DRSPath(object):
         :param boolean d_part: True to append the dataset facets
         :param boolean f_part: True to append the file facets
         :param boolean version: True to append the version facet
-        :param boolean file: True to append the folder for physical files
+        :param boolean file_folder: True to append the folder for physical files
         :param boolean latest: True to switch from upgrade to latest version
         :param boolean root: True to prepend the DRS root directory
         :return: The corresponding facet values
@@ -217,11 +216,11 @@ class DRSPath(object):
                 parts.update(OrderedDict({'version': self.v_latest}))
             else:
                 parts.update(OrderedDict({'version': self.v_upgrade}))
-            if file:
+            if file_folder:
                 parts.update(OrderedDict({'version': 'files'}))
         if f_part:
             parts.update(self.f_parts)
-        if file:
+        if file_folder:
             parts.update(self.v_files)
         if not root and 'root' in parts.keys():
             del parts['root']
@@ -290,7 +289,7 @@ class DRSLeaf(object):
                 os.makedirs(os.path.dirname(self.dst))
             except OSError:
                 pass
-        print('{} {} {}'.format(UNIX_COMMAND[self.mode], self.src, self.dst))
+        print('{} {} {}'.format(UNIX_COMMAND_LABEL[self.mode], self.src, self.dst))
         # Unlink symbolic link if already exists
         if self.mode == 'symlink' and os.path.exists(self.dst):
             print('{} {}'.format('unlink', self.dst))
@@ -298,7 +297,7 @@ class DRSLeaf(object):
                 os.unlink(self.dst)
         # Make upgrade depending on the migration mode
         if not todo_only:
-            globals()[self.mode](self.src, self.dst)
+            UNIX_COMMAND[self.mode](self.src, self.dst)
 
 
 class DRSTree(Tree):
@@ -318,12 +317,15 @@ class DRSTree(Tree):
         self.drs_version = version
         # Retrieve the migration mode
         self.drs_mode = mode
+        # Display width
+        self.d_lengths = []
 
     def get_display_lengths(self):
         """
         Gets the string lengths for comfort display.
 
         """
+        self.d_lengths = []
         self.d_lengths = [max([len(i) for i in self.paths.keys()]), 20, 20, 16, 16]
         self.d_lengths.append(sum(self.d_lengths) + 2)
 

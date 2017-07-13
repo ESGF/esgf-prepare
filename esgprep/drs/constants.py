@@ -7,14 +7,23 @@
 
 """
 
+from os import link, symlink
+from shutil import copy2 as copy
+from shutil import move
+
 # Symbolic link separator
 LINK_SEPARATOR = ' --> '
 
 # Unix command
-UNIX_COMMAND = {'symlink': 'ln -s',
-                'link': 'ln',
-                'copy': 'cp',
-                'move': 'mv'}
+UNIX_COMMAND_LABEL = {'symlink': 'ln -s',
+                      'link': 'ln',
+                      'copy': 'cp',
+                      'move': 'mv'}
+
+UNIX_COMMAND = {'symlink': symlink,
+                'link': link,
+                'copy': copy,
+                'move': move}
 
 # Command-line parameter to ignore
 CONTROLLED_ARGS = ['set_values', 'set_keys', 'mode', 'version']

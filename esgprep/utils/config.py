@@ -25,6 +25,7 @@ class SectionParser(ConfigParser):
     def __init__(self, directory, section):
         ConfigParser.__init__(self)
         self.files = list()
+        ConfigException.SECTION = section
         self.section = section
         self.parse(directory)
 
@@ -47,10 +48,10 @@ class SectionParser(ConfigParser):
             if not os.path.isfile(os.path.join(path, 'esg.{}.ini'.format(project))):
                 raise NoConfigFile(os.path.join(path, 'esg.{}.ini'.format(project)))
             self.read(os.path.join(path, 'esg.{}.ini'.format(project)))
-            if self.section not in self.sections():
-                raise NoConfigSection(self.section, self.files)
+        if self.section not in self.sections():
+            raise NoConfigSection()
         if not self:
-            raise EmptyConfigFile(self.files)
+            raise EmptyConfigFile()
 
     def read(self, filenames):
         """
@@ -66,6 +67,7 @@ class SectionParser(ConfigParser):
                 continue
             self._read(fp, filename)
             fp.close()
+            ConfigException.FILES.append(filename)
             self.files.append(filename)
 
     def sections(self, default=True):
@@ -99,7 +101,7 @@ class SectionParser(ConfigParser):
 
         """
         if option not in self.options():
-            raise NoConfigOption(option, self.section, self.files)
+            raise NoConfigOption(option)
         pattern = self.get(self.section, option, raw=True).strip()
         # Start translation
         pattern = pattern.replace('\.', '__ESCAPE_DOT__')
@@ -152,11 +154,11 @@ class SectionParser(ConfigParser):
             try:
                 # get_options returned a list
                 if pairs[key] not in options:
-                    raise NoConfigValue(pairs[key], option, self.section, self.files)
+                    raise NoConfigValue(pairs[key], option)
             except TypeError:
                 # get_options returned a regex from pattern
                 if not options.match(pairs[key]):
-                    raise NoConfigValue(pairs[key], option, self.section, self.files)
+                    raise NoConfigValue(pairs[key], option)
                 else:
                     self.check_options(options.match(pairs[key]).groupdict())
 
@@ -180,7 +182,7 @@ class SectionParser(ConfigParser):
             option = '{}_pattern'.format(option)
             return self.get_options_from_pattern(option), option
         else:
-            raise NoConfigOptions(option, self.section, self.files)
+            raise NoConfigOptions(option)
 
     def get_options_from_list(self, option):
         """
@@ -194,7 +196,7 @@ class SectionParser(ConfigParser):
 
         """
         if not self.has_option(self.section, option):
-            raise NoConfigOption(option, self.section, self.files)
+            raise NoConfigOption(option)
         if option.rsplit('_options')[0] == 'experiment':
             options = self.get_options_from_table(option, field_id=2)
         else:
@@ -215,7 +217,7 @@ class SectionParser(ConfigParser):
 
         """
         if not self.has_option(self.section, option):
-            raise NoConfigOption(option, self.section, self.files)
+            raise NoConfigOption(option)
         option_lines = split_line(self.get(self.section, option).lstrip(), sep='\n')
         if len(option_lines) == 1 and not option_lines[0]:
             return list()
@@ -225,7 +227,7 @@ class SectionParser(ConfigParser):
             else:
                 options = [tuple(option) for option in map(lambda x: split_line(x), option_lines)]
         except:
-            raise MisdeclaredOption(option, self.section, self.files, reason="Wrong syntax")
+            raise MisdeclaredOption(option)
         return options
 
     def get_options_from_pairs(self, option, key):
@@ -243,16 +245,16 @@ class SectionParser(ConfigParser):
 
         """
         if not self.has_option(self.section, option):
-            raise NoConfigOption(option, self.section, self.files)
+            raise NoConfigOption(option)
         options_lines = split_line(self.get(self.section, option), sep='\n')
         try:
             options = dict((k, v) for k, v in map(lambda x: split_line(x), options_lines[1:]))
         except:
-            raise MisdeclaredOption(option, self.section, self.files, reason="Wrong syntax")
+            raise MisdeclaredOption(option)
         try:
             return options[key]
         except KeyError:
-            raise NoConfigKey(key, option, self.section, self.files)
+            raise NoConfigKey(key, option)
 
     def get_options_from_map(self, option, key=None):
         """
@@ -269,7 +271,7 @@ class SectionParser(ConfigParser):
 
         """
         if not self.has_option(self.section, option):
-            raise NoConfigOption(option, self.section, self.files)
+            raise NoConfigOption(option)
         if not key:
             key = option.split('_map')[0]
         from_keys, to_keys, value_map = split_map(self.get(self.section, option))
@@ -293,12 +295,11 @@ class SectionParser(ConfigParser):
 
         """
         if not self.has_option(self.section, option):
-            raise NoConfigOption(option, self.section, self.files)
+            raise NoConfigOption(option)
         from_keys, to_keys, value_map = split_map(self.get(self.section, option))
         key = option.split('_map')[0]
         if key not in to_keys:
-            raise MisdeclaredOption(option, self.section, self.files,
-                                    reason="'{}' has to be in 'destination key'".format(key))
+            raise MisdeclaredOption(option, details="'{}' has to be in 'destination key'".format(key))
         from_values = tuple(pairs[k] for k in from_keys)
         to_values = value_map[from_values]
         return to_values[to_keys.index(key)]
@@ -316,7 +317,7 @@ class SectionParser(ConfigParser):
 
         """
         if not self.has_option(self.section, option):
-            raise NoConfigOption(option, self.section, self.files)
+            raise NoConfigOption(option)
         pattern = self.get(self.section, option, raw=True)
         # Translate all patterns matching %(digit)s
         pattern = re.sub(re.compile(r'%\((digit)\)s'), r'[\d]+', pattern)
@@ -427,7 +428,8 @@ def split_map(option, sep='|'):
 
     """
     lines = option.split('\n')
-    from_keys, to_keys = split_map_header(lines[0])
+    header = lines[0]
+    from_keys, to_keys = split_map_header(header)
     n_from = len(from_keys)
     result = {}
     for record in lines[1:]:
@@ -439,7 +441,7 @@ def split_map(option, sep='|'):
         if from_values not in result.keys():
             result[from_values] = to_values
         else:
-            raise DuplicatedMapEntry(fields)
+            raise DuplicatedMapEntry(fields, option)
         if len(from_values) != n_from:
-            raise InvalidMapEntry(fields)
+            raise InvalidMapEntry(fields, header, option)
     return from_keys, to_keys, result

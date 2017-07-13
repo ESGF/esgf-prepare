@@ -72,7 +72,8 @@ class ProcessingContext(object):
         self.tree = DRSTree(self.root, self.version, self.mode)
         # Disable file scan if a previous DRS tree have generated using same context and no "list" action
         if self.action != 'list' and os.path.isfile(TREE_FILE):
-            reader = load(TREE_FILE); old_args = reader.next()
+            reader = load(TREE_FILE)
+            old_args = reader.next()
             # Ensure that processing context is similar to previous step
             if self.check_args(old_args):
                 self.scan = False

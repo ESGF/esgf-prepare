@@ -8,7 +8,9 @@
 """
 
 import requests
-from exceptions import *
+
+from esgprep.fetchini.exceptions import *
+
 
 def gh_request_content(url, auth=None):
     """
@@ -24,6 +26,7 @@ def gh_request_content(url, auth=None):
     :raises Error: If the GitHub request fails for other reasons
 
     """
+    GitHubException.URI = url
     r = requests.get(url, auth=auth)
     if r.status_code == 200:
         return r
