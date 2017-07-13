@@ -14,6 +14,9 @@ IGNORED_KEYS = ['root', 'project', 'filename', 'variable', 'version', 'period_st
 # Program version
 VERSION = '2.7.9'
 
+# Date
+VERSION_DATE = datetime(year=2017, month=7, day=13).strftime("%Y-%d-%m")
+
 # Help
 PROGRAM_DESC = \
     """

@@ -13,12 +13,12 @@ import sys
 import unittest
 from importlib import import_module
 
+from utils.constants import *
 from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter
 from utils.utils import init_logging
-from utils.constants import *
 
 # Program version
-__version__ = 'v{} {}'.format(VERSION, datetime.now().strftime("%Y-%d-%m"))
+__version__ = 'v{} {}'.format(VERSION, VERSION_DATE)
 
 
 def get_args():
@@ -415,6 +415,7 @@ def run():
         else:
             main = import_module('.main', package='esgprep.{}'.format(submodule))
             main.main(args)
+
 
 # Main entry point for stand-alone call.
 if __name__ == "__main__":

@@ -31,10 +31,10 @@ def gh_request_content(url, auth=None):
     if r.status_code == 200:
         return r
     elif r.status_code == 401:
-        raise GitHubUnauthorized(uri=url)
+        raise GitHubUnauthorized()
     elif r.status_code == 403:
-        raise GitHubAPIRateLimit(uri=url)
+        raise GitHubAPIRateLimit()
     elif r.status_code == 404:
-        raise GitHubFileNotFound(uri=url)
+        raise GitHubFileNotFound()
     else:
-        raise GitHubConnectionError(uri=url)
+        raise GitHubConnectionError()
