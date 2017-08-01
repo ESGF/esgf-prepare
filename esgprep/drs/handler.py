@@ -58,20 +58,19 @@ class File(object):
         else:
             raise KeyNotFound(key, self.attributes.keys() + self.__dict__.keys())
 
-    def load_attributes(self, ctx):
+    def load_attributes(self, project, root, pattern, set_values):
         """
-        The DRS attributes are deduced from the NetCDF global attributes or the filname using the
+        The DRS attributes are deduced from the NetCDF global attributes or the filename using the
         the filename_format regex pattern. The project facet is added in any case with lower case if needed.
-        The root facet is added by default and the dataset version is initally set to None.
+        The root facet is added by default and the dataset version initially set to None. Can be overwrite by
+        "set_values" pairs if submitted.
 
-         * Matches filename with corresponding project pattern to get DRS attributes values
-         * Add NetCDF global attributes to DRS attributes
-         * Overwrite with ctx.set_values pairs if submitted
-         * attributes.keys() are facet names
-         * attributes[facet] is the facet values.
 
-        :param esgprep.drs.main.ProcessingContext ctx: The processing context
-        :raises Error: If the filename does not match the ``directory_format`` pattern/regex
+        :param str project: The project name
+        :param str root: The DRS tree root
+        :param str pattern: The ``filename_format`` pattern/regex
+        :param dict set_values: Key/value pairs of facet to set for the run
+        :raises Error: If the filename does not match the ``filename_format`` pattern/regex
         :raises Error: If invalid NetCDF file
 
         """
@@ -86,69 +85,68 @@ class File(object):
         # Get attributes from filename, overwriting existing ones
         try:
             # re.search() method is required to search through the entire string.
-            self.attributes.update(re.search(ctx.pattern, self.filename).groupdict())
+            self.attributes.update(re.search(pattern, self.filename).groupdict())
         except:
-            raise ExpressionNotMatch(self.filename, ctx.pattern)
+            raise ExpressionNotMatch(self.filename, pattern)
         # Get attributes from command-line, overwriting existing ones
-        self.attributes.update(ctx.set_values)
+        self.attributes.update(set_values)
         # Set version to None
-        self.attributes['root'] = ctx.root
+        self.attributes['root'] = root
         # Set version to None
         self.attributes['version'] = None
         # Only required to build proper DRS
-        try:
-            self.attributes['project'] = ctx.cfg.get_options_from_pairs('category_defaults', 'project')
-        except NoConfigOption:
-            self.attributes['project'] = ctx.project.lower()
+        self.attributes['project'] = project
 
-    def get_drs_parts(self, ctx):
+    def check_facets(self, facets, not_ignored, config, set_keys):
         """
-        Get the DRS pairs required to build the DRS path. The DRS parts are included as an OrderedDict():
-        {project : 'CMIP5', product: 'output1', ...}
+        Checks each facet against the esg.<project>.ini. If a DRS attribute is missing regarding the directory_format
+        template, the DRS attributes are completed from esg.<project>.ini maptables. In the case of non-standard
+        attribute, it gets the most similar key among netCDF attributes names/
+        If some keys has to be resolved through ini instead of ignored: remove it from the IGNORED_KEYS list
 
-         * Checks each value which the facet is found in directory_format AND attributes keys,
-         * Gets missing attributes from the maptables in the esg.<project>.ini,
-         * Get attribute from ctx.set_keys if submitted and exists,
-         * In the case of non-standard attribute, get the most similar key among attributes keys,
-         * Builds the DRS path from the attributes.
-
-        :param esgprep.drs.main.ProcessingContext ctx: The processing context
-        :returns: The ordered DRS parts
-        :rtype: *OrderedDict*
-        :raises Error: If a facet cannot be checked
+        :param list facets: The list of facet to check
+        :param list not_ignored: The list of facet to not ignore
+        :param esgprep.utils.config.SectionParser config: The configuration parser
+        :param dict set_keys: Key/Attribute pairs to map for the run
+        :raises Error: If one facet checkup fails
 
         """
-        # Check each facet required by the directory_format template from esg.<project>.ini
-        # Facet values to check are deduced from file glboal attributes or the filename
-        # If a DRS attribute is missing regarding the directory-format template,
-        # the DRS attributes are completed from esg.<project>.ini maptables, or with the most
-        # similar NetCDF attribute.
-        for facet in set(ctx.facets).intersection(self.attributes.keys()) - set(IGNORED_KEYS):
-            ctx.cfg.check_options({facet: self.attributes[facet]})
-        for facet in set(ctx.facets).difference(self.attributes.keys()) - set(IGNORED_KEYS):
+        ignored_keys = set(IGNORED_KEYS) - set(not_ignored)
+        for facet in set(facets).intersection(self.attributes.keys()) - ignored_keys:
+            config.check_options({facet: self.attributes[facet]})
+        for facet in set(facets).difference(self.attributes.keys()) - ignored_keys:
             try:
-                self.attributes[facet] = ctx.cfg.get_option_from_map('{}_map'.format(facet), self.attributes)
+                self.attributes[facet] = config.get_option_from_map('{}_map'.format(facet), self.attributes)
             except NoConfigOption:
-                if facet in ctx.set_keys.keys():
+                if facet in set_keys.keys():
                     try:
                         # Rename attribute key
-                        self.attributes[facet] = self.attributes.pop(ctx.set_keys[facet])
-                        ctx.cfg.check_options({facet: self.attributes[facet]})
+                        self.attributes[facet] = self.attributes.pop(set_keys[facet])
+                        config.check_options({facet: self.attributes[facet]})
                     except KeyError:
-                        raise NoNetCDFAttribute(ctx.set_keys[facet], self.ffp)
+                        raise NoNetCDFAttribute(set_keys[facet], self.ffp)
                 else:
                     # Find closest NetCDF attributes in terms of partial string comparison
                     key, score = process.extractOne(facet, self.attributes.keys(), scorer=fuzz.partial_ratio)
                     if score >= 80:
                         # Rename attribute key
                         self.attributes[facet] = self.attributes.pop(key)
-                        if ctx.verbose:
-                            logging.warning('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
-                        ctx.cfg.check_options({facet: self.attributes[facet]})
+                        logging.warning('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
+                        config.check_options({facet: self.attributes[facet]})
                     else:
-                        raise NoConfigVariable(facet,
-                                               ctx.cfg.get(ctx.cfg.section, 'directory_format', raw=True).strip())
-        return OrderedDict(zip(ctx.facets, [self.attributes[facet] for facet in ctx.facets]))
+                        raise NoConfigOptions(facet)
+
+    def get_drs_parts(self, facets):
+        """
+        Get the DRS pairs required to build the DRS path. The DRS parts are included as an OrderedDict():
+        {project : 'CMIP5', product: 'output1', ...}
+
+        :param list facets: The list of facet to check
+        :returns: The ordered DRS parts
+        :rtype: *OrderedDict*
+
+        """
+        return OrderedDict(zip(facets, [self.attributes[facet] for facet in facets]))
 
 
 class DRSPath(object):

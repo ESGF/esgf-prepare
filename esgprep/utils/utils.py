@@ -15,6 +15,7 @@ import re
 import sys
 from datetime import datetime
 
+from esgprep.utils.exceptions import *
 from tqdm import tqdm
 
 
@@ -88,18 +89,22 @@ def remove(pattern, string):
     return re.compile(pattern).sub("", string)
 
 
-def match(pattern, string):
+def match(pattern, string, negative=False):
     """
     Validates a string against a regular expression.
     Only match at the beginning of the string.
 
     :param str pattern: The regular expression to match
     :param str string: The string to test
-    :returns: True is it matches
+    :param boolean negative: True if negative matching (i.e., non-matching the regex)
+    :returns: True if it matches
     :rtype: *boolean*
 
     """
-    return True if re.match(re.compile(pattern), string) else False
+    if negative:
+        return True if not re.search(pattern, string) else False
+    else:
+        return True if re.search(pattern, string) else False
 
 
 def load(path):
@@ -164,3 +169,43 @@ def as_pbar(iterable, desc, units, total=None):
                 bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} ' + units,
                 ncols=100,
                 file=sys.stdout)
+
+
+def evaluate(results):
+    """
+    Evaluates a list depending on absence/presence of None values.
+
+    :param list results: The list to evaluate
+    :returns: True if no blocking errors
+    :rtype: *boolean*
+
+    """
+    if all(results) and any(results):
+        # The list contains only True value = no errors
+        return True
+    elif not all(results) and any(results):
+        # The list contains some None values = some errors occurred
+        return True
+    else:
+        return False
+
+
+def checksum(ffp, checksum_type, checksum_client):
+    """
+    Does the checksum by the Shell avoiding Python memory limits.
+
+    :param str ffp: The file full path
+    :param str checksum_client: Shell command line for checksum
+    :param str checksum_type: Checksum type
+    :returns: The checksum
+    :rtype: *str*
+    :raises Error: If the checksum fails
+
+    """
+    if not checksum_client:
+        return None
+    try:
+        shell = os.popen("{} {} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, ffp))
+        return shell.readline()[:-1]
+    except:
+        raise ChecksumFail(ffp, checksum_type)

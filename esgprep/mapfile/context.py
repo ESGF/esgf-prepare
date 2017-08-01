@@ -7,17 +7,17 @@
 
 """
 
+import fnmatch
 import logging
 import os
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
 
-from constants import *
-from esgprep.utils.collectors import Collector
+from esgprep.mapfile.constants import *
+from esgprep.utils.collectors import VersionedPathCollector
 from esgprep.utils.config import SectionParser
 from esgprep.utils.exceptions import *
-from esgprep.utils.utils import cmd_exists, load
-from handler import DRSTree, DRSPath
+from esgprep.utils.utils import cmd_exists
 
 
 class ProcessingContext(object):
@@ -33,52 +33,63 @@ class ProcessingContext(object):
     def __init__(self, args):
         self.pbar = args.pbar
         self.config_dir = args.i
-        self.directory = args.directory
-        self.root = os.path.normpath(args.root)
-        self.set_values = {}
-        if args.set_value:
-            self.set_values = dict(args.set_value)
-        self.set_keys = {}
-        if args.set_key:
-            self.set_keys = dict(args.set_key)
-        self.threads = args.max_threads
         self.project = args.project
-        self.action = args.action
-        if args.copy:
-            self.mode = 'copy'
-        elif args.link:
-            self.mode = 'link'
-        elif args.symlink:
-            self.mode = 'symlink'
-        else:
-            self.mode = 'move'
-        self.version = args.version
-        DRSPath.TREE_VERSION = 'v{}'.format(args.version)
+        self.directory = args.directory
+        self.mapfile_name = args.mapfile
+        self.outdir = args.outdir
+        self.notes_title = args.tech_notes_title
+        self.notes_url = args.tech_notes_url
+        self.no_version = args.no_version
+        self.threads = args.max_threads
+        self.dataset = args.dataset
+        if not args.no_cleanup:
+            self.clean()
+        self.no_cleanup = args.no_cleanup
+        self.not_ignored = args.not_ignored
         self.no_checksum = args.no_checksum
-        self.scan = True
+        self.dir_filter = args.ignore_dir_filter
+        self.file_filter = args.include_file_filter
+        self.all = args.all_versions
+        if self.all:
+            self.no_version = False
+        self.version = None
+        if args.version:
+            self.version = 'v{}'.format(args.version)
+        if args.latest_symlink:
+            self.version = 'latest'
+        self.scsan = True
         self.scan_errors = None
         self.scan_files = None
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename
+        self.nb_map = None
 
     def __enter__(self):
         # Get checksum client
         self.checksum_client, self.checksum_type = self.get_checksum_client()
         # Init configuration parser
         self.cfg = SectionParser(self.config_dir, section='project:{}'.format(self.project))
-        self.facets = self.cfg.get_facets('directory_format')
-        self.pattern = self.cfg.translate('filename_format')
-        # Init DRS tree
-        self.tree = DRSTree(self.root, self.version, self.mode)
-        # Disable file scan if a previous DRS tree have generated using same context and no "list" action
-        if self.action != 'list' and os.path.isfile(TREE_FILE):
-            reader = load(TREE_FILE)
-            old_args = reader.next()
-            # Ensure that processing context is similar to previous step
-            if self.check_args(old_args):
-                self.scan = False
+        self.facets = self.cfg.get_facets('dataset_id')
+        self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
+        # Get mapfile DRS is set in configuration file
+        try:
+            self.mapfile_drs = self.cfg.get('mapfile_drs')
+        except NoConfigOption:
+            self.mapfile_drs = None
         # Init data collector
-        self.sources = Collector(sources=self.directory,
-                                 data=self)
+        self.sources = VersionedPathCollector(sources=self.directory,
+                                              file_filter=self.file_filter,
+                                              data=self,
+                                              dir_format=self.cfg.translate('directory_format'))
+        # Init collector filter
+        # Exclude ``dir_filter`` patterns, default is "/files" and "/.*"
+        self.sources.PathFilter['base_filter'] = (self.dir_filter, True)
+        if self.all:
+            # Pick up all encountered versions by adding "/latest" exclusion
+            self.sources.PathFilter['version_filter'] = ('/latest', True)
+        elif self.version:
+            # Pick up the specified version only (--version flag) by adding "/v{version}" inclusion
+            # If --latest-symlink, --version is set to "latest"
+            self.sources.PathFilter['version_filter'] = '/{}'.format(self.version)
         # Init threads pool
         self.pool = ThreadPool(int(self.threads))
         return self
@@ -92,6 +103,10 @@ class ProcessingContext(object):
         # Default is sys.exit(0)
         if self.scan_files and not self.scan_errors:
             # All files have been successfully scanned
+            # Print number of generated mapfiles
+            if self.pbar:
+                print('{}: {} (see {})'.format('Mapfile(s) generated', self.nb_map, self.outdir))
+            logging.info('{} mapfile(s) generated'.format(self.nb_map))
             logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
         if not self.scan_files and not self.scan_errors:
             # Results list is empty = no files scanned/found
@@ -105,7 +120,7 @@ class ProcessingContext(object):
                             ' (see {})'.format(self.scan_errors, self.scan_err_log))
             if self.scan_errors == self.scan_files:
                 # All files have been skipped or failed during the scan
-                logging.warning('==> All files have been ignored or have failed leading to no DRS tree.')
+                logging.warning('==> All files have been ignored or have failed leading to no mapfile.')
                 sys.exit(3)
             else:
                 # Some files have been skipped or failed during the scan
@@ -134,19 +149,13 @@ class ProcessingContext(object):
             else:
                 return checksum_client, checksum_type
 
-    def check_args(self, old_args):
+    def clean(self):
         """
-        Checks command-line argument to avoid discrepancies between ``esgprep drs`` steps.
-
-        :param *dict* old_args: The recorded arguments
-        :raises Error: If one argument differs
+        Clean directory from incomplete mapfiles.
+        Incomplete mapfiles from a previous run are silently removed.
 
         """
-        for k in CONTROLLED_ARGS:
-            if self.__getattribute__(k) != old_args[k]:
-                logging.warning('"{}" argument has changed: "{}" instead of "{}". '
-                                'File scan re-run...'.format(k,
-                                                             self.__getattribute__(k),
-                                                             old_args[k]))
-                return False
-        return True
+        for root, _, filenames in os.walk(self.outdir):
+            for filename in fnmatch.filter(filenames, '*{}'.format(WORKING_EXTENSION)):
+                os.remove(os.path.join(root, filename))
+        logging.info('{} cleaned'.format(self.outdir))

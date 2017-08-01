@@ -352,7 +352,7 @@ def get_args():
         '--ignore-dir-filter',
         metavar="PYTHON_REGEX",
         type=str,
-        default='^.*/(files|latest|\.[\w]*).*$',
+        default='^.*/(files|\.[\w]*).*$',
         help=IGNORE_DIR_FILTER_HELP)
     mapfile.add_argument(
         '--include-file-filter',

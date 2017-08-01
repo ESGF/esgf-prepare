@@ -13,35 +13,14 @@ import os
 from context import ProcessingContext
 from esgprep.drs.constants import *
 from esgprep.drs.exceptions import *
-from esgprep.utils.exceptions import *
-from esgprep.utils.utils import load, store, as_pbar
+from esgprep.utils.utils import load, store, as_pbar, evaluate, checksum
 from handler import File, DRSPath
-
-
-def checksum(ffp, checksum_type, checksum_client):
-    """
-    Does the checksum by the Shell avoiding Python memory limits.
-
-    :param str ffp: The file full path
-    :param str checksum_client: Shell command line for checksum
-    :param str checksum_type: Checksum type
-    :returns: The checksum
-    :rtype: *str*
-    :raises Error: If the checksum fails
-
-    """
-    if not checksum_client:
-        return None
-    try:
-        shell = os.popen("{} {} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, ffp))
-        return shell.readline()[:-1]
-    except:
-        raise ChecksumFail(ffp, checksum_type)
+from esgprep.utils.exceptions import *
 
 
 def process(collector_input):
     """
-    process(ffp, ctx)
+    process(collector_input)
 
     File process that:
 
@@ -63,10 +42,23 @@ def process(collector_input):
     try:
         # Instantiate file handler
         fh = File(ffp)
-        # Matching between filename_format and filename
-        fh.load_attributes(ctx)
+        # Try to get the appropriate project case or use lower case instead
+
+        try:
+            project = ctx.cfg.get_options_from_pairs('category_defaults', 'project')
+        except NoConfigOption:
+            project = ctx.project.lower()
+        # Loads attributes from filename, netCDF attributes, command-line
+        fh.load_attributes(project=project,
+                           root=ctx.root,
+                           pattern=ctx.pattern,
+                           set_values=ctx.set_values)
+        fh.check_facets(facets=ctx.facets,
+                        not_ignored=ctx.not_ignored,
+                        config=ctx.cfg,
+                        set_keys=ctx.set_keys)
         # Get parts of DRS path
-        parts = fh.get_drs_parts(ctx)
+        parts = fh.get_drs_parts(ctx.facets)
         # Instantiate file DRS path handler
         fph = DRSPath(parts)
         # If a latest version already exists make some checks FIRST to stop files to not process
@@ -179,16 +171,9 @@ def main(args):
                                ctx.scan_err_log,
                                results])
         logging.warning('DRS tree recorded for next usage --> {}.'.format(TREE_FILE))
-        # Decline outputs depending on the scan results
-        # Raise errors when one or several files have been skipped or failed
-        if all(results) and any(results):
-            # Results list contains only True value = all files have been successfully scanned
+        # Evaluates the scan results to trigger the DRS tree action
+        if evaluate(results):
             # Apply tree action
             ctx.tree.get_display_lengths()
             getattr(ctx.tree, ctx.action)()
-        elif not all(results) and any(results):
-            # Results list contains some None values = some files have been skipped or failed during the scan
-            # Apply tree action
-            # Apply tree action
-            ctx.tree.get_display_lengths()
-            getattr(ctx.tree, ctx.action)()
+        # TODO: Add a "remove" action to properly delete a dataset version in the destination DRS Tree

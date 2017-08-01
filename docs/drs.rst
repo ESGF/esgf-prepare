@@ -24,6 +24,10 @@ corresponding ``esg.<project>.ini`` file. The DRS facets values are deduced from
  2. The filename pattern using the ``filename_format`` from the ``esg.<project>.ini``.
  3. The NetCDF global attributes by picking the attribute with the nearest name of the facet key.
 
+.. warning:: The incoming files are supposed to be produced by `CMOR <https://cmor.llnl.gov/>`_ (or at least be
+    CMOR-compliant) and unversioned. ``esgprep drs`` will apply a version regardless of the incoming file path. The
+    applied version only depends on the ``--version`` flag and the existing dataset versions in the DRS ``--root``.
+
 List the datasets related to the incoming files
 ***********************************************
 

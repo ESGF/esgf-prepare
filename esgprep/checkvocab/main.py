@@ -33,7 +33,6 @@ def main(args):
     with ProcessingContext(args) as ctx:
         # Get facets values used by the source
         source_values = dict((facet, set()) for facet in ctx.facets)
-        print('Collecting {}...\r'.format(ctx.source_type)),
         for source in ctx.sources:
             try:
                 attributes = re.match(ctx.pattern, source).groupdict()
