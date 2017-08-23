@@ -15,10 +15,10 @@ IGNORED_KEYS = ['root', 'project', 'filename', 'variable', 'version', 'period_st
 
 
 # Program version
-VERSION = '2.7.9'
+VERSION = '2.7.10'
 
 # Date
-VERSION_DATE = datetime(year=2017, month=8, day=2).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2017, month=8, day=23).strftime("%Y-%d-%m")
 
 # Help
 PROGRAM_DESC = \
