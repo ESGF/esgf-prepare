@@ -47,9 +47,9 @@ class ProcessingContext(object):
             # Instantiate file collector to walk through the tree
             self.source_type = 'files'
             self.sources = PathCollector(sources=self.directory,
-                                         dir_filter=self.dir_filter,
                                          file_filter=self.file_filter)
-            self.pattern = self.cfg.translate('directory_format')
+            self.sources.PathFilter['base_filter'] = (self.dir_filter, True)
+            self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
         else:
             # The source is a list of files (i.e., several dataset lists)
             # Instantiate dataset collector to parse the files

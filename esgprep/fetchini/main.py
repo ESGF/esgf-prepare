@@ -60,7 +60,7 @@ def write_content(outfile, content):
     
     """
     with open(outfile, 'w+') as f:
-        f.write(content)
+        f.write(content.encode('utf-8'))
 
 
 def do_fetching(f, remote_checksum, keep, overwrite):

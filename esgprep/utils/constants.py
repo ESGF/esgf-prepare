@@ -10,12 +10,15 @@ from datetime import datetime
 
 # Facets ignored during checking
 IGNORED_KEYS = ['root', 'project', 'filename', 'variable', 'version', 'period_start', 'period_end']
+# TODO: variable and version can now be check.
+# TODO: implement filename pattern checking as a facet?
+
 
 # Program version
-VERSION = '2.7.9'
+VERSION = '2.7.10'
 
 # Date
-VERSION_DATE = datetime(year=2017, month=7, day=13).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2017, month=8, day=23).strftime("%Y-%d-%m")
 
 # Help
 PROGRAM_DESC = \

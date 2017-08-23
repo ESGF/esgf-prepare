@@ -10,7 +10,7 @@
 import os
 import re
 import string
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, _Chainmap, DEFAULTSECT, MAX_INTERPOLATION_DEPTH
 
 from esgprep.utils.exceptions import *
 
@@ -30,7 +30,50 @@ class SectionParser(ConfigParser):
         self.section = section
         self.parse(directory)
 
-    def reset(self):
+    def get(self, option, raw=True, variables=None, section=None):
+        """
+        Overwrite the original method to get an option value for the given section.
+
+        """
+        sectiondict = {}
+        try:
+            sectiondict = self._sections[self.section]
+        except KeyError:
+            if self.section != DEFAULTSECT:
+                raise NoConfigSection()
+        # Update with the entry specific variables
+        vardict = {}
+        if variables:
+            for key, value in variables.items():
+                vardict[self.optionxform(key)] = value
+        d = _Chainmap(vardict, sectiondict, self._defaults)
+        option = self.optionxform(option)
+        try:
+            value = d[option]
+        except KeyError:
+            raise NoConfigOption(option)
+        if raw or value is None:
+            return value
+        else:
+            return self._interpolate(self.section, option, value, d)
+
+    def has_option(self, option, section=None):
+        """
+        Overwrite the original method to check for the existence of a given option in the given section.
+
+        """
+        if not self.section or self.section == DEFAULTSECT:
+            option = self.optionxform(option)
+            return option in self._defaults
+        elif self.section not in self._sections:
+            return False
+        else:
+            option = self.optionxform(option)
+            return (option in self._sections[self.section]
+                    or option in self._defaults)
+
+    @staticmethod
+    def reset():
         """
         Resets exception constants
 
@@ -101,7 +144,7 @@ class SectionParser(ConfigParser):
             del opts['__name__']
         return opts.keys()
 
-    def translate(self, option):
+    def translate(self, option, filename_pattern=False):
         """
         Return a regular expression associated with a ``pattern_format`` option
         in the configuration file. This can be passed to the Python ``re`` methods.
@@ -111,7 +154,7 @@ class SectionParser(ConfigParser):
         """
         if option not in self.options():
             raise NoConfigOption(option)
-        pattern = self.get(self.section, option, raw=True).strip()
+        pattern = self.get(option, raw=True).strip()
         # Start translation
         pattern = pattern.replace('\.', '__ESCAPE_DOT__')
         pattern = pattern.replace('.', r'\.')
@@ -130,10 +173,10 @@ class SectionParser(ConfigParser):
         pattern = re.sub(re.compile(r'%\((version)\)s'), r'(?P<\1>v[\d]+|latest)', pattern)
         # Translate all patterns matching %(name)s
         pattern = re.sub(re.compile(r'%\(([^()]*)\)s'), r'(?P<\1>[\w.-]+)', pattern)
-        if option == 'directory_format':
+        if filename_pattern:
             return '{}/(?P<filename>[\w.-]+)$'.format(pattern)
         else:
-            return pattern
+            return '{}$'.format(pattern)
 
     def get_facets(self, option, ignored=None):
         """
@@ -144,7 +187,7 @@ class SectionParser(ConfigParser):
         :rtype: *set*
 
         """
-        facets = re.findall(re.compile(r'%\(([^()]*)\)s'), self.get(self.section, option, raw=True))
+        facets = re.findall(re.compile(r'%\(([^()]*)\)s'), self.get(option, raw=True))
         if ignored:
             return [f for f in facets if f not in ignored]
         else:
@@ -181,13 +224,13 @@ class SectionParser(ConfigParser):
         :raises Error: If the option is missing
 
         """
-        if self.has_option(self.section, '{}_options'.format(option)):
+        if self.has_option('{}_options'.format(option)):
             option = '{}_options'.format(option)
             return self.get_options_from_list(option), option
-        elif self.has_option(self.section, '{}_map'.format(option)):
+        elif self.has_option('{}_map'.format(option)):
             option = '{}_map'.format(option)
             return self.get_options_from_map(option), option
-        elif self.has_option(self.section, '{}_pattern'.format(option)):
+        elif self.has_option('{}_pattern'.format(option)):
             option = '{}_pattern'.format(option)
             return self.get_options_from_pattern(option), option
         else:
@@ -204,12 +247,12 @@ class SectionParser(ConfigParser):
         :raises Error: If the option does not exist
 
         """
-        if not self.has_option(self.section, option):
+        if not self.has_option(option):
             raise NoConfigOption(option)
         if option.rsplit('_options')[0] == 'experiment':
             options = self.get_options_from_table(option, field_id=2)
         else:
-            options = split_line(self.get(self.section, option), sep=',')
+            options = split_line(self.get(option), sep=',')
         return options
 
     def get_options_from_table(self, option, field_id=None):
@@ -225,9 +268,9 @@ class SectionParser(ConfigParser):
         :raises Error: If the options table is misdeclared
 
         """
-        if not self.has_option(self.section, option):
+        if not self.has_option(option):
             raise NoConfigOption(option)
-        option_lines = split_line(self.get(self.section, option).lstrip(), sep='\n')
+        option_lines = split_line(self.get(option).lstrip(), sep='\n')
         if len(option_lines) == 1 and not option_lines[0]:
             return list()
         try:
@@ -253,9 +296,9 @@ class SectionParser(ConfigParser):
         :raises Error: If the options table is misdeclared
 
         """
-        if not self.has_option(self.section, option):
+        if not self.has_option(option):
             raise NoConfigOption(option)
-        options_lines = split_line(self.get(self.section, option), sep='\n')
+        options_lines = split_line(self.get(option), sep='\n')
         try:
             options = dict((k, v) for k, v in map(lambda x: split_line(x), options_lines[1:]))
         except:
@@ -279,11 +322,11 @@ class SectionParser(ConfigParser):
         :raises Error: If the related key is not in the source/destination keys of the maptable
 
         """
-        if not self.has_option(self.section, option):
+        if not self.has_option(option):
             raise NoConfigOption(option)
         if not key:
             key = option.split('_map')[0]
-        from_keys, to_keys, value_map = split_map(self.get(self.section, option))
+        from_keys, to_keys, value_map = split_map(self.get(option))
         if key in from_keys:
             return list(set([value[from_keys.index(key)] for value in value_map.keys()]))
         else:
@@ -303,9 +346,9 @@ class SectionParser(ConfigParser):
         :raises Error: If the key values are not in the destination keys of the maptable
 
         """
-        if not self.has_option(self.section, option):
+        if not self.has_option(option):
             raise NoConfigOption(option)
-        from_keys, to_keys, value_map = split_map(self.get(self.section, option))
+        from_keys, to_keys, value_map = split_map(self.get(option))
         key = option.split('_map')[0]
         if key not in to_keys:
             raise MisdeclaredOption(option, details="'{}' has to be in 'destination key'".format(key))
@@ -325,9 +368,9 @@ class SectionParser(ConfigParser):
         :raises Error: If the option does not exist
 
         """
-        if not self.has_option(self.section, option):
+        if not self.has_option(option):
             raise NoConfigOption(option)
-        pattern = self.get(self.section, option, raw=True)
+        pattern = self.get(option, raw=True)
         # Translate all patterns matching %(digit)s
         pattern = re.sub(re.compile(r'%\((digit)\)s'), r'[\d]+', pattern)
         # Translate all patterns matching %(string)s
@@ -349,6 +392,43 @@ class SectionParser(ConfigParser):
             if '_pattern' in option and option != 'version_pattern':
                 patterns[option] = self.get_options_from_pattern(option)
         return patterns
+
+
+def interpolate(rawval, variables):
+    """
+    Makes string interpolation outside of ``ConfigParser.ConfigParser`` class.
+
+    :param str rawval: The string to interpolate
+    :param dict variables: The dictionary of variables to replace with
+    :return:
+    """
+    pattern = re.compile(r"%\(([^)]*)\)s|.")
+    value = rawval
+    depth = MAX_INTERPOLATION_DEPTH
+    while depth:
+        depth -= 1
+        if value and "%(" in value:
+            value = pattern.sub(interpolation_replace, value)
+            try:
+                value = value % variables
+            except KeyError:
+                raise BadInterpolation(value, variables)
+        else:
+            break
+    if value and "%(" in value:
+        raise InterpolationDepthError(rawval)
+    return value
+
+
+def interpolation_replace(match):
+    """
+    Used to interpolate deep strings.
+    """
+    s = match.group(1)
+    if s is None:
+        return match.group()
+    else:
+        return "%%(%s)s" % s.lower()
 
 
 def split_line(line, sep='|'):

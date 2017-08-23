@@ -87,7 +87,7 @@ class NoConfigOptions(ConfigException):
     """
 
     def __init__(self, option):
-        self.msg = "None options not found"
+        self.msg = "No options found"
         self.msg += "\n<options: '{}_{{options|map|pattern}}'>".format(option)
         super(self.__class__, self).__init__(self.msg)
 
@@ -204,6 +204,30 @@ class ExpressionNotMatch(ConfigException):
 
     def __init__(self, string, pattern):
         self.msg = "Pattern resolution failed"
+        self.msg += "\n<value: '{}'>".format(string)
+        self.msg += "\n<pattern: '{}'>".format(pattern)
+        super(self.__class__, self).__init__(self.msg)
+
+
+class InterpolationDepthError(ConfigException):
+    """
+    Raised when an string interpolation failed.
+
+    """
+
+    def __init__(self, pattern):
+        self.msg = "String interpolation failed because of value interpolation too deeply recursive"
+        self.msg += "\n<pattern: '{}'>".format(pattern)
+        super(self.__class__, self).__init__(self.msg)
+
+class BadInterpolation(ConfigException):
+    """
+    Raised when an string interpolation failed.
+
+    """
+
+    def __init__(self, string, pattern):
+        self.msg = "String interpolation failed because of bad value substitution"
         self.msg += "\n<value: '{}'>".format(string)
         self.msg += "\n<pattern: '{}'>".format(pattern)
         super(self.__class__, self).__init__(self.msg)
