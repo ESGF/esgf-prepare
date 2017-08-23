@@ -348,6 +348,7 @@ def get_args():
         nargs='+',
         default=[],
         help=NOT_IGNORED_HELP)
+    # TODO: --not-ignored is deprecated
     mapfile.add_argument(
         '--ignore-dir-filter',
         metavar="PYTHON_REGEX",
