@@ -10,13 +10,12 @@
 import logging
 import os
 import re
-from exceptions import *
 
 from requests.auth import HTTPBasicAuth
 
 from constants import *
-from esgprep.utils.utils import as_pbar
 from utils import gh_request_content
+from esgprep.utils.misc import as_pbar
 
 
 class ProcessingContext(object):

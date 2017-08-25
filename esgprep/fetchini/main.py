@@ -10,7 +10,6 @@
 import logging
 import os
 from datetime import datetime
-from exceptions import *
 from hashlib import sha1
 
 import requests
@@ -108,7 +107,7 @@ def githash(outfile):
     return unicode(s.hexdigest())
 
 
-def main(args):
+def run(args):
     """
     Main process that:
 
@@ -125,7 +124,7 @@ def main(args):
     with ProcessingContext(args) as ctx:
         for project in ctx.targets:
             # Set full url
-            url = ctx.url.format(INI_FILE.format(project))
+            url = ctx.uformat(INI_FILE.format(project))
             # Set output file full path
             outfile = os.path.join(ctx.config_dir, INI_FILE.format(project))
             # Get GitHub file content

@@ -15,7 +15,7 @@ from importlib import import_module
 
 from utils.constants import *
 from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter
-from utils.utils import init_logging
+from utils.misc import init_logging
 
 # Program version
 __version__ = 'v{} {}'.format(VERSION, VERSION_DATE)
@@ -409,16 +409,15 @@ def run():
         testsuite = unittest.TestLoader().discover('.')
         unittest.TextTestRunner().run(testsuite)
     else:
-        submodule = args.cmd.lower().replace('-', '')
+        module_name = args.cmd.lower().replace('-', '')
         if args.test:
-            test = import_module('.test', package='esgprep.{}'.format(submodule))
+            test = import_module('.test', package='esgprep.{}'.format(module_name))
             test.run()
         else:
-            main = import_module('.main', package='esgprep.{}'.format(submodule))
-            main.main(args)
+            main = import_module('.main', package='esgprep.{}'.format(module_name))
+            main.run(args)
 
 
-# Main entry point for stand-alone call.
 if __name__ == "__main__":
     # PyCharm workaround
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))

@@ -10,10 +10,12 @@
 import os
 import re
 
-from esgprep.utils.utils import checksum
-from esgprep.utils.config import interpolate
+from ESGConfigParser import interpolate
+from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions, MissingPatternKey
+
 from esgprep.utils.constants import *
-from esgprep.utils.exceptions import *
+from esgprep.utils.custom_exceptions import *
+from esgprep.utils.misc import checksum
 
 
 class File(object):
@@ -78,7 +80,7 @@ class File(object):
 
         :param list facets: The list of facet to check
         :param list not_ignored: The list of facet to not ignore
-        :param esgprep.utils.config.SectionParser config: The configuration parser
+        :param ESGConfigParser.SectionParser config: The configuration parser
         :raises Error: If one facet checkup fails
 
         """

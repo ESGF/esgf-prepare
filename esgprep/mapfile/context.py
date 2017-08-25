@@ -13,11 +13,13 @@ import os
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
 
-from esgprep.mapfile.constants import *
+from ESGConfigParser import SectionParser
+from ESGConfigParser.custom_exceptions import NoConfigOption
+
+from constants import *
 from esgprep.utils.collectors import VersionedPathCollector
-from esgprep.utils.config import SectionParser
-from esgprep.utils.exceptions import *
-from esgprep.utils.utils import cmd_exists
+from esgprep.utils.custom_exceptions import *
+from esgprep.utils.misc import cmd_exists
 
 
 class ProcessingContext(object):
@@ -67,7 +69,7 @@ class ProcessingContext(object):
         # Get checksum client
         self.checksum_client, self.checksum_type = self.get_checksum_client()
         # Init configuration parser
-        self.cfg = SectionParser(self.config_dir, section='project:{}'.format(self.project))
+        self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
         self.facets = self.cfg.get_facets('dataset_id')
         self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
         # Get mapfile DRS is set in configuration file
@@ -139,7 +141,7 @@ class ProcessingContext(object):
         if self.no_checksum:
             return None, None
         else:
-            _cfg = SectionParser(self.config_dir, 'DEFAULT')
+            _cfg = SectionParser(section='DEFAULT', directory=self.config_dir)
             if _cfg.has_option('DEFAULT', 'checksum'):
                 checksum_client, checksum_type = _cfg.get_options_from_table('checksum')[0]
             else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory

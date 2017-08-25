@@ -11,10 +11,11 @@ import logging
 import re
 import sys
 
+from ESGConfigParser import SectionParser
+
 from esgprep.utils.collectors import PathCollector, DatasetCollector
-from esgprep.utils.config import SectionParser
 from esgprep.utils.constants import *
-from esgprep.utils.utils import as_pbar
+from esgprep.utils.misc import as_pbar
 
 
 class ProcessingContext(object):
@@ -40,7 +41,7 @@ class ProcessingContext(object):
 
     def __enter__(self):
         # Init configuration parser
-        self.cfg = SectionParser(self.config_dir, section='project:{}'.format(self.project))
+        self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
         # Init data collector
         if self.directory:
             # The source is a list of directories

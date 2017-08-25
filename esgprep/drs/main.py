@@ -10,12 +10,13 @@
 import logging
 import os
 
+from ESGConfigParser.custom_exceptions import NoConfigOption
+
+from constants import *
 from context import ProcessingContext
-from esgprep.drs.constants import *
-from esgprep.drs.exceptions import *
-from esgprep.utils.utils import load, store, as_pbar, evaluate, checksum
+from custom_exceptions import *
+from esgprep.utils.misc import load, store, as_pbar, evaluate, checksum
 from handler import File, DRSPath
-from esgprep.utils.exceptions import *
 
 
 def process(collector_input):
@@ -132,7 +133,7 @@ def process(collector_input):
         return None
 
 
-def main(args):
+def run(args):
     """
     Main process that:
 

@@ -5,3 +5,4 @@ lockfile
 hurry.filesize
 treelib
 tqdm
+esgconfigparser

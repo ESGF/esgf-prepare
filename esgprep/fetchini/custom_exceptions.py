@@ -11,6 +11,7 @@
 # Exceptions for GitHub connexion #
 ###################################
 
+
 class GitHubException(Exception):
     """
     Basic exception for GitHub errors.

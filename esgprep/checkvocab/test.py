@@ -8,11 +8,10 @@
 """
 
 import unittest
-import esgprep.checkvocab
-from esgprep.checkvocab.main import *
-from esgprep.checkvocab.constants import *
-from esgprep.checkvocab.exceptions import *
-from github3.github import Repository as GitHubRepository
+import checkvocab
+from checkvocab.main import *
+from checkvocab.constants import *
+from checkvocab.custom_exceptions import *
 
 
 class CheckVocabTest(unittest.TestCase):

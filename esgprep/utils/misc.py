@@ -15,8 +15,9 @@ import re
 import sys
 from datetime import datetime
 
-from esgprep.utils.exceptions import *
 from tqdm import tqdm
+
+from custom_exceptions import *
 
 
 class LogFilter(object):

@@ -10,7 +10,7 @@
 import unittest
 from esgprep.fetchini.main import *
 from esgprep.fetchini.constants import *
-from esgprep.fetchini.exceptions import *
+from esgprep.fetchini.custom_exceptions import *
 
 
 class FetchiniTest(unittest.TestCase):

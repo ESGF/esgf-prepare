@@ -12,16 +12,17 @@ import os
 import re
 from collections import OrderedDict
 
+from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions, NoConfigOption
 from fuzzywuzzy import fuzz, process
 from hurry.filesize import size
 from netCDF4 import Dataset
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
 
-from esgprep.drs.constants import *
-from esgprep.drs.exceptions import *
+from constants import *
+from custom_exceptions import *
 from esgprep.utils.constants import *
-from esgprep.utils.exceptions import *
+from esgprep.utils.custom_exceptions import *
 
 
 class File(object):
@@ -106,7 +107,7 @@ class File(object):
 
         :param list facets: The list of facet to check
         :param list not_ignored: The list of facet to not ignore
-        :param esgprep.utils.config.SectionParser config: The configuration parser
+        :param ESGConfigParser.SectionParser config: The configuration parser
         :param dict set_keys: Key/Attribute pairs to map for the run
         :raises Error: If one facet checkup fails
 

@@ -9,7 +9,7 @@
 
 import requests
 
-from esgprep.fetchini.exceptions import *
+from custom_exceptions import *
 
 
 def gh_request_content(url, auth=None):

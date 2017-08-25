@@ -11,7 +11,7 @@
 import os
 import re
 
-from esgprep.utils.utils import match, remove
+from esgprep.utils.misc import match, remove
 
 
 class Collector(object):

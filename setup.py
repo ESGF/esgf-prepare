@@ -13,6 +13,7 @@ setup(name='esgprep',
       packages=find_packages(),
       include_package_data=True,
       install_requires=['lockfile>=0.12.2',
+                        'esgconfigparser>=0.0.2',
                         'requests>=2.17.3',
                         'fuzzywuzzy>=0.15.0',
                         'netCDF4<=1.2.8,>=1.2.0',
@@ -32,4 +33,3 @@ setup(name='esgprep',
                    'Topic :: Scientific/Engineering',
                    'Topic :: Software Development :: Build Tools']
       )
-

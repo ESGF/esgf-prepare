@@ -12,12 +12,13 @@ import os
 import re
 from datetime import datetime
 
+from ESGConfigParser import interpolate
+from lockfile import LockFile
+
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.config import interpolate
-from esgprep.utils.utils import as_pbar, evaluate
+from esgprep.utils.misc import as_pbar, evaluate
 from handler import File
-from lockfile import LockFile
 
 
 def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_version, mapfile_drs=None):
@@ -167,7 +168,7 @@ def process(collector_input):
         return None
 
 
-def main(args):
+def run(args):
     """
     Main process that:
 

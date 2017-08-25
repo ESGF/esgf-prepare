@@ -10,13 +10,14 @@
 import logging
 import re
 
+from ESGConfigParser import split_map_header
+from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions
+
+from constants import *
 from context import ProcessingContext
-from esgprep.checkvocab.constants import *
-from esgprep.utils.config import split_map_header
-from esgprep.utils.exceptions import *
 
 
-def main(args):
+def run(args):
     """
     Main process that:
 
