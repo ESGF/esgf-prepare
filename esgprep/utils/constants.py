@@ -14,7 +14,7 @@ IGNORED_KEYS = ['root', 'project', 'filename', 'variable', 'version', 'period_st
 # TODO: implement filename pattern checking as a facet?
 
 # Program version
-VERSION = '2.7.11'
+VERSION = '2.7.12'
 
 # Date
 VERSION_DATE = datetime(year=2017, month=8, day=25).strftime("%Y-%d-%m")
