@@ -12,7 +12,7 @@ from shutil import copy2 as copy
 from shutil import move
 
 # Facets ignored during checking
-IGNORED_KEYS = ['root', 'project', 'filename', 'version', 'period_start', 'period_end']
+IGNORED_KEYS = ['root', 'project', 'mip_era', 'filename', 'version', 'period_start', 'period_end']
 
 # Symbolic link separator
 LINK_SEPARATOR = ' --> '
