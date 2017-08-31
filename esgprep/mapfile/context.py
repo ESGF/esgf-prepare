@@ -58,7 +58,6 @@ class ProcessingContext(object):
             self.version = 'v{}'.format(args.version)
         if args.latest_symlink:
             self.version = 'latest'
-        self.scsan = True
         self.scan_errors = None
         self.scan_files = None
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename

@@ -124,7 +124,7 @@ def run(args):
     with ProcessingContext(args) as ctx:
         for project in ctx.targets:
             # Set full url
-            url = ctx.uformat(INI_FILE.format(project))
+            url = ctx.url.format(INI_FILE.format(project))
             # Set output file full path
             outfile = os.path.join(ctx.config_dir, INI_FILE.format(project))
             # Get GitHub file content
