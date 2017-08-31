@@ -256,14 +256,6 @@ def get_args():
         action='store_true',
         default=False,
         help=NO_CHECKSUM_HELP['drs'])
-    drs.add_argument(
-        '--not-ignored',
-        metavar='FACET_KEY',
-        type=str,
-        nargs='+',
-        default=[],
-        help=NOT_IGNORED_HELP)
-    # TODO: --not-ignored is deprecated
     group = drs.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--copy',
@@ -349,14 +341,6 @@ def get_args():
         action='store_true',
         default=False,
         help=NO_CHECKSUM_HELP['mapfile'])
-    mapfile.add_argument(
-        '--not-ignored',
-        metavar='FACET_KEY',
-        type=str,
-        nargs='+',
-        default=[],
-        help=NOT_IGNORED_HELP)
-    # TODO: --not-ignored is deprecated
     mapfile.add_argument(
         '--ignore-dir-filter',
         metavar="PYTHON_REGEX",

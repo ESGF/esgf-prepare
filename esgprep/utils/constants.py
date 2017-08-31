@@ -9,8 +9,7 @@
 from datetime import datetime
 
 # Facets ignored during checking
-IGNORED_KEYS = ['root', 'project', 'filename', 'variable', 'version', 'period_start', 'period_end']
-# TODO: variable and version can now be check.
+IGNORED_KEYS = ['root', 'project', 'filename', 'period_start', 'period_end']
 # TODO: implement filename pattern checking as a facet?
 
 # Program version

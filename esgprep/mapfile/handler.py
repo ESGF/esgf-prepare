@@ -71,23 +71,20 @@ class File(object):
         except:
             raise ExpressionNotMatch(self.ffp, pattern)
 
-    def check_facets(self, facets, not_ignored, config):
+    def check_facets(self, facets, config):
         """
         Checks each facet against the esg.<project>.ini
         If a DRS attribute is missing regarding the dataset_id template,
         the DRS attributes are completed from esg.<project>.ini maptables.
-        If some keys has to be resolved through ini instead of ignored: remove it from the IGNORED_KEYS list
 
         :param list facets: The list of facet to check
-        :param list not_ignored: The list of facet to not ignore
         :param ESGConfigParser.SectionParser config: The configuration parser
         :raises Error: If one facet checkup fails
 
         """
-        ignored_keys = set(IGNORED_KEYS) - set(not_ignored)
-        for facet in set(facets).intersection(self.attributes.keys()) - ignored_keys:
+        for facet in set(facets).intersection(self.attributes.keys()) - set(IGNORED_KEYS):
             config.check_options({facet: self.attributes[facet]})
-        for facet in set(facets).difference(self.attributes.keys()) - ignored_keys:
+        for facet in set(facets).difference(self.attributes.keys()) - set(IGNORED_KEYS):
             try:
                 self.attributes[facet] = config.get_option_from_map('{}_map'.format(facet), self.attributes)
             except:

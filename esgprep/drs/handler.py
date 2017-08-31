@@ -98,24 +98,21 @@ class File(object):
         # Only required to build proper DRS
         self.attributes['project'] = project
 
-    def check_facets(self, facets, not_ignored, config, set_keys):
+    def check_facets(self, facets, config, set_keys):
         """
         Checks each facet against the esg.<project>.ini. If a DRS attribute is missing regarding the directory_format
         template, the DRS attributes are completed from esg.<project>.ini maptables. In the case of non-standard
         attribute, it gets the most similar key among netCDF attributes names/
-        If some keys has to be resolved through ini instead of ignored: remove it from the IGNORED_KEYS list
 
         :param list facets: The list of facet to check
-        :param list not_ignored: The list of facet to not ignore
         :param ESGConfigParser.SectionParser config: The configuration parser
         :param dict set_keys: Key/Attribute pairs to map for the run
         :raises Error: If one facet checkup fails
 
         """
-        ignored_keys = set(IGNORED_KEYS) - set(not_ignored)
-        for facet in set(facets).intersection(self.attributes.keys()) - ignored_keys:
+        for facet in set(facets).intersection(self.attributes.keys()) - set(IGNORED_KEYS):
             config.check_options({facet: self.attributes[facet]})
-        for facet in set(facets).difference(self.attributes.keys()) - ignored_keys:
+        for facet in set(facets).difference(self.attributes.keys()) - set(IGNORED_KEYS):
             try:
                 self.attributes[facet] = config.get_option_from_map('{}_map'.format(facet), self.attributes)
             except NoConfigOption:

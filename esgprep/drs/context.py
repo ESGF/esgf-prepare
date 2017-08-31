@@ -43,7 +43,6 @@ class ProcessingContext(object):
         if args.set_key:
             self.set_keys = dict(args.set_key)
         self.threads = args.max_threads
-        self.not_ignored = args.not_ignored
         self.project = args.project
         self.action = args.action
         if args.copy:
