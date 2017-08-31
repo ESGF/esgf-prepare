@@ -7,8 +7,8 @@
 
 """
 
+import getpass
 import logging
-import os
 import re
 from collections import OrderedDict
 
@@ -281,8 +281,6 @@ class DRSLeaf(object):
         :raises Error: If any IO action fails
 
         """
-        # TODO: Check user read / write permissions on ROOT and INCOMING folder.
-        # TODO: Make migration test prior to upgrade to avoid any OSError.
         # Make directory for destination path if not exist
         print('{} {}'.format('mkdir -p', os.path.dirname(self.dst)))
         if not todo_only:
@@ -299,6 +297,31 @@ class DRSLeaf(object):
         # Make upgrade depending on the migration mode
         if not todo_only:
             UNIX_COMMAND[self.mode](self.src, self.dst)
+
+    def has_permissions(self, root):
+        """
+        Check permissions for DRS migration on the leaf.
+        Discards relative paths.
+
+        :param str root: The DRS tree root
+        :raises Error: If missing user privileges
+
+        """
+        # Check src access
+        # Define src access depending on the migration mode
+        if self.mode == 'move':
+            if os.path.isabs(self.src) and not os.access(self.src, os.W_OK):
+                raise WriteAccessDenied(getpass.getuser(), self.src)
+        else:
+            if os.path.isabs(self.src) and not os.access(self.src, os.R_OK):
+                raise ReadAccessDenied(getpass.getuser(), self.src)
+        # Check dst access (always write)
+        # Backward the DRS is path does not exist
+        dst = self.dst
+        while not os.path.exists(dst) and dst != root:
+            dst = os.path.split(dst)[0]
+        if os.path.isabs(dst) and not os.access(dst, os.W_OK):
+            raise WriteAccessDenied(getpass.getuser(), dst)
 
 
 class DRSTree(Tree):
@@ -430,6 +453,10 @@ class DRSTree(Tree):
         :param boolean todo_only: Only print Unix command-line to do
 
         """
+        # Check permissions before to upgrade
+        if not todo_only:
+            for leaf in self.leaves():
+                leaf.data.has_permissions(self.drs_root)
         print(''.center(self.d_lengths[-1], '='))
         if todo_only:
             print('Unix command-lines (DRY-RUN)'.center(self.d_lengths[-1]))

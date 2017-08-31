@@ -6,6 +6,7 @@
     :synopsis: Custom exceptions used in this module.
 
 """
+import os
 
 
 class DuplicatedDataset(Exception):
@@ -44,4 +45,32 @@ class DuplicatedFile(Exception):
         self.msg = "Latest dataset version already includes NetCDF file"
         self.msg += "\n<latest  file: '{}'>".format(latest)
         self.msg += "\n<upgrade file: '{}'>".format(upgrade)
+        super(self.__class__, self).__init__(self.msg)
+
+
+class ReadAccessDenied(Exception):
+    """
+    Raised when user has no read access.
+
+    """
+
+    def __init__(self, user, path):
+        self.msg = "Read permission required."
+        self.msg += "\n<user: '{}'>".format(user)
+        self.msg += "\n<path: '{}'>".format(path)
+        self.msg += "\n<permissions: '{}'>".format(oct(os.stat(path).st_mode)[-4:])
+        super(self.__class__, self).__init__(self.msg)
+
+
+class WriteAccessDenied(Exception):
+    """
+    Raised when user has not write access.
+
+    """
+
+    def __init__(self, user, path):
+        self.msg = "Write permission required."
+        self.msg += "\n<user: '{}'>".format(user)
+        self.msg += "\n<path: '{}'>".format(path)
+        self.msg += "\n<permissions: '{}'>".format(oct(os.stat(path).st_mode)[-4:])
         super(self.__class__, self).__init__(self.msg)

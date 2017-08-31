@@ -8,7 +8,6 @@
 """
 
 import logging
-import os
 
 from ESGConfigParser.custom_exceptions import NoConfigOption
 
