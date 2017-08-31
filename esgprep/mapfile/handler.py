@@ -13,7 +13,7 @@ import re
 from ESGConfigParser import interpolate
 from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions, MissingPatternKey
 
-from esgprep.utils.constants import *
+from constants import *
 from esgprep.utils.custom_exceptions import *
 from esgprep.utils.misc import checksum
 

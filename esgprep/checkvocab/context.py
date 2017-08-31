@@ -13,8 +13,8 @@ import sys
 
 from ESGConfigParser import SectionParser
 
+from constants import *
 from esgprep.utils.collectors import PathCollector, DatasetCollector
-from esgprep.utils.constants import *
 from esgprep.utils.misc import as_pbar
 
 

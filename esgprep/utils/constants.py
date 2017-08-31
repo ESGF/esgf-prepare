@@ -8,12 +8,8 @@
 """
 from datetime import datetime
 
-# Facets ignored during checking
-IGNORED_KEYS = ['root', 'project', 'filename', 'period_start', 'period_end']
-# TODO: implement filename pattern checking as a facet?
-
 # Program version
-VERSION = '2.7.13'
+VERSION = '2.7.14'
 
 # Date
 VERSION_DATE = datetime(year=2017, month=8, day=31).strftime("%Y-%d-%m")

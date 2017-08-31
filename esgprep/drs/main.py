@@ -43,7 +43,6 @@ def process(collector_input):
         # Instantiate file handler
         fh = File(ffp)
         # Try to get the appropriate project case or use lower case instead
-
         try:
             project = ctx.cfg.get_options_from_pairs('category_defaults', 'project')
         except NoConfigOption:
@@ -54,7 +53,6 @@ def process(collector_input):
                            pattern=ctx.pattern,
                            set_values=ctx.set_values)
         fh.check_facets(facets=ctx.facets,
-                        not_ignored=ctx.not_ignored,
                         config=ctx.cfg,
                         set_keys=ctx.set_keys)
         # Get parts of DRS path

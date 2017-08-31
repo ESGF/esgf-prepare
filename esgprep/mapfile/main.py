@@ -136,7 +136,6 @@ def process(collector_input):
         dataset_id = ctx.dataset
         if not ctx.dataset:
             fh.check_facets(facets=ctx.facets,
-                            not_ignored=ctx.not_ignored,
                             config=ctx.cfg)
             dataset_id = fh.get_dataset_id(ctx.cfg.get('dataset_id', raw=True))
         # Deduce dataset_version

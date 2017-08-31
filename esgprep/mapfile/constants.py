@@ -7,6 +7,10 @@
 
 """
 
+# Facets ignored during checking
+IGNORED_KEYS = ['root', 'project', 'filename', 'period_start', 'period_end']
+# TODO: implement filename pattern checking as a facet?
+
 # Mapfile extension during processing
 WORKING_EXTENSION = '.part'
 

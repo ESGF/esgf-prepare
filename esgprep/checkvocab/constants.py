@@ -7,6 +7,9 @@
 
 """
 
+# Facets ignored during checking
+IGNORED_KEYS = ['root', 'project', 'filename', 'period_start', 'period_end']
+
 # Status messages
 STATUS = {0: 'ALL USED VALUES ARE PROPERLY DECLARED',
           1: 'THERE WERE UNDECLARED VALUES USED',

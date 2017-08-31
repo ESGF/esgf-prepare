@@ -47,7 +47,6 @@ class ProcessingContext(object):
         if not args.no_cleanup:
             self.clean()
         self.no_cleanup = args.no_cleanup
-        self.not_ignored = args.not_ignored
         self.no_checksum = args.no_checksum
         self.dir_filter = args.ignore_dir_filter
         self.file_filter = args.include_file_filter
