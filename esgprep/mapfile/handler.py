@@ -68,6 +68,9 @@ class File(object):
             self.attributes = re.search(pattern, self.ffp).groupdict()
             # Only required to build proper dataset_id
             self.attributes['project'] = project.lower()
+            # Set mip_era equal to project if exist (e.g., for CMIP6)
+            if 'mip_era' in self.attributes:
+                self.attributes['mip_era'] = self.attributes['project']
         except:
             raise ExpressionNotMatch(self.ffp, pattern)
 

@@ -9,7 +9,7 @@
 from datetime import datetime
 
 # Program version
-VERSION = '2.7.18'
+VERSION = '2.7.19'
 
 # Date
 VERSION_DATE = datetime(year=2017, month=9, day=1).strftime("%Y-%d-%m")
