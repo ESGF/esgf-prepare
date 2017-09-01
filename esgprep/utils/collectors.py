@@ -10,8 +10,22 @@
 # Module imports
 import os
 import re
+import sys
 
 from esgprep.utils.misc import match, remove
+
+
+class Collecting:
+    states = ('/', '-', '\\', '|')
+    step = 0
+
+    def __init__(self):
+        self.next()
+
+    def next(self):
+        sys.stdout.write('\rCollecting data... {}'.format(Collecting.states[Collecting.step % 4]))
+        sys.stdout.flush()
+        Collecting.step += 1
 
 
 class Collector(object):
@@ -24,6 +38,7 @@ class Collector(object):
     :rtype: *iter*
 
     """
+    progress = Collecting()
 
     def __init__(self, sources, file_filter='^[!.].*\.nc$', data=None):
         self.sources = sources
@@ -47,7 +62,14 @@ class Collector(object):
         :rtype: *int*
 
         """
-        return sum(1 for _ in self.__iter__())
+        progress = Collecting()
+        s = 0
+        for _ in self.__iter__():
+            progress.next()
+            s += 1
+        sys.stdout.write('\r\033[K')
+        sys.stdout.flush()
+        return s
 
     def attach(self, item):
         """
