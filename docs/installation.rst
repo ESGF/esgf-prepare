@@ -45,37 +45,34 @@ Dependencies and requirements
 Linux distribution with Python 2.6+ is required. ``esgprep`` uses the following basic Python libraries. Ensure that
 your Python environment includes:
 
- * `os <https://docs.python.org/2/library/os.html>`_
- * `re <https://docs.python.org/2/library/re.html>`_
- * `sys <https://docs.python.org/2/library/sys.html>`_
- * `glob <https://docs.python.org/2/library/glob.html>`_
+ * `argparse <https://docs.python.org/2/library/argparse.html>`_
+ * `collections <https://docs.python.org/2/library/collections.html>`_
+ * `datetime <https://docs.python.org/2/library/datetime.html>`_
+ * `ESGConfigParser<https://pypi.python.org/pypi/ESGConfigParser>`_
+ * `fnmatch <https://docs.python.org/2/library/fnmatch.html>`_
+ * `getpass <https://docs.python.org/2/library/getpass.html>`_
  * `hashlib <https://docs.python.org/2/library/hashlib.html>`_
  * `importlib <https://docs.python.org/2/library/importlib.html>`_
- * `string <https://docs.python.org/2/library/string.html>`_
- * `fnmatch <https://docs.python.org/2/library/fnmatch.html>`_
  * `logging <https://docs.python.org/2/library/logging.html>`_
- * `collections <https://docs.python.org/2/library/collections.html>`_
- * `shutil <https://docs.python.org/2/library/shutil.html>`_
- * `pickle <https://docs.python.org/2/library/pickle.html>`_
- * `unittest <https://docs.python.org/2/library/unittest.html>`_
- * `argparse <https://docs.python.org/2/library/argparse.html>`_
- * `datetime <https://docs.python.org/2/library/datetime.html>`_
- * `ConfigParser <https://docs.python.org/2/library/configparser.html>`_
- * `textwrap <https://docs.python.org/2/library/textwrap.html>`_
- * `functools <https://docs.python.org/2/library/functools.html>`_
  * `multiprocessing <https://docs.python.org/2/library/multiprocessing.html>`_
+ * `os <https://docs.python.org/2/library/os.html>`_
+ * `pickle <https://docs.python.org/2/library/pickle.html>`_
+ * `re <https://docs.python.org/2/library/re.html>`_
+ * `shutil <https://docs.python.org/2/library/shutil.html>`_
+ * `sys <https://docs.python.org/2/library/sys.html>`_
+ * `textwrap <https://docs.python.org/2/library/textwrap.html>`_
+ * `unittest <https://docs.python.org/2/library/unittest.html>`_
 
-Some required librairies are not included in most Python distributions. Please install them using the usual PIP command:
+Some required libraries are not included in most Python distributions. Please install them using the usual PIP command:
 
  * `fuzzywuzzy <https://pypi.python.org/pypi/fuzzywuzzy>`_
- * `github3 <https://github3py.readthedocs.io/en/master/>`_
  * `hurry.filesize <https://pypi.python.org/pypi/hurry.filesize>`_
  * `lockfile <https://pypi.python.org/pypi/lockfile/0.12.2>`_
  * `netCDF4 <http://unidata.github.io/netcdf4-python/>`_
+ * `requests <http://docs.python-requests.org/en/master/>`_
  * `tqdm <https://pypi.python.org/pypi/tqdm>`_
  * `treelib <https://pypi.python.org/pypi/treelib>`_
 
 .. code-block:: bash
 
    pip install <pkg_name>
-

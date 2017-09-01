@@ -26,7 +26,7 @@ class ProcessingContext(object):
     """
     Encapsulates the processing context/information for main process.
 
-    :param ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: The command-line arguments parser
     :returns: The processing context
     :rtype: *ProcessingContext*
 

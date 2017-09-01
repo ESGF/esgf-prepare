@@ -34,7 +34,7 @@ Run the test suite
 Add verbosity
 *************
 
-Some progress bars informs you about the processing statut of the different subcommands. You can switch to a more
+Some progress bars informs you about the processing status of the different subcommands. You can switch to a more
 verbose mode displaying each step.
 
 .. code-block:: bash
@@ -42,7 +42,7 @@ verbose mode displaying each step.
     $> esgprep SUBCOMMAND -v
 
 .. warning::
-    The verbose mode is silently actived in the case of a logfile (i.e., no progress bars).
+    The verbose mode is silently activated in the case of a logfile (i.e., no progress bars).
 
 
 Specify the project
@@ -108,7 +108,7 @@ It can be change with:
 
     $> esgprep SUBCOMMAND --include-file-filter PYTHON_REGEX
 
-Keep in mind that ``--ignore-dir-filter`` specifies a direcotry pattern **NOT** to be matched, and
+Keep in mind that ``--ignore-dir-filter`` specifies a directory pattern **NOT** to be matched, and
 ``--include-file-filter`` specifies a filename pattern **TO BE** matched.
 
 .. warning:: ``esgprep fetch-ini`` does not allow those features and ``esgprep drs`` only works with unhidden

@@ -10,19 +10,20 @@
 import logging
 import os
 import re
+import sys
 
 from requests.auth import HTTPBasicAuth
 
 from constants import *
-from utils import gh_request_content
 from esgprep.utils.misc import as_pbar
+from utils import gh_request_content
 
 
 class ProcessingContext(object):
     """
     Encapsulates the processing context/information for main process.
 
-    :param ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: The command-line arguments parser
     :returns: The processing context
     :rtype: *ProcessingContext*
 
@@ -40,6 +41,7 @@ class ProcessingContext(object):
         self.url = GITHUB_FILE_API
         if args.devel:
             self.url += '?ref=devel'
+        self.error = False
 
     def __enter__(self):
         # Init GitHub authentication
@@ -55,11 +57,12 @@ class ProcessingContext(object):
 
     def __exit__(self, *exc):
         # Default is sys.exit(0)
-        pass  # Errors?
+        if self.error:
+            sys.exit(1)
 
     def authenticate(self):
         """
-        Build GitHub HTTP authenticator
+        Builds GitHub HTTP authenticator
 
         :returns: The HTTP authenticator
         :rtype: *requests.auth.HTTPBasicAuth*
@@ -69,7 +72,7 @@ class ProcessingContext(object):
 
     def make_ini_dir(self):
         """
-        Build the output directory following:
+        Build the output directory as follows:
          - If ESGF node and args.i = /esg/config/esgcet -> exists
          - If not ESGF node and args.i = /esg/config/esgcet -> doesn't exist -> use $PWD/ini instead
          - If ESGF node and args.i = other -> if not exists make it
@@ -88,7 +91,7 @@ class ProcessingContext(object):
 
     def target_projects(self):
         """
-        Gets the available projects id from GitHub esg.*.ini files.
+        Gets the available projects ids from GitHub esg.*.ini files.
         Make the intersection with the desired projects to fetch.
 
         :returns: The target projects

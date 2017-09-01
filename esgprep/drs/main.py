@@ -24,12 +24,12 @@ def process(collector_input):
 
     File process that:
 
-     * Deduce facet key, values pairs from file attributes
-     * Build the DRS of the file
-     * Build the DRS of the corresponding dataset
-     * Apply the versioning
-     * Build the whole DRS tree
-     * Store dataset statistics into a dict.
+     * Handles files,
+     * Deduces facet key, values pairs from file attributes
+     * Checks facet values against CV,
+     * Applies the versioning
+     * Populates the DRS tree crating the appropriate leaves,
+     * Stores dataset statistics.
 
     :param tuple collector_input: A tuple with the file path and the processing context
     :return: True on success
@@ -134,13 +134,13 @@ def run(args):
     """
     Main process that:
 
-     * Instantiates processing context
-     * Parses the configuration files options and values,
-     * Deduces facets and values from files,
-     * Gets the DRS directory for each file,
-     * Apply DRS action to each file.
+     * Instantiates processing context,
+     * Loads previous program instance,
+     * Parallelizes file processing with threads pools,
+     * Apply command-line action to the whole DRS tree,
+     * Evaluate exit status.
 
-    :param ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: The command-line arguments parser
 
     """
     # Instantiate processing context
@@ -174,4 +174,3 @@ def run(args):
             # Apply tree action
             ctx.tree.get_display_lengths()
             getattr(ctx.tree, ctx.action)()
-        # TODO: Add a "remove" action to properly delete a dataset version in the destination DRS Tree

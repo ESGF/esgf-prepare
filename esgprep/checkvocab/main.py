@@ -23,11 +23,11 @@ def run(args):
 
      * Instantiates processing context
      * Parses the configuration files options and values,
-     * Deduces facets and values from directories,
+     * Deduces facets and values from directories or dataset lists,
      * Compares the values of each facet between both,
      * Print or log the checking.
 
-    :param ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: The command-line arguments parser
 
     """
     # Instantiate processing context manager

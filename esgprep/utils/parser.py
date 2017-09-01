@@ -126,7 +126,7 @@ def keyval_converter(pair):
     Checks the key value syntax.
 
     :param str pair: The key/value pair to check
-    :returns: The pairs if allowed
+    :returns: The key/value pair
     :rtype: *list*
     :raises Error: If invalid pair syntax
 

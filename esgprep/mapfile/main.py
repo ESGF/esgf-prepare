@@ -17,7 +17,7 @@ from lockfile import LockFile
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.misc import as_pbar, evaluate
+from esgprep.utils.misc import as_pbar, evaluate, checksum
 from handler import File
 
 
@@ -26,14 +26,14 @@ def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_ver
     Builds the mapfile full path depending on:
 
      * the --mapfile name using tokens,
-     * an optional mapfile tree declared in configuration file as ``mapfile_drs``,
+     * an optional mapfile tree declared in configuration file with ``mapfile_drs``,
      * the --outdir output directory.
 
     :param str outdir: The output directory (default is current working directory)
     :param dict attributes: The facets values deduces from file full path
-    :param str mapfile_name: The mapfile name from the command-line
-    :param str dataset_id: The corresponding dataset id
-    :param str dataset_version: The corresponding dataset version
+    :param str mapfile_name: An optional mapfile name from the command-line
+    :param str dataset_id: The dataset id
+    :param str dataset_version: The dataset version
     :param str mapfile_drs: The optional mapfile tree
     :returns: The mapfile full path
     :rtype: *str*
@@ -61,6 +61,7 @@ def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_ver
         mapfile_name = re.sub(r'{date}', datetime.now().strftime("%Y%d%m"), mapfile_name)
     if re.compile(r'{job_id}').search(mapfile_name):
         mapfile_name = re.sub(r'{job_id}', str(os.getpid()), mapfile_name)
+    # Add a "working extension" pending for the end of process
     return os.path.join(outdir, mapfile_name) + WORKING_EXTENSION
 
 
@@ -68,8 +69,8 @@ def mapfile_entry(dataset_id, dataset_version, ffp, size, **kwargs):
     """
     Builds the mapfile entry corresponding to a processed file.
 
-    :param str dataset_id: The corresponding dataset id
-    :param str dataset_version: The corresponding dataset version
+    :param str dataset_id: The dataset id
+    :param str dataset_version: The dataset version
     :param str ffp: The file full path
     :param str size: The file size
     :returns: The mapfile line/entry
@@ -90,7 +91,7 @@ def mapfile_entry(dataset_id, dataset_version, ffp, size, **kwargs):
 
 def write(outfile, entry):
     """
-    Inserts a mapfile entry using the ``with`` statement dealing with multiple threads.
+    Inserts a mapfile entry.
     It generates a lockfile to avoid that several threads write on the same file at the same time.
     A LockFile is acquired and released after writing. Acquiring LockFile is timeouted if it's locked by other thread.
     Each process adds one line to the appropriate mapfile
@@ -107,19 +108,21 @@ def write(outfile, entry):
 
 def process(collector_input):
     """
-    process(collector_input)
-
     File process that:
 
+     * Handles file,
+     * Harvests directory attributes,
+     * Check DRS attributes against CV,
      * Builds dataset ID,
      * Retrieves file size,
      * Does checksums,
      * Deduces mapfile name,
-     * Makes output directory if not already exists,
-     * Writes the corresponding line into it.
+     * Writes the corresponding mapfile entry.
+
+    Any error leads to skip the file. It does not stop the process.
 
     :param tuple collector_input: A tuple with the file path and the processing context
-    :return: The output mapfile full path
+    :returns: The output mapfile full path
     :rtype: *str*
 
     """
@@ -172,13 +175,11 @@ def run(args):
     Main process that:
 
      * Instantiates processing context,
-     * Creates mapfiles output directory if necessary,
-     * Instantiates threads pools,
+     * Parallelizes file processing with threads pools,
      * Copies mapfile(s) to the output directory,
-     * Removes the temporary directory and its content,
-     * Implements exit status values.
+     * Evaluate exit status.
 
-    :param ArgumentParser args: Parsed command-line arguments
+    :param ArgumentParser args: Command-line arguments parser
 
     """
     # Instantiate processing context

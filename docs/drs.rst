@@ -44,7 +44,7 @@ The resulting table lists each dataset with:
 Set a facet value
 *****************
 
-In some cases, a DRS facet value cannont by properly deduces from the above sources. To solve this issue, a facet value
+In some cases, a DRS facet value cannot be properly deduces from the above sources. To solve this issue, a facet value
 can be set for the whole scan. By duplicating the flag several facet value can be enforced. If the same facet key is
 used, only the last value will be considered.
 
@@ -60,7 +60,7 @@ used, only the last value will be considered.
 Enforce a facet mapping
 ***********************
 
-Based on the same schema of the ``--set-value`` argument, the mappging between a (list of) facet key and a (list of)
+Based on the same schema of the ``--set-value`` argument, the mapping between a (list of) facet key and a (list of)
 particular NetCDF attribute can be enforced for the whole scan.
 
 .. code-block:: bash
@@ -105,7 +105,7 @@ By default, the DRS tree is built from your current directory. This can be chang
 List Unix command to apply
 **************************
 
-The ``todo`` action can be seen as a dry-run to check which unix commands should be apply to build the excpeted DRS
+The ``todo`` action can be seen as a dry-run to check which unix commands should be apply to build the expected DRS
 tree. At this step, no file are moved or copy to the final DRS.
 
 .. code-block:: bash
@@ -116,7 +116,7 @@ Change the migration mode
 *************************
 
 ``esgprep drs`` allows different file migration mode.
-Default is to move the files from the incomping path to the root directory. Use ``--copy`` to make hard copies,
+Default is to move the files from the incoming path to the root directory. Use ``--copy`` to make hard copies,
 ``--link`` to make hard links or ``--symlink`` to make symbolic links from the incoming path. We recommend to use
 ``--link`` and remove the incoming directory after DRS checking. This doesn't affect the symbolic link skeleton used
 for the dataset versioning.
@@ -128,7 +128,7 @@ for the dataset versioning.
     $> esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/ --symlink
 
 .. warning:: ``esgprep drs`` temporarily stores the result of the ``list`` action to quickly generate the DRS tree
-    afterwards. This requires to stricly submit the same arguments from the ``list`` action to the following ones.
+    afterwards. This requires to strictly submit the same arguments from the ``list`` action to the following ones.
     If not, the incoming files are automatically scan again.
 
 Run the DRS upgrade
@@ -140,10 +140,10 @@ This will apply all the Unix command you can print with the ``todo`` action.
 
     $> esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/
 
-Disable checkum comparison
-**************************
+Disable checksum comparison
+***************************
 
-To avoid mistakes in versioning, ``esgprep drs`` compares the incoming files to the files from the latest knwon version
+To avoid mistakes in versioning, ``esgprep drs`` compares the incoming files to the files from the latest known version
 on the filesystem using a ``sha256`` checksum. Because this could be time consuming ``--no-checksum`` allows you to only
 make a comparison on filenames.
 
@@ -159,7 +159,7 @@ Exit status
  * Status = 1
     No files found. No DRS tree can be built.
  * Status = 2
-    Some scan errors occured. Some files have been skipped or failed during the scan potentially leading to an
+    Some scan errors occurred. Some files have been skipped or failed during the scan potentially leading to an
     incomplete DRS tree. See the error logfile.
  * Status = 3
     All the files have been skipped or failed during the scan leading to no DRS tree. See the error logfile.

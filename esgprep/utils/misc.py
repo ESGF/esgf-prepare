@@ -49,7 +49,6 @@ def init_logging(log, verbose=False, level='INFO'):
     :param str level: The log level.
 
     """
-    logging.getLogger("github3").setLevel(logging.CRITICAL)  # Disables logging message from github3 library
     logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
     logname = 'esgprep-{}-{}'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
     formatter = logging.Formatter(fmt='%(levelname)-10s %(asctime)s %(message)s')
@@ -97,7 +96,7 @@ def match(pattern, string, negative=False):
 
     :param str pattern: The regular expression to match
     :param str string: The string to test
-    :param boolean negative: True if negative matching (i.e., non-matching the regex)
+    :param boolean negative: True if negative matching (i.e., exclude the regex)
     :returns: True if it matches
     :rtype: *boolean*
 
@@ -113,7 +112,7 @@ def load(path):
     Loads data from Pickle file.
 
     :param str path: The Pickle file path
-    :returns: The data stored in the Pickle file
+    :returns: The Pickle file content
     :rtype: *object*
 
     """
@@ -130,7 +129,7 @@ def store(path, data):
     Stores data into a Pickle file.
 
     :param str path: The Pickle file path
-    :param *list* data: The list of data objects
+    :param *list* data: A list of data objects to store
 
     """
     with open(path, 'wb') as f:
@@ -154,13 +153,13 @@ def cmd_exists(cmd):
 
 def as_pbar(iterable, desc, units, total=None):
     """
-    Build progress pbar if desired
+    Build a progress pbar.
 
     :param *iterable* iterable: An iterable object
     :param str desc: The progress bar description
     :param str units: The progress bar units
     :param int total: The number of iterations
-    :returns: The progress bar object as a list
+    :returns: The progress bar object as an iterable
     :rtype: *tqdm.tqdm* or *iter*
 
     """

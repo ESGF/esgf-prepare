@@ -69,4 +69,4 @@ Exit status
  * Status = 0
     All the configuration have been successfully fetched.
  * Status = 1
-    One or several errors occured. See the error logfile.
+    One or several errors occurred. See the error logfile.

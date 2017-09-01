@@ -16,6 +16,7 @@ import requests
 
 from constants import *
 from context import ProcessingContext
+from custom_exceptions import GitHubException
 from utils import gh_request_content
 
 
@@ -52,7 +53,7 @@ def backup(f, mode=None):
 
 def write_content(outfile, content):
     """
-    Write GitHub content into a file using context manager.
+    Write GitHub content into a file.
     
     :param str outfile: The output file 
     :param str content: The file content to write
@@ -111,10 +112,9 @@ def run(args):
     """
     Main process that:
 
-     * Checks if output directory exists,
-     * Checks if configuration already exists in output directory,
-     * Tests the corresponding GitHub URL,
-     * Gets the GitHub URL,
+     * Decide to fetch or not depending on file presence/absence and command-line arguments,
+     * Gets the GitHub file content from full API URL,
+     * Backups old file if desired,
      * Writes response into INI file.
 
     :param ArgumentParser args: Parsed command-line arguments
@@ -122,21 +122,24 @@ def run(args):
     """
     # Instantiate processing context manager
     with ProcessingContext(args) as ctx:
-        for project in ctx.targets:
-            # Set full url
-            url = ctx.url.format(INI_FILE.format(project))
-            # Set output file full path
-            outfile = os.path.join(ctx.config_dir, INI_FILE.format(project))
-            # Get GitHub file content
-            r = gh_request_content(url=url, auth=ctx.auth)
-            sha = r.json()['sha']
-            content = requests.get(r.json()['download_url'], auth=ctx.auth).text
-            # Fetching True/False depending on flags and file checksum
-            if do_fetching(outfile, sha, ctx.keep, ctx.overwrite):
-                # Backup old file if exists
-                backup(outfile, mode=ctx.backup_mode)
-                # Write new file
-                write_content(outfile, content)
-                logging.info('{} :: FETCHED (in {})'.format(url.ljust(LEN_URL), outfile))
-            else:
-                logging.info('{} :: SKIPPED'.format(url.ljust(LEN_URL)))
+        try:
+            for project in ctx.targets:
+                # Set full url
+                url = ctx.url.format(INI_FILE.format(project))
+                # Set output file full path
+                outfile = os.path.join(ctx.config_dir, INI_FILE.format(project))
+                # Get GitHub file content
+                r = gh_request_content(url=url, auth=ctx.auth)
+                sha = r.json()['sha']
+                content = requests.get(r.json()['download_url'], auth=ctx.auth).text
+                # Fetching True/False depending on flags and file checksum
+                if do_fetching(outfile, sha, ctx.keep, ctx.overwrite):
+                    # Backup old file if exists
+                    backup(outfile, mode=ctx.backup_mode)
+                    # Write new file
+                    write_content(outfile, content)
+                    logging.info('{} :: FETCHED (in {})'.format(url.ljust(LEN_URL), outfile))
+                else:
+                    logging.info('{} :: SKIPPED'.format(url.ljust(LEN_URL)))
+        except GitHubException:
+            ctx.error = True

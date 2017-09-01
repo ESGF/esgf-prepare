@@ -14,7 +14,7 @@
 
 class InvalidNetCDFFile(Exception):
     """
-    Raised when NetCDF valid is corrupted.
+    Raised when invalid or corrupted NetCDF file.
 
     """
 

@@ -3,7 +3,7 @@
 
 """
     :platform: Unix
-    :synopsis: Toolbox to prepare ESGF date for publication.
+    :synopsis: Toolbox to prepare ESGF data for publication.
 
 """
 
@@ -17,19 +17,18 @@ from utils.constants import *
 from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter
 from utils.misc import init_logging
 
-# Program version
 __version__ = 'v{} {}'.format(VERSION, VERSION_DATE)
 
 
 def get_args():
     """
-    Returns parsed command-line arguments. See ``esgprep -h`` for full description.
+    Returns parsed command-line arguments.
 
-    :returns: The corresponding ``argparse`` Namespace
+    :returns: The argument parser
     :rtype: *argparse.Namespace*
 
     """
-    # Workaround to run ``esgprep [subcommand] --test`` without subparsers and required flags
+    # Workaround to run the test suite without subparsers and their required flags
     if len(sys.argv[1:]) == 1 and sys.argv[1:][-1] == '--test':
         return argparse.Namespace(**{'cmd': None, 'test': True, 'log': None, 'v': False})
     if len(sys.argv[1:]) == 2 and sys.argv[1:][-1] == '--test':
@@ -394,13 +393,15 @@ def run():
     init_logging(log=args.log, verbose=args.v)
     # Print progress bar if no log and no verbose mode
     setattr(args, 'pbar', True if not args.log and not args.v else False)
-    # Run subcommand
+    # Run program
     if args.test:
+        # Run test suite
         print('"esgprep" test suite not available. Coming soon!')
         exit()
         testsuite = unittest.TestLoader().discover('.')
         unittest.TextTestRunner().run(testsuite)
     else:
+        # Run subcommand
         module_name = args.cmd.lower().replace('-', '')
         if args.test:
             test = import_module('.test', package='esgprep.{}'.format(module_name))

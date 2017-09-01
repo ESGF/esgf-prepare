@@ -54,12 +54,12 @@ class File(object):
 
     def load_attributes(self, project, pattern):
         """
-        The DRS attributes are deduced from the file full path using
-        the directory_format regex pattern. The project facet is added in any case with lower case.
+        Loads DRS attributes catched from a regular expression match.
+        The project facet is added in any case with lower case.
 
         :param str project: The project name
-        :param str pattern: The ``directory_format`` pattern/regex
-        :raises Error: If the file full path does not match the ``directory_format`` pattern/regex
+        :param str pattern: The regular expression to match
+        :raises Error: If regular expression matching fails
 
         """
         try:
@@ -73,9 +73,9 @@ class File(object):
 
     def check_facets(self, facets, config):
         """
-        Checks each facet against the esg.<project>.ini
-        If a DRS attribute is missing regarding the dataset_id template,
-        the DRS attributes are completed from esg.<project>.ini maptables.
+        Checks each facet against the controlled vocabulary.
+        If a DRS attribute is missing regarding the list of facets,
+        the DRS attributes are completed from the configuration file maptables.
 
         :param list facets: The list of facet to check
         :param ESGConfigParser.SectionParser config: The configuration parser
@@ -92,10 +92,10 @@ class File(object):
 
     def get_dataset_id(self, dataset_format):
         """
-        Builds the dataset identifier from ``dataset_format`` interpolation.
+        Builds the dataset identifier from the dataset template interpolation.
 
-        :param str dataset_format: The ``dataset_id`` pattern/regex
-        :returns: The dataset identifier
+        :param str dataset_format: The dataset template pattern
+        :returns: The resulting dataset identifier
         :rtype: *str*
         :raises Error: If a facet key is missing
 
@@ -107,8 +107,8 @@ class File(object):
 
     def get_dataset_version(self, no_version=False):
         """
-        Retrieve the dataset version. If the version facet cannot be deduced from full path
-        (e.g., with --latest-symlink flag), it follows the symlink to complete the DRS attributes.
+        Retrieve the dataset version. If the version facet cannot be deduced from full path,
+        it follows the symlink to complete the DRS attributes.
 
         :param boolean no_version: True to not append version to the dataset ID
         :returns: The dataset version

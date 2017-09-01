@@ -3,7 +3,7 @@
 
 """
     :platform: Unix
-    :synopsis: Useful functions to collect files from directories.
+    :synopsis: Useful functions to collect data from directories.
 
 """
 
@@ -16,30 +16,32 @@ from esgprep.utils.misc import match, remove
 
 
 class Collecting:
-    states = ('/', '-', '\\', '|')
+    """
+    Spinner pending data collection.
+
+    """
+    STATES = ('/', '-', '\\', '|')
     step = 0
 
     def __init__(self):
         self.next()
 
     def next(self):
-        sys.stdout.write('\rCollecting data... {}'.format(Collecting.states[Collecting.step % 4]))
+        sys.stdout.write('\rCollecting data... {}'.format(Collecting.STATES[Collecting.step % 4]))
         sys.stdout.flush()
         Collecting.step += 1
 
 
 class Collector(object):
     """
-    Base collector class to yield all regular NetCDF files.
+    Base collector class to yield regular NetCDF files.
 
     :param list sources: The list of sources to parse
-    :param str file_filter: The regular expression to include files in the collection
+    :param str file_filter: A regular expression to include files in the collection
     :returns: The data collector
     :rtype: *iter*
 
     """
-    progress = Collecting()
-
     def __init__(self, sources, file_filter='^[!.].*\.nc$', data=None):
         self.sources = sources
         self.file_filter = file_filter
@@ -56,7 +58,7 @@ class Collector(object):
 
     def __len__(self):
         """
-        Returns collector length.
+        Returns collector length with animation.
 
         :returns: The number of items in the collector.
         :rtype: *int*
@@ -73,10 +75,10 @@ class Collector(object):
 
     def attach(self, item):
         """
-        Attach a "data" object to the each item.
+        Attach any object to the each collector item.
 
-        :param str item: The iterator item.
-        :returns: The item and the data
+        :param str item: The collector item
+        :returns: The collector item with the "data" object
         :rtype: *tuple*
 
         """
@@ -87,7 +89,7 @@ class PathCollector(Collector):
     """
     Collector class to yield files from a list of directories to parse.
 
-    :param str dir_filter: The regular expression to exclude directories from the collection
+    :param str dir_filter: A regular expression to exclude directories from the collection
 
     """
 
@@ -113,9 +115,9 @@ class PathCollector(Collector):
 
     class PathFilter(dict):
         """
-        Regex dictionary with a call method to evaluate a string against all regular expressions.
+        Regex dictionary with a call method to evaluate a string against several regular expressions.
         The dictionary values are 2-tuples with the regular expression as a string and a boolean
-        indicating to match or non-match the corresponding expression.
+        indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.
 
         """
 
@@ -191,7 +193,7 @@ class VersionedPathCollector(PathCollector):
     def version_finder(self, directory):
         regex = re.compile(self.format)
         version = None
-        # Process directory_format regex without <filename> part
+        # Test directory_format regex without <filename> part
         while 'version' in regex.groupindex.keys():
             if regex.search(directory):
                 # If version facet found return its value
@@ -214,7 +216,7 @@ class DatasetCollector(Collector):
         Yields datasets to process from a text file. Each line may contain the dataset with optional
         appended ``.v<version>`` or ``#<version>`, and only the part without the version is returned.
 
-        :returns: The dataset ID without `he version
+        :returns: The dataset ID without the version
         :rtype: *iter*
 
         """

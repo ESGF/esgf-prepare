@@ -61,18 +61,18 @@ class File(object):
 
     def load_attributes(self, project, root, pattern, set_values):
         """
-        The DRS attributes are deduced from the NetCDF global attributes or the filename using the
-        the filename_format regex pattern. The project facet is added in any case with lower case if needed.
-        The root facet is added by default and the dataset version initially set to None. Can be overwrite by
-        "set_values" pairs if submitted.
-
+        Loads DRS attributes catched from a regular expression match.
+        The project facet is added in any case with lower case.
+        The root facet is added by default.
+        The dataset version is initially set to None.
+        Can be overwrite by "set_values" pairs if submitted.
 
         :param str project: The project name
         :param str root: The DRS tree root
-        :param str pattern: The ``filename_format`` pattern/regex
+        :param str pattern: The regular expression to match
         :param dict set_values: Key/value pairs of facet to set for the run
-        :raises Error: If the filename does not match the ``filename_format`` pattern/regex
-        :raises Error: If invalid NetCDF file
+        :raises Error: If regular expression matching fails
+        :raises Error: If invalid NetCDF file.
 
         """
         # Get attributes from NetCDF global attributes
@@ -100,9 +100,12 @@ class File(object):
 
     def check_facets(self, facets, config, set_keys):
         """
-        Checks each facet against the esg.<project>.ini. If a DRS attribute is missing regarding the directory_format
-        template, the DRS attributes are completed from esg.<project>.ini maptables. In the case of non-standard
-        attribute, it gets the most similar key among netCDF attributes names/
+        Checks each facet against the controlled vocabulary.
+        If a DRS attribute is missing regarding the list of facets,
+        The DRS attributes are completed from the configuration file maptables.
+        In the case of non-standard attribute, it gets the most similar key among netCDF attributes names.
+        Attributes can be directly mapped with "set_keys" pairs if submitted.
+
 
         :param list facets: The list of facet to check
         :param ESGConfigParser.SectionParser config: The configuration parser
@@ -136,7 +139,7 @@ class File(object):
 
     def get_drs_parts(self, facets):
         """
-        Get the DRS pairs required to build the DRS path. The DRS parts are included as an OrderedDict():
+        Gets the DRS pairs required to build the DRS path. The DRS parts are included as an OrderedDict():
         {project : 'CMIP5', product: 'output1', ...}
 
         :param list facets: The list of facet to check
@@ -177,7 +180,7 @@ class DRSPath(object):
         The submitted key can refer to the DRS dataset parts of the DRS file parts.
 
         :param str key: The key
-        :returns: The corresponding value
+        :returns: The value
         :rtype: *str* or *list* or *dict* depending on the key
         :raises Error: If unknown key
 
@@ -272,10 +275,9 @@ class DRSLeaf(object):
 
     def upgrade(self, todo_only=True):
         """
-        Applies the DRS action.
+        Upgrade the DRS tree.
 
-        :param boolean todo_only: True to only print Unix command-lines to apply
-        :raises Error: If any IO action fails
+        :param boolean todo_only: True to only print Unix command-lines to apply (i.e., as dry-run)
 
         """
         # Make directory for destination path if not exist
@@ -297,7 +299,7 @@ class DRSLeaf(object):
 
     def has_permissions(self, root):
         """
-        Check permissions for DRS migration on the leaf.
+        Checks permissions for DRS leaf migration.
         Discards relative paths.
 
         :param str root: The DRS tree root
@@ -355,7 +357,7 @@ class DRSTree(Tree):
         Creates all upstream nodes to a DRS leaf.
         The :func:`esgprep.drs.handler.DRSLeaf` class is added to data leaf nodes.
 
-        :param list nodes: The list of nodes tag to the leaf
+        :param list nodes: The list of node tags to the leaf
         :param str leaf: The leaf name
         :param str label: The leaf label
         :param str src: The source of the leaf
@@ -450,7 +452,7 @@ class DRSTree(Tree):
         :param boolean todo_only: Only print Unix command-line to do
 
         """
-        # Check permissions before to upgrade
+        # Check permissions before upgrade
         if not todo_only:
             for leaf in self.leaves():
                 leaf.data.has_permissions(self.drs_root)
