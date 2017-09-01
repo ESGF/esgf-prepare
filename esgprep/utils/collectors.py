@@ -143,7 +143,10 @@ class VersionedPathCollector(PathCollector):
             for root, _, filenames in os.walk(source, followlinks=True):
                 # Reset version filter if latest_version exists to allow new filter for another dataset/version
                 if 'latest_version' in locals():
-                    del self.PathFilter['version_filter']
+                    try:
+                        del self.PathFilter['version_filter']
+                    except KeyError:
+                        pass
                 for filename in filenames:
                     ffp = os.path.join(root, filename)
                     path_version = self.version_finder(directory=root)
