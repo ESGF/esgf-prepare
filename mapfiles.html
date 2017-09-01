@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generation mapfiles for ESGF publication &mdash; esgprep 2.7.6 documentation</title>
+  <title>Generation mapfiles for ESGF publication &mdash; esgprep 2.7.18 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.6 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="index.html"/>
         <link rel="next" title="Frequently asked questions" href="faq.html"/>
         <link rel="prev" title="Check CV against configuration INI files" href="check-vocab.html"/> 
 
@@ -108,7 +108,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#walking-through-all-versions">Walking through all versions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#add-technical-notes">Add technical notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overwrite-the-dataset-identifier">Overwrite the dataset identifier</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#enforce-facet-checking">Enforce facet checking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
@@ -250,7 +249,7 @@ will be added to the output directory if submitted.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --outdir /PATH/TO/MY_MAPFILES/
 </pre></div>
 </div>
-<p>The output directory is cleaned up prior to mapfile process to avoid uncomplete mapfiles. In the case of several
+<p>The output directory is cleaned up prior to mapfile process to avoid uncompleted mapfiles. In the case of several
 <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code> instances run with the same output directory it is recommended to disable the cleanup:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-cleanup
 </pre></div>
@@ -294,35 +293,6 @@ will be added to the output directory if submitted.</p>
 <p class="last">All files will belong to the specified dataset, regardless of the DRS.</p>
 </div>
 </div>
-<div class="section" id="enforce-facet-checking">
-<h2>Enforce facet checking<a class="headerlink" href="#enforce-facet-checking" title="Permalink to this headline">¶</a></h2>
-<p>The following facets are always ignored during facet checking:</p>
-<blockquote>
-<div><ul class="simple">
-<li><code class="docutils literal"><span class="pre">root</span></code></li>
-<li><code class="docutils literal"><span class="pre">project</span></code></li>
-<li><code class="docutils literal"><span class="pre">filename</span></code></li>
-<li><code class="docutils literal"><span class="pre">variable</span></code></li>
-<li><code class="docutils literal"><span class="pre">version</span></code></li>
-<li><code class="docutils literal"><span class="pre">period_start</span></code></li>
-<li><code class="docutils literal"><span class="pre">period_end</span></code>.</li>
-</ul>
-</div></blockquote>
-<p>Indeed those facets are historically not a part of the configuration INI file(s). All allowed values are so not
-enumerated through very long list(s). Nevertheless one or more of those facet(s) should be resolved against the
-configuration file(s), this could be useful in case of differences between <code class="docutils literal"><span class="pre">directory_format</span></code> and <code class="docutils literal"><span class="pre">dataset_id</span></code>
-patterns.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --not-ignored FACEY_KEY
-$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --not-ignored FACEY_KEY1 FACET_KEY2
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">For instance, the <code class="docutils literal"><span class="pre">var</span></code> facet in obs4MIPs <code class="docutils literal"><span class="pre">dataset_id</span></code> pattern must be deduced from
-the <code class="docutils literal"><span class="pre">directory_format</span></code> using the <code class="docutils literal"><span class="pre">variable</span></code> facet. Consequently, you can use <code class="docutils literal"><span class="pre">--not-ignored</span> <span class="pre">variable</span></code> to
-resolve this facet from the appropriate maptable.</p>
-</div>
-</div>
 <div class="section" id="exit-status">
 <h2>Exit status<a class="headerlink" href="#exit-status" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -339,7 +309,7 @@ resolve this facet from the appropriate maptable.</p>
 </li>
 <li><dl class="first docutils">
 <dt>Status = 2</dt>
-<dd>Some scan errors occured. Some files have been skipped or failed during the scan potentially leading to incomplete
+<dd>Some scan errors occurred. Some files have been skipped or failed during the scan potentially leading to incomplete
 mapfiles. See the error logfile.</dd>
 </dl>
 </li>
@@ -397,7 +367,7 @@ mapfiles. See the error logfile.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.6',
+            VERSION:'2.7.18',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

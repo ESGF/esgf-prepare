@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.main &mdash; esgprep 2.7.6 documentation</title>
+  <title>esgprep.drs.main &mdash; esgprep 2.7.18 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -175,319 +175,172 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="k">import</span> <span class="n">Pool</span> <span class="k">as</span> <span class="n">ThreadPool</span>
 
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">NoConfigOption</span>
 
-<span class="kn">from</span> <span class="nn">esgprep.drs.constants</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.drs.exceptions</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils</span> <span class="k">import</span> <span class="n">parser</span><span class="p">,</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">File</span><span class="p">,</span> <span class="n">DRSTree</span><span class="p">,</span> <span class="n">DRSPath</span>
+<span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="k">import</span> <span class="n">ProcessingContext</span>
+<span class="kn">from</span> <span class="nn">custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">load</span><span class="p">,</span> <span class="n">store</span><span class="p">,</span> <span class="n">as_pbar</span><span class="p">,</span> <span class="n">evaluate</span><span class="p">,</span> <span class="n">checksum</span>
+<span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">File</span><span class="p">,</span> <span class="n">DRSPath</span>
 
 
-<div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="process"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.process">[docs]</a><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">collector_input</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Encapsulates the processing context/information for main process.</span>
-
-<span class="sd">    :param ArgumentParser args: Parsed command-line arguments</span>
-<span class="sd">    :returns: The processing context</span>
-<span class="sd">    :rtype: *ProcessingContext*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">set_value</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">set_value</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_keys</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">set_key</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_keys</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">set_key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">max_threads</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">action</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">copy</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;copy&#39;</span>
-        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">link</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;link&#39;</span>
-        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">symlink</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;symlink&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;move&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">version</span>
-        <span class="n">DRSPath</span><span class="o">.</span><span class="n">VERSION</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">project_section</span> <span class="o">=</span> <span class="s1">&#39;project:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">CfgParser</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">no_checksum</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;checksum&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="s1">&#39;checksum&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Use SHA256 as default because esg.ini not mandatory in configuration directory</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="s1">&#39;sha256sum&#39;</span><span class="p">,</span> <span class="s1">&#39;SHA256&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_facets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="s1">&#39;directory_format&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate_filename_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">v</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">DRSTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="yield_inputs"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.yield_inputs">[docs]</a><span class="k">def</span> <span class="nf">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Yields all files to process within tuples with the processing context. The file walking</span>
-<span class="sd">    through the DRS tree follows the symlinks.</span>
-
-<span class="sd">    :param esgprep.mapfile.main.ProcessingContext ctx: The processing context</span>
-<span class="sd">    :returns: Attach the processing context to a file to process as an iterator of tuples</span>
-<span class="sd">    :rtype: *iter*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
-        <span class="c1"># Walk trough the submitted tree</span>
-        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-                <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;^[!.].*\.nc$&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-                    <span class="k">yield</span> <span class="n">ffp</span><span class="p">,</span> <span class="n">ctx</span></div>
-
-
-<div class="viewcode-block" id="checksum"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.checksum">[docs]</a><span class="k">def</span> <span class="nf">checksum</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">,</span> <span class="n">checksum_client</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Does the checksum by the Shell avoiding Python memory limits.</span>
-
-<span class="sd">    :param str ffp: The file full path</span>
-<span class="sd">    :param str checksum_client: Shell command line for checksum</span>
-<span class="sd">    :param str checksum_type: Checksum type</span>
-<span class="sd">    :returns: The checksum</span>
-<span class="sd">    :rtype: *str*</span>
-<span class="sd">    :raises Error: If the checksum fails</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">checksum_client</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">shell</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> | awk -F &#39; &#39; &#39;{{ print $1 }}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">checksum_client</span><span class="p">,</span> <span class="n">ffp</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">shell</span><span class="o">.</span><span class="n">readline</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ChecksumFail</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="wrapper"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.wrapper">[docs]</a><span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Transparent wrapper for pool map.</span>
-
-<span class="sd">    :param tuple inputs: A tuple with the file path and the processing context</span>
-<span class="sd">    :returns: The :func:`process` call</span>
-<span class="sd">    :rtype: *callable*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Extract file full path (ffp) and processing context (ctx) from inputs</span>
-    <span class="n">ffp</span><span class="p">,</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">inputs</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">process</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="c1"># Use verbosity to raise the whole threads traceback errors</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> skipped</span><span class="se">\n</span><span class="si">{1}</span><span class="s1">: </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> failed&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ffp</span><span class="p">))</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
-
-<div class="viewcode-block" id="process"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.process">[docs]</a><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    process(ffp, ctx)</span>
+<span class="sd">    process(collector_input)</span>
 
 <span class="sd">    File process that:</span>
 
-<span class="sd">     * Deduce facet key, values pairs from file attributes</span>
-<span class="sd">     * Build the DRS of the file</span>
-<span class="sd">     * Build the DRS of the corresponding dataset</span>
-<span class="sd">     * Apply the versioning</span>
-<span class="sd">     * Build the whole DRS tree</span>
-<span class="sd">     * Store dataset statistics into a dict.</span>
+<span class="sd">     * Handles files,</span>
+<span class="sd">     * Deduces facet key, values pairs from file attributes</span>
+<span class="sd">     * Checks facet values against CV,</span>
+<span class="sd">     * Applies the versioning</span>
+<span class="sd">     * Populates the DRS tree crating the appropriate leaves,</span>
+<span class="sd">     * Stores dataset statistics.</span>
 
-<span class="sd">    :param str ffp: The file full path</span>
-<span class="sd">    :param esgprep.drs.main.ProcessingContext ctx: The processing context</span>
+<span class="sd">    :param tuple collector_input: A tuple with the file path and the processing context</span>
 <span class="sd">    :return: True on success</span>
 <span class="sd">    :rtype: *boolean*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Instantiate file handler</span>
-    <span class="n">fh</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
-    <span class="c1"># Matching between filename_format and filename</span>
-    <span class="n">fh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
-    <span class="c1"># Get parts of DRS path</span>
-    <span class="n">parts</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">get_drs_parts</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
-    <span class="c1"># Instanciate file DRS path handler</span>
-    <span class="n">fph</span> <span class="o">=</span> <span class="n">DRSPath</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
-    <span class="c1"># Instanciate dataset DRS path handler</span>
-    <span class="c1"># If a latest version already exists</span>
-    <span class="k">if</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span><span class="p">:</span>
-        <span class="c1"># Latest version should be older than upgrade version</span>
-        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">DRSPath</span><span class="o">.</span><span class="n">VERSION</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
-            <span class="k">raise</span> <span class="n">OlderUpgrade</span><span class="p">(</span><span class="n">DRSPath</span><span class="o">.</span><span class="n">VERSION</span><span class="p">,</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span><span class="p">,</span> <span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-        <span class="c1"># Check latest files</span>
-        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">:</span>
-            <span class="c1"># Pickup the latest file version</span>
-            <span class="n">latest_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
-            <span class="c1"># Compute checksums and compare between latest and upgrade versions</span>
-            <span class="n">latest_checksum</span> <span class="o">=</span> <span class="n">checksum</span><span class="p">(</span><span class="n">latest_file</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">)</span>
-            <span class="n">current_checksum</span> <span class="o">=</span> <span class="n">checksum</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">latest_checksum</span> <span class="o">==</span> <span class="n">current_checksum</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">DuplicatedFile</span><span class="p">(</span><span class="n">latest_file</span><span class="p">,</span> <span class="n">fh</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span>
+    <span class="c1"># Deserialize inputs from collector</span>
+    <span class="n">ffp</span><span class="p">,</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">collector_input</span>
+    <span class="c1"># Block to avoid program stop if a thread fails</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Instantiate file handler</span>
+        <span class="n">fh</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
+        <span class="c1"># Try to get the appropriate project case or use lower case instead</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_pairs</span><span class="p">(</span><span class="s1">&#39;category_defaults&#39;</span><span class="p">,</span> <span class="s1">&#39;project&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">NoConfigOption</span><span class="p">:</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="c1"># Loads attributes from filename, netCDF attributes, command-line</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span>
+                           <span class="n">root</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                           <span class="n">pattern</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
+                           <span class="n">set_values</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_values</span><span class="p">)</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">check_facets</span><span class="p">(</span><span class="n">facets</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">,</span>
+                        <span class="n">config</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+                        <span class="n">set_keys</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_keys</span><span class="p">)</span>
+        <span class="c1"># Get parts of DRS path</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">get_drs_parts</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span>
+        <span class="c1"># Instantiate file DRS path handler</span>
+        <span class="n">fph</span> <span class="o">=</span> <span class="n">DRSPath</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="c1"># If a latest version already exists make some checks FIRST to stop files to not process</span>
+        <span class="k">if</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span><span class="p">:</span>
+            <span class="c1"># Latest version should be older than upgrade version</span>
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">DRSPath</span><span class="o">.</span><span class="n">TREE_VERSION</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+                <span class="k">raise</span> <span class="n">OlderUpgrade</span><span class="p">(</span><span class="n">DRSPath</span><span class="o">.</span><span class="n">TREE_VERSION</span><span class="p">,</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span><span class="p">)</span>
+            <span class="c1"># Check latest files</span>
+            <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">:</span>
+                <span class="c1"># Pickup the latest file version</span>
+                <span class="n">latest_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+                <span class="c1"># Compute checksums and compare between latest (if exists) and upgrade file versions</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">latest_file</span><span class="p">):</span>
+                    <span class="n">latest_checksum</span> <span class="o">=</span> <span class="n">checksum</span><span class="p">(</span><span class="n">latest_file</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">)</span>
+                    <span class="n">current_checksum</span> <span class="o">=</span> <span class="n">checksum</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">latest_checksum</span> <span class="o">==</span> <span class="n">current_checksum</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">DuplicatedFile</span><span class="p">(</span><span class="n">latest_file</span><span class="p">,</span> <span class="n">fh</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span>
+        <span class="c1"># Start the tree generation</span>
+        <span class="c1"># Add file DRS path to Tree</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;..&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">d_part</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="n">src</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">d_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file_folder</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">src</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                             <span class="n">leaf</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">LINK_SEPARATOR</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">src</span><span class="p">)),</span>
+                             <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">src</span><span class="p">),</span>
+                             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symlink&#39;</span><span class="p">)</span>
+        <span class="c1"># Add &quot;latest&quot; node for symlink</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                             <span class="n">leaf</span><span class="o">=</span><span class="s1">&#39;latest&#39;</span><span class="p">,</span>
+                             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;latest&#39;</span><span class="p">,</span> <span class="n">LINK_SEPARATOR</span><span class="p">,</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_upgrade</span><span class="p">),</span>
+                             <span class="n">src</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">v_upgrade</span><span class="p">,</span>
+                             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symlink&#39;</span><span class="p">)</span>
+        <span class="c1"># Add &quot;files&quot; node to Tree</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">file_folder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                             <span class="n">leaf</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                             <span class="n">label</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                             <span class="n">src</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span>
+                             <span class="n">mode</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
         <span class="c1"># Walk through the latest dataset version</span>
-        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">))):</span>
-            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-                <span class="c1"># Add latest files as tree leaves with version to upgrade instead of latest version</span>
-                <span class="c1"># i.e., copy latest dataset leaves to Tree</span>
-                <span class="k">if</span> <span class="n">filename</span> <span class="o">!=</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">:</span>
-                    <span class="n">src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
-                    <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                                         <span class="n">leaf</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}{1}{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">LINK_SEPARATOR</span><span class="p">,</span> <span class="n">src</span><span class="p">),</span>
-                                         <span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">,</span>
-                                         <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symlink&#39;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span> <span class="o">=</span> <span class="s1">&#39;Initial&#39;</span>
-    <span class="c1"># Add file DRS path to Tree</span>
-    <span class="n">src</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;..&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">d_part</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-    <span class="n">src</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">d_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-    <span class="n">src</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
-    <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                         <span class="n">leaf</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}{1}{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">LINK_SEPARATOR</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">src</span><span class="p">)),</span>
-                         <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">src</span><span class="p">),</span>
-                         <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symlink&#39;</span><span class="p">)</span>
-    <span class="c1"># Add &quot;latest&quot; node for symlink</span>
-    <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                         <span class="n">leaf</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}{1}{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;latest&#39;</span><span class="p">,</span> <span class="n">LINK_SEPARATOR</span><span class="p">,</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_upgrade</span><span class="p">),</span>
-                         <span class="n">src</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">v_upgrade</span><span class="p">,</span>
-                         <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symlink&#39;</span><span class="p">)</span>
-    <span class="c1"># Add &quot;files&quot; node to Tree</span>
-    <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                         <span class="n">leaf</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
-                         <span class="n">src</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span>
-                         <span class="n">mode</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
-    <span class="c1"># Record entry for list()</span>
-    <span class="n">incoming</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;src&#39;</span><span class="p">:</span> <span class="n">ffp</span><span class="p">,</span>
-                <span class="s1">&#39;dst&#39;</span><span class="p">:</span> <span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
-                <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="n">fh</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">),</span>
-                <span class="s1">&#39;latest&#39;</span><span class="p">:</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span><span class="p">,</span>
-                <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">fh</span><span class="o">.</span><span class="n">size</span><span class="p">}</span>
-    <span class="k">if</span> <span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">incoming</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span><span class="n">incoming</span><span class="p">]</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> &lt;-- </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
-    <span class="k">return</span> <span class="kc">True</span></div>
+        <span class="k">if</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">))):</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                    <span class="c1"># Add latest files as tree leaves with version to upgrade instead of latest version</span>
+                    <span class="c1"># i.e., copy latest dataset leaves to Tree</span>
+                    <span class="k">if</span> <span class="n">filename</span> <span class="o">!=</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">:</span>
+                        <span class="n">src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+                        <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                             <span class="n">leaf</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+                                             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">LINK_SEPARATOR</span><span class="p">,</span> <span class="n">src</span><span class="p">),</span>
+                                             <span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">,</span>
+                                             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symlink&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span> <span class="o">=</span> <span class="s1">&#39;Initial&#39;</span>
+        <span class="c1"># Record entry for list()</span>
+        <span class="n">incoming</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;src&#39;</span><span class="p">:</span> <span class="n">ffp</span><span class="p">,</span>
+                    <span class="s1">&#39;dst&#39;</span><span class="p">:</span> <span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                    <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                    <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="n">fh</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">),</span>
+                    <span class="s1">&#39;latest&#39;</span><span class="p">:</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span><span class="p">,</span>
+                    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">fh</span><span class="o">.</span><span class="n">size</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">incoming</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span><span class="n">incoming</span><span class="p">]</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> &lt;-- </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="c1"># Catch any exception into error log instead of stop the run</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> skipped</span><span class="se">\n</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="check_args"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.check_args">[docs]</a><span class="k">def</span> <span class="nf">check_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">old_args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checks command-line argument to avoid discrepancies between ``esgprep drs`` steps.</span>
-<span class="sd">    </span>
-<span class="sd">    :param argparse.Namespace args: The submitted arguments </span>
-<span class="sd">    :param argparse.Namespace old_args: The recorded arguments </span>
-<span class="sd">    :raises Error: If one argument differs</span>
-<span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">IGNORED_ARGS</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">!=</span> <span class="n">old_args</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="n">MultipleContextParameter</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">old_args</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">k</span><span class="p">])</span></div>
-
-
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main process that:</span>
 
-<span class="sd">     * Instantiates processing context</span>
-<span class="sd">     * Parses the configuration files options and values,</span>
-<span class="sd">     * Deduces facets and values from files,</span>
-<span class="sd">     * Gets the DRS directory for each file,</span>
-<span class="sd">     * Apply DRS action to each file.</span>
+<span class="sd">     * Instantiates processing context,</span>
+<span class="sd">     * Loads previous program instance,</span>
+<span class="sd">     * Parallelizes file processing with threads pools,</span>
+<span class="sd">     * Apply command-line action to the whole DRS tree,</span>
+<span class="sd">     * Evaluate exit status.</span>
 
-<span class="sd">    :param ArgumentParser args: Parsed command-line arguments</span>
+<span class="sd">    :param ArgumentParser args: The command-line arguments parser</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Instantiate processing context from command-line arguments or SYNDA job dictionary</span>
-    <span class="n">ctx</span> <span class="o">=</span> <span class="n">ProcessingContext</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan started&#39;</span><span class="p">)</span>
-    <span class="c1"># Start threads pool over files list in supplied directory</span>
-    <span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">threads</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="o">!=</span> <span class="s1">&#39;list&#39;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s1">&#39;/tmp/DRSTree.pkl&#39;</span><span class="p">):</span>
-        <span class="c1"># Load &#39;DRSTree.pkl&#39; if already exists</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/DRSTree.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">old_args</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Previous DRS tree loaded&#39;</span><span class="p">)</span>
-        <span class="c1"># Ensure that processing context is similar to previous step</span>
-        <span class="n">check_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">old_args</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Process supplied files</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-            <span class="c1"># Get the number of files to scan</span>
-            <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">),</span>
-                                         <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Collecting files&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                                         <span class="n">unit</span><span class="o">=</span><span class="s1">&#39; files&#39;</span><span class="p">,</span>
-                                         <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)),</span>
-                                       <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Scanning incoming files&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                                       <span class="n">total</span><span class="o">=</span><span class="n">nfiles</span><span class="p">,</span>
-                                       <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
-                                       <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                                       <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
-                                       <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)]</span>
+    <span class="c1"># Instantiate processing context</span>
+    <span class="k">with</span> <span class="n">ProcessingContext</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">ctx</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan started&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">scan</span><span class="p">:</span>
+            <span class="n">reader</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">)</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">scan_err_log</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Previous DRS tree found and recovered &lt;-- </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">yield_inputs</span><span class="p">(</span><span class="n">ctx</span><span class="p">))]</span>
-    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span><span class="p">:</span>
-        <span class="c1"># Backup DRS Tree for later usage with other command lines</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/DRSTree.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;DRS tree recorded for next usage&#39;</span><span class="p">)</span>
-    <span class="c1"># Close threads pool</span>
-    <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-    <span class="c1"># Decline outputs depending on the scan results</span>
-    <span class="c1"># Raise errors when one or several files have been skipped or failed</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
-        <span class="c1"># Results list contains only True value = all files have been successfully scanned</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{0}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)))</span>
-        <span class="c1"># Apply tree action</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_display_lengths</span><span class="p">()</span>
-        <span class="nb">getattr</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span><span class="p">)()</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
-        <span class="c1"># Results list is empty = no files scanned/found</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; No files found&#39;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
-        <span class="c1"># Results list contains some None values = some files have been skipped or failed during the scan</span>
-        <span class="c1"># Print number of scan errors</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Scan errors&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">23</span><span class="p">),</span>
-                                              <span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
-                                              <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> file(s) have been skipped&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{0}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)))</span>
-        <span class="c1"># Apply tree action</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_display_lengths</span><span class="p">()</span>
-        <span class="nb">getattr</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span><span class="p">)()</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
-        <span class="c1"># Results list contains only None values = all files have been skipped or failed during the scan</span>
-        <span class="c1"># Print number of scan errors</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Scan errors&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">23</span><span class="p">),</span>
-                                              <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
-                                              <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; All files have been ignored or have failed leading to no DRS tree.&#39;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div>
+            <span class="n">processes</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+                <span class="n">processes</span> <span class="o">=</span> <span class="n">as_pbar</span><span class="p">(</span><span class="n">processes</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Scanning incoming files&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">))</span>
+            <span class="c1"># Process supplied files</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">processes</span><span class="p">]</span>
+        <span class="c1"># Get number of files scanned</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">scan_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="c1"># Get number of scan errors</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">scan_errors</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># Backup tree context for later usage with other command lines</span>
+        <span class="n">store</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[{</span><span class="n">key</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">CONTROLLED_ARGS</span><span class="p">},</span>
+                               <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span>
+                               <span class="n">ctx</span><span class="o">.</span><span class="n">scan_err_log</span><span class="p">,</span>
+                               <span class="n">results</span><span class="p">])</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;DRS tree recorded for next usage --&gt; </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">))</span>
+        <span class="c1"># Evaluates the scan results to trigger the DRS tree action</span>
+        <span class="k">if</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+            <span class="c1"># Apply tree action</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_display_lengths</span><span class="p">()</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span><span class="p">)()</span></div>
 </pre></div>
 
            </div>
@@ -524,7 +377,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.6',
+            VERSION:'2.7.18',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.checkvocab.main &mdash; esgprep 2.7.6 documentation</title>
+  <title>esgprep.checkvocab.main &mdash; esgprep 2.7.18 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -175,271 +175,81 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">split_map_header</span>
+<span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">ExpressionNotMatch</span><span class="p">,</span> <span class="n">NoConfigOptions</span>
 
-<span class="kn">from</span> <span class="nn">esgprep.checkvocab.constants</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils</span> <span class="k">import</span> <span class="n">parser</span><span class="p">,</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.constants</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.exceptions</span> <span class="k">import</span> <span class="o">*</span>
-
-
-<div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Encapsulates the processing context/information for main process.</span>
-
-<span class="sd">    :param ArgumentParser args: Parsed command-line arguments</span>
-<span class="sd">    :returns: The processing context</span>
-<span class="sd">    :rtype: *ProcessingContext*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dir_filter</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">ignore_dir_filter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">include_file_filter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">project_section</span> <span class="o">=</span> <span class="s1">&#39;project:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">CfgParser</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate_directory_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dataset_list</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset_list</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate_dataset_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_section</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">)</span><span class="o">.</span><span class="n">groupindex</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">IGNORED_KEYS</span><span class="p">))</span></div>
+<span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="k">import</span> <span class="n">ProcessingContext</span>
 
 
-<div class="viewcode-block" id="yield_datasets_from_file"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.yield_datasets_from_file">[docs]</a><span class="k">def</span> <span class="nf">yield_datasets_from_file</span><span class="p">(</span><span class="n">dataset_list</span><span class="p">,</span> <span class="n">dataset_pattern</span><span class="o">=</span><span class="s1">&#39;((\.v|#)[0-9]+)?\s*$&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Yields datasets to process from a text file.  Each line may contain the dataset with optional </span>
-<span class="sd">    appended .v&lt;version&gt; or #&lt;version&gt;, and only the part without the version is returned.</span>
-
-<span class="sd">    :param str dataset_list: The dataset list path</span>
-<span class="sd">    :param str dataset_pattern: The regular expression to control the dataset ID pattern</span>
-<span class="sd">    :returns: The dataset ID with or without version</span>
-<span class="sd">    :rtype: *iter*</span>
-<span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">trailing</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">dataset_pattern</span><span class="p">)</span>  <span class="c1"># re for optional version and any whitespace</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dataset_list</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">trailing</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="yield_files_from_tree"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.yield_files_from_tree">[docs]</a><span class="k">def</span> <span class="nf">yield_files_from_tree</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">dir_filter</span><span class="o">=</span><span class="s1">&#39;^.*/(files|latest|\.[\w]*).*$&#39;</span><span class="p">,</span> <span class="n">file_filter</span><span class="o">=</span><span class="s1">&#39;^[!.].*\.nc$&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Yields datasets to process. The file full path is returned to match the whole directory format.</span>
-
-<span class="sd">    :param list directory: THe directory list to parse</span>
-<span class="sd">    :param str dir_filter: The regular expression to ignore the root paths NON-matching the pattern</span>
-<span class="sd">    :param str file_filter: The regular expression to include the filenames matching the pattern</span>
-<span class="sd">    :returns: The file full path of the DRS tree</span>
-<span class="sd">    :rtype: *iter*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">directory</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">dir_filter</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-                    <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">file_filter</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-                        <span class="k">yield</span> <span class="n">ffp</span></div>
-
-
-<div class="viewcode-block" id="get_facet_values_from_tree"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.get_facet_values_from_tree">[docs]</a><span class="k">def</span> <span class="nf">get_facet_values_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="n">facets</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns all used values of each facet from the DRS tree, according to the supplied directories.</span>
-
-<span class="sd">    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context</span>
-<span class="sd">    :param iter dsets: The dataset part of the DRS tree</span>
-<span class="sd">    :param list facets: The facets list</span>
-<span class="sd">    :returns: The declared values of each facet</span>
-<span class="sd">    :rtype: *dict*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">scan_errors</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">used_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">facet</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span> <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">)</span>
-    <span class="c1"># Get the number of files to scan</span>
-    <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">yield_files_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dir_filter</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">file_filter</span><span class="p">),</span>
-                                 <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Collecting files&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                                 <span class="n">unit</span><span class="o">=</span><span class="s1">&#39; files&#39;</span><span class="p">,</span>
-                                 <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dsets</span><span class="p">,</span>
-                     <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Harvesting facets values from DRS tree&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                     <span class="n">total</span><span class="o">=</span><span class="n">nfiles</span><span class="p">,</span>
-                     <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
-                     <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                     <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span>
-                     <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">dset</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
-            <span class="c1"># Each facet is ensured to be included into &quot;attributes&quot; from matching</span>
-            <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
-                <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">DirectoryNotMatch</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">))</span>
-            <span class="n">scan_errors</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">scan_errors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Scan errors&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                                          <span class="n">scan_errors</span><span class="p">,</span>
-                                          <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">used_values</span><span class="p">,</span> <span class="n">scan_errors</span></div>
-
-
-<div class="viewcode-block" id="get_facet_values_from_dataset_list"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.get_facet_values_from_dataset_list">[docs]</a><span class="k">def</span> <span class="nf">get_facet_values_from_dataset_list</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="n">facets</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns all used values of each facet from the supplied of dataset IDs.</span>
-
-<span class="sd">    :param esgprep.checkvocab.main.ProcessingContext ctx: The processing context</span>
-<span class="sd">    :param iter dsets: The dataset part of the DRS tree</span>
-<span class="sd">    :param list facets: The facets list</span>
-<span class="sd">    :returns: The declared values of each facet</span>
-<span class="sd">    :rtype: *dict*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">scan_errors</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">used_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">facet</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span> <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">)</span>
-    <span class="c1"># Get the number of files to scan</span>
-    <span class="n">nids</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">yield_datasets_from_file</span><span class="p">(</span><span class="n">ctx</span><span class="p">),</span>
-                               <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Collecting datasets&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                               <span class="n">unit</span><span class="o">=</span><span class="s1">&#39; files&#39;</span><span class="p">,</span>
-                               <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dsets</span><span class="p">,</span>
-                     <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Harvesting facets values from dataset list&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                     <span class="n">total</span><span class="o">=</span><span class="n">nids</span><span class="p">,</span>
-                     <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
-                     <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                     <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;dataset ids&#39;</span><span class="p">,</span>
-                     <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">dset</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
-            <span class="c1"># Each facet is ensured to be included into &quot;attributes&quot; from matching</span>
-            <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
-                <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">DatasetNotMatch</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">))</span>
-            <span class="n">scan_errors</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">scan_errors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> (see </span><span class="si">{2}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Scan errors&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_MSG</span><span class="p">),</span>
-                                          <span class="n">scan_errors</span><span class="p">,</span>
-                                          <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">used_values</span><span class="p">,</span> <span class="n">scan_errors</span></div>
-
-
-<div class="viewcode-block" id="get_facet_values_from_config"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.get_facet_values_from_config">[docs]</a><span class="k">def</span> <span class="nf">get_facet_values_from_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">facets</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns all declared values of each facet from the configuration file, according to the project section.</span>
-
-<span class="sd">    :param CfgParser cfg: The configuration file parser</span>
-<span class="sd">    :param str section: The section name to parse</span>
-<span class="sd">    :param set facets: The set of facets to check</span>
-<span class="sd">    :returns: The declared values of each facet</span>
-<span class="sd">    :rtype: *dict*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">declared_values</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Collecting values from INI file(s) for &quot;</span><span class="si">{0}</span><span class="s1">&quot; facet...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">))</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">],</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_options</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">facet</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">],</span> <span class="nb">type</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))):</span>
-                <span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
-        <span class="k">except</span> <span class="n">NoConfigOptions</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_list</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;maps&#39;</span><span class="p">):</span>
-                <span class="n">maptable</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
-                <span class="n">from_keys</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">split_map_header</span><span class="p">(</span><span class="n">maptable</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">if</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">from_keys</span><span class="p">:</span>
-                    <span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_map</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">facet</span><span class="p">))</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">facet</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">declared_values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="n">NoConfigOptions</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">declared_values</span></div>
-
-
-<div class="viewcode-block" id="compare_values"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.compare_values">[docs]</a><span class="k">def</span> <span class="nf">compare_values</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">used_values</span><span class="p">,</span> <span class="n">declared_values</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compares used values from DRS tree with all declared values in configuration file for each facet.</span>
-
-<span class="sd">    :param str project: The project ID</span>
-<span class="sd">    :param list facets: The facets list</span>
-<span class="sd">    :param dict used_values: Dictionary of sets of used values from DRS tree</span>
-<span class="sd">    :param dict declared_values: Dictionary of sets of  declared values from the configuration file</span>
-<span class="sd">    :returns: True if undeclared values in configuration file are used in DRS tree</span>
-<span class="sd">    :rtype: *boolean*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">any_undeclared</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">facet</span><span class="p">)</span> <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">]),</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">status</span><span class="p">)</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">STATUS</span><span class="o">.</span><span class="n">itervalues</span><span class="p">()])]</span>
-    <span class="n">lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> :: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Facet&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-                              <span class="s1">&#39;Status&#39;</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">],</span> <span class="nb">type</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))):</span>
-            <span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="k">if</span> <span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">v</span><span class="p">)])</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> :: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-                                      <span class="n">STATUS</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> :: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-                                      <span class="n">STATUS</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">undeclared_values</span> <span class="o">=</span> <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
-            <span class="n">updated_values</span> <span class="o">=</span> <span class="n">used_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">declared_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">undeclared_values</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> :: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-                                          <span class="n">STATUS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
-                <span class="n">values</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">undeclared_values</span><span class="p">))</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> :: UNDECLARED VALUES :: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
-                <span class="n">values</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">updated_values</span><span class="p">))</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> :: UPDATED VALUES    :: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
-                <span class="n">any_undeclared</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> :: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-                                          <span class="n">STATUS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">any_undeclared</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Please update &quot;esg.</span><span class="si">{0}</span><span class="s1">.ini&quot; following: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">,</span>
-                                                                  <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">any_undeclared</span></div>
-
-
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../autodoc.html#esgprep.checkvocab.main.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main process that:</span>
 
 <span class="sd">     * Instantiates processing context</span>
 <span class="sd">     * Parses the configuration files options and values,</span>
-<span class="sd">     * Deduces facets and values from directories,</span>
+<span class="sd">     * Deduces facets and values from directories or dataset lists,</span>
 <span class="sd">     * Compares the values of each facet between both,</span>
 <span class="sd">     * Print or log the checking.</span>
 
-<span class="sd">    :param ArgumentParser args: Parsed command-line arguments</span>
+<span class="sd">    :param ArgumentParser args: The command-line arguments parser</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Instantiate processing context from command-line arguments or SYNDA job dictionary</span>
-    <span class="n">ctx</span> <span class="o">=</span> <span class="n">ProcessingContext</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
-        <span class="c1"># Walk trough DRS to get all dataset roots</span>
-        <span class="n">dsets</span> <span class="o">=</span> <span class="n">yield_files_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dir_filter</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">file_filter</span><span class="p">)</span>
-        <span class="c1"># Get facets values used by DRS tree</span>
-        <span class="n">facet_values_found</span><span class="p">,</span> <span class="n">scan_errors</span> <span class="o">=</span> <span class="n">get_facet_values_from_tree</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">dsets</span> <span class="o">=</span> <span class="n">yield_datasets_from_file</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">dataset_list</span><span class="p">)</span>
-        <span class="n">facet_values_found</span><span class="p">,</span> <span class="n">scan_errors</span> <span class="o">=</span> <span class="n">get_facet_values_from_dataset_list</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dsets</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">))</span>
-    <span class="c1"># Get facets values declared in configuration file</span>
-    <span class="n">facet_values_config</span> <span class="o">=</span> <span class="n">get_facet_values_from_config</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span>
-    <span class="c1"># Compare values from tree against values from configuration file</span>
-    <span class="n">any_undeclared</span> <span class="o">=</span> <span class="n">compare_values</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">),</span> <span class="n">facet_values_found</span><span class="p">,</span> <span class="n">facet_values_config</span><span class="p">)</span>
-    <span class="c1"># Exit status</span>
-    <span class="k">if</span> <span class="n">scan_errors</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">any_undeclared</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
+    <span class="c1"># Instantiate processing context manager</span>
+    <span class="k">with</span> <span class="n">ProcessingContext</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">ctx</span><span class="p">:</span>
+        <span class="c1"># Get facets values used by the source</span>
+        <span class="n">source_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">facet</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span> <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">:</span>
+                    <span class="n">source_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">ExpressionNotMatch</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">))</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">scan_errors</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># Get facets values declared in configuration file</span>
+        <span class="n">config_values</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Collecting values from INI file(s) for &quot;</span><span class="si">{}</span><span class="s1">&quot; facet...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">],</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options</span><span class="p">(</span><span class="n">facet</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">],</span> <span class="nb">type</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))):</span>
+                    <span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
+            <span class="k">except</span> <span class="n">NoConfigOptions</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_list</span><span class="p">(</span><span class="s1">&#39;maps&#39;</span><span class="p">):</span>
+                    <span class="n">maptable</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+                    <span class="n">from_keys</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">split_map_header</span><span class="p">(</span><span class="n">maptable</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">from_keys</span><span class="p">:</span>
+                        <span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_map</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">facet</span><span class="p">))</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">facet</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config_values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="n">NoConfigOptions</span><span class="p">(</span><span class="n">facet</span><span class="p">)</span>
+        <span class="c1"># Compare values from sources against values from configuration file</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">WIDTH</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> :: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Facet&#39;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">FACET_WIDTH</span><span class="p">),</span> <span class="s1">&#39;Status&#39;</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="n">STATUS_WIDTH</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">WIDTH</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">],</span> <span class="nb">type</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))):</span>
+                <span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">source_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="k">if</span> <span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">v</span><span class="p">)])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">source_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> :: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">FACET_WIDTH</span><span class="p">),</span> <span class="n">STATUS</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="n">STATUS_WIDTH</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> :: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">FACET_WIDTH</span><span class="p">),</span> <span class="n">STATUS</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="n">STATUS_WIDTH</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">undeclared_values</span> <span class="o">=</span> <span class="n">source_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
+                <span class="n">updated_values</span> <span class="o">=</span> <span class="n">source_values</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">config_values</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">undeclared_values</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> :: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">FACET_WIDTH</span><span class="p">),</span> <span class="n">STATUS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="n">STATUS_WIDTH</span><span class="p">)))</span>
+                    <span class="n">_values</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">undeclared_values</span><span class="p">))</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> :: UNDECLARED VALUES :: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="n">_values</span><span class="p">))</span>
+                    <span class="n">_values</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">updated_values</span><span class="p">))</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> :: UPDATED VALUES    :: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="n">_values</span><span class="p">))</span>
+                    <span class="n">ctx</span><span class="o">.</span><span class="n">any_undeclared</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> :: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">FACET_WIDTH</span><span class="p">),</span> <span class="n">STATUS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="n">STATUS_WIDTH</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">WIDTH</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
@@ -476,7 +286,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.6',
+            VERSION:'2.7.18',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.esgprep &mdash; esgprep 2.7.6 documentation</title>
+  <title>esgprep.esgprep &mdash; esgprep 2.7.18 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="esgprep 2.7.6 documentation" href="../../index.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -170,7 +170,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :platform: Unix</span>
-<span class="sd">    :synopsis: Toolbox to prepare ESGF date for publication.</span>
+<span class="sd">    :synopsis: Toolbox to prepare ESGF data for publication.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -178,25 +178,24 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">unittest</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
 
-<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="k">import</span> <span class="n">MultilineFormatter</span><span class="p">,</span> <span class="n">DirectoryChecker</span><span class="p">,</span> <span class="n">VersionChecker</span>
-<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="k">import</span> <span class="n">init_logging</span><span class="p">,</span> <span class="n">keyval_converter</span>
+<span class="kn">from</span> <span class="nn">utils.constants</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">utils.parser</span> <span class="k">import</span> <span class="n">MultilineFormatter</span><span class="p">,</span> <span class="n">DirectoryChecker</span><span class="p">,</span> <span class="n">VersionChecker</span><span class="p">,</span> <span class="n">keyval_converter</span>
+<span class="kn">from</span> <span class="nn">utils.misc</span> <span class="k">import</span> <span class="n">init_logging</span>
 
-<span class="c1"># Program version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;2.7.6&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2017</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-</span><span class="si">%d</span><span class="s2">-%m&quot;</span><span class="p">))</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">VERSION</span><span class="p">,</span> <span class="n">VERSION_DATE</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_args"><a class="viewcode-back" href="../../autodoc.html#esgprep.esgprep.get_args">[docs]</a><span class="k">def</span> <span class="nf">get_args</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns parsed command-line arguments. See ``esgprep -h`` for full description.</span>
+<span class="sd">    Returns parsed command-line arguments.</span>
 
-<span class="sd">    :returns: The corresponding ``argparse`` Namespace</span>
+<span class="sd">    :returns: The argument parser</span>
 <span class="sd">    :rtype: *argparse.Namespace*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Workaround to run ``esgprep [subcommand] --test`` without subparsers and required flags</span>
+    <span class="c1"># Workaround to run the test suite without subparsers and their required flags</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;--test&#39;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;cmd&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;--test&#39;</span><span class="p">:</span>
@@ -207,48 +206,28 @@
     <span class="c1">#############################</span>
     <span class="n">main</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        The ESGF publication process requires a strong and effective data management. &quot;esgprep&quot; allows data providers</span>
-<span class="s2">        to easily prepare their data before publishing to an ESGF node. &quot;esgprep&quot; provides python command-lines</span>
-<span class="s2">        covering several steps of ESGF publication workflow:|n|n</span>
-<span class="s2">        </span>
-<span class="s2">        i. Fetch proper configuration files from ESGF GitHub repository,|n|n</span>
-
-<span class="s2">        ii. Data Reference Syntax management,|n|n</span>
-
-<span class="s2">        iii. Check DRS vocabulary against configuration files,|n|n</span>
-
-<span class="s2">        iv. Generate mapfiles.|n|n</span>
-
-<span class="s2">        See full documentation and references at http://is-enes-data.github.io/esgf-prepare/.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">PROGRAM_DESC</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Developed by:|n</span>
-<span class="s2">        Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.fr)|n</span>
-<span class="s2">        Berger, K. (DKRZ - berger@dkrz.de)|n</span>
-<span class="s2">        Iwi, A. (STFC/CEDA - alan.iwi@stfc.ac.uk)|n</span>
-<span class="s2">        Stephens, A. (STFC/CEDA - ag.stephens@stfc.ac.uk)</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">main</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Optional arguments&quot;</span>
-    <span class="n">main</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="n">EPILOG</span><span class="p">)</span>
+    <span class="n">main</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">OPTIONAL</span>
+    <span class="n">main</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">POSITIONAL</span>
     <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;--help&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;help&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Show this help message and exit.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">HELP</span><span class="p">)</span>
     <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--test&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Run the full test suite.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">TEST_HELP</span><span class="p">[</span><span class="s1">&#39;program&#39;</span><span class="p">])</span>
     <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-V&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;version&#39;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(prog)s</span><span class="s1"> (</span><span class="si">{0}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Program version.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">version</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(prog)s</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">VERSION_HELP</span><span class="p">)</span>
     <span class="n">subparsers</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Tools as subcommands&#39;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">SUBCOMMANDS</span><span class="p">,</span>
         <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;cmd&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -260,34 +239,31 @@
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;--help&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;help&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Show this help message and exit.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">HELP</span><span class="p">)</span>
 
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-i&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;/esg/config/esgcet&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;/esg/config/esgcet&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Initialization/configuration directory containing|n</span>
-<span class="s2">        &quot;esg.ini&quot; and &quot;esg.&lt;project&gt;.ini&quot; files.|n</span>
-<span class="s2">        If not specified, the usual datanode directory|n</span>
-<span class="s2">        is used.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">INI_HELP</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--log&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;CWD&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">const</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/logs&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()),</span>
+        <span class="n">const</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/logs&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()),</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Logfile directory.|n</span>
-<span class="s2">        If not, standard output is used.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">LOG_HELP</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-v&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Verbose mode.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">VERBOSE_HELP</span><span class="p">)</span>
+    <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--test&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">TEST_HELP</span><span class="p">[</span><span class="s1">&#39;parent&#39;</span><span class="p">])</span>
 
     <span class="c1">#####################################</span>
     <span class="c1"># Subparser for &quot;esgprep fetch-ini&quot; #</span>
@@ -295,46 +271,30 @@
     <span class="n">fetchini</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s1">&#39;fetch-ini&#39;</span><span class="p">,</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep fetch-ini&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that </span>
-<span class="s2">        are the primary means of configuring the ESGF publisher. The &quot;esg.&lt;project_id&gt;.ini&quot; files declare all facets</span>
-<span class="s2">        and allowed values according to the Data Reference Syntax (DRS) and the controlled vocabularies of the</span>
-<span class="s2">        corresponding project. &quot;esgprep fetch-ini&quot; allows you to properly download and deploy those configuration files</span>
-<span class="s2">        hosted on a GitHub repository. Keep in mind that the fetched files have to be reviewed to ensure a correct</span>
-<span class="s2">        configuration of your publication. The supplied configuration directory is used to write the files retrieved</span>
-<span class="s2">        from GitHub.|n|n</span>
-
-<span class="s2">        The default values are displayed next to the corresponding flags.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">FETCHINI_DESC</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Fetch INI files from GitHub.|n</span>
-<span class="s2">        See &quot;esgprep fetch-ini -h&quot; for full help.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">FETCHINI_HELP</span><span class="p">,</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">parent</span><span class="p">])</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Optional arguments&quot;</span>
-    <span class="n">fetchini</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">OPTIONAL</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">POSITIONAL</span>
     <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PROJECT_ID&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        One or more lower-cased project name(s).|n</span>
-<span class="s2">        If not, all &quot;esg.*.ini&quot; are fetched.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">PROJECT_HELP</span><span class="p">[</span><span class="s1">&#39;fetch-ini&#39;</span><span class="p">])</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">fetchini</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-k&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Ignore and keep existing file(s) without prompting.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">KEEP_HELP</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-o&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Ignore and overwrite existing file(s) without prompting.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">OVERWRITE_HELP</span><span class="p">)</span>
     <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-b&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;one_version&#39;</span><span class="p">,</span>
@@ -342,25 +302,22 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
         <span class="n">const</span><span class="o">=</span><span class="s1">&#39;one_version&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Backup mode of existing files.|n</span>
-<span class="s2">        &quot;one_version&quot; renames an existing file in its source|n</span>
-<span class="s2">        directory adding a &quot;.bkp&quot; extension to the filename.|n</span>
-<span class="s2">        &quot;keep_versions&quot; moves an existing file to a child|n</span>
-<span class="s2">        directory called &quot;bkp&quot; and add a timestamp to the filename.|n</span>
-<span class="s2">        If no mode specified, &quot;one_version&quot; is the default.|n</span>
-<span class="s2">        If not specified, no backup.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">BACKUP_HELP</span><span class="p">)</span>
     <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--gh-user&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;USERNAME&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;GitHub username.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">GITHUB_USER_HELP</span><span class="p">)</span>
     <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--gh-password&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PASSWORD&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;GitHub password.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">GITHUB_PASSWORD_HELP</span><span class="p">)</span>
+    <span class="n">fetchini</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--devel&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">DEVEL_HELP</span><span class="p">)</span>
 
     <span class="c1">#######################################</span>
     <span class="c1"># Subparser for &quot;esgprep check-vocab&quot; #</span>
@@ -368,66 +325,43 @@
     <span class="n">checkvocab</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s1">&#39;check-vocab&#39;</span><span class="p">,</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep check-vocab&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        In the case that your data already follows the appropriate directory structure, you may want to check that all </span>
-<span class="s2">        values of each facet are correctly declared in the &quot;esg.&lt;project_id&gt;.ini&quot; sections. &quot;esgprep check-vocab&quot; </span>
-<span class="s2">        allows you to easily check the configuration file attributes by scanning your data tree. It requires that your </span>
-<span class="s2">        directory structure strictly follows the project DRS including the dataset version.|n|n</span>
-
-<span class="s2">        The default values are displayed next to the corresponding flags.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">CHECKVOCAB_DESC</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Checks configuration file vocabulary.|n</span>
-<span class="s2">        See &quot;esgprep check-vocab -h&quot; for full help.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">CHECKVOCAB_HELP</span><span class="p">,</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">parent</span><span class="p">])</span>
-    <span class="n">checkvocab</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Optional arguments&quot;</span>
-    <span class="n">checkvocab</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
+    <span class="n">checkvocab</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">OPTIONAL</span>
+    <span class="n">checkvocab</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">POSITIONAL</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--directory&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        One or more directories to recursively scan.|n</span>
-<span class="s2">        Unix wildcards are allowed.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s1">&#39;check-vocab&#39;</span><span class="p">])</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--dataset-list&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;TXT_FILE&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;File containing list of dataset IDs.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">DATASET_LIST_HELP</span><span class="p">)</span>
     <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PROJECT_ID&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Required lower-cased project name.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">PROJECT_HELP</span><span class="p">[</span><span class="s1">&#39;check-vocab&#39;</span><span class="p">])</span>
     <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--ignore-dir-filter&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PYTHON_REGEX&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;^.*/(files|latest|\.[\w]*).*$&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Filter directories NON-matching the regular expression.|n</span>
-<span class="s2">        Default ignore paths with folder name(s) starting with|n</span>
-<span class="s2">        &quot;.&quot; and/or including &quot;/files/&quot; or &quot;/latest/&quot; patterns.|n</span>
-<span class="s2">        (Regular expression must match from start of path; prefix|n</span>
-<span class="s2">        with &quot;.*&quot; if required.)</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">IGNORE_DIR_FILTER_HELP</span><span class="p">)</span>
     <span class="n">checkvocab</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--include-file-filter&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PYTHON_REGEX&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;^[!.].*\.nc$&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Filter files matching the regular expression.|n</span>
-<span class="s2">        Default only include NetCDF files (with names not|n</span>
-<span class="s2">        starting with &quot;.&quot;).</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">INCLUDE_FILE_FILTER_HELP</span><span class="p">)</span>
 
     <span class="c1">###############################</span>
     <span class="c1"># Subparser for &quot;esgprep drs&quot; #</span>
@@ -435,121 +369,81 @@
     <span class="n">drs</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s1">&#39;drs&#39;</span><span class="p">,</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep drs&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a</span>
-<span class="s2">        proper publication on ESGF node. &quot;esgprep drs&quot; command is designed to help ESGF datanode managers to prepare</span>
-<span class="s2">        incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of</span>
-<span class="s2">        publication-level datasets to minimise disk usage. Only CMORized netCDF files are supported as incoming</span>
-<span class="s2">        files.|n|n</span>
-
-<span class="s2">        The default values are displayed next to the corresponding flags.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">DRS_DESC</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Manages the Data Reference Syntax on your filesystem.|n</span>
-<span class="s2">        See &quot;esgprep drs -h&quot; for full help.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">DRS_HELP</span><span class="p">,</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">parent</span><span class="p">])</span>
-    <span class="n">drs</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Optional arguments&quot;</span>
-    <span class="n">drs</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
+    <span class="n">drs</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">OPTIONAL</span>
+    <span class="n">drs</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">POSITIONAL</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;action&#39;</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="s1">&#39;tree&#39;</span><span class="p">,</span> <span class="s1">&#39;todo&#39;</span><span class="p">,</span> <span class="s1">&#39;upgrade&#39;</span><span class="p">],</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;action&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        DRS action:|n</span>
-<span class="s2">        - &quot;list&quot; lists publication-level datasets,|n</span>
-<span class="s2">        - &quot;tree&quot; displays the final DRS tree,|n</span>
-<span class="s2">        - &quot;todo&quot; shows file operations pending for the next version,|n</span>
-<span class="s2">        - &quot;upgrade&quot; makes changes to upgrade datasets to the next version.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">ACTION_HELP</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;directory&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        One or more directories to recursively scan.|n</span>
-<span class="s2">        Unix wildcards are allowed.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s1">&#39;drs&#39;</span><span class="p">])</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PROJECT_ID&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Required lower-cased project name.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">PROJECT_HELP</span><span class="p">[</span><span class="s1">&#39;drs&#39;</span><span class="p">])</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--root&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;CWD&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Root directory to build the DRS.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">ROOT_HELP</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--version&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
         <span class="n">action</span><span class="o">=</span><span class="n">VersionChecker</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Set the version number for all scanned files.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">SET_VERSION_HELP</span><span class="p">[</span><span class="s1">&#39;drs&#39;</span><span class="p">])</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--set-value&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;FACET_KEY=VALUE&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">keyval_converter</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Set a facet value.|n</span>
-<span class="s2">        Duplicate the flag to set several facet values.|n</span>
-<span class="s2">        This overwrites facet auto-detection.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">SET_VALUE_HELP</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--set-key&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;FACET_KEY=ATTRIBUTE&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">keyval_converter</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Map one a facet key with a NetCDF attribute name.|n</span>
-<span class="s2">        Duplicate the flag to map several facet keys.|n</span>
-<span class="s2">        This overwrites facet auto-detection.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">SET_KEY_HELP</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--no-checksum&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Does not include files checksums for version comparison.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">NO_CHECKSUM_HELP</span><span class="p">[</span><span class="s1">&#39;drs&#39;</span><span class="p">])</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">drs</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--copy&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Copy incoming files into the DRS tree.|n</span>
-<span class="s2">        Default is moving files.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">COPY_HELP</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--link&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Hard link incoming files to the DRS tree.|n</span>
-<span class="s2">        Default is moving files.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">LINK_HELP</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--symlink&#39;</span><span class="p">,</span>
-        <span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
-        <span class="n">default</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Symbolic link incoming files to the DRS tree.|n</span>
-<span class="s2">        Default is moving files.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">SYMLINK_HELP</span><span class="p">)</span>
     <span class="n">drs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--max-threads&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Number of maximal threads to simultaneously process several|n</span>
-<span class="s2">        files (useful if checksum calculation is enabled). Set to|n</span>
-<span class="s2">        one seems sequential processing.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">MAX_THREADS_HELP</span><span class="p">)</span>
 
     <span class="c1">###################################</span>
     <span class="c1"># Subparser for &quot;esgprep mapfile&quot; #</span>
@@ -557,193 +451,100 @@
     <span class="n">mapfile</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s1">&#39;mapfile&#39;</span><span class="p">,</span>
         <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;esgprep mapfile&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes</span>
-<span class="s2">        a file to publish on the following format:|n|n</span>
-
-<span class="s2">        dataset_ID | absolute_path | size_bytes [ | option=value ]|n|n</span>
-
-<span class="s2">        1. All values have to be pipe-separated.|n</span>
-<span class="s2">        2. The dataset identifier, the absolute path and the size (in bytes) are required.|n</span>
-<span class="s2">        3. Adding the version number to the dataset identifier is strongly recommended to publish in a in bulk.|n</span>
-<span class="s2">        4. Strongly recommended optional values are:|n</span>
-<span class="s2">         - mod_time: last modification date of the file (since Unix EPOCH time, i.e., seconds since January, 1st,</span>
-<span class="s2">         1970),|n</span>
-<span class="s2">         - checksum: file checksum,|n</span>
-<span class="s2">         - checksum_type: checksum type (MD5 or the default SHA256).|n</span>
-<span class="s2">        5. Your directory structure has to strictly follows the tree fixed by the DRS including the version facet.|n</span>
-<span class="s2">        6. To store ONE mapfile PER dataset is strongly recommended.|n|n</span>
-
-<span class="s2">        &quot;esgprep mapfile&quot; allows you to easily generate ESGF mapfiles upon local ESGF datanode or not.|n|n</span>
-
-<span class="s2">        The default values are displayed next to the corresponding flags.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">MAPFILE_DESC</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Generates ESGF mapfiles.|n</span>
-<span class="s2">        See &quot;esgprep mapfile -h&quot; for full help.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">MAPFILE_HELP</span><span class="p">,</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">parent</span><span class="p">])</span>
-    <span class="n">mapfile</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Optional arguments&quot;</span>
-    <span class="n">mapfile</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Positional arguments&quot;</span>
+    <span class="n">mapfile</span><span class="o">.</span><span class="n">_optionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">OPTIONAL</span>
+    <span class="n">mapfile</span><span class="o">.</span><span class="n">_positionals</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">POSITIONAL</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;directory&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        One or more directories to recursively scan.|n</span>
-<span class="s2">        Unix wildcards are allowed.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s1">&#39;mapfile&#39;</span><span class="p">])</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--project&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PROJECT_ID&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Required lower-cased project name.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">PROJECT_HELP</span><span class="p">[</span><span class="s1">&#39;mapfile&#39;</span><span class="p">])</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--mapfile&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{dataset_id}</span><span class="s1">.</span><span class="si">{version}</span><span class="s1">.map&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{dataset_id}</span><span class="s1">.</span><span class="si">{version}</span><span class="s1">.map&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Specifies template for the output mapfile(s) name.|n</span>
-<span class="s2">        Substrings </span><span class="si">{dataset_id}</span><span class="s2">, </span><span class="si">{version}</span><span class="s2">, </span><span class="si">{job_id}</span><span class="s2"> or </span><span class="si">{date}</span><span class="s2"> |n</span>
-<span class="s2">        (in YYYYDDMM) will be substituted where found. If |n</span>
-<span class="s2">        </span><span class="si">{dataset_id}</span><span class="s2"> is not present in mapfile name, then all |n</span>
-<span class="s2">        datasets will be written to a single mapfile, overriding |n</span>
-<span class="s2">        the default behavior of producing ONE mapfile PER|n</span>
-<span class="s2">        dataset.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">MAPFILE_NAME_HELP</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--outdir&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;CWD/mapfiles&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;mapfiles&#39;</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Mapfile(s) output directory. A &quot;mapfile_drs&quot; can be|n</span>
-<span class="s2">        defined per project section in INI files and joined to|n</span>
-<span class="s2">        build a mapfiles tree.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">OUTDIR_HELP</span><span class="p">)</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">mapfile</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--all-versions&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Generates mapfile(s) with all versions found in the|n</span>
-<span class="s2">        directory recursively scanned (default is to pick up only|n</span>
-<span class="s2">        the latest one).|n</span>
-<span class="s2">        It disables --no-version.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">ALL_VERSIONS_HELP</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--version&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">VersionChecker</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Generates mapfile(s) scanning datasets with the|n</span>
-<span class="s2">        corresponding version number only. It takes priority over|n</span>
-<span class="s2">        --all-versions. If directly specified in positional|n</span>
-<span class="s2">        argument, use the version number from supplied directory|n</span>
-<span class="s2">        and disables --all-versions and --latest-symlink.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">SET_VERSION_HELP</span><span class="p">[</span><span class="s1">&#39;mapfile&#39;</span><span class="p">])</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--latest-symlink&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Generates mapfile(s) following latest symlinks only. This|n</span>
-<span class="s2">        sets the </span><span class="si">{version}</span><span class="s2"> token to &quot;latest&quot; into the mapfile|n</span>
-<span class="s2">        name, but picked up the pointed version to build the|n</span>
-<span class="s2">        dataset identifier (if --no-version is disabled).</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">LATEST_SYMLINK_HELP</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--no-version&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Does not includes DRS version into the dataset|n</span>
-<span class="s2">        identifier.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">NO_VERSION_HELP</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--no-checksum&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Does not include files checksums into the mapfile(s).&quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--not-ignored&#39;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;FACET_KEY&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        One or more facet key(s) to not ignored. This excludes|n</span>
-<span class="s2">        the corresponding facet from the default ignored list.|n</span>
-<span class="s2">        Useful in case of differences between|n</span>
-<span class="s2">        &quot;directory_format&quot; and &quot;dataset_id&quot; patterns.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">NO_CHECKSUM_HELP</span><span class="p">[</span><span class="s1">&#39;mapfile&#39;</span><span class="p">])</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--ignore-dir-filter&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PYTHON_REGEX&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;^.*/(files|latest|\.[\w]*).*$&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Filter directories NON-matching the regular expression.|n</span>
-<span class="s2">        Default ignore paths with folder name(s) starting with|n</span>
-<span class="s2">        &quot;.&quot; and/or including &quot;/files/&quot; or &quot;/latest/&quot; patterns.|n</span>
-<span class="s2">        (Regular expression must match from start of path; prefix|n</span>
-<span class="s2">        with &quot;.*&quot; if required.)</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;^.*/(files|\.[\w]*).*$&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">IGNORE_DIR_FILTER_HELP</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--include-file-filter&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PYTHON_REGEX&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;^[!.].*\.nc$&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Filter files matching the regular expression.|n</span>
-<span class="s2">        Default only include NetCDF files (with names not|n</span>
-<span class="s2">        starting with &quot;.&quot;).</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">INCLUDE_FILE_FILTER_HELP</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--tech-notes-url&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;URL&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        URL of the technical notes to be associated with each|n</span>
-<span class="s2">        dataset.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">TECH_NOTES_URL_HELP</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--tech-notes-title&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;TITLE&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Technical notes title for display.&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">TECH_NOTES_TITLE_HELP</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--dataset&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;DATASET_ID&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        String name of the dataset. If specified, all files will|n</span>
-<span class="s2">        belong to the specified dataset, regardless of the DRS.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">DATASET_HELP</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--max-threads&#39;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Number of maximal threads to simultaneously process|n</span>
-<span class="s2">        several files (useful if checksum calculation is|n</span>
-<span class="s2">        enabled). Set to one seems sequential processing.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">MAX_THREADS_HELP</span><span class="p">)</span>
     <span class="n">mapfile</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--no-cleanup&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Disables output directory cleanup prior to mapfile|n</span>
-<span class="s2">        process. This is recommended if several &quot;esgprep mapfile&quot;|n</span>
-<span class="s2">        instances run with the same output directory.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">NO_CLEANUP_HELP</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">main</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span></div>
 
@@ -755,28 +556,31 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get command-line arguments</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">()</span>
-    <span class="c1"># Initialize logger</span>
+    <span class="c1"># Initialize logger depending on log and verbose mode</span>
     <span class="n">init_logging</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">v</span><span class="p">)</span>
-    <span class="c1"># Print progress bar</span>
+    <span class="c1"># Print progress bar if no log and no verbose mode</span>
     <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;pbar&#39;</span><span class="p">,</span> <span class="kc">True</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">log</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">v</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span>
-    <span class="c1"># Run subcommand</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&quot;esgprep&quot; test suite is not available. Coming soon!&#39;</span><span class="p">)</span>
+    <span class="c1"># Run program</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test</span><span class="p">:</span>
+        <span class="c1"># Run test suite</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&quot;esgprep&quot; test suite not available. Coming soon!&#39;</span><span class="p">)</span>
         <span class="n">exit</span><span class="p">()</span>
         <span class="n">testsuite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestLoader</span><span class="p">()</span><span class="o">.</span><span class="n">discover</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
         <span class="n">unittest</span><span class="o">.</span><span class="n">TextTestRunner</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">testsuite</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">submodule</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="c1"># Run subcommand</span>
+        <span class="n">module_name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test</span><span class="p">:</span>
-            <span class="n">test</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.test&#39;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s1">&#39;esgprep.</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">submodule</span><span class="p">))</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.test&#39;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s1">&#39;esgprep.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span>
             <span class="n">test</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">main</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.main&#39;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s1">&#39;esgprep.</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">submodule</span><span class="p">))</span>
-            <span class="n">main</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
+            <span class="n">main</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.main&#39;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s1">&#39;esgprep.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span>
+            <span class="n">main</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
 
-<span class="c1"># Main entry point for stand-alone call.</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># PyCharm workaround</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
     <span class="n">run</span><span class="p">()</span>
 </pre></div>
 
@@ -814,7 +618,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.7.6',
+            VERSION:'2.7.18',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

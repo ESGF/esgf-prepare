@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.handler &mdash; esgprep 2.7.6 documentation</title>
+  <title>esgprep.mapfile.handler &mdash; esgprep 2.7.18 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -177,10 +177,12 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">esgprep.mapfile.exceptions</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.constants</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.exceptions</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">ConfigParser</span> <span class="k">import</span> <span class="n">InterpolationMissingOptionError</span>
+<span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">interpolate</span>
+<span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">ExpressionNotMatch</span><span class="p">,</span> <span class="n">NoConfigOptions</span><span class="p">,</span> <span class="n">MissingPatternKey</span>
+
+<span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">checksum</span>
 
 
 <div class="viewcode-block" id="File"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File">[docs]</a><span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -217,83 +219,70 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">KeyNotFound</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="File.load_attributes"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.load_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">load_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<div class="viewcode-block" id="File.load_attributes"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.load_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">load_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The DRS attributes are deduced from the file full path using</span>
-<span class="sd">        the directory_format regex pattern. The project facet is added in any case with lower case.</span>
+<span class="sd">        Loads DRS attributes catched from a regular expression match.</span>
+<span class="sd">        The project facet is added in any case with lower case.</span>
 
-<span class="sd">         * Matches file full path with corresponding project pattern to get DRS attributes values</span>
-<span class="sd">         * attributes.keys() are facet names</span>
-<span class="sd">         * attributes[facet] is the facet values.</span>
-
-<span class="sd">        :param esgprep.mapfile.main.ProcessingContext ctx: The processing context</span>
-<span class="sd">        :raises Error: If the file full path does not match the ``directory_format`` pattern/regex</span>
+<span class="sd">        :param str project: The project name</span>
+<span class="sd">        :param str pattern: The regular expression to match</span>
+<span class="sd">        :raises Error: If regular expression matching fails</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># re.search() method is required to search through the entire string.</span>
             <span class="c1"># In this case we aim to match the regex starting from the filename (i.e., the end of the string)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
             <span class="c1"># Only required to build proper dataset_id</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">DirectoryNotMatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">ExpressionNotMatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="File.get_dataset_id"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.get_dataset_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<div class="viewcode-block" id="File.check_facets"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.check_facets">[docs]</a>    <span class="k">def</span> <span class="nf">check_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Builds the dataset identifier. If the dataset name is not specified (i.e., --dataset flag is None), it:</span>
+<span class="sd">        Checks each facet against the controlled vocabulary.</span>
+<span class="sd">        If a DRS attribute is missing regarding the list of facets,</span>
+<span class="sd">        the DRS attributes are completed from the configuration file maptables.</span>
 
-<span class="sd">         * Checks each value which the facet is found in dataset_id AND attributes keys,</span>
-<span class="sd">         * Gets missing attributes from the maptables in the esg.&lt;project&gt;.ini,</span>
-<span class="sd">         * Builds the dataset identifier from the attributes.</span>
-
-<span class="sd">        :param esgprep.mapfile.main.ProcessingContext ctx: The processing context</span>
-<span class="sd">        :returns: The dataset identifier</span>
-<span class="sd">        :rtype: *str*</span>
-<span class="sd">        :raises Error: If a facet cannot be checked</span>
+<span class="sd">        :param list facets: The list of facet to check</span>
+<span class="sd">        :param ESGConfigParser.SectionParser config: The configuration parser</span>
+<span class="sd">        :raises Error: If one facet checkup fails</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check each facet required by the dataset_id template from esg.&lt;project&gt;.ini</span>
-        <span class="c1"># Facet values to check are deduced from file full-path</span>
-        <span class="c1"># If a DRS attribute is missing regarding the dataset_id template,</span>
-        <span class="c1"># the DRS attributes are completed from esg.&lt;project&gt;.ini maptables.</span>
-        <span class="c1"># If default keys has to be resolved through ini instead of ignored: remove it from the IGNORED_KEYS list</span>
-        <span class="n">ignored_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">IGNORED_KEYS</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">not_ignored</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="n">ignored_keys</span><span class="p">:</span>
-                <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">check_options</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="p">{</span><span class="n">facet</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]})</span>
-            <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="n">ignored_keys</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_option_from_map</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span>
-                                                                         <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_map&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">),</span>
-                                                                         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
-                <span class="k">except</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NoConfigVariable</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span>
-                                           <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="s1">&#39;directory_format&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
-                                           <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span>
-                                           <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">facets</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">IGNORED_KEYS</span><span class="p">):</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">check_options</span><span class="p">({</span><span class="n">facet</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]})</span>
+        <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">facets</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">IGNORED_KEYS</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="s1">&#39;dataset_id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">InterpolationMissingOptionError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MissingPatternKey</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
-                                        <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span> <span class="s1">&#39;dataset_id&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                                        <span class="n">ctx</span><span class="o">.</span><span class="n">project_section</span><span class="p">,</span>
-                                        <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset</span>
-        <span class="k">return</span> <span class="n">dataset_id</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get_option_from_map</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_map&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NoConfigOptions</span><span class="p">(</span><span class="n">facet</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="File.get_dataset_version"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.get_dataset_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<div class="viewcode-block" id="File.get_dataset_id"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.get_dataset_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_format</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieve the dataset version. If the version facet cannot be deduced from full path</span>
-<span class="sd">        (e.g., with --latest-symlink flag), it follows the symlink to complete the DRS attributes.</span>
+<span class="sd">        Builds the dataset identifier from the dataset template interpolation.</span>
 
-<span class="sd">        :param esgprep.mapfile.main.ProcessingContext ctx: The processing context</span>
+<span class="sd">        :param str dataset_format: The dataset template pattern</span>
+<span class="sd">        :returns: The resulting dataset identifier</span>
+<span class="sd">        :rtype: *str*</span>
+<span class="sd">        :raises Error: If a facet key is missing</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">dataset_format</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingPatternKey</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">dataset_format</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="File.get_dataset_version"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.get_dataset_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_version</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the dataset version. If the version facet cannot be deduced from full path,</span>
+<span class="sd">        it follows the symlink to complete the DRS attributes.</span>
+
+<span class="sd">        :param boolean no_version: True to not append version to the dataset ID</span>
 <span class="sd">        :returns: The dataset version</span>
 <span class="sd">        :rtype: *str*</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;version&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">no_version</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;version&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">no_version</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
@@ -309,13 +298,7 @@
 <span class="sd">        :raises Error: If the checksum fails</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">checksum_client</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">shell</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> | awk -F &#39; &#39; &#39;{{ print $1 }}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">checksum_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">shell</span><span class="o">.</span><span class="n">readline</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ChecksumFail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">checksum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">,</span> <span class="n">checksum_client</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
@@ -352,7 +335,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.6',
+            VERSION:'2.7.18',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

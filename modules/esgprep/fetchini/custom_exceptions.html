@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.fetchini.exceptions &mdash; esgprep 2.7.6 documentation</title>
+  <title>esgprep.fetchini.custom_exceptions &mdash; esgprep 2.7.18 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -147,7 +147,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>esgprep.fetchini.exceptions</li>
+      <li>esgprep.fetchini.custom_exceptions</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -164,7 +164,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for esgprep.fetchini.exceptions</h1><div class="highlight"><pre>
+  <h1>Source code for esgprep.fetchini.custom_exceptions</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
@@ -174,32 +174,67 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1">###################################</span>
+<span class="c1"># Exceptions for GitHub connexion #</span>
+<span class="c1">###################################</span>
 
-<div class="viewcode-block" id="GitHubConnectionError"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.exceptions.GitHubConnectionError">[docs]</a><span class="k">class</span> <span class="nc">GitHubConnectionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GitHubException"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.custom_exceptions.GitHubException">[docs]</a><span class="k">class</span> <span class="nc">GitHubException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Raised when the GitHub connection fails.</span>
+<span class="sd">    Basic exception for GitHub errors.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># API call url</span>
+    <span class="n">URI</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">GitHubException</span><span class="o">.</span><span class="n">URI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;url: &#39;</span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GitHubException</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GitHubUnauthorized"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.custom_exceptions.GitHubUnauthorized">[docs]</a><span class="k">class</span> <span class="nc">GitHubUnauthorized</span><span class="p">(</span><span class="n">GitHubException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when no read access on GitHub repo.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_msg</span><span class="p">,</span> <span class="n">repository</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">team</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s2">&quot;API rate limit exceeded&quot;</span> <span class="ow">in</span> <span class="n">error_msg</span><span class="p">:</span>
-            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;API rate limit exceeded. Please try again in 60 minutes or submit GitHub user/password.&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;GitHub access denied: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;username: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;password: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;team: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">team</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;repository: &#39;</span><span class="si">{0}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;GitHub permission denied&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GitHubNoContent"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.exceptions.GitHubNoContent">[docs]</a><span class="k">class</span> <span class="nc">GitHubNoContent</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="GitHubAPIRateLimit"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.custom_exceptions.GitHubAPIRateLimit">[docs]</a><span class="k">class</span> <span class="nc">GitHubAPIRateLimit</span><span class="p">(</span><span class="n">GitHubException</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Raised when the GitHub request returns empty content.</span>
+<span class="sd">    Raised when GitHub API rate limit exceeded.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No content from &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;GitHub API rate limit exceeded (try again in 60 minutes or submit GitHub user/password)&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GitHubFileNotFound"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.custom_exceptions.GitHubFileNotFound">[docs]</a><span class="k">class</span> <span class="nc">GitHubFileNotFound</span><span class="p">(</span><span class="n">GitHubException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when no file found on GitHub repo.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;GitHub file not found&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GitHubConnectionError"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.custom_exceptions.GitHubConnectionError">[docs]</a><span class="k">class</span> <span class="nc">GitHubConnectionError</span><span class="p">(</span><span class="n">GitHubException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the GitHub request fails.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;GitHub connection error&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 </pre></div>
 
@@ -237,7 +272,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.6',
+            VERSION:'2.7.18',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

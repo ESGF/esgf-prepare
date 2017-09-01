@@ -34,7 +34,7 @@ Run the test suite
 Add verbosity
 *************
 
-Some progress bars informs you about the processing statut of the different subcommands. You can switch to a more
+Some progress bars informs you about the processing status of the different subcommands. You can switch to a more
 verbose mode displaying each step.
 
 .. code-block:: bash
@@ -42,7 +42,7 @@ verbose mode displaying each step.
     $> esgprep SUBCOMMAND -v
 
 .. warning::
-    The verbose mode is silently actived in the case of a logfile (i.e., no progress bars).
+    The verbose mode is silently activated in the case of a logfile (i.e., no progress bars).
 
 
 Specify the project
@@ -86,18 +86,33 @@ It can be changed by adding a optional logfile directory to the flag.
     $> esgprep SUBCOMMAND --log
     $> esgprep SUBCOMMAND --log /PATH/TO/LOGDIR/
 
-Use a filter
-************
+Use filters
+***********
 
-Most of ``esgprep`` subcommand will scan your local archive to achieve proper data management. In such a scan, you can
-filter the files found to process by using a regular expression. The default is to only consdier NetCDF files
-(i.e., with a ``.nc`` extension).
+``esgprep check-vocab`` and ``esgprep mapfile`` subcommands will scan your local archive to achieve proper data
+management. In such a scan, you can filter the file discovery by using a Python regular expression
+(see `re <https://docs.python.org/2/library/re.html>`_ Python library).
+
+The default is to walk through your local filesystem ignoring the ``files`` and ``latest`` version levels
+and any hidden folders by using the following regular expression: ``^.*/(files|latest|\.[\w]*).*$``. It can be change
+with:
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND --filter ".*\.nc$"
+    $> esgprep SUBCOMMAND --ignore-dir-filter PYTHON_REGEX
 
-.. warning:: ``esgprep fetch-ini`` does not allow this feature.
+``esgprep`` only considers unhidden NetCDF files by default using the following regular expression: ``^[!.].*\.nc$``.
+It can be change with:
+
+.. code-block:: bash
+
+    $> esgprep SUBCOMMAND --include-file-filter PYTHON_REGEX
+
+Keep in mind that ``--ignore-dir-filter`` specifies a directory pattern **NOT** to be matched, and
+``--include-file-filter`` specifies a filename pattern **TO BE** matched.
+
+.. warning:: ``esgprep fetch-ini`` does not allow those features and ``esgprep drs`` only works with unhidden
+    NetCDF files.
 
 Use multiprocessing
 *******************

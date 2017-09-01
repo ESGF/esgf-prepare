@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.parser &mdash; esgprep 2.7.6 documentation</title>
+  <title>esgprep.utils.parser &mdash; esgprep 2.7.18 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -170,509 +170,139 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :platform: Unix</span>
-<span class="sd">    :synopsis: Methods used to parse ESGF ini files.</span>
+<span class="sd">    :synopsis: Class and methods used to parse command-line arguments.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">ConfigParser</span>
+<span class="c1"># Module imports</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">string</span>
-<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
-
-<span class="kn">from</span> <span class="nn">esgprep.utils.exceptions</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.utils</span> <span class="k">import</span> <span class="n">DirectoryChecker</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">HelpFormatter</span><span class="p">,</span> <span class="n">ArgumentTypeError</span><span class="p">,</span> <span class="n">Action</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 
 
-<div class="viewcode-block" id="CfgParser"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser">[docs]</a><span class="k">class</span> <span class="nc">CfgParser</span><span class="p">(</span><span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">):</span>
+<div class="viewcode-block" id="MultilineFormatter"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.MultilineFormatter">[docs]</a><span class="k">class</span> <span class="nc">MultilineFormatter</span><span class="p">(</span><span class="n">HelpFormatter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Custom ConfigParser class to parse ESGF .ini files from a source directory.</span>
+<span class="sd">    Custom formatter class for argument parser to use with the Python</span>
+<span class="sd">    `argparse &lt;https://docs.python.org/2/library/argparse.html&gt;`_ module.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="n">section</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog</span><span class="p">):</span>
+        <span class="c1"># Overload the HelpFormatter class.</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MultilineFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">max_help_position</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CfgParser.options"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.options">[docs]</a>    <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Can get options() with/without defaults.</span>
+    <span class="k">def</span> <span class="nf">_fill_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">indent</span><span class="p">):</span>
+        <span class="c1"># Rewrites the _fill_text method to support multiline description.</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_whitespace_matcher</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">multiline_text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">paragraphs</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|n|n &#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">paragraph</span> <span class="ow">in</span> <span class="n">paragraphs</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">paragraph</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|n &#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="n">formatted_line</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span>
+                                               <span class="n">initial_indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span>
+                                               <span class="n">subsequent_indent</span><span class="o">=</span><span class="n">indent</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">multiline_text</span> <span class="o">+=</span> <span class="n">formatted_line</span>
+            <span class="n">multiline_text</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="n">multiline_text</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">opts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">NoSectionError</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">defaults</span><span class="p">:</span>
-            <span class="n">opts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaults</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;__name__&#39;</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
-            <span class="k">del</span> <span class="n">opts</span><span class="p">[</span><span class="s1">&#39;__name__&#39;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">opts</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+    <span class="k">def</span> <span class="nf">_split_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+        <span class="c1"># Rewrites the _split_lines method to support multiline helps.</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_whitespace_matcher</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|n &#39;</span><span class="p">)</span>
+        <span class="n">multiline_text</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">multiline_text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+        <span class="n">multiline_text</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="n">multiline_text</span></div>
 
-<div class="viewcode-block" id="CfgParser.read"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Read and parse a filename or a list of filenames, and records their paths.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">filenames</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-            <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
+<div class="viewcode-block" id="DirectoryChecker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.DirectoryChecker">[docs]</a><span class="k">class</span> <span class="nc">DirectoryChecker</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom action class for argument parser to use with the Python</span>
+<span class="sd">    `argparse &lt;https://docs.python.org/2/library/argparse.html&gt;`_ module.</span>
 
-<div class="viewcode-block" id="CfgParser.sections"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.sections">[docs]</a>    <span class="k">def</span> <span class="nf">sections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the list of section names, including [DEFAULT]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="CfgParser.parse"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parses the configuration files. If no section is submitted, all INI files are read.</span>
-
-<span class="sd">        :param str path: The directory path of configuration files</span>
-<span class="sd">        :param str section: The section to parse (if not all ini files are read)</span>
-<span class="sd">        :returns: The configuration file parser</span>
-<span class="sd">        :rtype: *CfgParser*</span>
-<span class="sd">        :raises Error: If no configuration file exists</span>
-<span class="sd">        :raises Error: If the configuration file parsing fails</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;esg.ini&#39;</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">section</span><span class="p">:</span>
-            <span class="c1"># If the section is not &quot;[project:.*]&quot;, only read esg.ini</span>
-            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;project:.*&#39;</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span> <span class="ow">and</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
-                <span class="n">project</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;project:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))):</span>
-                    <span class="k">raise</span> <span class="n">NoConfigFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">)))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;esg.</span><span class="si">{0}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">)))</span>
-                <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
-                    <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">checked_vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">directory_checker</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">paths</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;esg*.ini&#39;</span><span class="p">))</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">paths</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">NoConfigFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;esg*.ini&#39;</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">EmptyConfigFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span></div>
+            <span class="n">checked_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory_checker</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">checked_vals</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CfgParser.translate_directory_format"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.translate_directory_format">[docs]</a>    <span class="k">def</span> <span class="nf">translate_directory_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="DirectoryChecker.directory_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.DirectoryChecker.directory_checker">[docs]</a>    <span class="k">def</span> <span class="nf">directory_checker</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a regular expression associated with the ``directory_format`` option</span>
-<span class="sd">        in the configuration file. This can be passed to the Python ``re`` methods.</span>
+<span class="sd">        Checks if the supplied directory exists. The path is normalized without trailing slash.</span>
 
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :returns: The corresponding ``re`` pattern</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Start translation</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;directory_format&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;\.&#39;</span><span class="p">,</span> <span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
-        <span class="c1"># Translate %(root)s variable if exists but not required. Can include the project name.</span>
-        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((root)\)s&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">):</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((root)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[\w./-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="c1"># Include specific facet patterns</span>
-        <span class="k">for</span> <span class="n">facet</span><span class="p">,</span> <span class="n">facet_regex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_patterns</span><span class="p">(</span><span class="n">section</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((</span><span class="si">{0}</span><span class="s1">)\)s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">)),</span> <span class="n">facet_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="c1"># Constraint on %(version)s number</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((version)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;v[\d]+|latest)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="c1"># Translate all patterns matching %(name)s</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">/(?P&lt;filename&gt;[\w.-]+)$&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="CfgParser.translate_dataset_format"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.translate_dataset_format">[docs]</a>    <span class="k">def</span> <span class="nf">translate_dataset_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a regular expression associated with the ``dataset_id`` option</span>
-<span class="sd">        in the configuration file. This can be passed to the Python ``re`` methods.</span>
-
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :returns: The corresponding ``re`` pattern</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;dataset_id&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;\.&#39;</span><span class="p">,</span> <span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
-        <span class="c1"># Include specific facet patterns</span>
-        <span class="k">for</span> <span class="n">facet</span><span class="p">,</span> <span class="n">facet_regex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_patterns</span><span class="p">(</span><span class="n">section</span><span class="p">)</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((</span><span class="si">{0}</span><span class="s1">)\)s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">)),</span> <span class="n">facet_regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="c1"># Constraint on %(version)s number</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((version)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;v[\d]+|latest)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="c1"># Translate all patterns matching %(name)s</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pattern</span></div>
-
-<div class="viewcode-block" id="CfgParser.translate_filename_format"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.translate_filename_format">[docs]</a>    <span class="k">def</span> <span class="nf">translate_filename_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a regular expression filters associated with the ``directory_format`` option</span>
-<span class="sd">        in the configuration file. This can be passed to the Python ``re`` methods.</span>
-
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :returns: The corresponding ``re`` pattern</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Start translation</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;filename_format&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;\.&#39;</span><span class="p">,</span> <span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__ESCAPE_DOT__&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span>
-        <span class="c1"># Translate all patterns matching [.*] as optional pattern</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\[(.*)\]&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(\1)?&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="c1"># Remove underscore from latest mandatory pattern to allow optional brackets</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s\(&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[^-_]+)(&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="c1"># Translate all patterns matching %(name)s</span>
-        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="CfgParser.get_facets"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_facets">[docs]</a>    <span class="k">def</span> <span class="nf">get_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">ignored</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the set of facets declared into &quot;*_format&quot; attributes in the configuration file.</span>
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :param str option: The option to get facet names</span>
-<span class="sd">        :param list ignored: The list of facets to ignored</span>
-<span class="sd">        :returns: The collection of facets</span>
-<span class="sd">        :rtype: *set*</span>
-<span class="sd">        </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">facets</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">ignored</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">facets</span> <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignored</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">facets</span></div>
-
-<div class="viewcode-block" id="CfgParser.check_options"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.check_options">[docs]</a>    <span class="k">def</span> <span class="nf">check_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">pairs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks a {key: value} pairs against the corresponding options from the configuration file.</span>
-
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :param dict pairs: A dictionary of {key: value} to check</span>
-<span class="sd">        :raises Error: If the value is missing in the corresponding options list</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pairs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">options</span><span class="p">,</span> <span class="n">option</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_options</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># get_options returned a list</span>
-                <span class="k">if</span> <span class="n">pairs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NoConfigValue</span><span class="p">(</span><span class="n">pairs</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-                <span class="c1"># get_options returned a regex from pattern</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pairs</span><span class="p">[</span><span class="n">key</span><span class="p">]):</span>
-                    <span class="k">raise</span> <span class="n">NoConfigValue</span><span class="p">(</span><span class="n">pairs</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">check_options</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pairs</span><span class="p">[</span><span class="n">key</span><span class="p">])</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span></div>
-
-<div class="viewcode-block" id="CfgParser.get_options"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_options">[docs]</a>    <span class="k">def</span> <span class="nf">get_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the list of attribute options.</span>
-
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :param str option: The option to get available values</span>
-<span class="sd">        :returns: The option values</span>
-<span class="sd">        :rtype: *list* or *re.RegexObject*</span>
-<span class="sd">        :raises Error: If the option is missing</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_options&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">option</span><span class="p">)):</span>
-            <span class="n">option</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_options&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_options_from_list</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">),</span> <span class="n">option</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_map&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">option</span><span class="p">)):</span>
-            <span class="n">option</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_map&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_options_from_map</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">),</span> <span class="n">option</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_pattern&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">option</span><span class="p">)):</span>
-            <span class="n">option</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_pattern&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_options_from_pattern</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">),</span> <span class="n">option</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NoConfigOptions</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="CfgParser.get_options_from_list"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_options_from_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_options_from_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the list of option values from options list.</span>
-
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :param str option: The option to get available values</span>
-<span class="sd">        :returns: The option values</span>
-<span class="sd">        :rtype: *list*</span>
-<span class="sd">        :raises Error: If the section does not exist</span>
-<span class="sd">        :raises Error: If the option does not exist</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;_options&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;experiment&#39;</span><span class="p">:</span>
-            <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">field_id</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">options</span> <span class="o">=</span> <span class="n">split_line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">options</span></div>
-
-<div class="viewcode-block" id="CfgParser.get_options_from_table"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_options_from_table">[docs]</a>    <span class="k">def</span> <span class="nf">get_options_from_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">field_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the list of options from options table (i.e., &lt;field1&gt; | &lt;field2&gt; | &lt;field3&gt; | etc.).</span>
-
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :param str option: The option to get available values</span>
-<span class="sd">        :param int field_id: The field number starting from 1 (if not return the tuple)</span>
-<span class="sd">        :returns: The option values</span>
-<span class="sd">        :rtype: *list*</span>
-<span class="sd">        :raises Error: If the section does not exist</span>
-<span class="sd">        :raises Error: If the option does not exist</span>
-<span class="sd">        :raises Error: If the options table is misdeclared</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="n">option_lines</span> <span class="o">=</span> <span class="n">split_line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">option_lines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">option_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">field_id</span><span class="p">:</span>
-                <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">option</span><span class="p">)[</span><span class="n">field_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">split_line</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">option_lines</span><span class="p">)]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">split_line</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">option_lines</span><span class="p">)]</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MisdeclaredOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Wrong syntax&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">options</span></div>
-
-<div class="viewcode-block" id="CfgParser.get_options_from_pairs"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_options_from_pairs">[docs]</a>    <span class="k">def</span> <span class="nf">get_options_from_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the list of option values from pairs table (i.e., &lt;key&gt; | &lt;value&gt;).</span>
-
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :param str option: The option to get available values</span>
-<span class="sd">        :param str key: The key to get the value</span>
-<span class="sd">        :returns: The key value</span>
+<span class="sd">        :param str path: The path list to check</span>
+<span class="sd">        :returns: The same path list</span>
 <span class="sd">        :rtype: *str*</span>
-<span class="sd">        :raises Error: If the section does not exist</span>
-<span class="sd">        :raises Error: If the option does not exist</span>
-<span class="sd">        :raises Error: If the key does not exist</span>
-<span class="sd">        :raises Error: If the options table is misdeclared</span>
+<span class="sd">        :raises Error: If one of the directory does not exist</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="n">options_lines</span> <span class="o">=</span> <span class="n">split_line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">split_line</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">options_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MisdeclaredOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Wrong syntax&quot;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">options</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NoConfigKey</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span></div>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="nb">print</span> <span class="n">path</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;No such directory: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="nb">print</span> <span class="n">msg</span>
+            <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span></div></div>
 
-<div class="viewcode-block" id="CfgParser.get_options_from_map"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_options_from_map">[docs]</a>    <span class="k">def</span> <span class="nf">get_options_from_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="VersionChecker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.VersionChecker">[docs]</a><span class="k">class</span> <span class="nc">VersionChecker</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom action class for argument parser to use with the Python</span>
+<span class="sd">    `argparse &lt;https://docs.python.org/2/library/argparse.html&gt;`_ module.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">checked_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_checker</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">checked_val</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="VersionChecker.version_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.VersionChecker.version_checker">[docs]</a>    <span class="k">def</span> <span class="nf">version_checker</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the list of option values from maptable.</span>
-<span class="sd">        If no key submitted, the option name has to be ``&lt;key&gt;_map``.</span>
+<span class="sd">        Checks the version format from command-line.</span>
 
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :param str option: The option to get available values</span>
-<span class="sd">        :param str key: The key to get the values</span>
-<span class="sd">        :returns: The option values</span>
-<span class="sd">        :rtype: *list*</span>
-<span class="sd">        :raises Error: If the section does not exist</span>
-<span class="sd">        :raises Error: If the option does not exist</span>
-<span class="sd">        :raises Error: If the related key is not in the source/destination keys of the maptable</span>
+<span class="sd">        :type version: The version string from command-line</span>
+<span class="sd">        :returns: The version if allowed</span>
+<span class="sd">        :rtype: *str*</span>
+<span class="sd">        :raises Error: If invalid version format</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_map&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">from_keys</span><span class="p">,</span> <span class="n">to_keys</span><span class="p">,</span> <span class="n">value_map</span> <span class="o">=</span> <span class="n">split_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">from_keys</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">value</span><span class="p">[</span><span class="n">from_keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">value_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()]))</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^[\d]{1,8}$&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">version</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid version date: </span><span class="si">{0}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">version</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">value</span><span class="p">[</span><span class="n">to_keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">value_map</span><span class="o">.</span><span class="n">values</span><span class="p">()]))</span></div>
-
-<div class="viewcode-block" id="CfgParser.get_option_from_map"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_option_from_map">[docs]</a>    <span class="k">def</span> <span class="nf">get_option_from_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">pairs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the destination values corresponding to key values from maptable.</span>
-<span class="sd">        The option name has to be ``&lt;key&gt;_map``. The key has to be in the destination keys of the maptable header.</span>
-
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :param str option: The option to get the value</span>
-<span class="sd">        :param dict pairs: A dictionary of {from_key: value} to input the maptable</span>
-<span class="sd">        :returns: The corresponding option value</span>
-<span class="sd">        :rtype: *list*</span>
-<span class="sd">        :raises Error: If the section does not exist</span>
-<span class="sd">        :raises Error: If the option does not exist</span>
-<span class="sd">        :raises Error: If the key values are not in the destination keys of the maptable</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="n">from_keys</span><span class="p">,</span> <span class="n">to_keys</span><span class="p">,</span> <span class="n">value_map</span> <span class="o">=</span> <span class="n">split_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">))</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_map&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">to_keys</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MisdeclaredOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">,</span>
-                                    <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&#39;</span><span class="si">{0}</span><span class="s2">&#39; has to be in &#39;destination key&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-        <span class="n">from_values</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pairs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">from_keys</span><span class="p">)</span>
-        <span class="n">to_values</span> <span class="o">=</span> <span class="n">value_map</span><span class="p">[</span><span class="n">from_values</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">to_values</span><span class="p">[</span><span class="n">to_keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span></div>
-
-<div class="viewcode-block" id="CfgParser.get_options_from_pattern"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_options_from_pattern">[docs]</a>    <span class="k">def</span> <span class="nf">get_options_from_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the expanded regex from ``key_pattern``.</span>
-<span class="sd">        The option name has to be ``&lt;attr&gt;_pattern``.</span>
-
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :param str option: The option to get available values</span>
-<span class="sd">        :returns: The expanded regex</span>
-<span class="sd">        :rtype: *re.RegexObject*</span>
-<span class="sd">        :raises Error: If the section does not exist</span>
-<span class="sd">        :raises Error: If the option does not exist</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">NoConfigSection</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_paths</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="c1"># Translate all patterns matching %(digit)s</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((digit)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;[\d]+&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="c1"># Translate all patterns matching %(string)s</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((string)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;[\w]+&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="c1"># Translate all patterns matching %(facet)s</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([^()]*)\)s&#39;</span><span class="p">),</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;\1&gt;[\w.-]+)&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="CfgParser.get_patterns"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.CfgParser.get_patterns">[docs]</a>    <span class="k">def</span> <span class="nf">get_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get all ``key_patterns`` options declared into the project section.</span>
-
-<span class="sd">        :param str section: The section name to parse</span>
-<span class="sd">        :returns: A dictionary of {option: pattern}</span>
-<span class="sd">        :rtype: *dict*</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">patterns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="k">if</span> <span class="s1">&#39;_pattern&#39;</span> <span class="ow">in</span> <span class="n">option</span> <span class="ow">and</span> <span class="n">option</span> <span class="o">!=</span> <span class="s1">&#39;version_pattern&#39;</span><span class="p">:</span>
-                <span class="n">patterns</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_options_from_pattern</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">patterns</span></div></div>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid version type: </span><span class="si">{0}</span><span class="s1">.</span><span class="se">\n</span><span class="s1">Available format is YYYYMMDD or an integer.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="split_line"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.split_line">[docs]</a><span class="k">def</span> <span class="nf">split_line</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="keyval_converter"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.keyval_converter">[docs]</a><span class="k">def</span> <span class="nf">keyval_converter</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Split a line into fields removing trailing and leading characters.</span>
+<span class="sd">    Checks the key value syntax.</span>
 
-<span class="sd">    :param str line: String line to split</span>
-<span class="sd">    :param str sep: Separator character</span>
-<span class="sd">    :returns:  A list of string fields</span>
+<span class="sd">    :param str pair: The key/value pair to check</span>
+<span class="sd">    :returns: The key/value pair</span>
+<span class="sd">    :rtype: *list*</span>
+<span class="sd">    :raises Error: If invalid pair syntax</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">fields</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">fields</span></div>
-
-
-<div class="viewcode-block" id="build_line"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.build_line">[docs]</a><span class="k">def</span> <span class="nf">build_line</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; | &#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Build a line from fields adding trailing and leading characters.</span>
-
-<span class="sd">    :param tuple fields: Tuple of ordered fields</span>
-<span class="sd">    :param str sep: Separator character</span>
-<span class="sd">    :param tuple length: The fields length</span>
-<span class="sd">    :returns: A string fields</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">length</span><span class="p">:</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="nb">format</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">length</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">))]</span>
-    <span class="n">line</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">line</span></div>
-
-
-<div class="viewcode-block" id="align"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.align">[docs]</a><span class="k">def</span> <span class="nf">align</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the maximum length among items of a list of tuples.</span>
-<span class="sd">    :param list fields:</span>
-<span class="sd">    :returns: The fields lengths</span>
-<span class="sd">    :rtype: *tuple*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">fields</span><span class="p">)])</span></div>
-
-
-<div class="viewcode-block" id="split_record"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.split_record">[docs]</a><span class="k">def</span> <span class="nf">split_record</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Split a multi-line record in a configuration file.</span>
-
-<span class="sd">    :param str option: Option in the configuration file.</span>
-<span class="sd">    :param str sep: Separator character.</span>
-<span class="sd">    :returns: A list of the form [[field1A, field2A, ...], [field1B, field2B, ...]]</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">record</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="n">split_line</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">sep</span><span class="p">)</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span></div>
-
-
-<div class="viewcode-block" id="split_map_header"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.split_map_header">[docs]</a><span class="k">def</span> <span class="nf">split_map_header</span><span class="p">(</span><span class="n">header</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Split header of a multi-line map in a configuration file.</span>
-<span class="sd">    A map header defines the mapping between two sets of facets id.</span>
-
-<span class="sd">    :param str header: Header line of multi-line map</span>
-<span class="sd">    :returns: &#39;from&#39; and &#39;to&#39; tuples representing the keys for the mapping</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">header_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;map\s*\((?P&lt;from_keys&gt;[^(:)]*):(?P&lt;to_keys&gt;[^(:)]*)\)&#39;</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">header_pattern</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">InvalidMapHeader</span><span class="p">(</span><span class="n">header_pattern</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
-    <span class="n">from_keys</span> <span class="o">=</span> <span class="n">split_line</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;from_keys&#39;</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-    <span class="n">to_keys</span> <span class="o">=</span> <span class="n">split_line</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;to_keys&#39;</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">from_keys</span><span class="p">,</span> <span class="n">to_keys</span></div>
-
-
-<div class="viewcode-block" id="split_map"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.split_map">[docs]</a><span class="k">def</span> <span class="nf">split_map</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Split a multi-line map in a configuration file.</span>
-
-<span class="sd">    :param str option: Option in the configuration file</span>
-<span class="sd">    :param str sep: Separator character</span>
-<span class="sd">    :returns: A dictionary mapping the &#39;from&#39; tuples to the &#39;to&#39; tuples</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">lines</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">from_keys</span><span class="p">,</span> <span class="n">to_keys</span> <span class="o">=</span> <span class="n">split_map_header</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">n_from</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">from_keys</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-        <span class="k">if</span> <span class="n">record</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">))</span>
-        <span class="n">from_values</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n_from</span><span class="p">])</span>
-        <span class="n">to_values</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="n">n_from</span><span class="p">:])</span>
-        <span class="k">if</span> <span class="n">from_values</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">result</span><span class="p">[</span><span class="n">from_values</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_values</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">DuplicatedMapEntry</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">from_values</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_from</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InvalidMapEntry</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">from_keys</span><span class="p">,</span> <span class="n">to_keys</span><span class="p">,</span> <span class="n">result</span></div>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([^=]+)=([^=]+)(?:,|$)&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Bad argument syntax: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span></div>
 </pre></div>
 
            </div>
@@ -709,7 +339,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.6',
+            VERSION:'2.7.18',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

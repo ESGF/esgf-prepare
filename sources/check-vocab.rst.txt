@@ -31,3 +31,13 @@ The file must contain one dataset ID per line. This can be without version, or w
 .. code-block:: bash
 
     $> esgprep check-vocab --dataset-list /PATH/TO/TXT_FILE/ --project PROJECT_ID
+
+Exit status
+***********
+
+ * Status = 0
+    All the files have been successfully scanned and there were no undeclared values in the configuration INI files.
+ * Status = 1
+    Some scan errors occurred. Some files have been skipped or failed during the scan. See the error logfile.
+ * Status = 2
+    There were undeclared values in the configuration INI files. See the error logfile.

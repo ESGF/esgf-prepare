@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>esgprep.utils.collectors &mdash; esgprep 2.7.18 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> esgprep
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../check-vocab.html">Check CV against configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">esgprep</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>esgprep.utils.collectors</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for esgprep.utils.collectors</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :platform: Unix</span>
+<span class="sd">    :synopsis: Useful functions to collect data from directories.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Module imports</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">match</span><span class="p">,</span> <span class="n">remove</span>
+
+
+<div class="viewcode-block" id="Collecting"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.Collecting">[docs]</a><span class="k">class</span> <span class="nc">Collecting</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spinner pending data collection.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">STATES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;|&#39;</span><span class="p">)</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">Collecting data... </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Collecting</span><span class="o">.</span><span class="n">STATES</span><span class="p">[</span><span class="n">Collecting</span><span class="o">.</span><span class="n">step</span> <span class="o">%</span> <span class="mi">4</span><span class="p">]))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">Collecting</span><span class="o">.</span><span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="Collector"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.Collector">[docs]</a><span class="k">class</span> <span class="nc">Collector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base collector class to yield regular NetCDF files.</span>
+
+<span class="sd">    :param list sources: The list of sources to parse</span>
+<span class="sd">    :param str file_filter: A regular expression to include files in the collection</span>
+<span class="sd">    :returns: The data collector</span>
+<span class="sd">    :rtype: *iter*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">file_filter</span><span class="o">=</span><span class="s1">&#39;^[!.].*\.nc$&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">sources</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span> <span class="o">=</span> <span class="n">file_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                    <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns collector length with animation.</span>
+
+<span class="sd">        :returns: The number of items in the collector.</span>
+<span class="sd">        :rtype: *int*</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="n">Collecting</span><span class="p">()</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">():</span>
+            <span class="n">progress</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\033</span><span class="s1">[K&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+<div class="viewcode-block" id="Collector.attach"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.Collector.attach">[docs]</a>    <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attach any object to the each collector item.</span>
+
+<span class="sd">        :param str item: The collector item</span>
+<span class="sd">        :returns: The collector item with the &quot;data&quot; object</span>
+<span class="sd">        :rtype: *tuple*</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="k">else</span> <span class="n">item</span></div></div>
+
+
+<div class="viewcode-block" id="PathCollector"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.PathCollector">[docs]</a><span class="k">class</span> <span class="nc">PathCollector</span><span class="p">(</span><span class="n">Collector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Collector class to yield files from a list of directories to parse.</span>
+
+<span class="sd">    :param str dir_filter: A regular expression to exclude directories from the collection</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PathCollector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yields files full path according to filters on path and filename.</span>
+
+<span class="sd">        :returns: The collected file full paths</span>
+<span class="sd">        :rtype: *iter*</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                        <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+                            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PathCollector.PathFilter"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.PathCollector.PathFilter">[docs]</a>    <span class="k">class</span> <span class="nc">PathFilter</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Regex dictionary with a call method to evaluate a string against several regular expressions.</span>
+<span class="sd">        The dictionary values are 2-tuples with the regular expression as a string and a boolean</span>
+<span class="sd">        indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="c1"># Assertions on filters values</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="c1"># Set negative = False by default</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="nb">dict</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">match</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">negative</span><span class="o">=</span><span class="n">negative</span><span class="p">)</span> <span class="k">for</span> <span class="n">regex</span><span class="p">,</span> <span class="n">negative</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span></div></div>
+
+
+<div class="viewcode-block" id="VersionedPathCollector"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.VersionedPathCollector">[docs]</a><span class="k">class</span> <span class="nc">VersionedPathCollector</span><span class="p">(</span><span class="n">PathCollector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Collector class to yield files from a list of versioned directories to parse.</span>
+
+<span class="sd">    :param str dir_format: The regular expression of the directory format</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_format</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VersionedPathCollector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">dir_format</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yields files full path according to filters on path and filename.</span>
+
+<span class="sd">        :returns: The collected file full paths</span>
+<span class="sd">        :rtype: *iter*</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
+            <span class="c1"># Find if the version among path if exists</span>
+            <span class="n">source_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_finder</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">source_version</span><span class="p">:</span>
+                <span class="c1"># Path version takes priority on command-line flags and default behavior</span>
+                <span class="c1"># Overwrite the version filter</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;version_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_version</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="c1"># Reset version filter if latest_version exists to allow new filter for another dataset/version</span>
+                <span class="k">if</span> <span class="s1">&#39;latest_version&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">():</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;version_filter&#39;</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                    <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                    <span class="n">path_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_finder</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+                    <span class="c1"># If no version filter, and path version exists, set default behavior</span>
+                    <span class="k">if</span> <span class="n">path_version</span> <span class="ow">and</span> <span class="s1">&#39;version_filter&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">:</span>
+                        <span class="c1"># Find latest version</span>
+                        <span class="n">path_versions</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">ffp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">path_version</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span>
+                                         <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^v[\d]+$&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
+                        <span class="n">latest_version</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">path_versions</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="c1"># Pick up the latest version among encountered versions</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;version_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">latest_version</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+                        <span class="c1"># Dereference latest symlink (only) in the end</span>
+                        <span class="k">if</span> <span class="n">path_version</span> <span class="o">==</span> <span class="s1">&#39;latest&#39;</span><span class="p">:</span>
+                            <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/(latest)/&#39;</span><span class="p">,</span> <span class="n">ffp</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                            <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/(latest)/&#39;</span><span class="p">,</span> <span class="n">ffp</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">:])</span>
+                        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+                            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">version_finder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Test directory_format regex without &lt;filename&gt; part</span>
+        <span class="k">while</span> <span class="s1">&#39;version&#39;</span> <span class="ow">in</span> <span class="n">regex</span><span class="o">.</span><span class="n">groupindex</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+                <span class="c1"># If version facet found return its value</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Walk backward the regex to find the version facet if exists</span>
+                <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">regex</span><span class="o">.</span><span class="n">pattern</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">version</span></div>
+
+
+<div class="viewcode-block" id="DatasetCollector"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.DatasetCollector">[docs]</a><span class="k">class</span> <span class="nc">DatasetCollector</span><span class="p">(</span><span class="n">Collector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Collector class to yield datasets from a list of files to read.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yields datasets to process from a text file. Each line may contain the dataset with optional</span>
+<span class="sd">        appended ``.v&lt;version&gt;`` or ``#&lt;version&gt;`, and only the part without the version is returned.</span>
+
+<span class="sd">        :returns: The dataset ID without the version</span>
+<span class="sd">        :rtype: *iter*</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;((\.v|#)[0-9]+)?\s*$&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Levavasseur, G..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'2.7.18',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../static/jquery.js"></script>
+      <script type="text/javascript" src="../../../static/underscore.js"></script>
+      <script type="text/javascript" src="../../../static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

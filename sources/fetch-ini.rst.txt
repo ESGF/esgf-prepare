@@ -62,3 +62,11 @@ To avoid the Github API rate limit, submit your GitHub username and password.
 .. code-block:: bash
 
     $> esgprep fetch-ini --gh-user MY_GH_USER --gh-password MY_GH_PASSWORD
+
+Exit status
+***********
+
+ * Status = 0
+    All the configuration have been successfully fetched.
+ * Status = 1
+    One or several errors occurred. See the error logfile.

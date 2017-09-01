@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generic usage &mdash; esgprep 2.7.6 documentation</title>
+  <title>Generic usage &mdash; esgprep 2.7.18 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.6 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="index.html"/>
         <link rel="next" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/>
         <link rel="prev" title="Configuration" href="configuration.html"/> 
 
@@ -208,14 +208,14 @@ $&gt; esgprep SUBCOMMAND --test
 </div>
 <div class="section" id="add-verbosity">
 <h2>Add verbosity<a class="headerlink" href="#add-verbosity" title="Permalink to this headline">¶</a></h2>
-<p>Some progress bars informs you about the processing statut of the different subcommands. You can switch to a more
+<p>Some progress bars informs you about the processing status of the different subcommands. You can switch to a more
 verbose mode displaying each step.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND -v
 </pre></div>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">The verbose mode is silently actived in the case of a logfile (i.e., no progress bars).</p>
+<p class="last">The verbose mode is silently activated in the case of a logfile (i.e., no progress bars).</p>
 </div>
 </div>
 <div class="section" id="specify-the-project">
@@ -230,14 +230,14 @@ the configuration file(s).</p>
 <div class="section" id="submit-a-configuration-directory">
 <h2>Submit a configuration directory<a class="headerlink" href="#submit-a-configuration-directory" title="Permalink to this headline">¶</a></h2>
 <p>By default, the configuration files are fetched or read from <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code> that is the usual configuration
-directory on ESGF nodes. If you’re preparing your data outside of an ESGF node, you can submit another directory to
+directory on ESGF nodes. If you&#8217;re preparing your data outside of an ESGF node, you can submit another directory to
 fetch and read the configuration files.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND -i /PATH/TO/CONFIG/
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">In the case of <code class="docutils literal"><span class="pre">fetch-ini</span></code> subcommand, if you’re not on an ESGF node and <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code> doesn’t exist,
+<p class="last">In the case of <code class="docutils literal"><span class="pre">fetch-ini</span></code> subcommand, if you&#8217;re not on an ESGF node and <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code> doesn&#8217;t exist,
 the configuration file(s) are fetched into an <code class="docutils literal"><span class="pre">ini</span></code> folder in your working directory.</p>
 </div>
 </div>
@@ -269,7 +269,7 @@ It can be change with:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --include-file-filter PYTHON_REGEX
 </pre></div>
 </div>
-<p>Keep in mind that <code class="docutils literal"><span class="pre">--ignore-dir-filter</span></code> specifies a direcotry pattern <strong>NOT</strong> to be matched, and
+<p>Keep in mind that <code class="docutils literal"><span class="pre">--ignore-dir-filter</span></code> specifies a directory pattern <strong>NOT</strong> to be matched, and
 <code class="docutils literal"><span class="pre">--include-file-filter</span></code> specifies a filename pattern <strong>TO BE</strong> matched.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -332,7 +332,7 @@ simultaneously process several files (4 threads is the default and one seems seq
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.6',
+            VERSION:'2.7.18',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Manage local data through the DRS &mdash; esgprep 2.7.6 documentation</title>
+  <title>Manage local data through the DRS &mdash; esgprep 2.7.18 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.6 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="index.html"/>
         <link rel="next" title="Check CV against configuration INI files" href="check-vocab.html"/>
         <link rel="prev" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/> 
 
@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#list-unix-command-to-apply">List Unix command to apply</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#change-the-migration-mode">Change the migration mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade">Run the DRS upgrade</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#disable-checkum-comparison">Disable checkum comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#disable-checksum-comparison">Disable checksum comparison</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
@@ -206,6 +206,12 @@ corresponding <code class="docutils literal"><span class="pre">esg.&lt;project&g
 <li>The NetCDF global attributes by picking the attribute with the nearest name of the facet key.</li>
 </ol>
 </div></blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The incoming files are supposed to be produced by <a class="reference external" href="https://cmor.llnl.gov/">CMOR</a> (or at least be
+CMOR-compliant) and unversioned. <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> will apply a version regardless of the incoming file path. The
+applied version only depends on the <code class="docutils literal"><span class="pre">--version</span></code> flag and the existing dataset versions in the DRS <code class="docutils literal"><span class="pre">--root</span></code>.</p>
+</div>
 <div class="section" id="list-the-datasets-related-to-the-incoming-files">
 <h2>List the datasets related to the incoming files<a class="headerlink" href="#list-the-datasets-related-to-the-incoming-files" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
@@ -224,7 +230,7 @@ corresponding <code class="docutils literal"><span class="pre">esg.&lt;project&g
 </div>
 <div class="section" id="set-a-facet-value">
 <h2>Set a facet value<a class="headerlink" href="#set-a-facet-value" title="Permalink to this headline">¶</a></h2>
-<p>In some cases, a DRS facet value cannont by properly deduces from the above sources. To solve this issue, a facet value
+<p>In some cases, a DRS facet value cannot be properly deduces from the above sources. To solve this issue, a facet value
 can be set for the whole scan. By duplicating the flag several facet value can be enforced. If the same facet key is
 used, only the last value will be considered.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs list --project PROJECT_ID /PATH/TO/SCAN/ --set-value <span class="nv">FACET_KEY</span><span class="o">=</span>VALUE
@@ -240,7 +246,7 @@ use <code class="docutils literal"><span class="pre">--set-value</span> <span cl
 </div>
 <div class="section" id="enforce-a-facet-mapping">
 <h2>Enforce a facet mapping<a class="headerlink" href="#enforce-a-facet-mapping" title="Permalink to this headline">¶</a></h2>
-<p>Based on the same schema of the <code class="docutils literal"><span class="pre">--set-value</span></code> argument, the mappging between a (list of) facet key and a (list of)
+<p>Based on the same schema of the <code class="docutils literal"><span class="pre">--set-value</span></code> argument, the mapping between a (list of) facet key and a (list of)
 particular NetCDF attribute can be enforced for the whole scan.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs list --project PROJECT_ID /PATH/TO/SCAN/ --set-key <span class="nv">FACET_KEY</span><span class="o">=</span>ATTRIBUTE
 $&gt; esgprep drs list --project PROJECT_ID /PATH/TO/SCAN/ --set-key <span class="nv">FACET_KEY1</span><span class="o">=</span>ATTRIBUTE1 --set-value <span class="nv">FACET_KEY2</span><span class="o">=</span>ATTRIBUTE2
@@ -281,7 +287,7 @@ including the project.</p>
 </div>
 <div class="section" id="list-unix-command-to-apply">
 <h2>List Unix command to apply<a class="headerlink" href="#list-unix-command-to-apply" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">todo</span></code> action can be seen as a dry-run to check which unix commands should be apply to build the excpeted DRS
+<p>The <code class="docutils literal"><span class="pre">todo</span></code> action can be seen as a dry-run to check which unix commands should be apply to build the expected DRS
 tree. At this step, no file are moved or copy to the final DRS.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/
 </pre></div>
@@ -290,9 +296,9 @@ tree. At this step, no file are moved or copy to the final DRS.</p>
 <div class="section" id="change-the-migration-mode">
 <h2>Change the migration mode<a class="headerlink" href="#change-the-migration-mode" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> allows different file migration mode.
-Default is to move the files from the incomping path to the root directory. Use <code class="docutils literal"><span class="pre">--copy</span></code> to make hard copies,
+Default is to move the files from the incoming path to the root directory. Use <code class="docutils literal"><span class="pre">--copy</span></code> to make hard copies,
 <code class="docutils literal"><span class="pre">--link</span></code> to make hard links or <code class="docutils literal"><span class="pre">--symlink</span></code> to make symbolic links from the incoming path. We recommend to use
-<code class="docutils literal"><span class="pre">--link</span></code> and remove the incoming directory after DRS checking. This doesn’t affect the symbolic link skeleton used
+<code class="docutils literal"><span class="pre">--link</span></code> and remove the incoming directory after DRS checking. This doesn&#8217;t affect the symbolic link skeleton used
 for the dataset versioning.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/ --copy
 $&gt; esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/ --link
@@ -302,7 +308,7 @@ $&gt; esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/ --symlink
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> temporarily stores the result of the <code class="docutils literal"><span class="pre">list</span></code> action to quickly generate the DRS tree
-afterwards. This requires to stricly submit the same arguments from the <code class="docutils literal"><span class="pre">list</span></code> action to the following ones.
+afterwards. This requires to strictly submit the same arguments from the <code class="docutils literal"><span class="pre">list</span></code> action to the following ones.
 If not, the incoming files are automatically scan again.</p>
 </div>
 </div>
@@ -313,9 +319,9 @@ If not, the incoming files are automatically scan again.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="disable-checkum-comparison">
-<h2>Disable checkum comparison<a class="headerlink" href="#disable-checkum-comparison" title="Permalink to this headline">¶</a></h2>
-<p>To avoid mistakes in versioning, <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> compares the incoming files to the files from the latest knwon version
+<div class="section" id="disable-checksum-comparison">
+<h2>Disable checksum comparison<a class="headerlink" href="#disable-checksum-comparison" title="Permalink to this headline">¶</a></h2>
+<p>To avoid mistakes in versioning, <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> compares the incoming files to the files from the latest known version
 on the filesystem using a <code class="docutils literal"><span class="pre">sha256</span></code> checksum. Because this could be time consuming <code class="docutils literal"><span class="pre">--no-checksum</span></code> allows you to only
 make a comparison on filenames.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
@@ -338,7 +344,7 @@ make a comparison on filenames.</p>
 </li>
 <li><dl class="first docutils">
 <dt>Status = 2</dt>
-<dd>Some scan errors occured. Some files have been skipped or failed during the scan potentially leading to an
+<dd>Some scan errors occurred. Some files have been skipped or failed during the scan potentially leading to an
 incomplete DRS tree. See the error logfile.</dd>
 </dl>
 </li>
@@ -396,7 +402,7 @@ incomplete DRS tree. See the error logfile.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.6',
+            VERSION:'2.7.18',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

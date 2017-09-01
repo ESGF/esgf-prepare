@@ -79,7 +79,7 @@ will be added to the output directory if submitted.
 
     $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --outdir /PATH/TO/MY_MAPFILES/
 
-The output directory is cleaned up prior to mapfile process to avoid uncomplete mapfiles. In the case of several
+The output directory is cleaned up prior to mapfile process to avoid uncompleted mapfiles. In the case of several
 ``esgprep mapfile`` instances run with the same output directory it is recommended to disable the cleanup:
 
 .. code-block:: bash
@@ -125,29 +125,15 @@ Overwrite the dataset identifier
 
 .. warning:: All files will belong to the specified dataset, regardless of the DRS.
 
-Enforce facet checking
-**********************
+Exit status
+***********
 
-The following facets are always ignored during facet checking:
-
- - ``root``
- - ``project``
- - ``filename``
- - ``variable``
- - ``version``
- - ``period_start``
- - ``period_end``.
-
-Indeed those facets are historically not a part of the configuration INI file(s). All allowed values are so not
-enumerated through very long list(s). Nevertheless one or more of those facet(s) should be resolved against the
-configuration file(s), this could be useful in case of differences between ``directory_format`` and ``dataset_id``
-patterns.
-
-.. code-block:: bash
-
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --not-ignored FACEY_KEY
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --not-ignored FACEY_KEY1 FACET_KEY2
-
-.. note:: For instance, the ``var`` facet in obs4MIPs ``dataset_id`` pattern must be deduced from
-    the ``directory_format`` using the ``variable`` facet. Consequently, you can use ``--not-ignored variable`` to
-    resolve this facet from the appropriate maptable.
+ * Status = 0
+    All the files have been successfully scanned and the mapfile(s) properly generated.
+ * Status = 1
+    No files found. No mapfile(s) generated.
+ * Status = 2
+    Some scan errors occurred. Some files have been skipped or failed during the scan potentially leading to incomplete
+    mapfiles. See the error logfile.
+ * Status = 3
+    All the files have been skipped or failed during the scan leading to no mapfile(s). See the error logfile.

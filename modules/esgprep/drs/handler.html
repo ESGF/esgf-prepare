@@ -1,0 +1,699 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>esgprep.drs.handler &mdash; esgprep 2.7.18 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="esgprep 2.7.18 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> esgprep
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../check-vocab.html">Check CV against configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">esgprep</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>esgprep.drs.handler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for esgprep.drs.handler</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :platform: Unix</span>
+<span class="sd">    :synopsis: Class to handle dataset directory for DRS management.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">getpass</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">ExpressionNotMatch</span><span class="p">,</span> <span class="n">NoConfigOptions</span><span class="p">,</span> <span class="n">NoConfigOption</span>
+<span class="kn">from</span> <span class="nn">fuzzywuzzy</span> <span class="k">import</span> <span class="n">fuzz</span><span class="p">,</span> <span class="n">process</span>
+<span class="kn">from</span> <span class="nn">hurry.filesize</span> <span class="k">import</span> <span class="n">size</span>
+<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">treelib</span> <span class="k">import</span> <span class="n">Tree</span>
+<span class="kn">from</span> <span class="nn">treelib.tree</span> <span class="k">import</span> <span class="n">DuplicatedNodeIdError</span>
+
+<span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.constants</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="File"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.File">[docs]</a><span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handler providing methods to deal with file processing.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ffp</span><span class="p">):</span>
+        <span class="c1"># Retrieve file full path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ffp</span> <span class="o">=</span> <span class="n">ffp</span>
+        <span class="c1"># Retrieve filename only</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
+        <span class="c1"># File attributes as dict(): {institute: &#39;IPSL&#39;, project: &#39;CMIP5&#39;, ...}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="c1"># Retrieve file size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span>
+
+<div class="viewcode-block" id="File.get"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.File.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the attribute value corresponding to the key.</span>
+<span class="sd">        The submitted key can refer to ``File.key`` or ``File.attributes[key]``.</span>
+
+<span class="sd">        :param str key: The key</span>
+<span class="sd">        :returns: The corresponding value</span>
+<span class="sd">        :rtype: *str* or *list* or *dict* depending on the key</span>
+<span class="sd">        :raises Error: If unknown key</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">KeyNotFound</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="File.load_attributes"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.File.load_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">load_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">set_values</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads DRS attributes catched from a regular expression match.</span>
+<span class="sd">        The project facet is added in any case with lower case.</span>
+<span class="sd">        The root facet is added by default.</span>
+<span class="sd">        The dataset version is initially set to None.</span>
+<span class="sd">        Can be overwrite by &quot;set_values&quot; pairs if submitted.</span>
+
+<span class="sd">        :param str project: The project name</span>
+<span class="sd">        :param str root: The DRS tree root</span>
+<span class="sd">        :param str pattern: The regular expression to match</span>
+<span class="sd">        :param dict set_values: Key/value pairs of facet to set for the run</span>
+<span class="sd">        :raises Error: If regular expression matching fails</span>
+<span class="sd">        :raises Error: If invalid NetCDF file.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get attributes from NetCDF global attributes</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">nc</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">getncattr</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="n">nc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidNetCDFFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span>
+        <span class="c1"># Get attributes from filename, overwriting existing ones</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># re.search() method is required to search through the entire string.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ExpressionNotMatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="c1"># Get attributes from command-line, overwriting existing ones</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">set_values</span><span class="p">)</span>
+        <span class="c1"># Set version to None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="c1"># Set version to None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Only required to build proper DRS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">project</span></div>
+
+<div class="viewcode-block" id="File.check_facets"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.File.check_facets">[docs]</a>    <span class="k">def</span> <span class="nf">check_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">set_keys</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks each facet against the controlled vocabulary.</span>
+<span class="sd">        If a DRS attribute is missing regarding the list of facets,</span>
+<span class="sd">        The DRS attributes are completed from the configuration file maptables.</span>
+<span class="sd">        In the case of non-standard attribute, it gets the most similar key among netCDF attributes names.</span>
+<span class="sd">        Attributes can be directly mapped with &quot;set_keys&quot; pairs if submitted.</span>
+
+
+<span class="sd">        :param list facets: The list of facet to check</span>
+<span class="sd">        :param ESGConfigParser.SectionParser config: The configuration parser</span>
+<span class="sd">        :param dict set_keys: Key/Attribute pairs to map for the run</span>
+<span class="sd">        :raises Error: If one facet checkup fails</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">facets</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">IGNORED_KEYS</span><span class="p">):</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">check_options</span><span class="p">({</span><span class="n">facet</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]})</span>
+        <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">facets</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">IGNORED_KEYS</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get_option_from_map</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_map&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">NoConfigOption</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">set_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># Rename attribute key</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">set_keys</span><span class="p">[</span><span class="n">facet</span><span class="p">])</span>
+                        <span class="n">config</span><span class="o">.</span><span class="n">check_options</span><span class="p">({</span><span class="n">facet</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]})</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">NoNetCDFAttribute</span><span class="p">(</span><span class="n">set_keys</span><span class="p">[</span><span class="n">facet</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Find closest NetCDF attributes in terms of partial string comparison</span>
+                    <span class="n">key</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">extractOne</span><span class="p">(</span><span class="n">facet</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">scorer</span><span class="o">=</span><span class="n">fuzz</span><span class="o">.</span><span class="n">partial_ratio</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;=</span> <span class="mi">80</span><span class="p">:</span>
+                        <span class="c1"># Rename attribute key</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Consider &quot;</span><span class="si">{}</span><span class="s1">&quot; attribute instead of &quot;</span><span class="si">{}</span><span class="s1">&quot; facet&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">facet</span><span class="p">))</span>
+                        <span class="n">config</span><span class="o">.</span><span class="n">check_options</span><span class="p">({</span><span class="n">facet</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]})</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">NoConfigOptions</span><span class="p">(</span><span class="n">facet</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="File.get_drs_parts"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.File.get_drs_parts">[docs]</a>    <span class="k">def</span> <span class="nf">get_drs_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">facets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the DRS pairs required to build the DRS path. The DRS parts are included as an OrderedDict():</span>
+<span class="sd">        {project : &#39;CMIP5&#39;, product: &#39;output1&#39;, ...}</span>
+
+<span class="sd">        :param list facets: The list of facet to check</span>
+<span class="sd">        :returns: The ordered DRS parts</span>
+<span class="sd">        :rtype: *OrderedDict*</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">facets</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">facet</span><span class="p">]</span> <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">facets</span><span class="p">]))</span></div></div>
+
+
+<div class="viewcode-block" id="DRSPath"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSPath">[docs]</a><span class="k">class</span> <span class="nc">DRSPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handler providing methods to deal with paths.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Default DRS tree version</span>
+    <span class="c1"># Modified on the ProcessingContext instance</span>
+    <span class="n">TREE_VERSION</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parts</span><span class="p">):</span>
+        <span class="c1"># Retrieve the dataset directory parts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_parts</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">parts</span><span class="o">.</span><span class="n">items</span><span class="p">()[:</span><span class="n">parts</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">)])</span>
+        <span class="c1"># Retrieve the file directory parts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_parts</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">parts</span><span class="o">.</span><span class="n">items</span><span class="p">()[</span><span class="n">parts</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
+        <span class="c1"># Retrieve the upgrade version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v_upgrade</span> <span class="o">=</span> <span class="n">DRSPath</span><span class="o">.</span><span class="n">TREE_VERSION</span>
+        <span class="c1"># If the dataset path is not equivalent to the file diretcory (e.g., CMIP5 like)</span>
+        <span class="c1"># Get the physical files version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v_latest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_latest_version</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">v_files</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span><span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_upgrade</span><span class="p">[</span><span class="mi">1</span><span class="p">:])})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">v_files</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;d</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v_upgrade</span><span class="p">[</span><span class="mi">1</span><span class="p">:])})</span>
+
+<div class="viewcode-block" id="DRSPath.get"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSPath.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the attribute value corresponding to the key.</span>
+<span class="sd">        The submitted key can refer to the DRS dataset parts of the DRS file parts.</span>
+
+<span class="sd">        :param str key: The key</span>
+<span class="sd">        :returns: The value</span>
+<span class="sd">        :rtype: *str* or *list* or *dict* depending on the key</span>
+<span class="sd">        :raises Error: If unknown key</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_parts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_parts</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_parts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_parts</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">KeyNotFound</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_parts</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_parts</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DRSPath.items"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSPath.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_part</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">f_part</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file_folder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Itemizes the facet values along the DRS path.</span>
+<span class="sd">        Flags can be combine to obtain different behaviors.</span>
+
+<span class="sd">        :param boolean d_part: True to append the dataset facets</span>
+<span class="sd">        :param boolean f_part: True to append the file facets</span>
+<span class="sd">        :param boolean version: True to append the version facet</span>
+<span class="sd">        :param boolean file_folder: True to append the folder for physical files</span>
+<span class="sd">        :param boolean latest: True to switch from upgrade to latest version</span>
+<span class="sd">        :param boolean root: True to prepend the DRS root directory</span>
+<span class="sd">        :return: The corresponding facet values</span>
+<span class="sd">        :rtype: *list*</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">d_part</span><span class="p">:</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_parts</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">latest</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">({</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_latest</span><span class="p">}))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">({</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_upgrade</span><span class="p">}))</span>
+            <span class="k">if</span> <span class="n">file_folder</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">({</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;files&#39;</span><span class="p">}))</span>
+        <span class="k">if</span> <span class="n">f_part</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f_parts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_folder</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v_files</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">root</span> <span class="ow">and</span> <span class="s1">&#39;root&#39;</span> <span class="ow">in</span> <span class="n">parts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">del</span> <span class="n">parts</span><span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">parts</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DRSPath.path"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSPath.path">[docs]</a>    <span class="k">def</span> <span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a list of facet values into path.</span>
+<span class="sd">        The arguments are the same as :func:`esgprep.drs.handler.DRSPath.items`</span>
+
+<span class="sd">        :returns: The path</span>
+<span class="sd">        :rtype: *str*</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DRSPath.get_latest_version"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSPath.get_latest_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_latest_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current latest dataset version if exists.</span>
+
+<span class="sd">        :returns: The latest dataset version properly formatted</span>
+<span class="sd">        :rtype: *str*</span>
+<span class="sd">        :raises Error: If latest version exists and is the same as upgrade version</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Test if dataset path already exists</span>
+        <span class="n">dset_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dset_path</span><span class="p">):</span>
+            <span class="c1"># Get and sort all existing dataset versions</span>
+            <span class="n">versions</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dset_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;v[\d]+&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">v</span><span class="p">)])</span>
+            <span class="c1"># Upgrade version should not already exist</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_upgrade</span> <span class="ow">in</span> <span class="n">versions</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DuplicatedDataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v_upgrade</span><span class="p">,</span> <span class="n">dset_path</span><span class="p">)</span>
+            <span class="c1"># Pickup respectively previous, next and latest version</span>
+            <span class="k">return</span> <span class="n">versions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="DRSLeaf"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSLeaf">[docs]</a><span class="k">class</span> <span class="nc">DRSLeaf</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handler providing methods to deal with DRS file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="c1"># Retrieve source data path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="n">src</span>
+        <span class="c1"># Get destination data path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst</span> <span class="o">=</span> <span class="n">dst</span>
+        <span class="c1"># Retrieve migration mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+
+<div class="viewcode-block" id="DRSLeaf.upgrade"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSLeaf.upgrade">[docs]</a>    <span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">todo_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Upgrade the DRS tree.</span>
+
+<span class="sd">        :param boolean todo_only: True to only print Unix command-lines to apply (i.e., as dry-run)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Make directory for destination path if not exist</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;mkdir -p&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">todo_only</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">UNIX_COMMAND_LABEL</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
+        <span class="c1"># Unlink symbolic link if already exists</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;symlink&#39;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;unlink&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">todo_only</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
+        <span class="c1"># Make upgrade depending on the migration mode</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">todo_only</span><span class="p">:</span>
+            <span class="n">UNIX_COMMAND</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DRSLeaf.has_permissions"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSLeaf.has_permissions">[docs]</a>    <span class="k">def</span> <span class="nf">has_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks permissions for DRS leaf migration.</span>
+<span class="sd">        Discards relative paths.</span>
+
+<span class="sd">        :param str root: The DRS tree root</span>
+<span class="sd">        :raises Error: If missing user privileges</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check src access</span>
+        <span class="c1"># Define src access depending on the migration mode</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;move&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">WriteAccessDenied</span><span class="p">(</span><span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">R_OK</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ReadAccessDenied</span><span class="p">(</span><span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+        <span class="c1"># Check dst access (always write)</span>
+        <span class="c1"># Backward the DRS is path does not exist</span>
+        <span class="n">dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dst</span> <span class="o">!=</span> <span class="n">root</span><span class="p">:</span>
+            <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dst</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">WriteAccessDenied</span><span class="p">(</span><span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">(),</span> <span class="n">dst</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DRSTree"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree">[docs]</a><span class="k">class</span> <span class="nc">DRSTree</span><span class="p">(</span><span class="n">Tree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handler providing methods to deal with DRS tree.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="c1"># Retrieve original class init</span>
+        <span class="n">Tree</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># To records dataset and files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="c1"># Retrieve the root directory to build the DRS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drs_root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="c1"># Retrieve the dataset version to build the DRS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drs_version</span> <span class="o">=</span> <span class="n">version</span>
+        <span class="c1"># Retrieve the migration mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drs_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="c1"># Display width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="DRSTree.get_display_lengths"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.get_display_lengths">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the string lengths for comfort display.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">keys</span><span class="p">()]),</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DRSTree.create_leaf"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.create_leaf">[docs]</a>    <span class="k">def</span> <span class="nf">create_leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">leaf</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates all upstream nodes to a DRS leaf.</span>
+<span class="sd">        The :func:`esgprep.drs.handler.DRSLeaf` class is added to data leaf nodes.</span>
+
+<span class="sd">        :param list nodes: The list of node tags to the leaf</span>
+<span class="sd">        :param str leaf: The leaf name</span>
+<span class="sd">        :param str label: The leaf label</span>
+<span class="sd">        :param str src: The source of the leaf</span>
+<span class="sd">        :param str mode: The migration mode (e.g., &#39;copy&#39;, &#39;move&#39;, etc.)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">leaf</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)):</span>
+            <span class="n">node_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">nodes</span><span class="p">[:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                     <span class="n">identifier</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">parent_node_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">nodes</span><span class="p">[:</span><span class="n">i</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                                     <span class="n">identifier</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span>
+                                     <span class="n">parent</span><span class="o">=</span><span class="n">parent_node_id</span><span class="p">,</span>
+                                     <span class="n">data</span><span class="o">=</span><span class="n">DRSLeaf</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">,</span>
+                                                  <span class="n">dst</span><span class="o">=</span><span class="n">node_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">LINK_SEPARATOR</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                                                  <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">parent_node_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">nodes</span><span class="p">[:</span><span class="n">i</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                     <span class="n">identifier</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span>
+                                     <span class="n">parent</span><span class="o">=</span><span class="n">parent_node_id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">DuplicatedNodeIdError</span><span class="p">:</span>
+                <span class="c1"># Mandatory to recursively generated the tree</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DRSTree.leaves"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.leaves">[docs]</a>    <span class="k">def</span> <span class="nf">leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yield leaves of the whole DRS tree of a subtree.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">():</span>
+                    <span class="k">yield</span> <span class="n">node</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_tree</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">():</span>
+                    <span class="k">yield</span> <span class="bp">self</span><span class="p">[</span><span class="n">node</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DRSTree.list"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List and summary upgrade information at the publication level.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">-&gt;</span><span class="si">{}{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Publication level&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                    <span class="s1">&#39;Latest version&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                                    <span class="s1">&#39;Upgrade version&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                    <span class="s1">&#39;Files to upgrade&#39;</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+                                    <span class="s1">&#39;Upgrade size&#39;</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">4</span><span class="p">])))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">dset_path</span><span class="p">,</span> <span class="n">incomings</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">dset_dir</span><span class="p">,</span> <span class="n">dset_version</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dset_path</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">dset_path</span><span class="p">)</span>
+            <span class="n">publication_level</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">dset_dir</span><span class="p">)</span>
+            <span class="n">files_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">incomings</span><span class="p">)</span>
+            <span class="n">latest_version</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">incoming</span><span class="p">[</span><span class="s1">&#39;latest&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">incoming</span> <span class="ow">in</span> <span class="n">incomings</span><span class="p">])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">total_size</span> <span class="o">=</span> <span class="n">size</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">incoming</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">incoming</span> <span class="ow">in</span> <span class="n">incomings</span><span class="p">]))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">-&gt;</span><span class="si">{}{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">publication_level</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                        <span class="n">latest_version</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                                        <span class="n">dset_version</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                        <span class="nb">str</span><span class="p">(</span><span class="n">files_number</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+                                        <span class="n">total_size</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">4</span><span class="p">])))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DRSTree.tree"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.tree">[docs]</a>    <span class="k">def</span> <span class="nf">tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints the whole DRS tree in a visual way.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Upgrade DRS Tree&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DRSTree.todo"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.todo">[docs]</a>    <span class="k">def</span> <span class="nf">todo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        As a dry run :func:`esgprep.drs.handler.DRSTree.upgrade` that only prints command-line to do.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upgrade</span><span class="p">(</span><span class="n">todo_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DRSTree.upgrade"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.upgrade">[docs]</a>    <span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">todo_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Upgrades the whole DRS tree.</span>
+
+<span class="sd">        :param boolean todo_only: Only print Unix command-line to do</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check permissions before upgrade</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">todo_only</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">leaf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaves</span><span class="p">():</span>
+                <span class="n">leaf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">has_permissions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drs_root</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">todo_only</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Unix command-lines (DRY-RUN)&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Unix command-lines&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">leaf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaves</span><span class="p">():</span>
+            <span class="n">leaf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">upgrade</span><span class="p">(</span><span class="n">todo_only</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Levavasseur, G..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'2.7.18',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../static/jquery.js"></script>
+      <script type="text/javascript" src="../../../static/underscore.js"></script>
+      <script type="text/javascript" src="../../../static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

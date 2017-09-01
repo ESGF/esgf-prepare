@@ -7,6 +7,7 @@ Changelog
 | Date       | Version | Modifications                                                                       |
 +============+=========+=====================================================================================+
 | 2017-05-09 | 2.7     | | Major review from Alan Iwi (CEDA).                                                |
+|            |         | | MAjor refactoring.                                                                |
 |            |         | | Improve logger management.                                                        |
 |            |         | | Improve all outputs.                                                              |
 |            |         | | Improve file discovery.                                                           |
@@ -14,6 +15,7 @@ Changelog
 |            |         | | Add ``--set-*``, ``--symlink`` features and ``drs`` result recording.             |
 |            |         | | Add ``--no-cleanup`` features to ``mapfile`` command.                             |
 |            |         | | Add filters features to ``check-vocab`` and ``mapfile`` commands.                 |
+|            |         | | CMIP6 enabled.                                                                    |
 +------------+---------+-------------------------------------------------------------------------------------+
 | 2016-09-27 | 2.5     | | Improvement of ``fetch-ini`` command to fetch all configuration files.            |
 |            |         | | Small refactoring.                                                                |
