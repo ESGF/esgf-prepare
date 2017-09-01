@@ -48,7 +48,7 @@ your Python environment includes:
  * `argparse <https://docs.python.org/2/library/argparse.html>`_
  * `collections <https://docs.python.org/2/library/collections.html>`_
  * `datetime <https://docs.python.org/2/library/datetime.html>`_
- * `ESGConfigParser<https://pypi.python.org/pypi/ESGConfigParser>`_
+ * `ESGConfigParser <https://pypi.python.org/pypi/ESGConfigParser>`_
  * `fnmatch <https://docs.python.org/2/library/fnmatch.html>`_
  * `getpass <https://docs.python.org/2/library/getpass.html>`_
  * `hashlib <https://docs.python.org/2/library/hashlib.html>`_
