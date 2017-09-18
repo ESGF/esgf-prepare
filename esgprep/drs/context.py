@@ -56,6 +56,7 @@ class ProcessingContext(object):
         self.version = args.version
         DRSPath.TREE_VERSION = 'v{}'.format(args.version)
         self.no_checksum = args.no_checksum
+        self.scan = True
         self.scan_errors = None
         self.scan_files = None
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename
