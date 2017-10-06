@@ -159,7 +159,7 @@ def run(args):
                 processes = as_pbar(processes, desc='Scanning incoming files', units='files', total=len(ctx.sources))
             # Process supplied files
             results = [x for x in processes]
-        # Get number of files scanned
+        # Get number of files scanned (including skipped files)
         ctx.scan_files = len(results)
         # Get number of scan errors
         ctx.scan_errors = results.count(None)

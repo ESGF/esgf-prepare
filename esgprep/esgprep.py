@@ -323,7 +323,7 @@ def get_args():
     group.add_argument(
         '--version',
         metavar=datetime.now().strftime("%Y%m%d"),
-        type=VersionChecker,
+        action=VersionChecker,
         help=SET_VERSION_HELP['mapfile'])
     group.add_argument(
         '--latest-symlink',

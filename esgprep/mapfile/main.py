@@ -17,7 +17,7 @@ from lockfile import LockFile
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.misc import as_pbar, evaluate, checksum
+from esgprep.utils.misc import as_pbar, evaluate
 from handler import File
 
 
@@ -190,15 +190,15 @@ def run(args):
             processes = as_pbar(processes, desc='Mapfile(s) generation', units='files', total=len(ctx.sources))
         # Process supplied files
         results = [x for x in processes]
-        # Get number of files scanned
+        # Get number of files scanned (including skipped files)
         ctx.scan_files = len(results)
         # Get number of scan errors
         ctx.scan_errors = results.count(None)
         # Get number of generated mapfiles
-        ctx.nb_map = len(set(results))
+        ctx.nb_map = len(filter(None, set(results)))
         # Evaluates the scan results to finalize mapfiles writing
         if evaluate(results):
             # Remove mapfile working extension
             # A final mapfile is silently overwritten if already exists
-            for mapfile in set(results):
+            for mapfile in filter(None, set(results)):
                 os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))

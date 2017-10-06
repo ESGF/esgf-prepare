@@ -27,6 +27,10 @@ class Collecting:
         self.next()
 
     def next(self):
+        """
+        Print collector spinner
+
+        """
         sys.stdout.write('\rCollecting data... {}'.format(Collecting.STATES[Collecting.step % 4]))
         sys.stdout.flush()
         Collecting.step += 1
@@ -191,6 +195,13 @@ class VersionedPathCollector(PathCollector):
                             yield self.attach(ffp)
 
     def version_finder(self, directory):
+        """
+        Returns the version number find into a DRS path
+        :param str directory: The directory to parse
+        :returns: The version
+        :rtype: *str*
+
+        """
         regex = re.compile(self.format)
         version = None
         # Test directory_format regex without <filename> part
