@@ -14,8 +14,8 @@ import unittest
 from importlib import import_module
 
 from utils.constants import *
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter
 from utils.misc import init_logging
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter
 
 __version__ = 'v{} {}'.format(VERSION, VERSION_DATE)
 

@@ -7,7 +7,6 @@
 
 """
 
-# Module imports
 import os
 import re
 import sys
@@ -41,15 +40,16 @@ class Collector(object):
     Base collector class to yield regular NetCDF files.
 
     :param list sources: The list of sources to parse
-    :param str file_filter: A regular expression to include files in the collection
+    :param object data: Any object to attach to each collected data
     :returns: The data collector
     :rtype: *iter*
 
     """
-    def __init__(self, sources, file_filter='^[!.].*\.nc$', data=None):
+
+    def __init__(self, sources, data=None):
         self.sources = sources
-        self.file_filter = file_filter
         self.data = data
+        self.FileFilter = Filter()
         assert isinstance(self.sources, list)
 
     def __iter__(self):
@@ -57,7 +57,7 @@ class Collector(object):
             for root, _, filenames in os.walk(source, followlinks=True):
                 for filename in filenames:
                     ffp = os.path.join(root, filename)
-                    if os.path.isfile(ffp) and not match(self.file_filter, filename):
+                    if os.path.isfile(ffp) and self.FileFilter(filename):
                         yield self.attach(ffp)
 
     def __len__(self):
@@ -88,6 +88,13 @@ class Collector(object):
         """
         return (item, self.data) if self.data else item
 
+    def first(self):
+        """
+
+        :return:
+        """
+        return self.__iter__().next()
+
 
 class PathCollector(Collector):
     """
@@ -99,7 +106,7 @@ class PathCollector(Collector):
 
     def __init__(self, *args, **kwargs):
         super(PathCollector, self).__init__(*args, **kwargs)
-        self.PathFilter = self.PathFilter()
+        self.PathFilter = Filter()
 
     def __iter__(self):
         """
@@ -114,31 +121,8 @@ class PathCollector(Collector):
                 if self.PathFilter(root):
                     for filename in filenames:
                         ffp = os.path.join(root, filename)
-                        if os.path.isfile(ffp) and not match(self.file_filter, filename):
+                        if os.path.isfile(ffp) and self.FileFilter(filename):
                             yield self.attach(ffp)
-
-    class PathFilter(dict):
-        """
-        Regex dictionary with a call method to evaluate a string against several regular expressions.
-        The dictionary values are 2-tuples with the regular expression as a string and a boolean
-        indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.
-
-        """
-
-        def __setitem__(self, key, value):
-            # Assertions on filters values
-            if isinstance(value, tuple):
-                assert len(value) == 2
-                assert isinstance(value[0], str)
-                assert isinstance(value[1], bool)
-            else:
-                assert isinstance(value, str)
-                # Set negative = False by default
-                value = (value, False)
-            dict.__setitem__(self, key, value)
-
-        def __call__(self, path):
-            return all([match(regex, path, negative=negative) for regex, negative in self.values()])
 
 
 class VersionedPathCollector(PathCollector):
@@ -191,7 +175,7 @@ class VersionedPathCollector(PathCollector):
                         if path_version == 'latest':
                             target = os.path.realpath(os.path.join(*re.split(r'/(latest)/', ffp)[:-1]))
                             ffp = os.path.join(target, *re.split(r'/(latest)/', ffp)[-1:])
-                        if os.path.isfile(ffp) and not match(self.file_filter, filename):
+                        if os.path.isfile(ffp) and self.FileFilter(filename):
                             yield self.attach(ffp)
 
     def version_finder(self, directory):
@@ -235,3 +219,27 @@ class DatasetCollector(Collector):
             with open(source) as f:
                 for line in f:
                     yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', line))
+
+
+class Filter(dict):
+    """
+    Regex dictionary with a call method to evaluate a string against several regular expressions.
+    The dictionary values are 2-tuples with the regular expression as a string and a boolean
+    indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.
+
+    """
+
+    def __setitem__(self, key, value):
+        # Assertions on filters values
+        if isinstance(value, tuple):
+            assert len(value) == 2
+            assert isinstance(value[0], str)
+            assert isinstance(value[1], bool)
+        else:
+            assert isinstance(value, str)
+            # Set negative = False by default
+            value = (value, False)
+        dict.__setitem__(self, key, value)
+
+    def __call__(self, string):
+        return all([match(regex, string, negative=negative) for regex, negative in self.values()])

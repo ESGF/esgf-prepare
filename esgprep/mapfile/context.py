@@ -77,10 +77,11 @@ class ProcessingContext(object):
             self.mapfile_drs = None
         # Init data collector
         self.sources = VersionedPathCollector(sources=self.directory,
-                                              file_filter=self.file_filter,
                                               data=self,
                                               dir_format=self.cfg.translate('directory_format'))
         # Init collector filter
+        # Include ``file_filter`` pattern, default is non-hidden NetCDF files
+        self.sources.FileFilter['base_filter'] = ('^[!.].*\.nc$')
         # Exclude ``dir_filter`` patterns, default is "/files" and "/.*"
         self.sources.PathFilter['base_filter'] = (self.dir_filter, True)
         if self.all:

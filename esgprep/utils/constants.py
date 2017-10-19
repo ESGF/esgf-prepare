@@ -6,13 +6,14 @@
     :synopsis: Constants used in this package.
 
 """
+
 from datetime import datetime
 
 # Program version
-VERSION = '2.7.21'
+VERSION = '2.7.22'
 
 # Date
-VERSION_DATE = datetime(year=2017, month=10, day=6).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2017, month=10, day=18).strftime("%Y-%d-%m")
 
 # Help
 PROGRAM_DESC = \
@@ -44,10 +45,16 @@ EPILOG = \
     """
 
 OPTIONAL = \
-    """Optional arguments"""
+    """
+    Optional arguments
+    
+    """
 
 POSITIONAL = \
-    """Positional arguments"""
+    """
+    Positional arguments
+    
+    """
 
 HELP = \
     """
@@ -98,7 +105,10 @@ VERBOSE_HELP = \
     """
 
 SUBCOMMANDS = \
-    """Subcommands"""
+    """
+    Subcommands
+    
+    """
 
 FETCHINI_DESC = \
     """
@@ -111,12 +121,14 @@ FETCHINI_DESC = \
     from GitHub.|n|n
     
     The default values are displayed next to the corresponding flags.
+    
     """
 
 FETCHINI_HELP = \
     """
     Fetch INI files from GitHub.|n
     See "esgprep fetch-ini -h" for full help.
+    
     """
 
 PROJECT_HELP = {

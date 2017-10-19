@@ -6,11 +6,11 @@ source $ESGPREP_HOME/sh/utils.sh
 # Main entry point.
 main()
 {
-    log "Python v"$PYTHON_VERSION" installation begins ..."
-
     # Set variables.
     declare PYTHON_VERSION_SHORT=2.7
     declare PYTHON_VERSION=2.7.14
+
+    log "Python v"$PYTHON_VERSION" installation begins ..."
 
     # Reset.
     rm -rf $ESGPREP_HOME/ops/python
