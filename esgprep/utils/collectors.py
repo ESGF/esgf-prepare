@@ -55,7 +55,7 @@ class Collector(object):
     def __iter__(self):
         for source in self.sources:
             for root, _, filenames in os.walk(source, followlinks=True):
-                for filename in filenames:
+                for filename in sorted(filenames):
                     ffp = os.path.join(root, filename)
                     if os.path.isfile(ffp) and self.FileFilter(filename):
                         yield self.attach(ffp)
@@ -119,7 +119,7 @@ class PathCollector(Collector):
         for source in self.sources:
             for root, _, filenames in os.walk(source, followlinks=True):
                 if self.PathFilter(root):
-                    for filename in filenames:
+                    for filename in sorted(filenames):
                         ffp = os.path.join(root, filename)
                         if os.path.isfile(ffp) and self.FileFilter(filename):
                             yield self.attach(ffp)
@@ -159,7 +159,7 @@ class VersionedPathCollector(PathCollector):
                         del self.PathFilter['version_filter']
                     except KeyError:
                         pass
-                for filename in filenames:
+                for filename in sorted(filenames):
                     ffp = os.path.join(root, filename)
                     path_version = self.version_finder(directory=root)
                     # If no version filter, and path version exists, set default behavior
