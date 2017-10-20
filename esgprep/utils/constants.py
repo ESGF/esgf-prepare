@@ -10,10 +10,10 @@
 from datetime import datetime
 
 # Program version
-VERSION = '2.7.22'
+VERSION = '2.7.23'
 
 # Date
-VERSION_DATE = datetime(year=2017, month=10, day=18).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2017, month=10, day=20).strftime("%Y-%d-%m")
 
 # Help
 PROGRAM_DESC = \
@@ -45,16 +45,10 @@ EPILOG = \
     """
 
 OPTIONAL = \
-    """
-    Optional arguments
-    
-    """
+    """Optional arguments"""
 
 POSITIONAL = \
-    """
-    Positional arguments
-    
-    """
+    """Positional arguments"""
 
 HELP = \
     """
@@ -105,10 +99,7 @@ VERBOSE_HELP = \
     """
 
 SUBCOMMANDS = \
-    """
-    Subcommands
-    
-    """
+    """Subcommands"""
 
 FETCHINI_DESC = \
     """
@@ -126,7 +117,7 @@ FETCHINI_DESC = \
 
 FETCHINI_HELP = \
     """
-    Fetch INI files from GitHub.|n
+    Fetchs INI files from GitHub.|n
     See "esgprep fetch-ini -h" for full help.
     
     """

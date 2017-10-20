@@ -72,7 +72,6 @@ fetch and read the configuration files.
     In the case of ``fetch-ini`` subcommand, if you're not on an ESGF node and ``/esg/config/esgcet`` doesn't exist,
     the configuration file(s) are fetched into an ``ini`` folder in your working directory.
 
-
 Use a logfile
 *************
 
