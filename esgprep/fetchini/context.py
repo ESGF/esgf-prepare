@@ -16,7 +16,7 @@ from requests.auth import HTTPBasicAuth
 
 from constants import *
 from esgprep.utils.misc import as_pbar
-from utils import gh_request_content
+from misc import gh_request_content
 
 
 class ProcessingContext(object):

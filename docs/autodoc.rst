@@ -1,5 +1,6 @@
 .. _autodoc:
 
+
 Code documentation
 ==================
 
@@ -13,7 +14,7 @@ fetch-ini
 .. automodule:: esgprep.fetchini.main
 .. automodule:: esgprep.fetchini.context
 .. automodule:: esgprep.fetchini.custom_exceptions
-.. automodule:: esgprep.fetchini.utils
+.. automodule:: esgprep.fetchini.misc
 
 drs
 ---
@@ -47,4 +48,4 @@ utils
 .. automodule:: esgprep.utils.custom_exceptions
 
 
-.. moduleauthor:: Levavasseur Guillaume (CNRS/IPSL) <glipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Levavasseur Guillaume (CNRS/IPSL) <glipsl@ipsl.fr>

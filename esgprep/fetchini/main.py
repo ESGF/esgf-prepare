@@ -17,7 +17,7 @@ import requests
 from constants import *
 from context import ProcessingContext
 from custom_exceptions import GitHubException
-from utils import gh_request_content
+from misc import gh_request_content
 
 
 def backup(f, mode=None):

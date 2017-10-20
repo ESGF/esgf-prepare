@@ -1,5 +1,6 @@
 .. _check-vocab:
 
+
 Check CV against configuration INI files
 ========================================
 
