@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.main &mdash; esgprep 2.7.18 documentation</title>
+  <title>esgprep.mapfile.main &mdash; esgprep 2.7.22 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.18 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.22 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -184,7 +184,7 @@
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">context</span> <span class="k">import</span> <span class="n">ProcessingContext</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">as_pbar</span><span class="p">,</span> <span class="n">evaluate</span><span class="p">,</span> <span class="n">checksum</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">as_pbar</span><span class="p">,</span> <span class="n">evaluate</span>
 <span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">File</span>
 
 
@@ -357,17 +357,17 @@
             <span class="n">processes</span> <span class="o">=</span> <span class="n">as_pbar</span><span class="p">(</span><span class="n">processes</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Mapfile(s) generation&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">))</span>
         <span class="c1"># Process supplied files</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">processes</span><span class="p">]</span>
-        <span class="c1"># Get number of files scanned</span>
+        <span class="c1"># Get number of files scanned (including skipped files)</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">scan_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
         <span class="c1"># Get number of scan errors</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">scan_errors</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="c1"># Get number of generated mapfiles</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="n">nb_map</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">nb_map</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">results</span><span class="p">)))</span>
         <span class="c1"># Evaluates the scan results to finalize mapfiles writing</span>
         <span class="k">if</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
             <span class="c1"># Remove mapfile working extension</span>
             <span class="c1"># A final mapfile is silently overwritten if already exists</span>
-            <span class="k">for</span> <span class="n">mapfile</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">mapfile</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">results</span><span class="p">)):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapfile</span><span class="p">,</span> <span class="n">mapfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span></div>
 </pre></div>
 
@@ -405,7 +405,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.18',
+            VERSION:'2.7.22',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

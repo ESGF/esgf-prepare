@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.context &mdash; esgprep 2.7.18 documentation</title>
+  <title>esgprep.mapfile.context &mdash; esgprep 2.7.22 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.18 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.22 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -244,10 +244,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">mapfile_drs</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Init data collector</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">VersionedPathCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span>
-                                              <span class="n">file_filter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="p">,</span>
                                               <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                                               <span class="n">dir_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">))</span>
         <span class="c1"># Init collector filter</span>
+        <span class="c1"># Include ``file_filter`` pattern, default is non-hidden NetCDF files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">[</span><span class="s1">&#39;base_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="c1"># Exclude ``dir_filter`` patterns, default is &quot;/files&quot; and &quot;/.*&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;base_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_filter</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
@@ -362,7 +363,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.18',
+            VERSION:'2.7.22',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

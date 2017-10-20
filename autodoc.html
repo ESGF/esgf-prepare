@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.7.18 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.7.22 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.18 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.22 documentation" href="index.html"/>
         <link rel="prev" title="Changelog" href="log.html"/> 
 
   
@@ -454,7 +454,7 @@ Make the intersection with the desired projects to fetch.</p>
 <dd><p>Raised when the GitHub request fails.</p>
 </dd></dl>
 
-<span class="target" id="module-esgprep.fetchini.utils"></span><table class="docutils field-list" frame="void" rules="none">
+<span class="target" id="module-esgprep.fetchini.misc"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -465,8 +465,8 @@ Make the intersection with the desired projects to fetch.</p>
 </tbody>
 </table>
 <dl class="function">
-<dt id="esgprep.fetchini.utils.gh_request_content">
-<code class="descclassname">esgprep.fetchini.utils.</code><code class="descname">gh_request_content</code><span class="sig-paren">(</span><em>url</em>, <em>auth=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/utils.html#gh_request_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.utils.gh_request_content" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.fetchini.misc.gh_request_content">
+<code class="descclassname">esgprep.fetchini.misc.</code><code class="descname">gh_request_content</code><span class="sig-paren">(</span><em>url</em>, <em>auth=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/misc.html#gh_request_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.misc.gh_request_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the GitHub content of a file or a directory.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1463,11 +1463,17 @@ it follows the symlink to complete the DRS attributes.</p>
 <dt id="esgprep.utils.collectors.Collecting">
 <em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Collecting</code><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collecting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collecting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spinner pending data collection.</p>
+<dl class="method">
+<dt id="esgprep.utils.collectors.Collecting.next">
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collecting.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collecting.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print collector spinner</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="esgprep.utils.collectors.Collector">
-<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Collector</code><span class="sig-paren">(</span><em>sources</em>, <em>file_filter='^[!.].*\.nc$'</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Collector</code><span class="sig-paren">(</span><em>sources</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base collector class to yield regular NetCDF files.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1475,7 +1481,7 @@ it follows the symlink to complete the DRS attributes.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>sources</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) &#8211; The list of sources to parse</li>
-<li><strong>file_filter</strong> (<em>str</em>) &#8211; A regular expression to include files in the collection</li>
+<li><strong>data</strong> (<em>object</em>) &#8211; Any object to attach to each collected data</li>
 </ul>
 </td>
 </tr>
@@ -1505,6 +1511,19 @@ it follows the symlink to complete the DRS attributes.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="esgprep.utils.collectors.Collector.first">
+<code class="descname">first</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collector.first"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collector.first" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -1519,14 +1538,6 @@ it follows the symlink to complete the DRS attributes.</p>
 </tr>
 </tbody>
 </table>
-<dl class="class">
-<dt id="esgprep.utils.collectors.PathCollector.PathFilter">
-<em class="property">class </em><code class="descname">PathFilter</code><a class="reference internal" href="modules/esgprep/utils/collectors.html#PathCollector.PathFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.PathCollector.PathFilter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Regex dictionary with a call method to evaluate a string against several regular expressions.
-The dictionary values are 2-tuples with the regular expression as a string and a boolean
-indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
@@ -1541,12 +1552,29 @@ indicating to match (i.e., include) or non-match (i.e., exclude) the correspondi
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="esgprep.utils.collectors.VersionedPathCollector.version_finder">
+<code class="descname">version_finder</code><span class="sig-paren">(</span><em>directory</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#VersionedPathCollector.version_finder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.VersionedPathCollector.version_finder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the version number find into a DRS path
+:param str directory: The directory to parse
+:returns: The version
+:rtype: <em>str</em></p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="esgprep.utils.collectors.DatasetCollector">
-<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">DatasetCollector</code><span class="sig-paren">(</span><em>sources</em>, <em>file_filter='^[!.].*\.nc$'</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#DatasetCollector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.DatasetCollector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">DatasetCollector</code><span class="sig-paren">(</span><em>sources</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#DatasetCollector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.DatasetCollector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Collector class to yield datasets from a list of files to read.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="esgprep.utils.collectors.Filter">
+<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Filter</code><a class="reference internal" href="modules/esgprep/utils/collectors.html#Filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regex dictionary with a call method to evaluate a string against several regular expressions.
+The dictionary values are 2-tuples with the regular expression as a string and a boolean
+indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.</p>
 </dd></dl>
 
 <span class="target" id="module-esgprep.utils.misc"></span><table class="docutils field-list" frame="void" rules="none">
@@ -1902,7 +1930,7 @@ Only match at the beginning of the string.</p>
 <dd><p>Raised when a checksum fails.</p>
 </dd></dl>
 
-<p><em>Module author: Levavasseur Guillaume (CNRS/IPSL) &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;jussieu&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>jussieu<span>&#46;</span>fr</a>&gt;</em></p>
+<p><em>Module author: Levavasseur Guillaume (CNRS/IPSL) &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
 </div>
 </div>
 
@@ -1948,7 +1976,7 @@ Only match at the beginning of the string.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.18',
+            VERSION:'2.7.22',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
