@@ -10,10 +10,10 @@
 from datetime import datetime
 
 # Program version
-VERSION = '2.7.23'
+VERSION = '2.7.24'
 
 # Date
-VERSION_DATE = datetime(year=2017, month=10, day=20).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2017, month=10, day=23).strftime("%Y-%d-%m")
 
 # Help
 PROGRAM_DESC = \
@@ -238,7 +238,7 @@ DATASET_LIST_HELP = \
     
     """
 
-IGNORE_DIR_FILTER_HELP = \
+IGNORE_DIR_HELP = \
     """
     Filter directories NON-matching the regular expression.|n
     Default ignore paths with folder name(s) starting with|n
@@ -248,12 +248,21 @@ IGNORE_DIR_FILTER_HELP = \
     
     """
 
-INCLUDE_FILE_FILTER_HELP = \
+INCLUDE_FILE_HELP = \
     """
     Filter files matching the regular expression.|n
-    Default only include NetCDF files (with names not|n
-    starting with ".").
+    Duplicate the flag to set several filters.|n
+    Default only include NetCDF files.
     
+    """
+
+EXCLUDE_FILE_HELP = \
+    """
+    Filter files NON-matching the regular expression.|n
+    Duplicate the flag to set several filters.|n
+    Default only exclude files (with names not|n
+    starting with ".").
+
     """
 
 DRS_DESC = \

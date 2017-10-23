@@ -12,6 +12,7 @@ import logging
 import os
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
+from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
 from ESGConfigParser.custom_exceptions import NoConfigOption
@@ -48,8 +49,18 @@ class ProcessingContext(object):
             self.clean()
         self.no_cleanup = args.no_cleanup
         self.no_checksum = args.no_checksum
-        self.dir_filter = args.ignore_dir_filter
-        self.file_filter = args.include_file_filter
+        self.dir_filter = args.ignore_dir
+        self.file_filter = []
+        if args.include_file:
+            self.file_filter.extend([(f, False) for f in args.include_file])
+        else:
+            # Default includes netCDF only
+            self.file_filter.append(('^.*\.nc$', False))
+        if args.exclude_file:
+            # Default exclude hidden files
+            self.file_filter.extend([(f, True) for f in args.exclude_file])
+        else:
+            self.file_filter.append(('^\..*$', True))
         self.all = args.all_versions
         if self.all:
             self.no_version = False
@@ -79,10 +90,10 @@ class ProcessingContext(object):
         self.sources = VersionedPathCollector(sources=self.directory,
                                               data=self,
                                               dir_format=self.cfg.translate('directory_format'))
-        # Init collector filter
-        # Include ``file_filter`` pattern, default is non-hidden NetCDF files
-        self.sources.FileFilter['base_filter'] = (self.file_filter, True)
-        # Exclude ``dir_filter`` patterns, default is "/files" and "/.*"
+        # Init file filter
+        for file_filter in self.file_filter:
+            self.sources.FileFilter[uuid()] = file_filter
+        # Init dir filter
         self.sources.PathFilter['base_filter'] = (self.dir_filter, True)
         if self.all:
             # Pick up all encountered versions by adding "/latest" exclusion

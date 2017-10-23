@@ -78,7 +78,7 @@ class DirectoryChecker(Action):
         """
         path = os.path.abspath(os.path.normpath(path))
         if not os.path.isdir(path):
-            msg = 'No such directory: {0}'.format(path)
+            msg = 'No such directory: {}'.format(path)
             raise ArgumentTypeError(msg)
         return path
 
@@ -110,11 +110,11 @@ class VersionChecker(Action):
                 try:
                     datetime.strptime(version, '%Y%m%d')
                 except ValueError:
-                    msg = 'Invalid version date: {0}.'.format(str(version))
+                    msg = 'Invalid version date: {}.'.format(str(version))
                     raise ArgumentTypeError(msg)
             return version
         else:
-            msg = 'Invalid version type: {0}.\nAvailable format is YYYYMMDD or an integer.'.format(str(version))
+            msg = 'Invalid version type: {}.\nAvailable format is YYYYMMDD or an integer.'.format(str(version))
             raise ArgumentTypeError(msg)
 
 
@@ -130,6 +130,23 @@ def keyval_converter(pair):
     """
     pattern = re.compile(r'([^=]+)=([^=]+)(?:,|$)')
     if not pattern.search(pair):
-        msg = 'Bad argument syntax: {0}'.format(pair)
+        msg = 'Bad argument syntax: {}'.format(pair)
         raise ArgumentTypeError(msg)
     return pattern.search(pair).groups()
+
+
+def regex_validator(string):
+    """
+    Validates a Python regular expression syntax.
+
+    :param str string: The string to check
+    :returns: The Python regex
+    :rtype: *re.compile*
+    :raises Error: If invalid regular expression
+
+    """
+    try:
+        return re.compile(string)
+    except re.error:
+        msg = 'Bad regex syntax: {}'.format(string)
+        raise ArgumentTypeError(msg)

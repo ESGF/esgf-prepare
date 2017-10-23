@@ -228,12 +228,13 @@ class Filter(dict):
     indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.
 
     """
+    FILTER_TYPES = (str, re._pattern_type)
 
     def __setitem__(self, key, value):
         # Assertions on filters values
         if isinstance(value, tuple):
             assert len(value) == 2
-            assert isinstance(value[0], str)
+            assert isinstance(value[0], self.FILTER_TYPES)
             assert isinstance(value[1], bool)
         else:
             assert isinstance(value, str)

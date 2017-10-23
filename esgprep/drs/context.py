@@ -11,14 +11,15 @@ import logging
 import os
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
+from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
 
 from constants import *
-from handler import DRSTree, DRSPath
 from esgprep.utils.collectors import Collector
 from esgprep.utils.custom_exceptions import *
 from esgprep.utils.misc import cmd_exists, load
+from handler import DRSTree, DRSPath
 
 
 class ProcessingContext(object):
@@ -80,6 +81,11 @@ class ProcessingContext(object):
         # Init data collector
         self.sources = Collector(sources=self.directory,
                                  data=self)
+        # Init file filter
+        # Only supports netCDF files
+        self.sources.FileFilter[uuid()] = ('^.*\.nc$', False)
+        # And exclude hidden files
+        self.sources.FileFilter[uuid()] = ('^\..*$', True)
         # Init threads pool
         self.pool = ThreadPool(int(self.threads))
         return self

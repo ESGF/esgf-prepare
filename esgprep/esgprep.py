@@ -15,7 +15,7 @@ from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter, regex_validator
 
 __version__ = 'v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -184,17 +184,23 @@ def get_args():
         required=True,
         help=PROJECT_HELP['check-vocab'])
     checkvocab.add_argument(
-        '--ignore-dir-filter',
+        '--ignore-dir',
         metavar="PYTHON_REGEX",
-        type=str,
+        type=regex_validator,
         default='^.*/(files|latest|\.[\w]*).*$',
-        help=IGNORE_DIR_FILTER_HELP)
+        help=IGNORE_DIR_HELP)
     checkvocab.add_argument(
-        '--include-file-filter',
-        metavar="PYTHON_REGEX",
-        type=str,
-        default='^[!.].*\.nc$',
-        help=INCLUDE_FILE_FILTER_HELP)
+        '--include-file',
+        metavar='PYTHON_REGEX',
+        type=regex_validator,
+        action='append',
+        help=INCLUDE_FILE_HELP)
+    checkvocab.add_argument(
+        '--exclude-file',
+        metavar='PYTHON_REGEX',
+        type=regex_validator,
+        action='append',
+        help=EXCLUDE_FILE_HELP)
 
     ###############################
     # Subparser for "esgprep drs" #
@@ -341,17 +347,23 @@ def get_args():
         default=False,
         help=NO_CHECKSUM_HELP['mapfile'])
     mapfile.add_argument(
-        '--ignore-dir-filter',
+        '--ignore-dir',
         metavar="PYTHON_REGEX",
         type=str,
         default='^.*/(files|\.[\w]*).*$',
-        help=IGNORE_DIR_FILTER_HELP)
+        help=IGNORE_DIR_HELP)
     mapfile.add_argument(
-        '--include-file-filter',
-        metavar="PYTHON_REGEX",
-        type=str,
-        default='^[!.].*\.nc$',
-        help=INCLUDE_FILE_FILTER_HELP)
+        '--include-file',
+        metavar='PYTHON_REGEX',
+        type=regex_validator,
+        action='append',
+        help=INCLUDE_FILE_HELP)
+    mapfile.add_argument(
+        '--exclude-file',
+        metavar='PYTHON_REGEX',
+        type=regex_validator,
+        action='append',
+        help=EXCLUDE_FILE_HELP)
     mapfile.add_argument(
         '--tech-notes-url',
         metavar='URL',

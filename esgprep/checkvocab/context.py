@@ -10,6 +10,7 @@
 import logging
 import re
 import sys
+from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
 
@@ -34,8 +35,18 @@ class ProcessingContext(object):
         self.config_dir = args.i
         self.directory = args.directory
         self.dataset_list = args.dataset_list
-        self.dir_filter = args.ignore_dir_filter
-        self.file_filter = args.include_file_filter
+        self.dir_filter = args.ignore_dir
+        self.file_filter = []
+        if args.include_file:
+            self.file_filter.extend([(f, False) for f in args.include_file])
+        else:
+            # Default includes netCDF only
+            self.file_filter.append(('^.*\.nc$', False))
+        if args.exclude_file:
+            # Default exclude hidden files
+            self.file_filter.extend([(f, True) for f in args.exclude_file])
+        else:
+            self.file_filter.append(('^\..*$', True))
         self.scan_errors = 0
         self.any_undeclared = False
 
@@ -48,7 +59,10 @@ class ProcessingContext(object):
             # Instantiate file collector to walk through the tree
             self.source_type = 'files'
             self.sources = PathCollector(sources=self.directory)
-            self.sources.FileFilter['base_filter'] = (self.file_filter, True)
+            # Init file filter
+            for file_filter in self.file_filter:
+                self.sources.FileFilter[uuid()] = file_filter
+            # Init dir filter
             self.sources.PathFilter['base_filter'] = (self.dir_filter, True)
             self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
         else:
