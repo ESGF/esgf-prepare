@@ -99,17 +99,17 @@ with:
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND --ignore-dir-filter PYTHON_REGEX
+    $> esgprep SUBCOMMAND --ignore-dir PYTHON_REGEX
 
-``esgprep`` only considers unhidden NetCDF files by default using the following regular expression: ``^[!.].*\.nc$``.
-It can be change with:
+``esgprep`` only considers unhidden NetCDF files by default excuding the regular expression ``^\..*$`` and
+including the following one ``.*\.nc$``. It can be independently change with:
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND --include-file-filter PYTHON_REGEX
+    $> esgprep SUBCOMMAND --include-file PYTHON_REGEX --exclude-file PYTHON_REGEX
 
-Keep in mind that ``--ignore-dir-filter`` specifies a directory pattern **NOT** to be matched, and
-``--include-file-filter`` specifies a filename pattern **TO BE** matched.
+Keep in mind that ``--ignore-dir`` and ``--exclude-file`` specifie a directory pattern **NOT** to be matched, while
+``--include-file`` specifies a filename pattern **TO BE** matched.
 
 .. warning:: ``esgprep fetch-ini`` does not allow those features and ``esgprep drs`` only works with unhidden
     NetCDF files.
