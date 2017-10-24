@@ -101,8 +101,8 @@ with:
 
     $> esgprep SUBCOMMAND --ignore-dir PYTHON_REGEX
 
-``esgprep`` only considers unhidden NetCDF files by default using excuding the regular expressions: ``^\..*$`` and
-including the following one ``.*\.nc$``. It can be change with:
+``esgprep`` only considers unhidden NetCDF files by default excuding the regular expressions ``^\..*$`` and
+including the following one ``.*\.nc$``. It can be independently change with:
 
 .. code-block:: bash
 
