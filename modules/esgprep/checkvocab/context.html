@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.checkvocab.context &mdash; esgprep 2.7.23 documentation</title>
+  <title>esgprep.checkvocab.context &mdash; esgprep 2.7.24 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.23 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.24 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -177,6 +177,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid4</span> <span class="k">as</span> <span class="n">uuid</span>
 
 <span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">SectionParser</span>
 
@@ -201,8 +202,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">i</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset_list</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset_list</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dir_filter</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">ignore_dir_filter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">include_file_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir_filter</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">ignore_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">include_file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">f</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">include_file</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Default includes netCDF only</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;^.*\.nc$&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">exclude_file</span><span class="p">:</span>
+            <span class="c1"># Default exclude hidden files</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">f</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">exclude_file</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;^\..*$&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scan_errors</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">any_undeclared</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -215,7 +226,10 @@
             <span class="c1"># Instantiate file collector to walk through the tree</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">source_type</span> <span class="o">=</span> <span class="s1">&#39;files&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">PathCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">[</span><span class="s1">&#39;base_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Init file filter</span>
+            <span class="k">for</span> <span class="n">file_filter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">[</span><span class="n">uuid</span><span class="p">()]</span> <span class="o">=</span> <span class="n">file_filter</span>
+            <span class="c1"># Init dir filter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;base_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_filter</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">,</span> <span class="n">filename_pattern</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -278,7 +292,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.23',
+            VERSION:'2.7.24',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

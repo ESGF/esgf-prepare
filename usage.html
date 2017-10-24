@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generic usage &mdash; esgprep 2.7.23 documentation</title>
+  <title>Generic usage &mdash; esgprep 2.7.24 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.23 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.24 documentation" href="index.html"/>
         <link rel="next" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/>
         <link rel="prev" title="Configuration" href="configuration.html"/> 
 
@@ -261,16 +261,16 @@ management. In such a scan, you can filter the file discovery by using a Python 
 <p>The default is to walk through your local filesystem ignoring the <code class="docutils literal"><span class="pre">files</span></code> and <code class="docutils literal"><span class="pre">latest</span></code> version levels
 and any hidden folders by using the following regular expression: <code class="docutils literal"><span class="pre">^.*/(files|latest|\.[\w]*).*$</span></code>. It can be change
 with:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --ignore-dir-filter PYTHON_REGEX
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --ignore-dir PYTHON_REGEX
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">esgprep</span></code> only considers unhidden NetCDF files by default using the following regular expression: <code class="docutils literal"><span class="pre">^[!.].*\.nc$</span></code>.
-It can be change with:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --include-file-filter PYTHON_REGEX
+<p><code class="docutils literal"><span class="pre">esgprep</span></code> only considers unhidden NetCDF files by default using excuding the regular expressions: <code class="docutils literal"><span class="pre">^\..*$</span></code> and
+including the following one <code class="docutils literal"><span class="pre">.*\.nc$</span></code>. It can be change with:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --include-file PYTHON_REGEX --exclude-file PYTHON_REGEX
 </pre></div>
 </div>
-<p>Keep in mind that <code class="docutils literal"><span class="pre">--ignore-dir-filter</span></code> specifies a directory pattern <strong>NOT</strong> to be matched, and
-<code class="docutils literal"><span class="pre">--include-file-filter</span></code> specifies a filename pattern <strong>TO BE</strong> matched.</p>
+<p>Keep in mind that <code class="docutils literal"><span class="pre">--ignore-dir</span></code> and <code class="docutils literal"><span class="pre">--exclude-file</span></code> specifie a directory pattern <strong>NOT</strong> to be matched, while
+<code class="docutils literal"><span class="pre">--include-file</span></code> specifies a filename pattern <strong>TO BE</strong> matched.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code> does not allow those features and <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> only works with unhidden
@@ -332,7 +332,7 @@ simultaneously process several files (4 threads is the default and one seems seq
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.23',
+            VERSION:'2.7.24',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

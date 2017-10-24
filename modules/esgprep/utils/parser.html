@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.parser &mdash; esgprep 2.7.23 documentation</title>
+  <title>esgprep.utils.parser &mdash; esgprep 2.7.24 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.23 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.24 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -245,7 +245,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;No such directory: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;No such directory: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">path</span></div></div>
 
@@ -277,11 +277,11 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid version date: </span><span class="si">{0}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">))</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid version date: </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">))</span>
                     <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">version</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid version type: </span><span class="si">{0}</span><span class="s1">.</span><span class="se">\n</span><span class="s1">Available format is YYYYMMDD or an integer.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid version type: </span><span class="si">{}</span><span class="s1">.</span><span class="se">\n</span><span class="s1">Available format is YYYYMMDD or an integer.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">))</span>
             <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div></div>
 
 
@@ -297,9 +297,26 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([^=]+)=([^=]+)(?:,|$)&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Bad argument syntax: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Bad argument syntax: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="regex_validator"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.regex_validator">[docs]</a><span class="k">def</span> <span class="nf">regex_validator</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validates a Python regular expression syntax.</span>
+
+<span class="sd">    :param str string: The string to check</span>
+<span class="sd">    :returns: The Python regex</span>
+<span class="sd">    :rtype: *re.compile*</span>
+<span class="sd">    :raises Error: If invalid regular expression</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">re</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Bad regex syntax: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -336,7 +353,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.23',
+            VERSION:'2.7.24',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

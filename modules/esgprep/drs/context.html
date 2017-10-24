@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.context &mdash; esgprep 2.7.23 documentation</title>
+  <title>esgprep.drs.context &mdash; esgprep 2.7.24 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.23 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.24 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -178,14 +178,15 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="k">import</span> <span class="n">Pool</span> <span class="k">as</span> <span class="n">ThreadPool</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid4</span> <span class="k">as</span> <span class="n">uuid</span>
 
 <span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">SectionParser</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">DRSTree</span><span class="p">,</span> <span class="n">DRSPath</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.collectors</span> <span class="k">import</span> <span class="n">Collector</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">cmd_exists</span><span class="p">,</span> <span class="n">load</span>
+<span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">DRSTree</span><span class="p">,</span> <span class="n">DRSPath</span>
 
 
 <div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.context.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -247,6 +248,11 @@
         <span class="c1"># Init data collector</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">Collector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span>
                                  <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># Init file filter</span>
+        <span class="c1"># Only supports netCDF files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">[</span><span class="n">uuid</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;^.*\.nc$&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># And exclude hidden files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">[</span><span class="n">uuid</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;^\..*$&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="c1"># Init threads pool</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span>
@@ -354,7 +360,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.23',
+            VERSION:'2.7.24',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
