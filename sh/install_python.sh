@@ -18,8 +18,8 @@ main()
 
     # Get source.
     cd $ESGPREP_HOME/ops/python/src
-    if [ -f "$ESGPREP_HOME/requirements/Python-$PYTHON_VERSION.tgz" ]; then
-        cp $ESGPREP_HOME/requirements/Python-$PYTHON_VERSION.tgz .
+    if [ -f "$ESGPREP_SRC/Python-$PYTHON_VERSION.tgz" ]; then
+        cp $ESGPREP_SRC/Python-$PYTHON_VERSION.tgz .
     else
         wget http://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz --no-check-certificate
     fi
@@ -38,27 +38,26 @@ main()
 
     # Install setuptools.
     cd $ESGPREP_HOME/ops/python/src
-    if [ -f "$ESGPREP_HOME/sources/ez_setup.py" ]; then
-        cp $ESGPREP_HOME/sources/ez_setup.py .
+    if [ -f "$ESGPREP_SRC/ez_setup.py" ]; then
+        cp $ESGPREP_SRC/ez_setup.py .
     else
         wget http://bootstrap.pypa.io/ez_setup.py
     fi
     python ez_setup.py
 
-    # Install & upgrade pip / virtual env.
-    if ls $ESGPREP_HOME/requirements/pip-*.tar.gz 1> /dev/null 2>&1; then
-        cp $ESGPREP_HOME/requirements/pip-*.tar.gz .
-        pip install --upgrade pip --no-index --find-links $ESGPREP_HOME/requirements
+    # Install & upgrade pip.
+    if ls $ESGPREP_SRC/pip-*.tar.gz 1> /dev/null 2>&1; then
+        pip install --upgrade pip --no-index --find-links $ESGPREP_SRC
     else
-        easy_install --prefix $ESGPREP_HOME/ops/python pip virtualenv
+        easy_install --prefix $ESGPREP_HOME/ops/python pip
         pip install --upgrade pip
     fi
 
-    if ls $ESGPREP_HOME/requirements/virtualenv-*.tar.gz 1> /dev/null 2>&1; then
-        cp $ESGPREP_HOME/requirements/virtualenv-*.tar.gz .
-        pip install --upgrade virtualenv --no-index --find-links $ESGPREP_HOME/requirements
-
+    # Install & upgrade virtual env.
+    if ls $ESGPREP_SRC/virtualenv-*.tar.gz 1> /dev/null 2>&1; then
+        pip install --upgrade virtualenv --no-index --find-links $ESGPREP_SRC
     else
+        easy_install --prefix $ESGPREP_HOME/ops/python virtualenv
         pip install --upgrade virtualenv
     fi
 

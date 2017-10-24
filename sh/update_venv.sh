@@ -12,10 +12,18 @@ main()
 	source $ESGPREP_HOME/sh/activate_venv.sh
 
     # Upgrade pip.
-    pip install --upgrade pip
+    if ls $ESGPREP_SRC/pip-*.tar.gz 1> /dev/null 2>&1; then
+        pip install --upgrade pip --no-index --find-links $ESGPREP_SRC
+    else
+        pip install --upgrade pip
+    fi
 
     # Upgrade dependencies.
+    if ls $ESGPREP_SRC/esgprep-*.tar.gz 1> /dev/null 2>&1; then
+        pip install --upgrade -I -r $ESGPREP_HOME/requirements.txt --no-index --find-links $ESGPREP_SRC
+    else
     pip install --upgrade -I -r $ESGPREP_HOME/requirements.txt
+    fi
 
     # Clean up.
     deactivate

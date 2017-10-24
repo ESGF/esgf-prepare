@@ -10,9 +10,19 @@ main()
     export PATH=$ESGPREP_HOME/ops/python/bin:$PATH
     export PYTHONPATH=$ESGPREP_HOME/ops/python/bin:$PYTHONPATH
 
-    # Upgrade pip/virtualenv.
-    pip install --upgrade pip
-    pip install --upgrade virtualenv
+    # Upgrade pip.
+    if ls $ESGPREP_SRC/pip-*.tar.gz 1> /dev/null 2>&1; then
+        pip install --upgrade pip --no-index --find-links $ESGPREP_SRC
+    else
+        pip install --upgrade pip
+    fi
+
+    # Upgrade virtualenv.
+    if ls $ESGPREP_SRC/virtualenv-*.tar.gz 1> /dev/null 2>&1; then
+        pip install --upgrade virtualenv --no-index --find-links $ESGPREP_SRC
+    else
+        pip install --upgrade virtualenv
+    fi
 
     # Create venv.
     rm -rf $ESGPREP_HOME/ops/python/venv
@@ -23,7 +33,11 @@ main()
     source $ESGPREP_HOME/ops/python/venv/bin/activate
 
     # Install dependencies.
-    pip install -r $ESGPREP_HOME/requirements.txt
+    if ls $ESGPREP_SRC/esgprep-*.tar.gz 1> /dev/null 2>&1; then
+        pip install esgprep --no-index --find-links $ESGPREP_SRC
+    else
+        pip install -r $ESGPREP_HOME/requirements.txt
+    fi
 
     # Clean up.
     deactivate
