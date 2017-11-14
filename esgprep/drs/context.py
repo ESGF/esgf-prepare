@@ -132,7 +132,7 @@ class ProcessingContext(object):
             return None, None
         else:
             _cfg = SectionParser(section='DEFAULT', directory=self.config_dir)
-            if _cfg.has_option('DEFAULT', 'checksum'):
+            if _cfg.has_option('checksum', section='DEFAULT'):
                 checksum_client, checksum_type = _cfg.get_options_from_table('checksum')[0]
             else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
                 checksum_client, checksum_type = 'sha256sum', 'SHA256'

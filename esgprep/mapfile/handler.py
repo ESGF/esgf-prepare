@@ -11,7 +11,7 @@ import os
 import re
 
 from ESGConfigParser import interpolate
-from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions, MissingPatternKey
+from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOption, MissingPatternKey
 
 from constants import *
 from esgprep.utils.custom_exceptions import *
@@ -91,7 +91,7 @@ class File(object):
             try:
                 self.attributes[facet] = config.get_option_from_map('{}_map'.format(facet), self.attributes)
             except:
-                raise NoConfigOptions(facet)
+                raise NoConfigOption('{}_map'.format(facet))
 
     def get_dataset_id(self, dataset_format):
         """
