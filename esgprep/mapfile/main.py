@@ -185,9 +185,10 @@ def run(args):
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
+        nfiles = len(ctx.sources)
         processes = ctx.pool.imap(process, ctx.sources)
         if ctx.pbar:
-            processes = as_pbar(processes, desc='Mapfile(s) generation', units='files', total=len(ctx.sources))
+            processes = as_pbar(processes, desc='Mapfile(s) generation', units='files', total=nfiles)
         # Process supplied files
         results = [x for x in processes]
         # Get number of files scanned (including skipped files)

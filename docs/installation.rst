@@ -27,14 +27,14 @@ Installation from GitHub
 
    git clone git://github.com/IS-ENES-Data/esgf-prepare.git
 
-3. Run the ``setup.py``:
+2. Run the ``setup.py``:
 
 .. code-block:: bash
 
    cd esgf-prepare
    python setup.py install
 
-4. The ``esgprep`` command-line is ready.
+3. The ``esgprep`` command-line is ready.
 
 .. warning:: To run ``esgprep`` you have to be logged into a machine which mounts the filesystem hosting the data to
    publish.
