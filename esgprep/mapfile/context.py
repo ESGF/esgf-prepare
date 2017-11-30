@@ -122,6 +122,8 @@ class ProcessingContext(object):
             logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
         if not self.scan_files and not self.scan_errors:
             # Results list is empty = no files scanned/found
+            if self.pbar:
+                print('No files found')
             logging.warning('==> No files found')
             sys.exit(1)
         if self.scan_files and self.scan_errors:

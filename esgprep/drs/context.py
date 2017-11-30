@@ -65,6 +65,9 @@ class ProcessingContext(object):
     def __enter__(self):
         # Get checksum client
         self.checksum_client, self.checksum_type = self.get_checksum_client()
+        # Ensute migration is possible
+        # TODO
+
         # Init configuration parser
         self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
         self.facets = self.cfg.get_facets('directory_format')
@@ -102,6 +105,8 @@ class ProcessingContext(object):
             logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
         if not self.scan_files and not self.scan_errors:
             # Results list is empty = no files scanned/found
+            if self.pbar:
+                print('No files found')
             logging.warning('==> No files found')
             sys.exit(1)
         if self.scan_files and self.scan_errors:
@@ -157,3 +162,17 @@ class ProcessingContext(object):
                                                              old_args[k]))
                 return False
         return True
+
+    def migration_granted(self):
+        """
+        Check if migration is possible.
+        Basically, --copy and --move are always possible as --move on different filesystem
+        is handle as a copy with a remove.
+        Migration could fail in the case of --link.
+
+        :returns: True if migration granted.
+        :rtype: *boolean*
+
+        """
+        # TODO
+        pass

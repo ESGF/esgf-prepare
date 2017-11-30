@@ -315,7 +315,7 @@ class DRSLeaf(object):
             if os.path.isabs(self.src) and not os.access(self.src, os.R_OK):
                 raise ReadAccessDenied(getpass.getuser(), self.src)
         # Check dst access (always write)
-        # Backward the DRS is path does not exist
+        # Backward the DRS if path does not exist
         dst = self.dst
         while not os.path.exists(dst) and dst != root:
             dst = os.path.split(dst)[0]
