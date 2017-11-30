@@ -7,7 +7,7 @@
 
 """
 
-from os import link, symlink
+from os import link, symlink, environ
 from shutil import copy2 as copy
 from shutil import move
 
@@ -32,4 +32,4 @@ UNIX_COMMAND = {'symlink': symlink,
 CONTROLLED_ARGS = ['directory', 'set_values', 'set_keys', 'mode', 'version']
 
 # Tree context file
-TREE_FILE = '/tmp/DRSTree.pkl'
+TREE_FILE = '/tmp/DRSTree_{}.pkl'.format(environ['USER'])
