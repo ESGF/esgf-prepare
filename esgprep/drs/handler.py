@@ -11,6 +11,7 @@ import getpass
 import logging
 import re
 from collections import OrderedDict
+from tempfile import NamedTemporaryFile
 
 from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions, NoConfigOption
 from fuzzywuzzy import fuzz, process
@@ -322,6 +323,31 @@ class DRSLeaf(object):
         if os.path.isabs(dst) and not os.access(dst, os.W_OK):
             raise WriteAccessDenied(getpass.getuser(), dst)
 
+    def migration_granted(self, root):
+        """
+        Check if migration mode is allowed by filesystem.
+        Bacially, copy or move will always succeed.
+        Only hardlinks could fail depending on the filesystem partition.
+
+        :param str root: The DRS tree root
+        :raises Error: If migration is disallowed by filesystem configuration
+        """
+        if self.mode == 'link':
+            with NamedTemporaryFile(dir=os.path.dirname(self.src)) as f:
+                dst = os.path.dirname(self.dst)
+                while not os.path.exists(dst) and dst != root:
+                    dst = os.path.split(dst)[0]
+                dst = os.path.join(dst, os.path.basename(f.name))
+                try:
+                    UNIX_COMMAND[self.mode](f.name, dst)
+                except OSError as e:
+                    if e.errno == 18:
+                        # Invalide corss-device link
+                        raise CrossMigrationDenied(self.src, self.src, self.mode)
+                    else:
+                        # Other OSError
+                        raise MigrationDenied(self.src, self.src, self.mode, e.strerror)
+
 
 class DRSTree(Tree):
     """
@@ -452,10 +478,11 @@ class DRSTree(Tree):
         :param boolean todo_only: Only print Unix command-line to do
 
         """
-        # Check permissions before upgrade
+        # Check permissions and migration availability before upgrade
         if not todo_only:
             for leaf in self.leaves():
                 leaf.data.has_permissions(self.drs_root)
+                leaf.data.migration_granted(self.drs_root)
         print(''.center(self.d_lengths[-1], '='))
         if todo_only:
             print('Unix command-lines (DRY-RUN)'.center(self.d_lengths[-1]))

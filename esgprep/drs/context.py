@@ -12,7 +12,6 @@ import os
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
 from uuid import uuid4 as uuid
-
 from ESGConfigParser import SectionParser
 
 from constants import *
@@ -65,9 +64,6 @@ class ProcessingContext(object):
     def __enter__(self):
         # Get checksum client
         self.checksum_client, self.checksum_type = self.get_checksum_client()
-        # Ensute migration is possible
-        # TODO
-
         # Init configuration parser
         self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
         self.facets = self.cfg.get_facets('directory_format')
@@ -162,17 +158,3 @@ class ProcessingContext(object):
                                                              old_args[k]))
                 return False
         return True
-
-    def migration_granted(self):
-        """
-        Check if migration is possible.
-        Basically, --copy and --move are always possible as --move on different filesystem
-        is handle as a copy with a remove.
-        Migration could fail in the case of --link.
-
-        :returns: True if migration granted.
-        :rtype: *boolean*
-
-        """
-        # TODO
-        pass

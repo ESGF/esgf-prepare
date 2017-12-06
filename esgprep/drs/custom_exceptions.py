@@ -74,3 +74,32 @@ class WriteAccessDenied(Exception):
         self.msg += "\n<path: '{}'>".format(path)
         self.msg += "\n<permissions: '{}'>".format(oct(os.stat(path).st_mode)[-4:])
         super(self.__class__, self).__init__(self.msg)
+
+
+class CrossMigrationDenied(Exception):
+    """
+    Raised when migration fails for cross-device link.
+
+    """
+
+    def __init__(self, src, dst, mode):
+        self.msg = "Migration on cross-device disallowed."
+        self.msg += "\n<src: '{}'>".format(src)
+        self.msg += "\n<dst: '{}'>".format(dst)
+        self.msg += "\n<mode: '{}'>".format(mode)
+        super(self.__class__, self).__init__(self.msg)
+
+
+class MigrationDenied(Exception):
+    """
+    Raised when migration fails in another case.
+
+    """
+
+    def __init__(self, src, dst, mode, reason):
+        self.msg = "Migration disallowed."
+        self.msg += "\n<src: '{}'>".format(src)
+        self.msg += "\n<dst: '{}'>".format(dst)
+        self.msg += "\n<mode: '{}'>".format(mode)
+        self.msg += "\n<reason: '{}'>".format(reason)
+        super(self.__class__, self).__init__(self.msg)
