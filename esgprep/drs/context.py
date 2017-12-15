@@ -82,7 +82,7 @@ class ProcessingContext(object):
         self.facets = self.cfg.get_facets('directory_format')
         self.pattern = self.cfg.translate('filename_format')
         # Init DRS tree
-        self.tree = DRSTree(self.root, self.version, self.mode)
+        self.tree = DRSTree(self.root, self.version, self.mode, self.printf)
         # Disable file scan if a previous DRS tree have generated using same context and no "list" action
         if not self.rescan and self.action != 'list' and os.path.isfile(TREE_FILE):
             reader = load(TREE_FILE)

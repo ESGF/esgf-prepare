@@ -274,7 +274,7 @@ class DRSLeaf(object):
         # Retrieve migration mode
         self.mode = mode
 
-    def upgrade(self, printf, todo_only=True):
+    def upgrade(self, todo_only=True, printf=None):
         """
         Upgrade the DRS tree.
 
@@ -289,32 +289,40 @@ class DRSLeaf(object):
 
         # Make directory for destination path if not exist
         line = '{} {}'.format('mkdir -p', os.path.dirname(self.dst))
-
-        if printf and todo_only:
-            with open(printf, 'w+') as f:
-                f.write(line)
-        else:
-            print(line)
-
+        self.print_cmd(line, 'w', printf, todo_only)
         if not todo_only:
             try:
                 os.makedirs(os.path.dirname(self.dst))
             except OSError:
                 pass
-
-
-
-
-
-        print('{} {} {}'.format(UNIX_COMMAND_LABEL[self.mode], self.src, self.dst))
+        # Print command-line to apply
+        line = '{} {} {}'.format(UNIX_COMMAND_LABEL[self.mode], self.src, self.dst)
+        self.print_cmd(line, 'a', printf, todo_only)
         # Unlink symbolic link if already exists
         if self.mode == 'symlink' and os.path.exists(self.dst):
-            print('{} {}'.format('unlink', self.dst))
+            line = '{} {}'.format('unlink', self.dst)
+            self.print_cmd(line, 'a', printf, todo_only)
             if not todo_only:
                 os.unlink(self.dst)
         # Make upgrade depending on the migration mode
         if not todo_only:
             UNIX_COMMAND[self.mode](self.src, self.dst)
+
+    def print_cmd(self, line, mode, printf, todo_only):
+        """
+        Print unix command-line depending on the choosen output and DRS action.
+
+        :param str printf: The output file to write command-lines, None if not.
+        :param boolean todo_only: True to only print Unix command-lines to apply (i.e., as dry-run)
+        :param str mode: File open() mode
+
+        """
+        if printf and todo_only:
+            with open(printf, mode) as f:
+                f.write('{}\n'.format(line))
+        else:
+            print(line)
+
 
     def has_permissions(self, root):
         """
@@ -373,7 +381,7 @@ class DRSTree(Tree):
 
     """
 
-    def __init__(self, root, version, mode):
+    def __init__(self, root, version, mode, outfile=None):
         # Retrieve original class init
         Tree.__init__(self)
         # To records dataset and files
@@ -386,6 +394,8 @@ class DRSTree(Tree):
         self.drs_mode = mode
         # Display width
         self.d_lengths = []
+        # Output file if submitted
+        self.printf = outfile
 
     def get_display_lengths(self):
         """
@@ -484,7 +494,7 @@ class DRSTree(Tree):
 
     def todo(self):
         """
-        As a dry run :func:`esgprep.drs.handler.DRSTree.upgrade` that only prints command-line to do.
+        As a dry run :func:`esgprep.drs.handler.DRSTree.upgrade` that only prints command-lines to do.
 
         """
         self.upgrade(todo_only=True)
@@ -508,5 +518,7 @@ class DRSTree(Tree):
             print('Unix command-lines'.center(self.d_lengths[-1]))
         print(''.center(self.d_lengths[-1], '-'))
         for leaf in self.leaves():
-            leaf.data.upgrade(todo_only)
+            leaf.data.upgrade(todo_only, self.printf)
+        if todo_only and self.printf:
+            print('Command-lines to apply have been exported to {}'.format(self.printf))
         print(''.center(self.d_lengths[-1], '='))
