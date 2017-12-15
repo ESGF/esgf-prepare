@@ -63,6 +63,8 @@ class ProcessingContext(object):
         self.scan_errors = None
         self.scan_files = None
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename
+        if self.printf and self.action != 'todo':
+            logging.warning('"{}" action do not consider "--commands-file" argument.'.format(self.action))
 
     def __enter__(self):
         # Get checksum client
@@ -89,8 +91,10 @@ class ProcessingContext(object):
             if self.check_args(old_args):
                 self.scan = False
         # Init data collector
-        self.sources = Collector(sources=self.directory,
-                                 data=self)
+        if self.pbar:
+            self.sources = Collector(sources=self.directory, data=self)
+        else:
+            self.sources = Collector(sources=self.directory, spinner=False, data=self)
         # Init file filter
         # Only supports netCDF files
         self.sources.FileFilter[uuid()] = ('^.*\.nc$', False)

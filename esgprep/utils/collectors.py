@@ -22,7 +22,8 @@ class Collecting:
     STATES = ('/', '-', '\\', '|')
     step = 0
 
-    def __init__(self):
+    def __init__(self, spinner):
+        self.spinner = spinner
         self.next()
 
     def next(self):
@@ -30,8 +31,9 @@ class Collecting:
         Print collector spinner
 
         """
-        sys.stdout.write('\rCollecting data... {}'.format(Collecting.STATES[Collecting.step % 4]))
-        sys.stdout.flush()
+        if self.spinner:
+            sys.stdout.write('\rCollecting data... {}'.format(Collecting.STATES[Collecting.step % 4]))
+            sys.stdout.flush()
         Collecting.step += 1
 
 
@@ -46,7 +48,8 @@ class Collector(object):
 
     """
 
-    def __init__(self, sources, data=None):
+    def __init__(self, sources, spinner=True, data=None):
+        self.spinner = spinner
         self.sources = sources
         self.data = data
         self.FileFilter = Filter()
@@ -68,7 +71,7 @@ class Collector(object):
         :rtype: *int*
 
         """
-        progress = Collecting()
+        progress = Collecting(self.spinner)
         s = 0
         for _ in self.__iter__():
             progress.next()

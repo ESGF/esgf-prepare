@@ -87,9 +87,15 @@ class ProcessingContext(object):
         except NoConfigOption:
             self.mapfile_drs = None
         # Init data collector
-        self.sources = VersionedPathCollector(sources=self.directory,
-                                              data=self,
-                                              dir_format=self.cfg.translate('directory_format'))
+        if self.pbar:
+            self.sources = VersionedPathCollector(sources=self.directory,
+                                                  data=self,
+                                                  dir_format=self.cfg.translate('directory_format'))
+        else:
+            self.sources = VersionedPathCollector(sources=self.directory,
+                                                  data=self,
+                                                  spinner=False,
+                                                  dir_format=self.cfg.translate('directory_format'))
         # Init file filter
         for file_filter in self.file_filter:
             self.sources.FileFilter[uuid()] = file_filter

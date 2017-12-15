@@ -274,7 +274,7 @@ class DRSLeaf(object):
         # Retrieve migration mode
         self.mode = mode
 
-    def upgrade(self, todo_only=True):
+    def upgrade(self, printf, todo_only=True):
         """
         Upgrade the DRS tree.
 
@@ -285,13 +285,27 @@ class DRSLeaf(object):
         # Someone could use display outputs for parsing an later procceding.
         # Any change of the line outputs can break this for users.
 
+        # --printf writes print statements ONLY in the submitted file
+
         # Make directory for destination path if not exist
-        print('{} {}'.format('mkdir -p', os.path.dirname(self.dst)))
+        line = '{} {}'.format('mkdir -p', os.path.dirname(self.dst))
+
+        if printf and todo_only:
+            with open(printf, 'w+') as f:
+                f.write(line)
+        else:
+            print(line)
+
         if not todo_only:
             try:
                 os.makedirs(os.path.dirname(self.dst))
             except OSError:
                 pass
+
+
+
+
+
         print('{} {} {}'.format(UNIX_COMMAND_LABEL[self.mode], self.src, self.dst))
         # Unlink symbolic link if already exists
         if self.mode == 'symlink' and os.path.exists(self.dst):

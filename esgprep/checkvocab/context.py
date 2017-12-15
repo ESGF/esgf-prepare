@@ -58,7 +58,10 @@ class ProcessingContext(object):
             # The source is a list of directories
             # Instantiate file collector to walk through the tree
             self.source_type = 'files'
-            self.sources = PathCollector(sources=self.directory)
+            if self.pbar:
+                self.sources = PathCollector(sources=self.directory)
+            else:
+                self.sources = PathCollector(sources=self.directory, spinner=False)
             # Init file filter
             for file_filter in self.file_filter:
                 self.sources.FileFilter[uuid()] = file_filter
@@ -69,7 +72,10 @@ class ProcessingContext(object):
             # The source is a list of files (i.e., several dataset lists)
             # Instantiate dataset collector to parse the files
             self.source_type = 'datasets'
-            self.sources = DatasetCollector(self.dataset_list)
+            if self.pbar:
+                self.sources = DatasetCollector(self.dataset_list)
+            else:
+                self.sources = DatasetCollector(self.dataset_list, spinner=False)
             self.pattern = self.cfg.translate('dataset_id')
         # Get the facet keys from pattern
         self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
