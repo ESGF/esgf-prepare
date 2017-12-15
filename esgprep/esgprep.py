@@ -15,7 +15,8 @@ from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter, regex_validator
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter, regex_validator, \
+    _ArgumentParser
 
 __version__ = 'v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -37,7 +38,7 @@ def get_args():
     #############################
     # Main parser for "esgprep" #
     #############################
-    main = argparse.ArgumentParser(
+    main = _ArgumentParser(
         prog='esgprep',
         description=PROGRAM_DESC,
         formatter_class=MultilineFormatter,
@@ -266,6 +267,11 @@ def get_args():
         action='store_true',
         default=False,
         help=RESCAN_HELP)
+    drs.add_argument(
+        '--commands-file',
+        metavar='TXT_FILE',
+        type=str,
+        help=COMMANDS_FILE_HELP)
     group = drs.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--copy',
@@ -405,11 +411,7 @@ def run():
 
     """
     # Get command-line arguments
-    # Catch argparse errors to avoid collusion with esgprep exit status
-    try:
-        args = get_args()
-    except:
-        sys.exit(99)
+    args = get_args()
     # Initialize logger depending on log and verbose mode
     init_logging(log=args.log, verbose=args.v)
     # Print progress bar if no log and no verbose mode

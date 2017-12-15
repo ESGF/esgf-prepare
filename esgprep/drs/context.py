@@ -38,6 +38,7 @@ class ProcessingContext(object):
         self.directory = args.directory
         self.root = os.path.normpath(args.root)
         self.rescan = args.rescan
+        self.printf = args.commands_file
         self.set_values = {}
         if args.set_value:
             self.set_values = dict(args.set_value)

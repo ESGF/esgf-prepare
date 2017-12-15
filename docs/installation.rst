@@ -62,6 +62,7 @@ your Python environment includes:
  * `sys <https://docs.python.org/2/library/sys.html>`_
  * `textwrap <https://docs.python.org/2/library/textwrap.html>`_
  * `unittest <https://docs.python.org/2/library/unittest.html>`_
+ * `gettext <https://docs.python.org/2/library/gettext.html>`_
 
 Some required libraries are not included in most Python distributions. Please install them using the usual PIP command:
 

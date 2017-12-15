@@ -347,6 +347,13 @@ NO_CHECKSUM_HELP = {
         """
 }
 
+COMMANDS_FILE_HELP = \
+    """
+    Writes Unix command-line statements only in the submitted file.|n
+    Default is the standard output (requires "todo" action).
+
+    """
+
 RESCAN_HELP = \
     """
     Force incoming files rescan.|n

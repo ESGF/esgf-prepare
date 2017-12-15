@@ -9,8 +9,11 @@
 
 import os
 import re
+import sys
 import textwrap
-from argparse import HelpFormatter, ArgumentTypeError, Action
+from argparse import HelpFormatter, ArgumentTypeError, Action, ArgumentParser
+from gettext import gettext
+
 from datetime import datetime
 
 
@@ -150,3 +153,13 @@ def regex_validator(string):
     except re.error:
         msg = 'Bad regex syntax: {}'.format(string)
         raise ArgumentTypeError(msg)
+
+
+class _ArgumentParser(ArgumentParser):
+    def error(self, message):
+        """
+        Overwrite the original method to change exist status.
+
+        """
+        self.print_usage(sys.stderr)
+        self.exit(99, gettext('%s: error: %s\n') % (self.prog, message))
