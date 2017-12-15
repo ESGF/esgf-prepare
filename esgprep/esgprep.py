@@ -405,7 +405,11 @@ def run():
 
     """
     # Get command-line arguments
-    args = get_args()
+    # Catch argparse errors to avoid collusion with esgprep exit status
+    try:
+        args = get_args()
+    except:
+        sys.exit(99)
     # Initialize logger depending on log and verbose mode
     init_logging(log=args.log, verbose=args.v)
     # Print progress bar if no log and no verbose mode

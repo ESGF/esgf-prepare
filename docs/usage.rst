@@ -124,3 +124,9 @@ simultaneously process several files (4 threads is the default and one seems seq
 .. code-block:: bash
 
     $> esgprep SUBCOMMAND --max-threads 4
+
+Exit status
+***********
+
+ * Status = 99
+    Argument parsing error.
