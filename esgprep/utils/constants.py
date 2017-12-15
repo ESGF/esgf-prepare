@@ -347,6 +347,16 @@ NO_CHECKSUM_HELP = {
         """
 }
 
+RESCAN_HELP = \
+    """
+    Force incoming files rescan.|n
+    Default is to scan incoming files with "list" action,|n
+    or if no cached scan results exist, or if the changed|n
+    arguments between two runs do not require to rescan|n
+    the incoming files.
+
+    """
+
 COPY_HELP = \
     """
     Copy incoming files into the DRS tree.|n

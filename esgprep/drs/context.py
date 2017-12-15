@@ -10,6 +10,7 @@
 import logging
 import os
 import sys
+import re
 from multiprocessing.dummy import Pool as ThreadPool
 from uuid import uuid4 as uuid
 from ESGConfigParser import SectionParser
@@ -36,6 +37,7 @@ class ProcessingContext(object):
         self.config_dir = args.i
         self.directory = args.directory
         self.root = os.path.normpath(args.root)
+        self.rescan = args.rescan
         self.set_values = {}
         if args.set_value:
             self.set_values = dict(args.set_value)
@@ -66,12 +68,20 @@ class ProcessingContext(object):
         self.checksum_client, self.checksum_type = self.get_checksum_client()
         # Init configuration parser
         self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
+        # Warn user about unconsidered hard-coded elements
+        for pattern_element in self.cfg.get('directory_format', raw=True).strip().split("/"):
+            if not re.match(re.compile(r'%\([\w]+\)s'), pattern_element):
+                msg = 'Hard-coded DRS elements (as "{}") in "directory_format" are not supported.'.format(pattern_element)
+                if self.pbar:
+                    print(msg)
+                logging.warning(msg)
+                break
         self.facets = self.cfg.get_facets('directory_format')
         self.pattern = self.cfg.translate('filename_format')
         # Init DRS tree
         self.tree = DRSTree(self.root, self.version, self.mode)
         # Disable file scan if a previous DRS tree have generated using same context and no "list" action
-        if self.action != 'list' and os.path.isfile(TREE_FILE):
+        if not self.rescan and self.action != 'list' and os.path.isfile(TREE_FILE):
             reader = load(TREE_FILE)
             old_args = reader.next()
             # Ensure that processing context is similar to previous step
@@ -106,9 +116,13 @@ class ProcessingContext(object):
             logging.warning('==> No files found')
             sys.exit(1)
         if self.scan_files and self.scan_errors:
+            if self.scan:
+                msg = 'Scan errors: {} (see {})'
+            else:
+                msg = 'Orginal scan errors: {} (previously written to {})'
             # Print number of scan errors in any case
             if self.pbar:
-                print('{}: {} (see {})'.format('Scan errors', self.scan_errors, self.scan_err_log))
+                print(msg.format(self.scan_errors, self.scan_err_log))
             logging.warning('{} file(s) have been skipped'
                             ' (see {})'.format(self.scan_errors, self.scan_err_log))
             if self.scan_errors == self.scan_files:
@@ -153,7 +167,7 @@ class ProcessingContext(object):
         for k in CONTROLLED_ARGS:
             if self.__getattribute__(k) != old_args[k]:
                 logging.warning('"{}" argument has changed: "{}" instead of "{}". '
-                                'File scan re-run...'.format(k,
+                                'File rescan needed.'.format(k,
                                                              self.__getattribute__(k),
                                                              old_args[k]))
                 return False

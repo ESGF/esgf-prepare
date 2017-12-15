@@ -261,6 +261,11 @@ def get_args():
         action='store_true',
         default=False,
         help=NO_CHECKSUM_HELP['drs'])
+    drs.add_argument(
+        '--rescan',
+        action='store_true',
+        default=False,
+        help=RESCAN_HELP)
     group = drs.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--copy',

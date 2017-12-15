@@ -152,7 +152,11 @@ def run(args):
             ctx.tree = reader.next()
             ctx.scan_err_log = reader.next()
             results = reader.next()
-            logging.warning('Previous DRS tree found and recovered <-- {}.'.format(TREE_FILE))
+            msg = 'Skipping incoming files scan (use "--rescan" to force it) -- ' \
+                  'Using cached DRS tree from {}'.format(TREE_FILE)
+            if ctx.pbar:
+                print(msg)
+            logging.warning(msg)
         else:
             nfiles = len(ctx.sources)
             processes = ctx.pool.imap(process, ctx.sources)
@@ -169,7 +173,7 @@ def run(args):
                                ctx.tree,
                                ctx.scan_err_log,
                                results])
-        logging.warning('DRS tree recorded for next usage --> {}.'.format(TREE_FILE))
+        logging.warning('DRS tree recorded for next usage onto {}.'.format(TREE_FILE))
         # Evaluates the scan results to trigger the DRS tree action
         if evaluate(results):
             # Apply tree action
