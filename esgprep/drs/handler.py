@@ -281,6 +281,10 @@ class DRSLeaf(object):
         :param boolean todo_only: True to only print Unix command-lines to apply (i.e., as dry-run)
 
         """
+        # BECARFUL: Avoid any changes in the print statements here
+        # Someone could use display outputs for parsing an later procceding.
+        # Any change of the line outputs can break this for users.
+
         # Make directory for destination path if not exist
         print('{} {}'.format('mkdir -p', os.path.dirname(self.dst)))
         if not todo_only:
