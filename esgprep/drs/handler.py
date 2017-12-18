@@ -278,6 +278,7 @@ class DRSLeaf(object):
         """
         Upgrade the DRS tree.
 
+        :param str commands_file: The file to write command-lines statement if submitted
         :param boolean todo_only: True to only print Unix command-lines to apply (i.e., as dry-run)
 
         """
@@ -308,10 +309,12 @@ class DRSLeaf(object):
         if not todo_only:
             UNIX_COMMAND[self.mode](self.src, self.dst)
 
-    def print_cmd(self, line, commands_file, todo_only, mode='a'):
+    @staticmethod
+    def print_cmd(line, commands_file, todo_only, mode='a'):
         """
         Print unix command-line depending on the choosen output and DRS action.
 
+        :param str line: The command-line to write.
         :param str commands_file: The output file to write command-lines, None if not.
         :param boolean todo_only: True to only print Unix command-lines to apply (i.e., as dry-run)
         :param str mode: File open() mode
@@ -322,7 +325,6 @@ class DRSLeaf(object):
                 f.write('{}\n'.format(line))
         else:
             print(line)
-
 
     def has_permissions(self, root):
         """
