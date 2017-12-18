@@ -93,8 +93,8 @@ class Collector(object):
 
     def first(self):
         """
+        Returns the first iterator element.
 
-        :return:
         """
         return self.__iter__().next()
 

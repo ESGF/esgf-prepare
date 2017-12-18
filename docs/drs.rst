@@ -91,6 +91,9 @@ symbolic links skeleton that avoid to duplicate files between two versions.
 
     $> esgprep drs tree --project PROJECT_ID /PATH/TO/SCAN/
 
+.. warning:: Some miscellaneous characters could appear due to wrong encoding configuration. To see ASCII characters,
+    choose another utf-8 font in your console setup.
+
 Set up a root directory
 ***********************
 
@@ -112,6 +115,21 @@ tree. At this step, no file are moved or copy to the final DRS.
 .. code-block:: bash
 
     $> esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/
+
+Those Unix command-lines can also be written into a file for further process:
+
+.. code-block:: bash
+
+    $> esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/ --commands-file /PATH/TO/COMMANDS.txt
+
+.. note:: Only the commands statements are written to the file. This is not a logfile.
+
+By default another ``esgprep drs todo`` run will append new command-lines to the file (if exists).
+To overwrite existing file:
+
+.. code-block:: bash
+
+    $> esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/ --commands-file /PATH/TO/COMMANDS.txt --overwrite-commands-file
 
 Change the migration mode
 *************************
