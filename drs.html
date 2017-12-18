@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Manage local data through the DRS &mdash; esgprep 2.7.24 documentation</title>
+  <title>Manage local data through the DRS &mdash; esgprep 2.7.28 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.24 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.28 documentation" href="index.html"/>
         <link rel="next" title="Check CV against configuration INI files" href="check-vocab.html"/>
         <link rel="prev" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/> 
 
@@ -272,6 +272,11 @@ symbolic links skeleton that avoid to duplicate files between two versions.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs tree --project PROJECT_ID /PATH/TO/SCAN/
 </pre></div>
 </div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Some miscellaneous characters could appear due to wrong encoding configuration. To see ASCII characters,
+choose another utf-8 font in your console setup.</p>
+</div>
 </div>
 <div class="section" id="set-up-a-root-directory">
 <h2>Set up a root directory<a class="headerlink" href="#set-up-a-root-directory" title="Permalink to this headline">¶</a></h2>
@@ -290,6 +295,19 @@ including the project.</p>
 <p>The <code class="docutils literal"><span class="pre">todo</span></code> action can be seen as a dry-run to check which unix commands should be apply to build the expected DRS
 tree. At this step, no file are moved or copy to the final DRS.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/
+</pre></div>
+</div>
+<p>Those Unix command-lines can also be written into a file for further process:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/ --commands-file /PATH/TO/COMMANDS.txt
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Only the commands statements are written to the file. This is not a logfile.</p>
+</div>
+<p>By default another <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span> <span class="pre">todo</span></code> run will append new command-lines to the file (if exists).
+To overwrite existing file:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs todo --project PROJECT_ID /PATH/TO/SCAN/ --commands-file /PATH/TO/COMMANDS.txt --overwrite-commands-file
 </pre></div>
 </div>
 </div>
@@ -402,7 +420,7 @@ incomplete DRS tree. See the error logfile.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.24',
+            VERSION:'2.7.28',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

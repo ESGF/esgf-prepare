@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.handler &mdash; esgprep 2.7.24 documentation</title>
+  <title>esgprep.drs.handler &mdash; esgprep 2.7.28 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.24 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.28 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -178,6 +178,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="k">import</span> <span class="n">NamedTemporaryFile</span>
 
 <span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">ExpressionNotMatch</span><span class="p">,</span> <span class="n">NoConfigOptions</span><span class="p">,</span> <span class="n">NoConfigOption</span>
 <span class="kn">from</span> <span class="nn">fuzzywuzzy</span> <span class="k">import</span> <span class="n">fuzz</span><span class="p">,</span> <span class="n">process</span>
@@ -440,29 +441,57 @@
         <span class="c1"># Retrieve migration mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
 
-<div class="viewcode-block" id="DRSLeaf.upgrade"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSLeaf.upgrade">[docs]</a>    <span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">todo_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="DRSLeaf.upgrade"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSLeaf.upgrade">[docs]</a>    <span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">todo_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">commands_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upgrade the DRS tree.</span>
 
+<span class="sd">        :param str commands_file: The file to write command-lines statement if submitted</span>
 <span class="sd">        :param boolean todo_only: True to only print Unix command-lines to apply (i.e., as dry-run)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># BE CAREFUL: Avoid any changes in the print statements here</span>
+        <span class="c1"># Someone could use display outputs for parsing and further processing.</span>
+        <span class="c1"># Any change of the line outputs can break this for users.</span>
+
+        <span class="c1"># --commands_file writes print statements ONLY in the submitted file</span>
+
         <span class="c1"># Make directory for destination path if not exist</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;mkdir -p&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)))</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;mkdir -p&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">commands_file</span><span class="p">,</span> <span class="n">todo_only</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">todo_only</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
                 <span class="k">pass</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">UNIX_COMMAND_LABEL</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
+        <span class="c1"># Print command-line to apply</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">UNIX_COMMAND_LABEL</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">commands_file</span><span class="p">,</span> <span class="n">todo_only</span><span class="p">)</span>
         <span class="c1"># Unlink symbolic link if already exists</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;symlink&#39;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;unlink&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;unlink&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">commands_file</span><span class="p">,</span> <span class="n">todo_only</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">todo_only</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
         <span class="c1"># Make upgrade depending on the migration mode</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">todo_only</span><span class="p">:</span>
             <span class="n">UNIX_COMMAND</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="DRSLeaf.print_cmd"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSLeaf.print_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">print_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">commands_file</span><span class="p">,</span> <span class="n">todo_only</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print unix command-line depending on the choosen output and DRS action.</span>
+
+<span class="sd">        :param str line: The command-line to write.</span>
+<span class="sd">        :param str commands_file: The output file to write command-lines, None if not.</span>
+<span class="sd">        :param boolean todo_only: True to only print Unix command-lines to apply (i.e., as dry-run)</span>
+<span class="sd">        :param str mode: File open() mode</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">commands_file</span> <span class="ow">and</span> <span class="n">todo_only</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">commands_file</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DRSLeaf.has_permissions"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSLeaf.has_permissions">[docs]</a>    <span class="k">def</span> <span class="nf">has_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -482,12 +511,37 @@
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">R_OK</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">ReadAccessDenied</span><span class="p">(</span><span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
         <span class="c1"># Check dst access (always write)</span>
-        <span class="c1"># Backward the DRS is path does not exist</span>
+        <span class="c1"># Backward the DRS if path does not exist</span>
         <span class="n">dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dst</span> <span class="o">!=</span> <span class="n">root</span><span class="p">:</span>
             <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dst</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">WriteAccessDenied</span><span class="p">(</span><span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">(),</span> <span class="n">dst</span><span class="p">)</span></div></div>
+            <span class="k">raise</span> <span class="n">WriteAccessDenied</span><span class="p">(</span><span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">(),</span> <span class="n">dst</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DRSLeaf.migration_granted"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSLeaf.migration_granted">[docs]</a>    <span class="k">def</span> <span class="nf">migration_granted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if migration mode is allowed by filesystem.</span>
+<span class="sd">        Bacially, copy or move will always succeed.</span>
+<span class="sd">        Only hardlinks could fail depending on the filesystem partition.</span>
+
+<span class="sd">        :param str root: The DRS tree root</span>
+<span class="sd">        :raises Error: If migration is disallowed by filesystem configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;link&#39;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
+                <span class="k">while</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dst</span> <span class="o">!=</span> <span class="n">root</span><span class="p">:</span>
+                    <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dst</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">UNIX_COMMAND</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">](</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="mi">18</span><span class="p">:</span>
+                        <span class="c1"># Invalide corss-device link</span>
+                        <span class="k">raise</span> <span class="n">CrossMigrationDenied</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># Other OSError</span>
+                        <span class="k">raise</span> <span class="n">MigrationDenied</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="DRSTree"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree">[docs]</a><span class="k">class</span> <span class="nc">DRSTree</span><span class="p">(</span><span class="n">Tree</span><span class="p">):</span>
@@ -496,7 +550,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Retrieve original class init</span>
         <span class="n">Tree</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="c1"># To records dataset and files</span>
@@ -509,6 +563,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">drs_mode</span> <span class="o">=</span> <span class="n">mode</span>
         <span class="c1"># Display width</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Output file if submitted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span> <span class="o">=</span> <span class="n">outfile</span>
 
 <div class="viewcode-block" id="DRSTree.get_display_lengths"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.get_display_lengths">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -607,7 +663,7 @@
 
 <div class="viewcode-block" id="DRSTree.todo"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.todo">[docs]</a>    <span class="k">def</span> <span class="nf">todo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        As a dry run :func:`esgprep.drs.handler.DRSTree.upgrade` that only prints command-line to do.</span>
+<span class="sd">        As a dry run :func:`esgprep.drs.handler.DRSTree.upgrade` that only prints command-lines to do.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">upgrade</span><span class="p">(</span><span class="n">todo_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
@@ -619,10 +675,11 @@
 <span class="sd">        :param boolean todo_only: Only print Unix command-line to do</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check permissions before upgrade</span>
+        <span class="c1"># Check permissions and migration availability before upgrade</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">todo_only</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">leaf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaves</span><span class="p">():</span>
                 <span class="n">leaf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">has_permissions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drs_root</span><span class="p">)</span>
+                <span class="n">leaf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">migration_granted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drs_root</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">todo_only</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Unix command-lines (DRY-RUN)&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
@@ -630,7 +687,9 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Unix command-lines&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">leaf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaves</span><span class="p">():</span>
-            <span class="n">leaf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">upgrade</span><span class="p">(</span><span class="n">todo_only</span><span class="p">)</span>
+            <span class="n">leaf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">upgrade</span><span class="p">(</span><span class="n">todo_only</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">todo_only</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Command-lines to apply have been exported to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;=&#39;</span><span class="p">))</span></div></div>
 </pre></div>
 
@@ -668,7 +727,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.24',
+            VERSION:'2.7.28',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

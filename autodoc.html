@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.7.24 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.7.28 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.24 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.28 documentation" href="index.html"/>
         <link rel="prev" title="Changelog" href="log.html"/> 
 
   
@@ -597,6 +597,13 @@ Make the intersection with the desired projects to fetch.</p>
 </tbody>
 </table>
 <dl class="method">
+<dt id="esgprep.drs.context.ProcessingContext._check_existing_commands_file">
+<code class="descname">_check_existing_commands_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/context.html#ProcessingContext._check_existing_commands_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.context.ProcessingContext._check_existing_commands_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>check for existing commands file, and depending on &#8211;overwrite-commands-file setting,
+either delete it or throw a fatal error.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="esgprep.drs.context.ProcessingContext.get_checksum_client">
 <code class="descname">get_checksum_client</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/context.html#ProcessingContext.get_checksum_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.context.ProcessingContext.get_checksum_client" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the checksum client to use.
@@ -840,13 +847,37 @@ The arguments are the same as <a class="reference internal" href="#esgprep.drs.h
 <dd><p>Handler providing methods to deal with DRS file.</p>
 <dl class="method">
 <dt id="esgprep.drs.handler.DRSLeaf.upgrade">
-<code class="descname">upgrade</code><span class="sig-paren">(</span><em>todo_only=True</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSLeaf.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSLeaf.upgrade" title="Permalink to this definition">¶</a></dt>
+<code class="descname">upgrade</code><span class="sig-paren">(</span><em>todo_only=True</em>, <em>commands_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSLeaf.upgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSLeaf.upgrade" title="Permalink to this definition">¶</a></dt>
 <dd><p>Upgrade the DRS tree.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>todo_only</strong> (<em>boolean</em>) &#8211; True to only print Unix command-lines to apply (i.e., as dry-run)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>commands_file</strong> (<em>str</em>) &#8211; The file to write command-lines statement if submitted</li>
+<li><strong>todo_only</strong> (<em>boolean</em>) &#8211; True to only print Unix command-lines to apply (i.e., as dry-run)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="esgprep.drs.handler.DRSLeaf.print_cmd">
+<em class="property">static </em><code class="descname">print_cmd</code><span class="sig-paren">(</span><em>line</em>, <em>commands_file</em>, <em>todo_only</em>, <em>mode='a'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSLeaf.print_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSLeaf.print_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print unix command-line depending on the choosen output and DRS action.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>line</strong> (<em>str</em>) &#8211; The command-line to write.</li>
+<li><strong>commands_file</strong> (<em>str</em>) &#8211; The output file to write command-lines, None if not.</li>
+<li><strong>todo_only</strong> (<em>boolean</em>) &#8211; True to only print Unix command-lines to apply (i.e., as dry-run)</li>
+<li><strong>mode</strong> (<em>str</em>) &#8211; File open() mode</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -869,11 +900,29 @@ Discards relative paths.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="esgprep.drs.handler.DRSLeaf.migration_granted">
+<code class="descname">migration_granted</code><span class="sig-paren">(</span><em>root</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSLeaf.migration_granted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSLeaf.migration_granted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if migration mode is allowed by filesystem.
+Bacially, copy or move will always succeed.
+Only hardlinks could fail depending on the filesystem partition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>root</strong> (<em>str</em>) &#8211; The DRS tree root</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If migration is disallowed by filesystem configuration</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="esgprep.drs.handler.DRSTree">
-<em class="property">class </em><code class="descclassname">esgprep.drs.handler.</code><code class="descname">DRSTree</code><span class="sig-paren">(</span><em>root</em>, <em>version</em>, <em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.drs.handler.</code><code class="descname">DRSTree</code><span class="sig-paren">(</span><em>root</em>, <em>version</em>, <em>mode</em>, <em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handler providing methods to deal with DRS tree.</p>
 <dl class="method">
 <dt id="esgprep.drs.handler.DRSTree.get_display_lengths">
@@ -924,7 +973,7 @@ The <a class="reference internal" href="#esgprep.drs.handler.DRSLeaf" title="esg
 <dl class="method">
 <dt id="esgprep.drs.handler.DRSTree.todo">
 <code class="descname">todo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree.todo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree.todo" title="Permalink to this definition">¶</a></dt>
-<dd><p>As a dry run <a class="reference internal" href="#esgprep.drs.handler.DRSTree.upgrade" title="esgprep.drs.handler.DRSTree.upgrade"><code class="xref py py-func docutils literal"><span class="pre">esgprep.drs.handler.DRSTree.upgrade()</span></code></a> that only prints command-line to do.</p>
+<dd><p>As a dry run <a class="reference internal" href="#esgprep.drs.handler.DRSTree.upgrade" title="esgprep.drs.handler.DRSTree.upgrade"><code class="xref py py-func docutils literal"><span class="pre">esgprep.drs.handler.DRSTree.upgrade()</span></code></a> that only prints command-lines to do.</p>
 </dd></dl>
 
 <dl class="method">
@@ -981,6 +1030,18 @@ The <a class="reference internal" href="#esgprep.drs.handler.DRSLeaf" title="esg
 <dt id="esgprep.drs.custom_exceptions.WriteAccessDenied">
 <em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">WriteAccessDenied</code><span class="sig-paren">(</span><em>user</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#WriteAccessDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.WriteAccessDenied" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised when user has not write access.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.CrossMigrationDenied">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">CrossMigrationDenied</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em>, <em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#CrossMigrationDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.CrossMigrationDenied" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when migration fails for cross-device link.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.MigrationDenied">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">MigrationDenied</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em>, <em>mode</em>, <em>reason</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#MigrationDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.MigrationDenied" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when migration fails in another case.</p>
 </dd></dl>
 
 </div>
@@ -1461,7 +1522,7 @@ it follows the symlink to complete the DRS attributes.</p>
 </table>
 <dl class="class">
 <dt id="esgprep.utils.collectors.Collecting">
-<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Collecting</code><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collecting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collecting" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Collecting</code><span class="sig-paren">(</span><em>spinner</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collecting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collecting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spinner pending data collection.</p>
 <dl class="method">
 <dt id="esgprep.utils.collectors.Collecting.next">
@@ -1473,7 +1534,7 @@ it follows the symlink to complete the DRS attributes.</p>
 
 <dl class="class">
 <dt id="esgprep.utils.collectors.Collector">
-<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Collector</code><span class="sig-paren">(</span><em>sources</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Collector</code><span class="sig-paren">(</span><em>sources</em>, <em>spinner=True</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base collector class to yield regular NetCDF files.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1514,14 +1575,7 @@ it follows the symlink to complete the DRS attributes.</p>
 <dl class="method">
 <dt id="esgprep.utils.collectors.Collector.first">
 <code class="descname">first</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collector.first"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collector.first" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dd><p>Returns the first iterator element.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1565,7 +1619,7 @@ it follows the symlink to complete the DRS attributes.</p>
 
 <dl class="class">
 <dt id="esgprep.utils.collectors.DatasetCollector">
-<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">DatasetCollector</code><span class="sig-paren">(</span><em>sources</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#DatasetCollector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.DatasetCollector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">DatasetCollector</code><span class="sig-paren">(</span><em>sources</em>, <em>spinner=True</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#DatasetCollector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.DatasetCollector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Collector class to yield datasets from a list of files to read.</p>
 </dd></dl>
 
@@ -1996,7 +2050,7 @@ Only match at the beginning of the string.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.24',
+            VERSION:'2.7.28',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
