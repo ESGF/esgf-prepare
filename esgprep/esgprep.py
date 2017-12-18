@@ -272,6 +272,11 @@ def get_args():
         metavar='TXT_FILE',
         type=str,
         help=COMMANDS_FILE_HELP)
+    drs.add_argument(
+        '--overwrite-commands-file',
+        action='store_true',
+        default=False,
+        help=OVERWRITE_COMMANDS_FILE_HELP)
     group = drs.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--copy',
