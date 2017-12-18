@@ -38,7 +38,8 @@ class ProcessingContext(object):
         self.directory = args.directory
         self.root = os.path.normpath(args.root)
         self.rescan = args.rescan
-        self.printf = args.commands_file
+        self.commands_file = args.commands_file
+        self.overwrite_commands_file = args.overwrite_commands_file
         self.set_values = {}
         if args.set_value:
             self.set_values = dict(args.set_value)
@@ -63,14 +64,19 @@ class ProcessingContext(object):
         self.scan_errors = None
         self.scan_files = None
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename
-        if self.printf and self.action != 'todo':
-            logging.warning('"{}" action do not consider "--commands-file" argument.'.format(self.action))
-
+        if self.commands_file and self.action != 'todo':
+            print '"{}" action ignores "--commands-file" argument.'.format(self.action)
+            self.commands_file = None
+        if self.overwrite_commands_file and not self.commands_file:
+            print '--overwrite-commands-file ignored'
+        
     def __enter__(self):
         # Get checksum client
         self.checksum_client, self.checksum_type = self.get_checksum_client()
         # Init configuration parser
         self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
+        # check if --commands-file argument specifies existing file
+        self._check_existing_commands_file()
         # Warn user about unconsidered hard-coded elements
         for pattern_element in self.cfg.get('directory_format', raw=True).strip().split("/"):
             if not re.match(re.compile(r'%\([\w]+\)s'), pattern_element):
@@ -82,7 +88,7 @@ class ProcessingContext(object):
         self.facets = self.cfg.get_facets('directory_format')
         self.pattern = self.cfg.translate('filename_format')
         # Init DRS tree
-        self.tree = DRSTree(self.root, self.version, self.mode, self.printf)
+        self.tree = DRSTree(self.root, self.version, self.mode, self.commands_file)
         # Disable file scan if a previous DRS tree have generated using same context and no "list" action
         if not self.rescan and self.action != 'list' and os.path.isfile(TREE_FILE):
             reader = load(TREE_FILE)
@@ -104,6 +110,18 @@ class ProcessingContext(object):
         self.pool = ThreadPool(int(self.threads))
         return self
 
+    def _check_existing_commands_file(self):
+        """
+        check for existing commands file, and depending on --overwrite-commands-file setting,
+        either delete it or throw a fatal error.
+        """
+        if self.commands_file and os.path.exists(self.commands_file):
+            if self.overwrite_commands_file:
+                os.remove(self.commands_file)
+            else:
+                print "File '{}' already exists and '--overwrite-commands-file' option not used.".format(self.commands_file)
+                sys.exit(1)
+                
     def __exit__(self, *exc):
         # Close threads pool
         self.pool.close()

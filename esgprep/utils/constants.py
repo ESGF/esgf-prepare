@@ -354,6 +354,12 @@ COMMANDS_FILE_HELP = \
 
     """
 
+OVERWRITE_COMMANDS_FILE_HELP = \
+    """
+    Allow overwriting of existing file specified by "--commands-file".
+
+    """
+
 RESCAN_HELP = \
     """
     Force incoming files rescan.|n
