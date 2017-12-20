@@ -65,15 +65,14 @@ def process(collector_input):
             if int(DRSPath.TREE_VERSION[1:]) <= int(fph.v_latest[1:]):
                 raise OlderUpgrade(DRSPath.TREE_VERSION, fph.v_latest)
             # Check latest files
-            if ctx.checksum_client:
-                # Pickup the latest file version
-                latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
-                # Compute checksums and compare between latest (if exists) and upgrade file versions
-                if os.path.exists(latest_file):
-                    latest_checksum = checksum(latest_file, ctx.checksum_type, ctx.checksum_client)
-                    current_checksum = checksum(fh.ffp, ctx.checksum_type, ctx.checksum_client)
-                    if latest_checksum == current_checksum:
-                        raise DuplicatedFile(latest_file, fh.ffp)
+            # Pickup the latest file version
+            latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
+            if os.path.exists(latest_file) and ctx.duplicates_error:
+                # If checksum check submitted compare checksums
+                latest_checksum = checksum(latest_file, ctx.checksum_type, ctx.checksum_client)
+                current_checksum = checksum(fh.ffp, ctx.checksum_type, ctx.checksum_client)
+                if latest_checksum == current_checksum:
+                    raise DuplicatedFile(latest_file, fh.ffp)
         # Start the tree generation
         # Add file DRS path to Tree
         src = ['..'] * len(fph.items(d_part=False))

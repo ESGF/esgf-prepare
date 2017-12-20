@@ -40,6 +40,7 @@ class ProcessingContext(object):
         self.rescan = args.rescan
         self.commands_file = args.commands_file
         self.overwrite_commands_file = args.overwrite_commands_file
+        self.duplicates_error = args.error_on_duplicates
         self.set_values = {}
         if args.set_value:
             self.set_values = dict(args.set_value)
@@ -59,7 +60,6 @@ class ProcessingContext(object):
             self.mode = 'move'
         self.version = args.version
         DRSPath.TREE_VERSION = 'v{}'.format(args.version)
-        self.no_checksum = args.no_checksum
         self.scan = True
         self.scan_errors = None
         self.scan_files = None
@@ -166,18 +166,15 @@ class ProcessingContext(object):
         :rtype: *str*
 
         """
-        if self.no_checksum:
-            return None, None
+        _cfg = SectionParser(section='DEFAULT', directory=self.config_dir)
+        if _cfg.has_option('checksum', section='DEFAULT'):
+            checksum_client, checksum_type = _cfg.get_options_from_table('checksum')[0]
+        else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
+            checksum_client, checksum_type = 'sha256sum', 'SHA256'
+        if not cmd_exists(checksum_client):
+            raise ChecksumClientNotFound(checksum_client)
         else:
-            _cfg = SectionParser(section='DEFAULT', directory=self.config_dir)
-            if _cfg.has_option('checksum', section='DEFAULT'):
-                checksum_client, checksum_type = _cfg.get_options_from_table('checksum')[0]
-            else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
-                checksum_client, checksum_type = 'sha256sum', 'SHA256'
-            if not cmd_exists(checksum_client):
-                raise ChecksumClientNotFound(checksum_client)
-            else:
-                return checksum_client, checksum_type
+            return checksum_client, checksum_type
 
     def check_args(self, old_args):
         """

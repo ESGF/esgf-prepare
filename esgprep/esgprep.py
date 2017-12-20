@@ -258,10 +258,10 @@ def get_args():
         action='append',
         help=SET_KEY_HELP)
     drs.add_argument(
-        '--no-checksum',
+        '--error-on-duplicates',
         action='store_true',
         default=False,
-        help=NO_CHECKSUM_HELP['drs'])
+        help=ERROR_ON_DUPLICATES)
     drs.add_argument(
         '--rescan',
         action='store_true',
@@ -361,7 +361,7 @@ def get_args():
         '--no-checksum',
         action='store_true',
         default=False,
-        help=NO_CHECKSUM_HELP['mapfile'])
+        help=NO_CHECKSUM_HELP)
     mapfile.add_argument(
         '--ignore-dir',
         metavar="PYTHON_REGEX",

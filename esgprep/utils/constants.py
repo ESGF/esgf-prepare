@@ -333,19 +333,11 @@ SET_KEY_HELP = \
     This overwrites facet auto-detection.
     
     """
-NO_CHECKSUM_HELP = {
-    'drs':
-        """
-        Does not include files checksums for version comparison.
-        
-        """,
-
-    'mapfile':
-        """
-        Does not include files checksums into the mapfile(s).
-        
-        """
-}
+NO_CHECKSUM_HELP = \
+    """
+    Does not include files checksums into the mapfile(s).
+    
+    """
 
 COMMANDS_FILE_HELP = \
     """
@@ -466,6 +458,13 @@ LATEST_SYMLINK_HELP = \
     name, but picked up the pointed version to build the|n
     dataset identifier (if --no-version is disabled).
     
+    """
+
+ERROR_ON_DUPLICATES = \
+    """
+    Raise an error when upgrade and latest version have|n
+    duplicated files. Default is to skip duplicated files|n
+    and treat them with symlinks in the final DRS tree.
     """
 
 NO_VERSION_HELP = \
