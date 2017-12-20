@@ -40,7 +40,6 @@ class ProcessingContext(object):
         self.rescan = args.rescan
         self.commands_file = args.commands_file
         self.overwrite_commands_file = args.overwrite_commands_file
-        self.duplicates_error = args.error_on_duplicates
         self.set_values = {}
         if args.set_value:
             self.set_values = dict(args.set_value)

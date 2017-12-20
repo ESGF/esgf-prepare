@@ -64,11 +64,10 @@ def process(collector_input):
             # Latest version should be older than upgrade version
             if int(DRSPath.TREE_VERSION[1:]) <= int(fph.v_latest[1:]):
                 raise OlderUpgrade(DRSPath.TREE_VERSION, fph.v_latest)
-            # Check latest files
             # Pickup the latest file version
             latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
-            if os.path.exists(latest_file) and ctx.duplicates_error:
-                # If checksum check submitted compare checksums
+            # Check latest file if exists
+            if os.path.exists(latest_file):
                 latest_checksum = checksum(latest_file, ctx.checksum_type, ctx.checksum_client)
                 current_checksum = checksum(fh.ffp, ctx.checksum_type, ctx.checksum_client)
                 if latest_checksum == current_checksum:

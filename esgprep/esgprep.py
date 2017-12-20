@@ -258,11 +258,6 @@ def get_args():
         action='append',
         help=SET_KEY_HELP)
     drs.add_argument(
-        '--error-on-duplicates',
-        action='store_true',
-        default=False,
-        help=ERROR_ON_DUPLICATES)
-    drs.add_argument(
         '--rescan',
         action='store_true',
         default=False,
