@@ -11,6 +11,7 @@ import getpass
 import logging
 import re
 from collections import OrderedDict
+from os import remove
 from tempfile import NamedTemporaryFile
 
 from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions, NoConfigOption
@@ -509,6 +510,13 @@ class DRSTree(Tree):
         for duplicate in self.duplicates:
             line = '{} {}'.format('rm -f', duplicate)
             print_cmd(line, self.commands_file, todo_only)
+            if not todo_only:
+                # Check src access
+                if os.path.isabs(duplicate) and not os.access(duplicate, os.W_OK):
+                    raise WriteAccessDenied(getpass.getuser(), self.src)
+                else:
+                    # If access granted, remove file
+                    remove(duplicate)
         if todo_only and self.commands_file:
             print('Command-lines to apply have been exported to {}'.format(self.commands_file))
         print(''.center(self.d_lengths[-1], '='))
