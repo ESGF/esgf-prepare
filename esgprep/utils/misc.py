@@ -38,14 +38,14 @@ class LogFilter(object):
         return log_record.levelno <= self.level
 
 
-def init_logging(log, verbose=False, level='INFO'):
+def init_logging(log, debug=False, level='INFO'):
     """
     Initiates the logging configuration (output, date/message formatting).
     If a directory is submitted the logfile name is unique and formatted as follows:
     ``name-YYYYMMDD-HHMMSS-JOBID.log``If ``None`` the standard output is used.
 
     :param str log: The logfile directory.
-    :param boolean verbose: Verbose mode.
+    :param boolean debug: Debug mode.
     :param str level: The log level.
 
     """
@@ -66,7 +66,7 @@ def init_logging(log, verbose=False, level='INFO'):
     if log:
         stream_handler = logging.FileHandler(filename='{}.log'.format(logfile), delay=True)
     else:
-        if verbose:
+        if debug:
             stream_handler = logging.StreamHandler()
         else:
             stream_handler = logging.NullHandler()

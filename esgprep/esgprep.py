@@ -89,7 +89,7 @@ def get_args():
         nargs='?',
         help=LOG_HELP)
     parent.add_argument(
-        '-v',
+        '--debug',
         action='store_true',
         default=False,
         help=VERBOSE_HELP)
@@ -412,10 +412,10 @@ def run():
     """
     # Get command-line arguments
     args = get_args()
-    # Initialize logger depending on log and verbose mode
-    init_logging(log=args.log, verbose=args.v)
-    # Print progress bar if no log and no verbose mode
-    setattr(args, 'pbar', True if not args.log and not args.v else False)
+    # Initialize logger depending on log and debug mode
+    init_logging(log=args.log, debug=args.debug)
+    # Print progress bar if no log and no debug mode
+    setattr(args, 'pbar', True if not args.log and not args.debug else False)
     # Run program
     if args.test:
         # Run test suite
