@@ -129,8 +129,10 @@ def process(collector_input):
     except DuplicatedFile as e:
         # Log warning statement (not print because of progress bar)
         logging.warning('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
-        # Records duplicated file for further removal
-        ctx.tree.duplicates.append(ffp)
+        # Records duplicated file for further removal only if migration mode is the default (i.e., moving files)
+        # In the case of --copy or --link, keep duplicates in place into the incoming directory
+        if ctx.mode== 'move':
+            ctx.tree.duplicates.append(ffp)
         # Returns True because of no scan error in fact
         return True
     # Catch any other exception into error log instead of stop the run
