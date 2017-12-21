@@ -290,7 +290,7 @@ class DRSLeaf(object):
 
         # Make directory for destination path if not exist
         line = '{} {}'.format('mkdir -p', os.path.dirname(self.dst))
-        self.print_cmd(line, commands_file, todo_only)
+        print_cmd(line, commands_file, todo_only)
         if not todo_only:
             try:
                 os.makedirs(os.path.dirname(self.dst))
@@ -298,33 +298,16 @@ class DRSLeaf(object):
                 pass
         # Print command-line to apply
         line = '{} {} {}'.format(UNIX_COMMAND_LABEL[self.mode], self.src, self.dst)
-        self.print_cmd(line, commands_file, todo_only)
+        print_cmd(line, commands_file, todo_only)
         # Unlink symbolic link if already exists
         if self.mode == 'symlink' and os.path.exists(self.dst):
             line = '{} {}'.format('unlink', self.dst)
-            self.print_cmd(line, commands_file, todo_only)
+            print_cmd(line, commands_file, todo_only)
             if not todo_only:
                 os.unlink(self.dst)
         # Make upgrade depending on the migration mode
         if not todo_only:
             UNIX_COMMAND[self.mode](self.src, self.dst)
-
-    @staticmethod
-    def print_cmd(line, commands_file, todo_only, mode='a'):
-        """
-        Print unix command-line depending on the choosen output and DRS action.
-
-        :param str line: The command-line to write.
-        :param str commands_file: The output file to write command-lines, None if not.
-        :param boolean todo_only: True to only print Unix command-lines to apply (i.e., as dry-run)
-        :param str mode: File open() mode
-
-        """
-        if commands_file and todo_only:
-            with open(commands_file, mode) as f:
-                f.write('{}\n'.format(line))
-        else:
-            print(line)
 
     def has_permissions(self, root):
         """
@@ -398,6 +381,8 @@ class DRSTree(Tree):
         self.d_lengths = []
         # Output file if submitted
         self.commands_file = outfile
+        # List of duplicates to remove
+        self.duplicates = list()
 
     def get_display_lengths(self):
         """
@@ -521,6 +506,26 @@ class DRSTree(Tree):
         print(''.center(self.d_lengths[-1], '-'))
         for leaf in self.leaves():
             leaf.data.upgrade(todo_only, self.commands_file)
+        for duplicate in self.duplicates:
+            line = '{} {}'.format('rm -f', duplicate)
+            print_cmd(line, self.commands_file, todo_only)
         if todo_only and self.commands_file:
             print('Command-lines to apply have been exported to {}'.format(self.commands_file))
         print(''.center(self.d_lengths[-1], '='))
+
+
+def print_cmd(line, commands_file, todo_only, mode='a'):
+    """
+    Print unix command-line depending on the choosen output and DRS action.
+
+    :param str line: The command-line to write.
+    :param str commands_file: The output file to write command-lines, None if not.
+    :param boolean todo_only: True to only print Unix command-lines to apply (i.e., as dry-run)
+    :param str mode: File open() mode
+
+    """
+    if commands_file and todo_only:
+        with open(commands_file, mode) as f:
+            f.write('{}\n'.format(line))
+    else:
+        print(line)

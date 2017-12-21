@@ -122,7 +122,18 @@ def process(collector_input):
             ctx.tree.paths[fph.path(f_part=False)] = [incoming]
         logging.info('{} <-- {}'.format(fph.path(f_part=False), fh.filename))
         return True
-    # Catch any exception into error log instead of stop the run
+    # Catch DuplicatedFile as a particular error
+    # Duplicated file could normally occurs in the incoming directory
+    # In such a case just print warning statement that duplicated files are skipped
+    # and removed from incoming path if migration mode is the default (i.e., moving file)
+    except DuplicatedFile as e:
+        # Log warning statement (not print because of progress bar)
+        logging.warning('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
+        # Records duplicated file for further removal
+        ctx.tree.duplicates.append(ffp)
+        # Returns True because of no scan error in fact
+        return True
+    # Catch any other exception into error log instead of stop the run
     except Exception as e:
         logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         return None
