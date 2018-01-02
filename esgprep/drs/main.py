@@ -70,35 +70,36 @@ def process(collector_input):
             if os.path.exists(latest_file):
                 latest_checksum = checksum(latest_file, ctx.checksum_type, ctx.checksum_client)
                 current_checksum = checksum(fh.ffp, ctx.checksum_type, ctx.checksum_client)
+                # Check if processed file is a duplicate in comparison with latest version
                 if latest_checksum == current_checksum:
-                    raise DuplicatedFile(latest_file, fh.ffp)
+                    fh.is_duplicate = True
         # Start the tree generation
-        # Add file DRS path to Tree
-        src = ['..'] * len(fph.items(d_part=False))
-        src.extend(fph.items(d_part=False, latest=True, file_folder=True))
-        src.append(fh.filename)
-        ctx.tree.create_leaf(nodes=fph.items(root=True),
-                             leaf=fh.filename,
-                             label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
-                             src=os.path.join(*src),
-                             mode='symlink')
-        # Add "latest" node for symlink
-        ctx.tree.create_leaf(nodes=fph.items(f_part=False, version=False, root=True),
-                             leaf='latest',
-                             label='{}{}{}'.format('latest', LINK_SEPARATOR, fph.v_upgrade),
-                             src=fph.v_upgrade,
-                             mode='symlink')
-        # Add "files" node to Tree
-        ctx.tree.create_leaf(nodes=fph.items(file_folder=True, root=True),
-                             leaf=fh.filename,
-                             label=fh.filename,
-                             src=fh.ffp,
-                             mode=ctx.mode)
-        # If upgrade from latest is activated, walk through the latest dataset version
-        # and create a simlink for each file with a different filename than the processed one
-        if fph.v_latest:
+        if not fh.is_duplicate:
+            # Add the processed file to the "vYYYYMMDD" node
+            src = ['..'] * len(fph.items(d_part=False))
+            src.extend(fph.items(d_part=False, latest=True, file_folder=True))
+            src.append(fh.filename)
+            ctx.tree.create_leaf(nodes=fph.items(root=True),
+                                 leaf=fh.filename,
+                                 label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
+                                 src=os.path.join(*src),
+                                 mode='symlink')
+            # Add the "latest" node for symlink
+            ctx.tree.create_leaf(nodes=fph.items(f_part=False, version=False, root=True),
+                                 leaf='latest',
+                                 label='{}{}{}'.format('latest', LINK_SEPARATOR, fph.v_upgrade),
+                                 src=fph.v_upgrade,
+                                 mode='symlink')
+            # Add the processed file to the "files" node
+            ctx.tree.create_leaf(nodes=fph.items(file_folder=True, root=True),
+                                 leaf=fh.filename,
+                                 label=fh.filename,
+                                 src=fh.ffp,
+                                 mode=ctx.mode)
             if ctx.upgrade_from_latest:
-                for root, _, filenames in os.walk(os.path.join(fph.path(f_part=False, latest=True, root=True))):
+                # Walk through the latest dataset version and create a simlink for each file with a different
+                # filename than the processed one
+                for root, _, filenames in os.walk(fph.path(f_part=False, latest=True, root=True)):
                     for filename in filenames:
                         # Add latest files as tree leaves with version to upgrade instead of latest version
                         # i.e., copy latest dataset leaves to Tree
@@ -110,13 +111,32 @@ def process(collector_input):
                                                  src=src,
                                                  mode='symlink')
         else:
-            fph.v_latest = 'Initial'
+            # Pickup the latest file version
+            latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
+            if ctx.upgrade_from_latest:
+                # If upgrade from latest is activated, raise the error, no duplicated files allowed
+                # Because incoming must only contain modifed/corrected files
+                raise DuplicatedFile(latest_file, fh.ffp)
+            else:
+                # If default behavior, the incoming contains all data for a new version
+                # In the case of a duplicated file, just pass to the expected symlink creation
+                # and records duplicated file for further removal only if migration mode is the
+                # default (i.e., moving files). In the case of --copy or --link, keep duplicates
+                # in place into the incoming directory
+                src = os.readlink(latest_file)
+                ctx.tree.create_leaf(nodes=fph.items(root=True),
+                                     leaf=fh.filename,
+                                     label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, src),
+                                     src=src,
+                                     mode='symlink')
+                if ctx.mode == 'move':
+                    ctx.tree.duplicates.append(ffp)
         # Record entry for list()
         incoming = {'src': ffp,
                     'dst': fph.path(root=True),
                     'filename': fh.filename,
                     'variable': fh.get('variable'),
-                    'latest': fph.v_latest,
+                    'latest': fph.v_latest or 'Initial',
                     'size': fh.size}
         if fph.path(f_part=False) in ctx.tree.paths.keys():
             ctx.tree.paths[fph.path(f_part=False)].append(incoming)
@@ -124,20 +144,6 @@ def process(collector_input):
             ctx.tree.paths[fph.path(f_part=False)] = [incoming]
         logging.info('{} <-- {}'.format(fph.path(f_part=False), fh.filename))
         return True
-    # Catch DuplicatedFile as a particular error
-    # Duplicated file could normally occurs in the incoming directory
-    # In such a case just print warning statement that duplicated files are skipped
-    # and removed from incoming path if migration mode is the default (i.e., moving file)
-    except DuplicatedFile as e:
-        # Log warning statement (not print because of progress bar)
-        logging.warning('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
-        # Records duplicated file for further removal only if migration mode is the default (i.e., moving files)
-        # In the case of --copy or --link, keep duplicates in place into the incoming directory
-        if ctx.mode == 'move':
-            ctx.tree.duplicates.append(ffp)
-        # Returns True because of no scan error in fact
-        return True
-    # Catch any other exception into error log instead of stop the run
     except Exception as e:
         logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         return None

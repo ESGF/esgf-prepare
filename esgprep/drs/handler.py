@@ -42,6 +42,8 @@ class File(object):
         self.attributes = dict()
         # Retrieve file size
         self.size = os.stat(self.ffp).st_size
+        # Is duplicated (default is False if no latest version exists)
+        self.is_duplicate = False
 
     def get(self, key):
         """
@@ -236,7 +238,7 @@ class DRSPath(object):
         :rtype: *str*
 
         """
-        return os.path.join(*self.items(kwargs))
+        return os.path.join(*self.items(**kwargs))
 
     def get_latest_version(self):
         """
@@ -302,10 +304,10 @@ class DRSLeaf(object):
         print_cmd(line, commands_file, todo_only)
         # Unlink symbolic link if already exists
         if self.mode == 'symlink' and os.path.exists(self.dst):
-            line = '{} {}'.format('unlink', self.dst)
+            line = '{} {}'.format('rm -f', self.dst)
             print_cmd(line, commands_file, todo_only)
             if not todo_only:
-                os.unlink(self.dst)
+                os.remove(self.dst)
         # Make upgrade depending on the migration mode
         if not todo_only:
             UNIX_COMMAND[self.mode](self.src, self.dst)
