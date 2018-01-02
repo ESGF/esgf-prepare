@@ -236,7 +236,7 @@ class DRSPath(object):
         :rtype: *str*
 
         """
-        return os.path.join(*self.items(**kwargs))
+        return os.path.join(*self.items(kwargs))
 
     def get_latest_version(self):
         """

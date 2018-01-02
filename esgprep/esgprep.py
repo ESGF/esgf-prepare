@@ -272,6 +272,11 @@ def get_args():
         action='store_true',
         default=False,
         help=OVERWRITE_COMMANDS_FILE_HELP)
+    drs.add_argument(
+        '--upgrade-from-latest',
+        action='store_true',
+        default=False,
+        help=UPGRADE_FROM_LATEST_HELP)
     group = drs.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--copy',

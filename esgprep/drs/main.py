@@ -94,19 +94,21 @@ def process(collector_input):
                              label=fh.filename,
                              src=fh.ffp,
                              mode=ctx.mode)
-        # Walk through the latest dataset version
+        # If upgrade from latest is activated, walk through the latest dataset version
+        # and create a simlink for each file with a different filename than the processed one
         if fph.v_latest:
-            for root, _, filenames in os.walk(os.path.join(fph.path(f_part=False, latest=True, root=True))):
-                for filename in filenames:
-                    # Add latest files as tree leaves with version to upgrade instead of latest version
-                    # i.e., copy latest dataset leaves to Tree
-                    if filename != fh.filename:
-                        src = os.readlink(os.path.join(root, filename))
-                        ctx.tree.create_leaf(nodes=fph.items(root=True),
-                                             leaf=filename,
-                                             label='{}{}{}'.format(filename, LINK_SEPARATOR, src),
-                                             src=src,
-                                             mode='symlink')
+            if ctx.upgrade_from_latest:
+                for root, _, filenames in os.walk(os.path.join(fph.path(f_part=False, latest=True, root=True))):
+                    for filename in filenames:
+                        # Add latest files as tree leaves with version to upgrade instead of latest version
+                        # i.e., copy latest dataset leaves to Tree
+                        if filename != fh.filename:
+                            src = os.readlink(os.path.join(root, filename))
+                            ctx.tree.create_leaf(nodes=fph.items(root=True),
+                                                 leaf=filename,
+                                                 label='{}{}{}'.format(filename, LINK_SEPARATOR, src),
+                                                 src=src,
+                                                 mode='symlink')
         else:
             fph.v_latest = 'Initial'
         # Record entry for list()
@@ -131,7 +133,7 @@ def process(collector_input):
         logging.warning('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         # Records duplicated file for further removal only if migration mode is the default (i.e., moving files)
         # In the case of --copy or --link, keep duplicates in place into the incoming directory
-        if ctx.mode== 'move':
+        if ctx.mode == 'move':
             ctx.tree.duplicates.append(ffp)
         # Returns True because of no scan error in fact
         return True

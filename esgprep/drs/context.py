@@ -40,6 +40,7 @@ class ProcessingContext(object):
         self.rescan = args.rescan
         self.commands_file = args.commands_file
         self.overwrite_commands_file = args.overwrite_commands_file
+        self.upgrade_from_latest = args.upgrade_from_latest
         self.set_values = {}
         if args.set_value:
             self.set_values = dict(args.set_value)
@@ -77,9 +78,10 @@ class ProcessingContext(object):
         # check if --commands-file argument specifies existing file
         self._check_existing_commands_file()
         # Warn user about unconsidered hard-coded elements
-        for pattern_element in self.cfg.get('directory_format', raw=True).strip().split("/"):
+        for pattern_element in self.cfg.get('directory_format').strip().split("/"):
             if not re.match(re.compile(r'%\([\w]+\)s'), pattern_element):
-                msg = 'Hard-coded DRS elements (as "{}") in "directory_format" are not supported.'.format(pattern_element)
+                msg = 'Hard-coded DRS elements (as "{}") in "directory_format"' \
+                      'are not supported.'.format(pattern_element)
                 if self.pbar:
                     print(msg)
                 logging.warning(msg)
@@ -118,7 +120,8 @@ class ProcessingContext(object):
             if self.overwrite_commands_file:
                 os.remove(self.commands_file)
             else:
-                print "File '{}' already exists and '--overwrite-commands-file' option not used.".format(self.commands_file)
+                print "File '{}' already exists and '--overwrite-commands-file'" \
+                      "option not used.".format(self.commands_file)
                 sys.exit(1)
                 
     def __exit__(self, *exc):

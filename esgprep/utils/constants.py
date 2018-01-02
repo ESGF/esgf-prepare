@@ -352,6 +352,15 @@ OVERWRITE_COMMANDS_FILE_HELP = \
 
     """
 
+UPGRADE_FROM_LATEST_HELP = \
+    """
+    The upgraded version of the dataset is based primarily on the
+    previous (latest) version. Default is to consider the incoming
+    files as the complete contents of the new version of the dataset.
+    See the full documentation to get details on both methods.
+    
+    """
+
 RESCAN_HELP = \
     """
     Force incoming files rescan.|n
