@@ -15,10 +15,10 @@ class DuplicatedDataset(Exception):
 
     """
 
-    def __init__(self, version, path):
+    def __init__(self, path, version):
         self.msg = "Dataset already exists"
-        self.msg += "\n<version: '{}'>".format(version)
         self.msg += "\n<path: '{}'>".format(path)
+        self.msg += "\n<version: '{}'>".format(version)
         super(self.__class__, self).__init__(self.msg)
 
 

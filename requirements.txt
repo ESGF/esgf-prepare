@@ -2,7 +2,7 @@ requests
 fuzzywuzzy
 netCDF4
 lockfile
-hurry.filesize
+hurry
 treelib
 tqdm
 esgconfigparser

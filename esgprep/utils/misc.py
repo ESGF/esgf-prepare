@@ -7,7 +7,7 @@
 
 """
 
-# Module imports
+import hashlib
 import logging
 import os
 import pickle
@@ -172,6 +172,7 @@ def as_pbar(iterable, desc, units, total=None):
 
 
 def evaluate(results):
+    # type: (object) -> object
     """
     Evaluates a list depending on absence/presence of None values.
 

@@ -29,7 +29,7 @@ UNIX_COMMAND = {'symlink': symlink,
                 'move': move}
 
 # Command-line parameter to ignore
-CONTROLLED_ARGS = ['directory', 'set_values', 'set_keys', 'mode', 'version', 'root']
+CONTROLLED_ARGS = ['directory', 'set_values', 'set_keys', 'mode', 'version', 'root', 'upgrade_from_latest']
 
 # Tree context file
 TREE_FILE = '/tmp/DRSTree_{}.pkl'.format(environ['USER'])

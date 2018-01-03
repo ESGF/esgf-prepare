@@ -64,6 +64,16 @@ def process(collector_input):
             # Latest version should be older than upgrade version
             if int(DRSPath.TREE_VERSION[1:]) <= int(fph.v_latest[1:]):
                 raise OlderUpgrade(DRSPath.TREE_VERSION, fph.v_latest)
+            # Walk through the latest dataset version to check its uniqueness with file checksums
+            dset_nid = fph.path(f_part=False, latest=True, root=True)
+            if dset_nid not in ctx.tree.hash.keys():
+                ctx.tree.hash[dset_nid] = dict()
+                ctx.tree.hash[dset_nid]['latest'] = dict()
+                for root, _, filenames in os.walk(fph.path(f_part=False, latest=True, root=True)):
+                    for filename in filenames:
+                        ctx.tree.hash[dset_nid]['latest'][filename] = checksum(os.path.join(root, filename),
+                                                                               ctx.checksum_type,
+                                                                               ctx.checksum_client)
             # Pickup the latest file version
             latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
             # Check latest file if exists
@@ -77,13 +87,14 @@ def process(collector_input):
         if not fh.is_duplicate:
             # Add the processed file to the "vYYYYMMDD" node
             src = ['..'] * len(fph.items(d_part=False))
-            src.extend(fph.items(d_part=False, latest=True, file_folder=True))
+            src.extend(fph.items(d_part=False, file_folder=True))
             src.append(fh.filename)
             ctx.tree.create_leaf(nodes=fph.items(root=True),
                                  leaf=fh.filename,
                                  label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
                                  src=os.path.join(*src),
-                                 mode='symlink')
+                                 mode='symlink',
+                                 origin=fh.ffp)
             # Add the "latest" node for symlink
             ctx.tree.create_leaf(nodes=fph.items(f_part=False, version=False, root=True),
                                  leaf='latest',
@@ -104,12 +115,13 @@ def process(collector_input):
                         # Add latest files as tree leaves with version to upgrade instead of latest version
                         # i.e., copy latest dataset leaves to Tree
                         if filename != fh.filename:
-                            src = os.readlink(os.path.join(root, filename))
+                            src = os.path.join(root, filename)
                             ctx.tree.create_leaf(nodes=fph.items(root=True),
                                                  leaf=filename,
-                                                 label='{}{}{}'.format(filename, LINK_SEPARATOR, src),
-                                                 src=src,
-                                                 mode='symlink')
+                                                 label='{}{}{}'.format(filename, LINK_SEPARATOR, os.readlink(src)),
+                                                 src=os.readlink(src),
+                                                 mode='symlink',
+                                                 origin=os.path.realpath(src))
         else:
             # Pickup the latest file version
             latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
@@ -128,11 +140,12 @@ def process(collector_input):
                                      leaf=fh.filename,
                                      label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, src),
                                      src=src,
-                                     mode='symlink')
+                                     mode='symlink',
+                                     origin=fh.ffp)
                 if ctx.mode == 'move':
-                    ctx.tree.duplicates.append(ffp)
+                    ctx.tree.duplicates.append(fh.ffp)
         # Record entry for list()
-        incoming = {'src': ffp,
+        incoming = {'src': fh.ffp,
                     'dst': fph.path(root=True),
                     'filename': fh.filename,
                     'variable': fh.get('variable'),
@@ -195,6 +208,8 @@ def run(args):
         logging.warning('DRS tree recorded for next usage onto {}.'.format(TREE_FILE))
         # Evaluates the scan results to trigger the DRS tree action
         if evaluate(results):
+            # Check upgrade uniqueness
+            ctx.tree.check_uniqueness(ctx.checksum_type, ctx.checksum_client)
             # Apply tree action
             ctx.tree.get_display_lengths()
             getattr(ctx.tree, ctx.action)()

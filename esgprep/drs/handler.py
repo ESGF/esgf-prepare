@@ -25,6 +25,7 @@ from constants import *
 from custom_exceptions import *
 from esgprep.utils.constants import *
 from esgprep.utils.custom_exceptions import *
+from esgprep.utils.misc import checksum
 
 
 class File(object):
@@ -256,7 +257,7 @@ class DRSPath(object):
             versions = sorted([v for v in os.listdir(dset_path) if re.compile(r'v[\d]+').search(v)])
             # Upgrade version should not already exist
             if self.v_upgrade in versions:
-                raise DuplicatedDataset(self.v_upgrade, dset_path)
+                raise DuplicatedDataset(dset_path, self.v_upgrade)
             # Pickup respectively previous, next and latest version
             return versions[-1]
         else:
@@ -269,13 +270,15 @@ class DRSLeaf(object):
 
     """
 
-    def __init__(self, src, dst, mode):
+    def __init__(self, src, dst, mode, origin):
         # Retrieve source data path
         self.src = src
         # Get destination data path
         self.dst = dst
         # Retrieve migration mode
         self.mode = mode
+        # Retrieve origin data/file (Default is None)
+        self.origin = origin
 
     def upgrade(self, todo_only=True, commands_file=None):
         """
@@ -372,7 +375,7 @@ class DRSTree(Tree):
     def __init__(self, root, version, mode, outfile=None):
         # Retrieve original class init
         Tree.__init__(self)
-        # To records dataset and files
+        # Dataset and files record
         self.paths = dict()
         # Retrieve the root directory to build the DRS
         self.drs_root = root
@@ -381,11 +384,13 @@ class DRSTree(Tree):
         # Retrieve the migration mode
         self.drs_mode = mode
         # Display width
-        self.d_lengths = []
+        self.d_lengths = list()
         # Output file if submitted
         self.commands_file = outfile
         # List of duplicates to remove
         self.duplicates = list()
+        # Dataset hash record
+        self.hash = dict()
 
     def get_display_lengths(self):
         """
@@ -396,7 +401,7 @@ class DRSTree(Tree):
         self.d_lengths = [max([len(i) for i in self.paths.keys()]), 20, 20, 16, 16]
         self.d_lengths.append(sum(self.d_lengths) + 2)
 
-    def create_leaf(self, nodes, leaf, label, src, mode):
+    def create_leaf(self, nodes, leaf, label, src, mode, origin=None):
         """
         Creates all upstream nodes to a DRS leaf.
         The :func:`esgprep.drs.handler.DRSLeaf` class is added to data leaf nodes.
@@ -406,6 +411,7 @@ class DRSTree(Tree):
         :param str label: The leaf label
         :param str src: The source of the leaf
         :param str mode: The migration mode (e.g., 'copy', 'move', etc.)
+        :param str origin: The original file full path used for the DRSLeaf source
 
         """
         nodes.append(leaf)
@@ -422,7 +428,8 @@ class DRSTree(Tree):
                                      parent=parent_node_id,
                                      data=DRSLeaf(src=src,
                                                   dst=node_id.split(LINK_SEPARATOR)[0],
-                                                  mode=mode))
+                                                  mode=mode,
+                                                  origin=origin))
                 else:
                     parent_node_id = os.path.join(*nodes[:i])
                     self.create_node(tag=nodes[i],
@@ -445,6 +452,23 @@ class DRSTree(Tree):
             for node in self.expand_tree(root):
                 if self[node].is_leaf():
                     yield self[node]
+
+    def check_uniqueness(self, checksum_type, checksum_client):
+        """
+        Check tree upgrade uniqueness. Each data version to upgrade has to be stricly different
+        from the latest version if exists.
+
+        """
+        for latest_dset in self.hash.keys():
+            latest_path, latest_version = os.path.dirname(latest_dset), os.path.basename(latest_dset)
+            self.hash[latest_dset]['upgrade'] = dict()
+            for dset_leaf in self.leaves(root=os.path.join(latest_path, DRSPath.TREE_VERSION)):
+                filename = os.path.basename(dset_leaf.data.origin)
+                self.hash[latest_dset]['upgrade'][filename] = checksum(dset_leaf.data.origin,
+                                                                       checksum_type,
+                                                                       checksum_client)
+            if self.hash[latest_dset]['latest'] == self.hash[latest_dset]['upgrade']:
+                raise DuplicatedDataset(latest_path, latest_version)
 
     def list(self):
         """
