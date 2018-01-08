@@ -453,7 +453,7 @@ class DRSTree(Tree):
                 if self[node].is_leaf():
                     yield self[node]
 
-    def check_uniqueness(self, checksum_type, checksum_client):
+    def check_uniqueness(self, checksum_type):
         """
         Check tree upgrade uniqueness. Each data version to upgrade has to be stricly different
         from the latest version if exists.
@@ -465,8 +465,7 @@ class DRSTree(Tree):
             for dset_leaf in self.leaves(root=os.path.join(latest_path, DRSPath.TREE_VERSION)):
                 filename = os.path.basename(dset_leaf.data.origin)
                 self.hash[latest_dset]['upgrade'][filename] = checksum(dset_leaf.data.origin,
-                                                                       checksum_type,
-                                                                       checksum_client)
+                                                                       checksum_type)
             if self.hash[latest_dset]['latest'] == self.hash[latest_dset]['upgrade']:
                 raise DuplicatedDataset(latest_path, latest_version)
 

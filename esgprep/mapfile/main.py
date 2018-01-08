@@ -156,8 +156,8 @@ def process(collector_input):
                              ffp,
                              fh.size,
                              mod_time=fh.mtime,
-                             checksum=fh.checksum(ctx.checksum_type, ctx.checksum_client),
-                             checksum_type=ctx.checksum_type,
+                             checksum=fh.checksum(ctx.checksum_type),
+                             checksum_type=ctx.checksum_type.upper(),
                              dataset_tech_notes=ctx.notes_url,
                              dataset_tech_notes_title=ctx.notes_title)
         write(outfile, line)

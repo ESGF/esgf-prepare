@@ -123,7 +123,7 @@ class File(object):
         else:
             return None
 
-    def checksum(self, checksum_type, checksum_client):
+    def checksum(self, checksum_type):
         """
         Does the checksum by the Shell avoiding Python memory limits.
 
@@ -134,4 +134,4 @@ class File(object):
         :raises Error: If the checksum fails
 
         """
-        return checksum(self.ffp, checksum_type, checksum_client)
+        return checksum(self.ffp, checksum_type)

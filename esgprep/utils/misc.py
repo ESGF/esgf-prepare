@@ -14,7 +14,6 @@ import pickle
 import re
 import sys
 from datetime import datetime
-
 from tqdm import tqdm
 
 from custom_exceptions import *
@@ -191,22 +190,33 @@ def evaluate(results):
         return False
 
 
-def checksum(ffp, checksum_type, checksum_client):
+def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
     """
     Does the checksum by the Shell avoiding Python memory limits.
 
     :param str ffp: The file full path
-    :param str checksum_client: Shell command line for checksum
     :param str checksum_type: Checksum type
+    :param boolean human_readable: True to return a human readable digested message
+    :param boolean include_filename: True to include filename in hash calculation
     :returns: The checksum
     :rtype: *str*
     :raises Error: If the checksum fails
 
     """
-    if not checksum_client:
+    if not checksum_type:
         return None
     try:
-        shell = os.popen("{} {} | awk -F ' ' '{{ print $1 }}'".format(checksum_client, ffp))
-        return shell.readline()[:-1]
+        hash_algo = getattr(hashlib, checksum_type)()
+        with open(ffp, 'rb') as f:
+            for block in iter(lambda: f.read(os.stat(ffp).st_blksize), b''):
+                hash_algo.update(block)
+        if include_filename:
+            hash_algo.update(os.path.basename(ffp))
+        if human_readable:
+            return hash_algo.hexdigest()
+        else:
+            return hash_algo.digest()
+    except AttributeError:
+        raise InvalidChecksumClient(checksum_type)
     except:
         raise ChecksumFail(ffp, checksum_type)

@@ -18,6 +18,7 @@ from ESGConfigParser import SectionParser
 from constants import *
 from esgprep.utils.collectors import Collector
 from esgprep.utils.custom_exceptions import *
+from esgprep.utils.constants import CHECKSUM_TYPES
 from esgprep.utils.misc import cmd_exists, load
 from handler import DRSTree, DRSPath
 
@@ -72,7 +73,7 @@ class ProcessingContext(object):
         
     def __enter__(self):
         # Get checksum client
-        self.checksum_client, self.checksum_type = self.get_checksum_client()
+        self.checksum_type = self.get_checksum_type()
         # Init configuration parser
         self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
         # check if --commands-file argument specifies existing file
@@ -159,24 +160,23 @@ class ProcessingContext(object):
                 logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
                 sys.exit(2)
 
-    def get_checksum_client(self):
+    def get_checksum_type(self):
         """
-        Gets the checksum client to use.
+        Gets the checksum type to use.
         Be careful to Exception constants by reading two different sections.
 
-        :returns: The checksum client
+        :returns: The checksum type
         :rtype: *str*
 
         """
         _cfg = SectionParser(section='DEFAULT', directory=self.config_dir)
         if _cfg.has_option('checksum', section='DEFAULT'):
-            checksum_client, checksum_type = _cfg.get_options_from_table('checksum')[0]
+            checksum_type = _cfg.get_options_from_table('checksum')[0][1].lower()
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
-            checksum_client, checksum_type = 'sha256sum', 'SHA256'
-        if not cmd_exists(checksum_client):
-            raise ChecksumClientNotFound(checksum_client)
-        else:
-            return checksum_client, checksum_type
+            checksum_type = 'sha256'
+        if checksum_type not in CHECKSUM_TYPES:
+            raise InvalidChecksumType(checksum_type)
+        return checksum_type
 
     def check_args(self, old_args):
         """

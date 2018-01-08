@@ -72,14 +72,13 @@ def process(collector_input):
                 for root, _, filenames in os.walk(fph.path(f_part=False, latest=True, root=True)):
                     for filename in filenames:
                         ctx.tree.hash[dset_nid]['latest'][filename] = checksum(os.path.join(root, filename),
-                                                                               ctx.checksum_type,
-                                                                               ctx.checksum_client)
+                                                                               ctx.checksum_type)
             # Pickup the latest file version
             latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
             # Check latest file if exists
             if os.path.exists(latest_file):
-                latest_checksum = checksum(latest_file, ctx.checksum_type, ctx.checksum_client)
-                current_checksum = checksum(fh.ffp, ctx.checksum_type, ctx.checksum_client)
+                latest_checksum = checksum(latest_file, ctx.checksum_type)
+                current_checksum = checksum(fh.ffp, ctx.checksum_type)
                 # Check if processed file is a duplicate in comparison with latest version
                 if latest_checksum == current_checksum:
                     fh.is_duplicate = True
@@ -209,7 +208,7 @@ def run(args):
         # Evaluates the scan results to trigger the DRS tree action
         if evaluate(results):
             # Check upgrade uniqueness
-            ctx.tree.check_uniqueness(ctx.checksum_type, ctx.checksum_client)
+            ctx.tree.check_uniqueness(ctx.checksum_type)
             # Apply tree action
             ctx.tree.get_display_lengths()
             getattr(ctx.tree, ctx.action)()
