@@ -127,7 +127,6 @@ class File(object):
         """
         Does the checksum by the Shell avoiding Python memory limits.
 
-        :param str checksum_client: Shell command line for checksum
         :param str checksum_type: Checksum type
         :returns: The checksum
         :rtype: *str*

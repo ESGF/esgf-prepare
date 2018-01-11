@@ -14,7 +14,7 @@ from hashlib import algorithms as CHECKSUM_TYPES
 VERSION = '2.7.30'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=1, day=2).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=1, day=11).strftime("%Y-%d-%m")
 
 # Help
 PROGRAM_DESC = \
