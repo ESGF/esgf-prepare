@@ -11,10 +11,10 @@ from datetime import datetime
 from hashlib import algorithms as CHECKSUM_TYPES
 
 # Program version
-VERSION = '2.7.30'
+VERSION = '2.7.31'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=1, day=11).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=1, day=12).strftime("%Y-%d-%m")
 
 # Help
 PROGRAM_DESC = \
