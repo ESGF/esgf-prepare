@@ -11,6 +11,7 @@ import logging
 import os
 import re
 from datetime import datetime
+import itertools
 
 from ESGConfigParser import interpolate
 from lockfile import LockFile
@@ -186,7 +187,10 @@ def run(args):
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
         nfiles = len(ctx.sources)
-        processes = ctx.pool.imap(process, ctx.sources)
+        if ctx.use_pool:
+            processes = ctx.pool.imap(process, ctx.sources)
+        else:
+            processes = itertools.imap(process, ctx.sources)
         if ctx.pbar:
             processes = as_pbar(processes, desc='Mapfile(s) generation', units='files', total=nfiles)
         # Process supplied files
