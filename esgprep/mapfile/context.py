@@ -44,6 +44,7 @@ class ProcessingContext(object):
         self.notes_url = args.tech_notes_url
         self.no_version = args.no_version
         self.threads = args.max_threads
+        self.use_pool = (self.threads > 1)
         self.dataset = args.dataset
         if not args.no_cleanup:
             self.clean()
@@ -109,13 +110,15 @@ class ProcessingContext(object):
             # If --latest-symlink, --version is set to "latest"
             self.sources.PathFilter['version_filter'] = '/{}'.format(self.version)
         # Init threads pool
-        self.pool = ThreadPool(int(self.threads))
+        if self.use_pool:
+            self.pool = ThreadPool(int(self.threads))
         return self
 
     def __exit__(self, *exc):
         # Close threads pool
-        self.pool.close()
-        self.pool.join()
+        if self.use_pool:
+            self.pool.close()
+            self.pool.join()
         # Decline outputs depending on the scan results
         # Raise errors when one or several files have been skipped or failed
         # Default is sys.exit(0)
