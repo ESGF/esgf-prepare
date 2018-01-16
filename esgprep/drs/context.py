@@ -49,6 +49,7 @@ class ProcessingContext(object):
         if args.set_key:
             self.set_keys = dict(args.set_key)
         self.threads = args.max_threads
+        self.use_pool = (self.threads > 1)
         self.project = args.project
         self.action = args.action
         if args.copy:
@@ -109,7 +110,8 @@ class ProcessingContext(object):
         # And exclude hidden files
         self.sources.FileFilter[uuid()] = ('^\..*$', True)
         # Init threads pool
-        self.pool = ThreadPool(int(self.threads))
+        if self.use_pool:
+            self.pool = ThreadPool(int(self.threads))
         return self
 
     def _check_existing_commands_file(self):
@@ -127,8 +129,9 @@ class ProcessingContext(object):
                 
     def __exit__(self, *exc):
         # Close threads pool
-        self.pool.close()
-        self.pool.join()
+        if self.use_pool:
+            self.pool.close()
+            self.pool.join()
         # Decline outputs depending on the scan results
         # Raise errors when one or several files have been skipped or failed
         # Default is sys.exit(0)

@@ -8,6 +8,7 @@
 """
 
 import logging
+import itertools
 
 from ESGConfigParser.custom_exceptions import NoConfigOption
 
@@ -190,7 +191,10 @@ def run(args):
             logging.warning(msg)
         else:
             nfiles = len(ctx.sources)
-            processes = ctx.pool.imap(process, ctx.sources)
+            if ctx.use_pool:
+                processes = ctx.pool.imap(process, ctx.sources)
+            else:
+                processes = itertools.imap(process, ctx.sources)
             if ctx.pbar:
                 processes = as_pbar(processes, desc='Scanning incoming files', units='files', total=nfiles)
             # Process supplied files
