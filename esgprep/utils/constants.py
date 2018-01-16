@@ -11,7 +11,7 @@ from datetime import datetime
 from hashlib import algorithms as CHECKSUM_TYPES
 
 # Program version
-VERSION = '2.7.32'
+VERSION = '2.7.33'
 
 # Date
 VERSION_DATE = datetime(year=2018, month=1, day=16).strftime("%Y-%d-%m")
@@ -357,7 +357,7 @@ UPGRADE_FROM_LATEST_HELP = \
     """
     The upgraded version of the dataset is based primarily on the|n
     previous (latest) version. Default is to consider the incoming|n
-    files as the complete contents of the new version of the dataset.|n
+    files as the complete content of the new version of the dataset.|n
     See the full documentation to get details on both methods.
     
     """
