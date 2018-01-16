@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.misc &mdash; esgprep 2.7.28 documentation</title>
+  <title>esgprep.utils.misc &mdash; esgprep 2.7.32 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.28 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.32 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -174,14 +174,13 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1"># Module imports</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
@@ -205,14 +204,14 @@
         <span class="k">return</span> <span class="n">log_record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span></div></div>
 
 
-<div class="viewcode-block" id="init_logging"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.init_logging">[docs]</a><span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="init_logging"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.init_logging">[docs]</a><span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initiates the logging configuration (output, date/message formatting).</span>
 <span class="sd">    If a directory is submitted the logfile name is unique and formatted as follows:</span>
 <span class="sd">    ``name-YYYYMMDD-HHMMSS-JOBID.log``If ``None`` the standard output is used.</span>
 
 <span class="sd">    :param str log: The logfile directory.</span>
-<span class="sd">    :param boolean verbose: Verbose mode.</span>
+<span class="sd">    :param boolean debug: Debug mode.</span>
 <span class="sd">    :param str level: The log level.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -233,7 +232,7 @@
     <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">stream_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.log&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">logfile</span><span class="p">),</span> <span class="n">delay</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
             <span class="n">stream_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">stream_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">()</span>
@@ -339,6 +338,7 @@
 
 
 <div class="viewcode-block" id="evaluate"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.evaluate">[docs]</a><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+    <span class="c1"># type: (object) -&gt; object</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluates a list depending on absence/presence of None values.</span>
 
@@ -357,23 +357,34 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="checksum"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.checksum">[docs]</a><span class="k">def</span> <span class="nf">checksum</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">,</span> <span class="n">checksum_client</span><span class="p">):</span>
+<div class="viewcode-block" id="checksum"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.checksum">[docs]</a><span class="k">def</span> <span class="nf">checksum</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">,</span> <span class="n">include_filename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">human_readable</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Does the checksum by the Shell avoiding Python memory limits.</span>
 
 <span class="sd">    :param str ffp: The file full path</span>
-<span class="sd">    :param str checksum_client: Shell command line for checksum</span>
 <span class="sd">    :param str checksum_type: Checksum type</span>
+<span class="sd">    :param boolean human_readable: True to return a human readable digested message</span>
+<span class="sd">    :param boolean include_filename: True to include filename in hash calculation</span>
 <span class="sd">    :returns: The checksum</span>
 <span class="sd">    :rtype: *str*</span>
 <span class="sd">    :raises Error: If the checksum fails</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">checksum_client</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">checksum_type</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">shell</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> | awk -F &#39; &#39; &#39;{{ print $1 }}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">checksum_client</span><span class="p">,</span> <span class="n">ffp</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">shell</span><span class="o">.</span><span class="n">readline</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">hash_algo</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">hashlib</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span><span class="o">.</span><span class="n">st_blksize</span><span class="p">),</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+                <span class="n">hash_algo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">include_filename</span><span class="p">:</span>
+            <span class="n">hash_algo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ffp</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">human_readable</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">hash_algo</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">hash_algo</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">InvalidChecksumClient</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ChecksumFail</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span></div>
 </pre></div>
@@ -412,7 +423,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.28',
+            VERSION:'2.7.32',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

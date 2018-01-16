@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.context &mdash; esgprep 2.7.28 documentation</title>
+  <title>esgprep.mapfile.context &mdash; esgprep 2.7.32 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.28 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.32 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -211,6 +211,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">notes_url</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">tech_notes_url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">no_version</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">no_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">max_threads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_pool</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cleanup</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
@@ -243,7 +244,7 @@
 
     <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Get checksum client</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">checksum_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_checksum_client</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_checksum_type</span><span class="p">()</span>
         <span class="c1"># Init configuration parser</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SectionParser</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;project:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">),</span> <span class="n">directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_facets</span><span class="p">(</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">)</span>
@@ -276,13 +277,15 @@
             <span class="c1"># If --latest-symlink, --version is set to &quot;latest&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;version_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
         <span class="c1"># Init threads pool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_pool</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">):</span>
         <span class="c1"># Close threads pool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_pool</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
         <span class="c1"># Decline outputs depending on the scan results</span>
         <span class="c1"># Raise errors when one or several files have been skipped or failed</span>
         <span class="c1"># Default is sys.exit(0)</span>
@@ -314,27 +317,23 @@
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span><span class="p">))</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ProcessingContext.get_checksum_client"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.context.ProcessingContext.get_checksum_client">[docs]</a>    <span class="k">def</span> <span class="nf">get_checksum_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessingContext.get_checksum_type"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.context.ProcessingContext.get_checksum_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_checksum_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Gets the checksum client to use.</span>
+<span class="sd">        Gets the checksum type to use.</span>
 <span class="sd">        Be careful to Exception constants by reading two different sections.</span>
 
-<span class="sd">        :returns: The checksum client</span>
+<span class="sd">        :returns: The checksum type</span>
 <span class="sd">        :rtype: *str*</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">_cfg</span> <span class="o">=</span> <span class="n">SectionParser</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">_cfg</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;checksum&#39;</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">):</span>
-                <span class="n">checksum_client</span><span class="p">,</span> <span class="n">checksum_type</span> <span class="o">=</span> <span class="n">_cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;checksum&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Use SHA256 as default because esg.ini not mandatory in configuration directory</span>
-                <span class="n">checksum_client</span><span class="p">,</span> <span class="n">checksum_type</span> <span class="o">=</span> <span class="s1">&#39;sha256sum&#39;</span><span class="p">,</span> <span class="s1">&#39;SHA256&#39;</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">cmd_exists</span><span class="p">(</span><span class="n">checksum_client</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">ChecksumClientNotFound</span><span class="p">(</span><span class="n">checksum_client</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">checksum_client</span><span class="p">,</span> <span class="n">checksum_type</span></div>
+        <span class="n">_cfg</span> <span class="o">=</span> <span class="n">SectionParser</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_cfg</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;checksum&#39;</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">):</span>
+            <span class="n">checksum_type</span> <span class="o">=</span> <span class="n">_cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;checksum&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Use SHA256 as default because esg.ini not mandatory in configuration directory</span>
+            <span class="n">checksum_type</span> <span class="o">=</span> <span class="s1">&#39;sha256&#39;</span>
+        <span class="k">if</span> <span class="n">checksum_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CHECKSUM_TYPES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidChecksumType</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">checksum_type</span></div>
 
 <div class="viewcode-block" id="ProcessingContext.clean"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.context.ProcessingContext.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -382,7 +381,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.28',
+            VERSION:'2.7.32',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

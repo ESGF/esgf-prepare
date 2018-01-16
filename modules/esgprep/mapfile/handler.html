@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.handler &mdash; esgprep 2.7.28 documentation</title>
+  <title>esgprep.mapfile.handler &mdash; esgprep 2.7.32 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.28 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.32 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -290,18 +290,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="File.checksum"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.checksum">[docs]</a>    <span class="k">def</span> <span class="nf">checksum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">,</span> <span class="n">checksum_client</span><span class="p">):</span>
+<div class="viewcode-block" id="File.checksum"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.checksum">[docs]</a>    <span class="k">def</span> <span class="nf">checksum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Does the checksum by the Shell avoiding Python memory limits.</span>
 
-<span class="sd">        :param str checksum_client: Shell command line for checksum</span>
 <span class="sd">        :param str checksum_type: Checksum type</span>
 <span class="sd">        :returns: The checksum</span>
 <span class="sd">        :rtype: *str*</span>
 <span class="sd">        :raises Error: If the checksum fails</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">checksum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">,</span> <span class="n">checksum_client</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">checksum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
@@ -338,7 +337,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.28',
+            VERSION:'2.7.32',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

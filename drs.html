@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Manage local data through the DRS &mdash; esgprep 2.7.28 documentation</title>
+  <title>Manage local data through the DRS &mdash; esgprep 2.7.32 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.28 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.32 documentation" href="index.html"/>
         <link rel="next" title="Check CV against configuration INI files" href="check-vocab.html"/>
         <link rel="prev" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/> 
 
@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#list-unix-command-to-apply">List Unix command to apply</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#change-the-migration-mode">Change the migration mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade">Run the DRS upgrade</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#disable-checksum-comparison">Disable checksum comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade-from-the-latest-version">Run the DRS upgrade from the latest version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
@@ -337,13 +337,25 @@ If not, the incoming files are automatically scan again.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="disable-checksum-comparison">
-<h2>Disable checksum comparison<a class="headerlink" href="#disable-checksum-comparison" title="Permalink to this headline">¶</a></h2>
-<p>To avoid mistakes in versioning, <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> compares the incoming files to the files from the latest known version
-on the filesystem using a <code class="docutils literal"><span class="pre">sha256</span></code> checksum. Because this could be time consuming <code class="docutils literal"><span class="pre">--no-checksum</span></code> allows you to only
-make a comparison on filenames.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
+<div class="section" id="run-the-drs-upgrade-from-the-latest-version">
+<h2>Run the DRS upgrade from the latest version<a class="headerlink" href="#run-the-drs-upgrade-from-the-latest-version" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> supports two upgrade methods:</p>
+<blockquote>
+<div><p><em>(a)</em> (the default) The incoming directory must contain the complete contents of the new version of the dataset.
+If a file is unchanged from the previous version, it must still be supplied in incoming, although esgprep will
+detect that it is unmodified, and will optimise disk space by removing duplicates and symlinking to the old version
+instead. Any files that are not supplied are treated as removed in the new version.</p>
+<p><em>(b)</em> The new version of the dataset is based primarily on the previous published version. The user supplies in the
+incoming directory (or directories) only the files which are modified in the new version. Any file not supplied in
+incoming is considered to be the same as in the previous version, and a symlink is created accordingly.</p>
+</div></blockquote>
+<p>The option <code class="docutils literal"><span class="pre">--upgrade-from-latest</span></code> allows you to toggle to method <em>(b)</em>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --upgrade-from-latest
 </pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Method <em>(b)</em> might not support any way to simply delete a file between versions, rather than modifying it.</p>
 </div>
 </div>
 <div class="section" id="exit-status">
@@ -420,7 +432,7 @@ incomplete DRS tree. See the error logfile.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.28',
+            VERSION:'2.7.32',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

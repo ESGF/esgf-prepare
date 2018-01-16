@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.7.28 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.7.32 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.28 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.32 documentation" href="index.html"/>
         <link rel="prev" title="Changelog" href="log.html"/> 
 
   
@@ -604,15 +604,15 @@ either delete it or throw a fatal error.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="esgprep.drs.context.ProcessingContext.get_checksum_client">
-<code class="descname">get_checksum_client</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/context.html#ProcessingContext.get_checksum_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.context.ProcessingContext.get_checksum_client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the checksum client to use.
+<dt id="esgprep.drs.context.ProcessingContext.get_checksum_type">
+<code class="descname">get_checksum_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/context.html#ProcessingContext.get_checksum_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.context.ProcessingContext.get_checksum_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the checksum type to use.
 Be careful to Exception constants by reading two different sections.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The checksum client</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The checksum type</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
@@ -843,7 +843,7 @@ The arguments are the same as <a class="reference internal" href="#esgprep.drs.h
 
 <dl class="class">
 <dt id="esgprep.drs.handler.DRSLeaf">
-<em class="property">class </em><code class="descclassname">esgprep.drs.handler.</code><code class="descname">DRSLeaf</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em>, <em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSLeaf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSLeaf" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.drs.handler.</code><code class="descname">DRSLeaf</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em>, <em>mode</em>, <em>origin</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSLeaf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSLeaf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handler providing methods to deal with DRS file.</p>
 <dl class="method">
 <dt id="esgprep.drs.handler.DRSLeaf.upgrade">
@@ -856,26 +856,6 @@ The arguments are the same as <a class="reference internal" href="#esgprep.drs.h
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>commands_file</strong> (<em>str</em>) &#8211; The file to write command-lines statement if submitted</li>
 <li><strong>todo_only</strong> (<em>boolean</em>) &#8211; True to only print Unix command-lines to apply (i.e., as dry-run)</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="esgprep.drs.handler.DRSLeaf.print_cmd">
-<em class="property">static </em><code class="descname">print_cmd</code><span class="sig-paren">(</span><em>line</em>, <em>commands_file</em>, <em>todo_only</em>, <em>mode='a'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSLeaf.print_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSLeaf.print_cmd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Print unix command-line depending on the choosen output and DRS action.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>line</strong> (<em>str</em>) &#8211; The command-line to write.</li>
-<li><strong>commands_file</strong> (<em>str</em>) &#8211; The output file to write command-lines, None if not.</li>
-<li><strong>todo_only</strong> (<em>boolean</em>) &#8211; True to only print Unix command-lines to apply (i.e., as dry-run)</li>
-<li><strong>mode</strong> (<em>str</em>) &#8211; File open() mode</li>
 </ul>
 </td>
 </tr>
@@ -932,7 +912,7 @@ Only hardlinks could fail depending on the filesystem partition.</p>
 
 <dl class="method">
 <dt id="esgprep.drs.handler.DRSTree.create_leaf">
-<code class="descname">create_leaf</code><span class="sig-paren">(</span><em>nodes</em>, <em>leaf</em>, <em>label</em>, <em>src</em>, <em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree.create_leaf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree.create_leaf" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_leaf</code><span class="sig-paren">(</span><em>nodes</em>, <em>leaf</em>, <em>label</em>, <em>src</em>, <em>mode</em>, <em>origin=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree.create_leaf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree.create_leaf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates all upstream nodes to a DRS leaf.
 The <a class="reference internal" href="#esgprep.drs.handler.DRSLeaf" title="esgprep.drs.handler.DRSLeaf"><code class="xref py py-func docutils literal"><span class="pre">esgprep.drs.handler.DRSLeaf()</span></code></a> class is added to data leaf nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -945,6 +925,7 @@ The <a class="reference internal" href="#esgprep.drs.handler.DRSLeaf" title="esg
 <li><strong>label</strong> (<em>str</em>) &#8211; The leaf label</li>
 <li><strong>src</strong> (<em>str</em>) &#8211; The source of the leaf</li>
 <li><strong>mode</strong> (<em>str</em>) &#8211; The migration mode (e.g., &#8216;copy&#8217;, &#8216;move&#8217;, etc.)</li>
+<li><strong>origin</strong> (<em>str</em>) &#8211; The original file full path used for the DRSLeaf source</li>
 </ul>
 </td>
 </tr>
@@ -956,6 +937,13 @@ The <a class="reference internal" href="#esgprep.drs.handler.DRSLeaf" title="esg
 <dt id="esgprep.drs.handler.DRSTree.leaves">
 <code class="descname">leaves</code><span class="sig-paren">(</span><em>root=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree.leaves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree.leaves" title="Permalink to this definition">¶</a></dt>
 <dd><p>Yield leaves of the whole DRS tree of a subtree.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esgprep.drs.handler.DRSTree.check_uniqueness">
+<code class="descname">check_uniqueness</code><span class="sig-paren">(</span><em>checksum_type</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree.check_uniqueness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree.check_uniqueness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check tree upgrade uniqueness. Each data version to upgrade has to be stricly different
+from the latest version if exists.</p>
 </dd></dl>
 
 <dl class="method">
@@ -992,6 +980,26 @@ The <a class="reference internal" href="#esgprep.drs.handler.DRSLeaf" title="esg
 
 </dd></dl>
 
+<dl class="function">
+<dt id="esgprep.drs.handler.print_cmd">
+<code class="descclassname">esgprep.drs.handler.</code><code class="descname">print_cmd</code><span class="sig-paren">(</span><em>line</em>, <em>commands_file</em>, <em>todo_only</em>, <em>mode='a'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#print_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.print_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print unix command-line depending on the choosen output and DRS action.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>line</strong> (<em>str</em>) &#8211; The command-line to write.</li>
+<li><strong>commands_file</strong> (<em>str</em>) &#8211; The output file to write command-lines, None if not.</li>
+<li><strong>todo_only</strong> (<em>boolean</em>) &#8211; True to only print Unix command-lines to apply (i.e., as dry-run)</li>
+<li><strong>mode</strong> (<em>str</em>) &#8211; File open() mode</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <span class="target" id="module-esgprep.drs.custom_exceptions"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1004,7 +1012,7 @@ The <a class="reference internal" href="#esgprep.drs.handler.DRSLeaf" title="esg
 </table>
 <dl class="exception">
 <dt id="esgprep.drs.custom_exceptions.DuplicatedDataset">
-<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">DuplicatedDataset</code><span class="sig-paren">(</span><em>version</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#DuplicatedDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.DuplicatedDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">DuplicatedDataset</code><span class="sig-paren">(</span><em>path</em>, <em>version</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#DuplicatedDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.DuplicatedDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised if a dataset already exists with submitted version.</p>
 </dd></dl>
 
@@ -1313,15 +1321,15 @@ Each process adds one line to the appropriate mapfile</p>
 </tbody>
 </table>
 <dl class="method">
-<dt id="esgprep.mapfile.context.ProcessingContext.get_checksum_client">
-<code class="descname">get_checksum_client</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/context.html#ProcessingContext.get_checksum_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.context.ProcessingContext.get_checksum_client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the checksum client to use.
+<dt id="esgprep.mapfile.context.ProcessingContext.get_checksum_type">
+<code class="descname">get_checksum_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/context.html#ProcessingContext.get_checksum_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.context.ProcessingContext.get_checksum_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the checksum type to use.
 Be careful to Exception constants by reading two different sections.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The checksum client</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The checksum type</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
@@ -1459,26 +1467,19 @@ it follows the symlink to complete the DRS attributes.</p>
 
 <dl class="method">
 <dt id="esgprep.mapfile.handler.File.checksum">
-<code class="descname">checksum</code><span class="sig-paren">(</span><em>checksum_type</em>, <em>checksum_client</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.checksum" title="Permalink to this definition">¶</a></dt>
+<code class="descname">checksum</code><span class="sig-paren">(</span><em>checksum_type</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.checksum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Does the checksum by the Shell avoiding Python memory limits.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>checksum_client</strong> (<em>str</em>) &#8211; Shell command line for checksum</li>
-<li><strong>checksum_type</strong> (<em>str</em>) &#8211; Checksum type</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>checksum_type</strong> (<em>str</em>) &#8211; Checksum type</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The checksum</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The checksum</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>str</em></p>
-</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the checksum fails</p>
-</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If the checksum fails</td>
 </tr>
 </tbody>
 </table>
@@ -1656,7 +1657,7 @@ indicating to match (i.e., include) or non-match (i.e., exclude) the correspondi
 
 <dl class="function">
 <dt id="esgprep.utils.misc.init_logging">
-<code class="descclassname">esgprep.utils.misc.</code><code class="descname">init_logging</code><span class="sig-paren">(</span><em>log</em>, <em>verbose=False</em>, <em>level='INFO'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#init_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.init_logging" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.utils.misc.</code><code class="descname">init_logging</code><span class="sig-paren">(</span><em>log</em>, <em>debug=False</em>, <em>level='INFO'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#init_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.init_logging" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initiates the logging configuration (output, date/message formatting).
 If a directory is submitted the logfile name is unique and formatted as follows:
 <code class="docutils literal"><span class="pre">name-YYYYMMDD-HHMMSS-JOBID.log``If</span> <span class="pre">``None</span></code> the standard output is used.</p>
@@ -1666,7 +1667,7 @@ If a directory is submitted the logfile name is unique and formatted as follows:
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>log</strong> (<em>str</em>) &#8211; The logfile directory.</li>
-<li><strong>verbose</strong> (<em>boolean</em>) &#8211; Verbose mode.</li>
+<li><strong>debug</strong> (<em>boolean</em>) &#8211; Debug mode.</li>
 <li><strong>level</strong> (<em>str</em>) &#8211; The log level.</li>
 </ul>
 </td>
@@ -1823,7 +1824,7 @@ Only match at the beginning of the string.</p>
 
 <dl class="function">
 <dt id="esgprep.utils.misc.checksum">
-<code class="descclassname">esgprep.utils.misc.</code><code class="descname">checksum</code><span class="sig-paren">(</span><em>ffp</em>, <em>checksum_type</em>, <em>checksum_client</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.checksum" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.utils.misc.</code><code class="descname">checksum</code><span class="sig-paren">(</span><em>ffp</em>, <em>checksum_type</em>, <em>include_filename=False</em>, <em>human_readable=True</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.checksum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Does the checksum by the Shell avoiding Python memory limits.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1831,8 +1832,9 @@ Only match at the beginning of the string.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>ffp</strong> (<em>str</em>) &#8211; The file full path</li>
-<li><strong>checksum_client</strong> (<em>str</em>) &#8211; Shell command line for checksum</li>
 <li><strong>checksum_type</strong> (<em>str</em>) &#8211; Checksum type</li>
+<li><strong>human_readable</strong> (<em>boolean</em>) &#8211; True to return a human readable digested message</li>
+<li><strong>include_filename</strong> (<em>boolean</em>) &#8211; True to include filename in hash calculation</li>
 </ul>
 </td>
 </tr>
@@ -1993,9 +1995,9 @@ Only match at the beginning of the string.</p>
 </dd></dl>
 
 <dl class="exception">
-<dt id="esgprep.utils.custom_exceptions.ChecksumClientNotFound">
-<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">ChecksumClientNotFound</code><span class="sig-paren">(</span><em>client</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#ChecksumClientNotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.ChecksumClientNotFound" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when checksum client not found on operating system.</p>
+<dt id="esgprep.utils.custom_exceptions.InvalidChecksumType">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">InvalidChecksumType</code><span class="sig-paren">(</span><em>client</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#InvalidChecksumType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.InvalidChecksumType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when checksum type in unknown.</p>
 </dd></dl>
 
 <dl class="exception">
@@ -2050,7 +2052,7 @@ Only match at the beginning of the string.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.28',
+            VERSION:'2.7.32',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

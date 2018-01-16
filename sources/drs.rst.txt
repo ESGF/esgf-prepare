@@ -159,16 +159,27 @@ This will apply all the Unix command you can print with the ``todo`` action.
 
     $> esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/
 
-Disable checksum comparison
-***************************
+Run the DRS upgrade from the latest version
+*******************************************
 
-To avoid mistakes in versioning, ``esgprep drs`` compares the incoming files to the files from the latest known version
-on the filesystem using a ``sha256`` checksum. Because this could be time consuming ``--no-checksum`` allows you to only
-make a comparison on filenames.
+``esgprep drs`` supports two upgrade methods:
+
+ *(a)* (the default) The incoming directory must contain the complete contents of the new version of the dataset.
+ If a file is unchanged from the previous version, it must still be supplied in incoming, although esgprep will
+ detect that it is unmodified, and will optimise disk space by removing duplicates and symlinking to the old version
+ instead. Any files that are not supplied are treated as removed in the new version.
+
+ *(b)* The new version of the dataset is based primarily on the previous published version. The user supplies in the
+ incoming directory (or directories) only the files which are modified in the new version. Any file not supplied in
+ incoming is considered to be the same as in the previous version, and a symlink is created accordingly.
+
+The option ``--upgrade-from-latest`` allows you to toggle to method *(b)*:
 
 .. code-block:: bash
 
-    $> esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
+    $> esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --upgrade-from-latest
+
+.. warning:: Method *(b)* might not support any way to simply delete a file between versions, rather than modifying it.
 
 Exit status
 ***********

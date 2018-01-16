@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generic usage &mdash; esgprep 2.7.28 documentation</title>
+  <title>Generic usage &mdash; esgprep 2.7.32 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.28 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.32 documentation" href="index.html"/>
         <link rel="next" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/>
         <link rel="prev" title="Configuration" href="configuration.html"/> 
 
@@ -97,7 +97,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#check-the-help">Check the help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#check-the-version">Check the version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-the-test-suite">Run the test suite</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#add-verbosity">Add verbosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debug-mode">Debug mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#specify-the-project">Specify the project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#submit-a-configuration-directory">Submit a configuration directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#use-a-logfile">Use a logfile</a></li>
@@ -192,7 +192,7 @@ $&gt; esgprep SUBCOMMAND -h
 </div>
 <div class="section" id="check-the-version">
 <h2>Check the version<a class="headerlink" href="#check-the-version" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep -V
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep -v
 </pre></div>
 </div>
 </div>
@@ -207,11 +207,11 @@ $&gt; esgprep SUBCOMMAND --test
 </pre></div>
 </div>
 </div>
-<div class="section" id="add-verbosity">
-<h2>Add verbosity<a class="headerlink" href="#add-verbosity" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="debug-mode">
+<h2>Debug mode<a class="headerlink" href="#debug-mode" title="Permalink to this headline">¶</a></h2>
 <p>Some progress bars informs you about the processing status of the different subcommands. You can switch to a more
-verbose mode displaying each step.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND -v
+verbose mode displaying each step with useful additional information.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --debug
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -345,7 +345,7 @@ simultaneously process several files (4 threads is the default and one seems seq
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.28',
+            VERSION:'2.7.32',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
