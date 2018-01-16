@@ -19,7 +19,7 @@ Check the version
 
 .. code-block:: bash
 
-    $> esgprep -V
+    $> esgprep -v
 
 Run the test suite
 ******************
@@ -32,15 +32,15 @@ Run the test suite
     $> esgprep --test
     $> esgprep SUBCOMMAND --test
 
-Add verbosity
-*************
+Debug mode
+**********
 
 Some progress bars informs you about the processing status of the different subcommands. You can switch to a more
-verbose mode displaying each step.
+verbose mode displaying each step with useful additional information.
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND -v
+    $> esgprep SUBCOMMAND --debug
 
 .. warning::
     The verbose mode is silently activated in the case of a logfile (i.e., no progress bars).
