@@ -56,7 +56,7 @@ def get_args():
         default=False,
         help=TEST_HELP['program'])
     main.add_argument(
-        '-V',
+        '-v', '--version',
         action='version',
         version='%(prog)s ({})'.format(__version__),
         help=VERSION_HELP)
