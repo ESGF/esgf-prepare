@@ -169,6 +169,8 @@ def process(collector_input):
     except Exception as e:
         logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         return None
+    finally:
+        ctx.pbar.update()
 
 
 def run(args):
@@ -186,13 +188,13 @@ def run(args):
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
-        nfiles = len(ctx.sources)
+        #nfiles = len(ctx.sources)
         if ctx.use_pool:
             processes = ctx.pool.imap(process, ctx.sources)
         else:
             processes = itertools.imap(process, ctx.sources)
-        if ctx.pbar:
-            processes = as_pbar(processes, desc='Mapfile(s) generation', units='files', total=nfiles)
+        #if ctx.pbar:
+        #    processes = as_pbar(processes, desc='Mapfile(s) generation', units='files', total=nfiles)
         # Process supplied files
         results = [x for x in processes]
         # Get number of files scanned (including skipped files)

@@ -217,6 +217,6 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
         else:
             return hash_algo.digest()
     except AttributeError:
-        raise InvalidChecksumClient(checksum_type)
+        raise InvalidChecksumType(checksum_type)
     except:
         raise ChecksumFail(ffp, checksum_type)
