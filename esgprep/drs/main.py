@@ -7,15 +7,15 @@
 
 """
 
-import logging
 import itertools
+import logging
 
 from ESGConfigParser.custom_exceptions import NoConfigOption
 
 from constants import *
 from context import ProcessingContext
 from custom_exceptions import *
-from esgprep.utils.misc import load, store, as_pbar, evaluate, checksum
+from esgprep.utils.misc import load, store, evaluate, checksum
 from handler import File, DRSPath
 
 
@@ -160,6 +160,8 @@ def process(collector_input):
     except Exception as e:
         logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         return None
+    finally:
+        ctx.pbar.update()
 
 
 def run(args):
@@ -190,13 +192,10 @@ def run(args):
                 print(msg)
             logging.warning(msg)
         else:
-            nfiles = len(ctx.sources)
             if ctx.use_pool:
                 processes = ctx.pool.imap(process, ctx.sources)
             else:
                 processes = itertools.imap(process, ctx.sources)
-            if ctx.pbar:
-                processes = as_pbar(processes, desc='Scanning incoming files', units='files', total=nfiles)
             # Process supplied files
             results = [x for x in processes]
         # Get number of files scanned (including skipped files)

@@ -9,17 +9,19 @@
 
 import logging
 import os
-import sys
 import re
+import sys
 from multiprocessing.dummy import Pool as ThreadPool
 from uuid import uuid4 as uuid
+
 from ESGConfigParser import SectionParser
+from tqdm import tqdm
 
 from constants import *
 from esgprep.utils.collectors import Collector
-from esgprep.utils.custom_exceptions import *
 from esgprep.utils.constants import CHECKSUM_TYPES
-from esgprep.utils.misc import cmd_exists, load
+from esgprep.utils.custom_exceptions import *
+from esgprep.utils.misc import load
 from handler import DRSTree, DRSPath
 
 
@@ -71,14 +73,14 @@ class ProcessingContext(object):
             self.commands_file = None
         if self.overwrite_commands_file and not self.commands_file:
             print '--overwrite-commands-file ignored'
-        
+
     def __enter__(self):
         # Get checksum client
         self.checksum_type = self.get_checksum_type()
         # Init configuration parser
         self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
         # check if --commands-file argument specifies existing file
-        self._check_existing_commands_file()
+        self.check_existing_commands_file()
         # Warn user about unconsidered hard-coded elements
         for pattern_element in self.cfg.get('directory_format').strip().split("/"):
             if not re.match(re.compile(r'%\([\w]+\)s'), pattern_element):
@@ -109,15 +111,25 @@ class ProcessingContext(object):
         self.sources.FileFilter[uuid()] = ('^.*\.nc$', False)
         # And exclude hidden files
         self.sources.FileFilter[uuid()] = ('^\..*$', True)
+        # Init progress bar
+        if self.pbar:
+            nfiles = len(self.sources)
+            self.pbar = tqdm(desc='Scanning incoming files',
+                             total=nfiles,
+                             bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
+                             ncols=100,
+                             file=sys.stdout)
         # Init threads pool
         if self.use_pool:
             self.pool = ThreadPool(int(self.threads))
         return self
 
-    def _check_existing_commands_file(self):
+    def check_existing_commands_file(self):
         """
-        check for existing commands file, and depending on --overwrite-commands-file setting,
+        Check for existing commands file,
+        and depending on ``--overwrite-commands-file`` setting,
         either delete it or throw a fatal error.
+
         """
         if self.commands_file and os.path.exists(self.commands_file):
             if self.overwrite_commands_file:
@@ -126,12 +138,15 @@ class ProcessingContext(object):
                 print "File '{}' already exists and '--overwrite-commands-file'" \
                       "option not used.".format(self.commands_file)
                 sys.exit(1)
-                
+
     def __exit__(self, *exc):
         # Close threads pool
         if self.use_pool:
             self.pool.close()
             self.pool.join()
+        # Close progress bar
+        if self.pbar:
+            self.pbar.close()
         # Decline outputs depending on the scan results
         # Raise errors when one or several files have been skipped or failed
         # Default is sys.exit(0)

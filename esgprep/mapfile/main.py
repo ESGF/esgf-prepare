@@ -18,7 +18,7 @@ from lockfile import LockFile
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.misc import as_pbar, evaluate
+from esgprep.utils.misc import evaluate
 from handler import File
 
 
@@ -188,13 +188,10 @@ def run(args):
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
-        #nfiles = len(ctx.sources)
         if ctx.use_pool:
             processes = ctx.pool.imap(process, ctx.sources)
         else:
             processes = itertools.imap(process, ctx.sources)
-        #if ctx.pbar:
-        #    processes = as_pbar(processes, desc='Mapfile(s) generation', units='files', total=nfiles)
         # Process supplied files
         results = [x for x in processes]
         # Get number of files scanned (including skipped files)

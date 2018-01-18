@@ -114,7 +114,7 @@ class ProcessingContext(object):
             nfiles = len(self.sources)
             self.pbar = tqdm(desc='Mapfile(s) generation',
                              total=nfiles,
-                             bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} files',
+                             bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
                              ncols=100,
                              file=sys.stdout)
         # Init threads pool
@@ -127,6 +127,9 @@ class ProcessingContext(object):
         if self.use_pool:
             self.pool.close()
             self.pool.join()
+        # Close progress bar
+        if self.pbar:
+            self.pbar.close()
         # Decline outputs depending on the scan results
         # Raise errors when one or several files have been skipped or failed
         # Default is sys.exit(0)
