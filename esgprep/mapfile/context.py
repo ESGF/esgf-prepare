@@ -175,7 +175,7 @@ class ProcessingContext(object):
             checksum_type = _cfg.get_options_from_table('checksum')[0][1].lower()
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             checksum_type = 'sha256'
-        if checksum_type not in CHECKSUM_TYPES:
+        if checksum_type not in checksum_types:
             raise InvalidChecksumType(checksum_type)
         return checksum_type
 

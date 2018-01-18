@@ -14,6 +14,7 @@ import pickle
 import re
 import sys
 from datetime import datetime
+
 from tqdm import tqdm
 
 from custom_exceptions import *

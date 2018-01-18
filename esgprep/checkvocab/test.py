@@ -8,10 +8,6 @@
 """
 
 import unittest
-import checkvocab
-from checkvocab.main import *
-from checkvocab.constants import *
-from checkvocab.custom_exceptions import *
 
 
 class CheckVocabTest(unittest.TestCase):

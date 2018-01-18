@@ -8,7 +8,6 @@
 """
 
 from datetime import datetime
-from hashlib import algorithms as CHECKSUM_TYPES
 
 # Program version
 VERSION = '2.7.33'

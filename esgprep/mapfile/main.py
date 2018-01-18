@@ -7,11 +7,11 @@
 
 """
 
+import itertools
 import logging
 import os
 import re
 from datetime import datetime
-import itertools
 
 from ESGConfigParser import interpolate
 from lockfile import LockFile
