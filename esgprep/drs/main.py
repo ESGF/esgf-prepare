@@ -186,6 +186,8 @@ def run(args):
             ctx.tree = reader.next()
             ctx.scan_err_log = reader.next()
             results = reader.next()
+            # Rollback --commands_file value to command-line argument in any case
+            ctx.tree.commands_file = ctx.commands_file
             msg = 'Skipping incoming files scan (use "--rescan" to force it) -- ' \
                   'Using cached DRS tree from {}'.format(TREE_FILE)
             if ctx.pbar:
