@@ -137,20 +137,6 @@ def store(path, data):
             pickle.dump(data[i], f)
 
 
-def cmd_exists(cmd):
-    """
-    Checks if a Shell command exists.
-
-    :returns: True if exists.
-    :rtype: *boolean*
-
-    """
-    return any(
-        os.access(os.path.join(path, cmd), os.X_OK)
-        for path in os.environ["PATH"].split(os.pathsep)
-    )
-
-
 def as_pbar(iterable, desc, units, total=None):
     """
     Build a progress pbar.
@@ -172,7 +158,6 @@ def as_pbar(iterable, desc, units, total=None):
 
 
 def evaluate(results):
-    # type: (object) -> object
     """
     Evaluates a list depending on absence/presence of None values.
 
