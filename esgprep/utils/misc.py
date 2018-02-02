@@ -189,8 +189,6 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
     :raises Error: If the checksum fails
 
     """
-    if not checksum_type:
-        return None
     try:
         hash_algo = getattr(hashlib, checksum_type)()
         with open(ffp, 'rb') as f:

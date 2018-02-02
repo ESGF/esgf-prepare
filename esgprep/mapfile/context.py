@@ -127,9 +127,6 @@ class ProcessingContext(object):
         if self.use_pool:
             self.pool.close()
             self.pool.join()
-        # Close progress bar
-        if self.pbar:
-            self.pbar.close()
         # Decline outputs depending on the scan results
         # Raise errors when one or several files have been skipped or failed
         # Default is sys.exit(0)
@@ -170,6 +167,8 @@ class ProcessingContext(object):
         :rtype: *str*
 
         """
+        if self.no_checksum:
+            return None
         _cfg = SectionParser(section='DEFAULT', directory=self.config_dir)
         if _cfg.has_option('checksum', section='DEFAULT'):
             checksum_type = _cfg.get_options_from_table('checksum')[0][1].lower()

@@ -143,9 +143,6 @@ class ProcessingContext(object):
         if self.use_pool:
             self.pool.close()
             self.pool.join()
-        # Close progress bar
-        if self.pbar:
-            self.pbar.close()
         # Decline outputs depending on the scan results
         # Raise errors when one or several files have been skipped or failed
         # Default is sys.exit(0)
