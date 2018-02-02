@@ -7,18 +7,18 @@
 
 """
 
+import itertools
 import logging
 import os
 import re
 from datetime import datetime
-import itertools
 
-from ESGConfigParser import interpolate
+from ESGConfigParser import interpolate, NoConfigKey
 from lockfile import LockFile
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.misc import as_pbar, evaluate
+from esgprep.utils.misc import evaluate
 from handler import File
 
 
@@ -66,7 +66,7 @@ def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_ver
     return os.path.join(outdir, mapfile_name) + WORKING_EXTENSION
 
 
-def mapfile_entry(dataset_id, dataset_version, ffp, size, **kwargs):
+def mapfile_entry(dataset_id, dataset_version, ffp, size, optional_attrs):
     """
     Builds the mapfile entry corresponding to a processed file.
 
@@ -74,6 +74,7 @@ def mapfile_entry(dataset_id, dataset_version, ffp, size, **kwargs):
     :param str dataset_version: The dataset version
     :param str ffp: The file full path
     :param str size: The file size
+    :param dict optional_attrs: Optional attributes to append to mapfile lines
     :returns: The mapfile line/entry
     :rtype: *str*
 
@@ -84,7 +85,7 @@ def mapfile_entry(dataset_id, dataset_version, ffp, size, **kwargs):
         line = ['{}#{}'.format(dataset_id, dataset_version[1:])]
     line.append(ffp)
     line.append(str(size))
-    for k, v in kwargs.items():
+    for k, v in optional_attrs.items():
         if v:
             line.append('{}={}'.format(k, v))
     return ' | '.join(line) + '\n'
@@ -134,8 +135,15 @@ def process(collector_input):
         # Instantiate file handler
         fh = File(ffp)
         # Matching between directory_format and file full path
-        fh.load_attributes(project=ctx.project,
-                           pattern=ctx.pattern)
+        fh.load_attributes(pattern=ctx.pattern)
+        # Apply proper case to each attribute
+        for key in fh.attributes:
+            # Try to get the appropriate facet case for "category_default"
+            try:
+                fh.attributes[key] = ctx.cfg.get_options_from_pairs('category_defaults', key)
+            except NoConfigKey:
+                # If not specified keep facet case from local path, do nothing
+                pass
         # Deduce dataset_id
         dataset_id = ctx.dataset
         if not ctx.dataset:
@@ -152,15 +160,18 @@ def process(collector_input):
                                      dataset_version=dataset_version,
                                      mapfile_drs=ctx.mapfile_drs)
         # Generate the corresponding mapfile entry/line
-        line = mapfile_entry(dataset_id,
-                             dataset_version,
-                             ffp,
-                             fh.size,
-                             mod_time=fh.mtime,
-                             checksum=fh.checksum(ctx.checksum_type),
-                             checksum_type=ctx.checksum_type.upper(),
-                             dataset_tech_notes=ctx.notes_url,
-                             dataset_tech_notes_title=ctx.notes_title)
+        optional_attrs = dict()
+        optional_attrs['mod_time'] = fh.mtime
+        if not ctx.no_checksum:
+            optional_attrs['checksum'] = fh.checksum(ctx.checksum_type)
+            optional_attrs['checksum_type'] = ctx.checksum_type.upper()
+        optional_attrs['dataset_tech_notes'] = ctx.notes_url
+        optional_attrs['dataset_tech_notes_title'] = ctx.notes_title
+        line = mapfile_entry(dataset_id=dataset_id,
+                             dataset_version=dataset_version,
+                             ffp=ffp,
+                             size=fh.size,
+                             optional_attrs=optional_attrs)
         write(outfile, line)
         logging.info('{} <-- {}'.format(os.path.splitext(os.path.basename(outfile))[0], ffp))
         # Return mapfile name
@@ -169,6 +180,8 @@ def process(collector_input):
     except Exception as e:
         logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         return None
+    finally:
+        ctx.pbar.update()
 
 
 def run(args):
@@ -186,15 +199,15 @@ def run(args):
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
-        nfiles = len(ctx.sources)
         if ctx.use_pool:
             processes = ctx.pool.imap(process, ctx.sources)
         else:
             processes = itertools.imap(process, ctx.sources)
-        if ctx.pbar:
-            processes = as_pbar(processes, desc='Mapfile(s) generation', units='files', total=nfiles)
         # Process supplied files
         results = [x for x in processes]
+        # Close progress bar
+        if ctx.pbar:
+            ctx.pbar.close()
         # Get number of files scanned (including skipped files)
         ctx.scan_files = len(results)
         # Get number of scan errors

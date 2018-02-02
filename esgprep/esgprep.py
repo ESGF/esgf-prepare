@@ -74,7 +74,6 @@ def get_args():
         '-h', '--help',
         action='help',
         help=HELP)
-
     parent.add_argument(
         '-i',
         metavar='/esg/config/esgcet',

@@ -52,12 +52,11 @@ class File(object):
         else:
             raise KeyNotFound(key, self.attributes.keys() + self.__dict__.keys())
 
-    def load_attributes(self, project, pattern):
+    def load_attributes(self, pattern):
         """
         Loads DRS attributes catched from a regular expression match.
         The project facet is added in any case with lower case.
 
-        :param str project: The project name
         :param str pattern: The regular expression to match
         :raises Error: If regular expression matching fails
 
@@ -66,11 +65,6 @@ class File(object):
             # re.search() method is required to search through the entire string.
             # In this case we aim to match the regex starting from the filename (i.e., the end of the string)
             self.attributes = re.search(pattern, self.ffp).groupdict()
-            # Only required to build proper dataset_id
-            self.attributes['project'] = project.lower()
-            # Set mip_era equal to project if exist (e.g., for CMIP6)
-            if 'mip_era' in self.attributes:
-                self.attributes['mip_era'] = self.attributes['project']
         except:
             raise ExpressionNotMatch(self.ffp, pattern)
 

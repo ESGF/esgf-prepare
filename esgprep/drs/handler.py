@@ -64,7 +64,7 @@ class File(object):
         else:
             raise KeyNotFound(key, self.attributes.keys() + self.__dict__.keys())
 
-    def load_attributes(self, project, root, pattern, set_values):
+    def load_attributes(self, root, pattern, set_values):
         """
         Loads DRS attributes catched from a regular expression match.
         The project facet is added in any case with lower case.
@@ -72,7 +72,6 @@ class File(object):
         The dataset version is initially set to None.
         Can be overwrite by "set_values" pairs if submitted.
 
-        :param str project: The project name
         :param str root: The DRS tree root
         :param str pattern: The regular expression to match
         :param dict set_values: Key/value pairs of facet to set for the run
@@ -100,8 +99,6 @@ class File(object):
         self.attributes['root'] = root
         # Set version to None
         self.attributes['version'] = None
-        # Only required to build proper DRS
-        self.attributes['project'] = project
 
     def check_facets(self, facets, config, set_keys):
         """

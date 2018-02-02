@@ -16,11 +16,11 @@ from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
 from ESGConfigParser.custom_exceptions import NoConfigOption
+from tqdm import tqdm
 
 from constants import *
 from esgprep.utils.collectors import VersionedPathCollector
 from esgprep.utils.custom_exceptions import *
-from esgprep.utils.misc import cmd_exists
 
 
 class ProcessingContext(object):
@@ -109,6 +109,14 @@ class ProcessingContext(object):
             # Pick up the specified version only (--version flag) by adding "/v{version}" inclusion
             # If --latest-symlink, --version is set to "latest"
             self.sources.PathFilter['version_filter'] = '/{}'.format(self.version)
+        # Init progress bar
+        if self.pbar:
+            nfiles = len(self.sources)
+            self.pbar = tqdm(desc='Mapfile(s) generation',
+                             total=nfiles,
+                             bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
+                             ncols=100,
+                             file=sys.stdout)
         # Init threads pool
         if self.use_pool:
             self.pool = ThreadPool(int(self.threads))
@@ -159,12 +167,14 @@ class ProcessingContext(object):
         :rtype: *str*
 
         """
+        if self.no_checksum:
+            return None
         _cfg = SectionParser(section='DEFAULT', directory=self.config_dir)
         if _cfg.has_option('checksum', section='DEFAULT'):
             checksum_type = _cfg.get_options_from_table('checksum')[0][1].lower()
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             checksum_type = 'sha256'
-        if checksum_type not in CHECKSUM_TYPES:
+        if checksum_type not in checksum_types:
             raise InvalidChecksumType(checksum_type)
         return checksum_type
 

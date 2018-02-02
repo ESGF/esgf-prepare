@@ -8,13 +8,12 @@
 """
 
 from datetime import datetime
-from hashlib import algorithms as CHECKSUM_TYPES
 
 # Program version
-VERSION = '2.7.33'
+VERSION = '2.7.35'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=1, day=16).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=2, day=2).strftime("%Y-%d-%m")
 
 # Help
 PROGRAM_DESC = \
@@ -470,26 +469,10 @@ LATEST_SYMLINK_HELP = \
     
     """
 
-ERROR_ON_DUPLICATES = \
-    """
-    Raise an error when upgrade and latest version have|n
-    duplicated files. Default is to skip duplicated files|n
-    and treat them with symlinks in the final DRS tree.
-    """
-
 NO_VERSION_HELP = \
     """
     Does not includes DRS version into the dataset|n
     identifier.
-    
-    """
-
-NOT_IGNORED_HELP = \
-    """
-    One or more facet key(s) to not ignored. This excludes|n
-    the corresponding facet from the default ignored list.|n
-    Useful in case of differences between|n
-    "directory_format" and "dataset_id" patterns.
     
     """
 

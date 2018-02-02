@@ -14,6 +14,7 @@ import pickle
 import re
 import sys
 from datetime import datetime
+
 from tqdm import tqdm
 
 from custom_exceptions import *
@@ -136,20 +137,6 @@ def store(path, data):
             pickle.dump(data[i], f)
 
 
-def cmd_exists(cmd):
-    """
-    Checks if a Shell command exists.
-
-    :returns: True if exists.
-    :rtype: *boolean*
-
-    """
-    return any(
-        os.access(os.path.join(path, cmd), os.X_OK)
-        for path in os.environ["PATH"].split(os.pathsep)
-    )
-
-
 def as_pbar(iterable, desc, units, total=None):
     """
     Build a progress pbar.
@@ -171,7 +158,6 @@ def as_pbar(iterable, desc, units, total=None):
 
 
 def evaluate(results):
-    # type: (object) -> object
     """
     Evaluates a list depending on absence/presence of None values.
 
@@ -203,8 +189,6 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
     :raises Error: If the checksum fails
 
     """
-    if not checksum_type:
-        return None
     try:
         hash_algo = getattr(hashlib, checksum_type)()
         with open(ffp, 'rb') as f:
@@ -217,6 +201,6 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
         else:
             return hash_algo.digest()
     except AttributeError:
-        raise InvalidChecksumClient(checksum_type)
+        raise InvalidChecksumType(checksum_type)
     except:
         raise ChecksumFail(ffp, checksum_type)

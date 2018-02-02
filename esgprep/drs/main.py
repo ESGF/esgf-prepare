@@ -7,15 +7,15 @@
 
 """
 
-import logging
 import itertools
+import logging
 
-from ESGConfigParser.custom_exceptions import NoConfigOption
+from ESGConfigParser.custom_exceptions import NoConfigKey
 
 from constants import *
 from context import ProcessingContext
 from custom_exceptions import *
-from esgprep.utils.misc import load, store, as_pbar, evaluate, checksum
+from esgprep.utils.misc import load, store, evaluate, checksum
 from handler import File, DRSPath
 
 
@@ -43,16 +43,18 @@ def process(collector_input):
     try:
         # Instantiate file handler
         fh = File(ffp)
-        # Try to get the appropriate project case or use lower case instead
-        try:
-            project = ctx.cfg.get_options_from_pairs('category_defaults', 'project')
-        except NoConfigOption:
-            project = ctx.project.lower()
         # Loads attributes from filename, netCDF attributes, command-line
-        fh.load_attributes(project=project,
-                           root=ctx.root,
+        fh.load_attributes(root=ctx.root,
                            pattern=ctx.pattern,
                            set_values=ctx.set_values)
+        # Apply proper case to each attribute
+        for key in fh.attributes:
+            # Try to get the appropriate facet case for "category_default"
+            try:
+                fh.attributes[key] = ctx.cfg.get_options_from_pairs('category_defaults', key)
+            except NoConfigKey:
+                # If not specified keep facet case from local path, do nothing
+                pass
         fh.check_facets(facets=ctx.facets,
                         config=ctx.cfg,
                         set_keys=ctx.set_keys)
@@ -148,7 +150,6 @@ def process(collector_input):
         incoming = {'src': fh.ffp,
                     'dst': fph.path(root=True),
                     'filename': fh.filename,
-                    'variable': fh.get('variable'),
                     'latest': fph.v_latest or 'Initial',
                     'size': fh.size}
         if fph.path(f_part=False) in ctx.tree.paths.keys():
@@ -160,6 +161,8 @@ def process(collector_input):
     except Exception as e:
         logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         return None
+    finally:
+        ctx.pbar.update()
 
 
 def run(args):
@@ -184,21 +187,23 @@ def run(args):
             ctx.tree = reader.next()
             ctx.scan_err_log = reader.next()
             results = reader.next()
+            # Rollback --commands_file value to command-line argument in any case
+            ctx.tree.commands_file = ctx.commands_file
             msg = 'Skipping incoming files scan (use "--rescan" to force it) -- ' \
                   'Using cached DRS tree from {}'.format(TREE_FILE)
             if ctx.pbar:
                 print(msg)
             logging.warning(msg)
         else:
-            nfiles = len(ctx.sources)
             if ctx.use_pool:
                 processes = ctx.pool.imap(process, ctx.sources)
             else:
                 processes = itertools.imap(process, ctx.sources)
-            if ctx.pbar:
-                processes = as_pbar(processes, desc='Scanning incoming files', units='files', total=nfiles)
             # Process supplied files
             results = [x for x in processes]
+        # Close progress bar
+        if ctx.pbar:
+            ctx.pbar.close()
         # Get number of files scanned (including skipped files)
         ctx.scan_files = len(results)
         # Get number of scan errors

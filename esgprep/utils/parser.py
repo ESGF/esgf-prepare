@@ -12,9 +12,8 @@ import re
 import sys
 import textwrap
 from argparse import HelpFormatter, ArgumentTypeError, Action, ArgumentParser
-from gettext import gettext
-
 from datetime import datetime
+from gettext import gettext
 
 
 class MultilineFormatter(HelpFormatter):
