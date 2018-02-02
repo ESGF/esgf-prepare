@@ -100,7 +100,6 @@ class File(object):
         # Set version to None
         self.attributes['version'] = None
 
-
     def check_facets(self, facets, config, set_keys):
         """
         Checks each facet against the controlled vocabulary.
