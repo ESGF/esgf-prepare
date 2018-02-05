@@ -162,7 +162,8 @@ def process(collector_input):
         logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         return None
     finally:
-        ctx.pbar.update()
+        if ctx.pbar:
+            ctx.pbar.update()
 
 
 def run(args):
