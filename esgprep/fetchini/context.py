@@ -12,10 +12,10 @@ import os
 import re
 import sys
 
+from tqdm import tqdm
 from requests.auth import HTTPBasicAuth
 
 from constants import *
-from esgprep.utils.misc import as_pbar
 from misc import gh_request_content
 
 
@@ -52,7 +52,12 @@ class ProcessingContext(object):
         self.targets = self.target_projects()
         # Init progress bar
         if self.pbar:
-            self.targets = as_pbar(self.targets, desc='Fetching "esg.<project>.ini"', units='files')
+            self.targets = tqdm(self.targets,
+                                desc='Fetching project(s) config',
+                                total=len(self.targets),
+                                bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
+                                ncols=100,
+                                file=sys.stdout)
         return self
 
     def __exit__(self, *exc):

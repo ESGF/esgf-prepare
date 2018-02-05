@@ -12,10 +12,7 @@ import logging
 import os
 import pickle
 import re
-import sys
 from datetime import datetime
-
-from tqdm import tqdm
 
 from custom_exceptions import *
 
@@ -135,26 +132,6 @@ def store(path, data):
     with open(path, 'wb') as f:
         for i in range(len(data)):
             pickle.dump(data[i], f)
-
-
-def as_pbar(iterable, desc, units, total=None):
-    """
-    Build a progress pbar.
-
-    :param *iterable* iterable: An iterable object
-    :param str desc: The progress bar description
-    :param str units: The progress bar units
-    :param int total: The number of iterations
-    :returns: The progress bar object as an iterable
-    :rtype: *tqdm.tqdm* or *iter*
-
-    """
-    return tqdm(iterable,
-                desc=desc,
-                total=total or len(iterable),
-                bar_format='{desc}{percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} ' + units,
-                ncols=100,
-                file=sys.stdout)
 
 
 def evaluate(results):

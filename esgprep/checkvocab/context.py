@@ -13,10 +13,10 @@ import sys
 from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
+from tqdm import tqdm
 
 from constants import *
 from esgprep.utils.collectors import PathCollector, DatasetCollector
-from esgprep.utils.misc import as_pbar
 
 
 class ProcessingContext(object):
@@ -81,7 +81,12 @@ class ProcessingContext(object):
         self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
         # Init progress bar
         if self.pbar:
-            self.sources = as_pbar(self.sources, desc='Harvesting facets values from source', units=self.source_type)
+            self.sources = tqdm(self.sources,
+                                desc='Harvesting facets values from data',
+                                total=len(self.sources),
+                                bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} ' + self.source_type,
+                                ncols=100,
+                                file=sys.stdout)
         return self
 
     def __exit__(self, *exc):
