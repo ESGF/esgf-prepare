@@ -30,7 +30,7 @@ PROGRAM_DESC = \
     
     iv. Generate mapfiles.|n|n
     
-    See full documentation and references at http://is-enes-data.github.io/esgf-prepare/.
+    See full documentation and references at http://esgf.github.io/esgf-prepare/.
     
     """
 
