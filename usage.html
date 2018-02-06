@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generic usage &mdash; esgprep 2.7.32 documentation</title>
+  <title>Generic usage &mdash; esgprep 2.7.36 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.32 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.36 documentation" href="index.html"/>
         <link rel="next" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/>
         <link rel="prev" title="Configuration" href="configuration.html"/> 
 
@@ -112,7 +112,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
 </ul>
 
@@ -231,14 +231,14 @@ the configuration file(s).</p>
 <div class="section" id="submit-a-configuration-directory">
 <h2>Submit a configuration directory<a class="headerlink" href="#submit-a-configuration-directory" title="Permalink to this headline">¶</a></h2>
 <p>By default, the configuration files are fetched or read from <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code> that is the usual configuration
-directory on ESGF nodes. If you&#8217;re preparing your data outside of an ESGF node, you can submit another directory to
+directory on ESGF nodes. If you’re preparing your data outside of an ESGF node, you can submit another directory to
 fetch and read the configuration files.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND -i /PATH/TO/CONFIG/
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">In the case of <code class="docutils literal"><span class="pre">fetch-ini</span></code> subcommand, if you&#8217;re not on an ESGF node and <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code> doesn&#8217;t exist,
+<p class="last">In the case of <code class="docutils literal"><span class="pre">fetch-ini</span></code> subcommand, if you’re not on an ESGF node and <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code> doesn’t exist,
 the configuration file(s) are fetched into an <code class="docutils literal"><span class="pre">ini</span></code> folder in your working directory.</p>
 </div>
 </div>
@@ -345,7 +345,7 @@ simultaneously process several files (4 threads is the default and one seems seq
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.32',
+            VERSION:'2.7.36',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

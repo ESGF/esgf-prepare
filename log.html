@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Changelog &mdash; esgprep 2.7.32 documentation</title>
+  <title>Change Log &mdash; esgprep 2.7.36 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.32 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.36 documentation" href="index.html"/>
         <link rel="next" title="Code documentation" href="autodoc.html"/>
         <link rel="prev" title="Credits" href="credits.html"/> 
 
@@ -100,7 +100,12 @@
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-7-35-2018-02-02">v2.7.35 (2018-02-02)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#untagged-older-changes">Untagged older changes</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
 </ul>
 
@@ -146,7 +151,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Changelog</li>
+      <li>Change Log</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -165,8 +170,65 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="changelog">
-<span id="log"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="change-log">
+<span id="log"></span><h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="unreleased">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.7.35...HEAD">Full
+Changelog</a></p>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>Tags missing and issue with publishing CORDEX data
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/18">#18</a></li>
+<li>–commands-file option is being written to the tree file
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/17">#17</a></li>
+</ul>
+</div>
+<div class="section" id="v2-7-35-2018-02-02">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.7.35">v2.7.35</a> (2018-02-02)<a class="headerlink" href="#v2-7-35-2018-02-02" title="Permalink to this headline">¶</a></h2>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>dataset_id names
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/15">#15</a></li>
+<li>use consistent delete command in “esgprep drs todo”
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/14">#14</a></li>
+<li>unicode ascii conversion error in “esgprep drs tree”
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/12">#12</a></li>
+<li>hard coded strings in directory_format are ignored without warning
+in “esgprep drs”
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/11">#11</a></li>
+<li>root directory stored in tree file in “esgprep drs”
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/10">#10</a></li>
+<li>“tree” file breaking logging in “esgprep drs”
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/9">#9</a></li>
+<li>esgprep fails to install under esgf-installer
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/8">#8</a></li>
+<li>enhancement: sanity check esg.ini for mistakes
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/7">#7</a></li>
+<li>UnicodeEncode Error in fetchini/main.py
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/6">#6</a></li>
+<li>The esg.cmip6.ini file is blank when downloaded.
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/5">#5</a></li>
+<li>version tagging
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/4">#4</a></li>
+<li>string facets shouldn’t need options
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/1">#1</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul class="simple">
+<li>when max_threads=1, do not create a thread pool
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/16">#16</a>
+(<a class="reference external" href="https://github.com/alaniwi">alaniwi</a>)</li>
+<li>Changes related to –commands-file
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/13">#13</a>
+(<a class="reference external" href="https://github.com/alaniwi">alaniwi</a>)</li>
+<li>updated pull request to include new commit
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/2">#2</a>
+(<a class="reference external" href="https://github.com/alaniwi">alaniwi</a>)</li>
+</ul>
+</div>
+<div class="section" id="untagged-older-changes">
+<h2>Untagged older changes<a class="headerlink" href="#untagged-older-changes" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="11%" />
@@ -293,7 +355,7 @@
 <td>0.3.1</td>
 <td><div class="first last line-block">
 <div class="line">Improve logging.</div>
-<div class="line">Includes developer&#8217;s entry point.</div>
+<div class="line">Includes developer’s entry point.</div>
 </div>
 </td>
 </tr>
@@ -324,6 +386,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 
 
@@ -370,7 +433,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.32',
+            VERSION:'2.7.36',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

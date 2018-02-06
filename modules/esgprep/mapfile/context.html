@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.context &mdash; esgprep 2.7.32 documentation</title>
+  <title>esgprep.mapfile.context &mdash; esgprep 2.7.36 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.32 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -99,7 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
 </ul>
 
@@ -183,11 +183,11 @@
 
 <span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">SectionParser</span>
 <span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">NoConfigOption</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.collectors</span> <span class="k">import</span> <span class="n">VersionedPathCollector</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">cmd_exists</span>
 
 
 <div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.context.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -276,6 +276,14 @@
             <span class="c1"># Pick up the specified version only (--version flag) by adding &quot;/v{version}&quot; inclusion</span>
             <span class="c1"># If --latest-symlink, --version is set to &quot;latest&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;version_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+        <span class="c1"># Init progress bar</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Mapfile(s) generation&#39;</span><span class="p">,</span>
+                             <span class="n">total</span><span class="o">=</span><span class="n">nfiles</span><span class="p">,</span>
+                             <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}</span><span class="s1">: </span><span class="si">{percentage:3.0f}</span><span class="s1">% | </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
+                             <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                             <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
         <span class="c1"># Init threads pool</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_pool</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">))</span>
@@ -326,12 +334,14 @@
 <span class="sd">        :rtype: *str*</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="n">_cfg</span> <span class="o">=</span> <span class="n">SectionParser</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_cfg</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;checksum&#39;</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">):</span>
             <span class="n">checksum_type</span> <span class="o">=</span> <span class="n">_cfg</span><span class="o">.</span><span class="n">get_options_from_table</span><span class="p">(</span><span class="s1">&#39;checksum&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># Use SHA256 as default because esg.ini not mandatory in configuration directory</span>
             <span class="n">checksum_type</span> <span class="o">=</span> <span class="s1">&#39;sha256&#39;</span>
-        <span class="k">if</span> <span class="n">checksum_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CHECKSUM_TYPES</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">checksum_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">checksum_types</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidChecksumType</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">checksum_type</span></div>
 
@@ -381,7 +391,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.32',
+            VERSION:'2.7.36',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.7.32 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.7.36 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.32 documentation" href="index.html"/>
-        <link rel="prev" title="Changelog" href="log.html"/> 
+    <link rel="top" title="esgprep 2.7.36 documentation" href="index.html"/>
+        <link rel="prev" title="Change Log" href="log.html"/> 
 
   
   <script src="static/js/modernizr.min.js"></script>
@@ -99,7 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Code documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-esgprep.esgprep">esgprep</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#module-esgprep.fetchini.constants">fetch-ini</a></li>
@@ -238,8 +238,8 @@
 <dd><p>Backup a local file following different modes:</p>
 <blockquote>
 <div><ul class="simple">
-<li>&#8220;one_version&#8221; renames the existing file in its source directory adding a &#8221;.bkp&#8221; extension to the filename.</li>
-<li>&#8220;keep_versions&#8221; moves the existing file in a child directory called &#8220;bkp&#8221; and add a timestamp to the filename.</li>
+<li>“one_version” renames the existing file in its source directory adding a “.bkp” extension to the filename.</li>
+<li>“keep_versions” moves the existing file in a child directory called “bkp” and add a timestamp to the filename.</li>
 </ul>
 </div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
@@ -247,8 +247,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>f</strong> (<em>str</em>) &#8211; The file to backup</li>
-<li><strong>mode</strong> (<em>str</em>) &#8211; The backup mode to follow</li>
+<li><strong>f</strong> (<em>str</em>) – The file to backup</li>
+<li><strong>mode</strong> (<em>str</em>) – The backup mode to follow</li>
 </ul>
 </td>
 </tr>
@@ -265,8 +265,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outfile</strong> (<em>str</em>) &#8211; The output file</li>
-<li><strong>content</strong> (<em>str</em>) &#8211; The file content to write</li>
+<li><strong>outfile</strong> (<em>str</em>) – The output file</li>
+<li><strong>content</strong> (<em>str</em>) – The file content to write</li>
 </ul>
 </td>
 </tr>
@@ -283,10 +283,10 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>f</strong> (<em>str</em>) &#8211; The file to test</li>
-<li><strong>remote_checksum</strong> (<em>str</em>) &#8211; The remote file checksum</li>
-<li><strong>overwrite</strong> (<em>boolean</em>) &#8211; True if overwrite existing files</li>
-<li><strong>keep</strong> (<em>boolean</em>) &#8211; True if keep existing files</li>
+<li><strong>f</strong> (<em>str</em>) – The file to test</li>
+<li><strong>remote_checksum</strong> (<em>str</em>) – The remote file checksum</li>
+<li><strong>overwrite</strong> (<em>boolean</em>) – True if overwrite existing files</li>
+<li><strong>keep</strong> (<em>boolean</em>) – True if keep existing files</li>
 </ul>
 </td>
 </tr>
@@ -303,12 +303,12 @@
 <dl class="function">
 <dt id="esgprep.fetchini.main.githash">
 <code class="descclassname">esgprep.fetchini.main.</code><code class="descname">githash</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#githash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.githash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes Git checksum (as called by &#8220;git hash-object&#8221;) of a file</p>
+<dd><p>Makes Git checksum (as called by “git hash-object”) of a file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> &#8211; </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> – </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The SHA1 sum</td>
 </tr>
@@ -332,7 +332,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; Parsed command-line arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Parsed command-line arguments</td>
 </tr>
 </tbody>
 </table>
@@ -356,7 +356,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; The command-line arguments parser</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – The command-line arguments parser</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The processing context</td>
 </tr>
@@ -387,7 +387,7 @@
 <dt>Build the output directory as follows:</dt>
 <dd><ul class="first last simple">
 <li>If ESGF node and args.i = /esg/config/esgcet -&gt; exists</li>
-<li>If not ESGF node and args.i = /esg/config/esgcet -&gt; doesn&#8217;t exist -&gt; use $PWD/ini instead</li>
+<li>If not ESGF node and args.i = /esg/config/esgcet -&gt; doesn’t exist -&gt; use $PWD/ini instead</li>
 <li>If ESGF node and args.i = other -&gt; if not exists make it</li>
 <li>If not ESGF node and args.i = other -&gt; if not exists make it</li>
 </ul>
@@ -473,8 +473,8 @@ Make the intersection with the desired projects to fetch.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>url</strong> (<em>str</em>) &#8211; The GitHub url to request</li>
-<li><strong>auth</strong> (<em>requests.auth.HTTPBasicAuth</em>) &#8211; The authenticator object</li>
+<li><strong>url</strong> (<em>str</em>) – The GitHub url to request</li>
+<li><strong>auth</strong> (<em>requests.auth.HTTPBasicAuth</em>) – The authenticator object</li>
 </ul>
 </td>
 </tr>
@@ -485,10 +485,10 @@ Make the intersection with the desired projects to fetch.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> &#8211; If user not authorized to read GitHub repository</li>
-<li><strong>Error</strong> &#8211; If user exceed the GitHub API rate limit</li>
-<li><strong>Error</strong> &#8211; If the queried content does not exist</li>
-<li><strong>Error</strong> &#8211; If the GitHub request fails for other reasons</li>
+<li><strong>Error</strong> – If user not authorized to read GitHub repository</li>
+<li><strong>Error</strong> – If user exceed the GitHub API rate limit</li>
+<li><strong>Error</strong> – If the queried content does not exist</li>
+<li><strong>Error</strong> – If the GitHub request fails for other reasons</li>
 </ul>
 </td>
 </tr>
@@ -537,7 +537,7 @@ Make the intersection with the desired projects to fetch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>collector_input</strong> (<em>tuple</em>) &#8211; A tuple with the file path and the processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>collector_input</strong> (<em>tuple</em>) – A tuple with the file path and the processing context</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True on success</td>
 </tr>
@@ -564,7 +564,7 @@ Make the intersection with the desired projects to fetch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; The command-line arguments parser</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – The command-line arguments parser</td>
 </tr>
 </tbody>
 </table>
@@ -588,7 +588,7 @@ Make the intersection with the desired projects to fetch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; Parsed command-line arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Parsed command-line arguments</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The processing context</td>
 </tr>
@@ -597,9 +597,10 @@ Make the intersection with the desired projects to fetch.</p>
 </tbody>
 </table>
 <dl class="method">
-<dt id="esgprep.drs.context.ProcessingContext._check_existing_commands_file">
-<code class="descname">_check_existing_commands_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/context.html#ProcessingContext._check_existing_commands_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.context.ProcessingContext._check_existing_commands_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>check for existing commands file, and depending on &#8211;overwrite-commands-file setting,
+<dt id="esgprep.drs.context.ProcessingContext.check_existing_commands_file">
+<code class="descname">check_existing_commands_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/context.html#ProcessingContext.check_existing_commands_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.context.ProcessingContext.check_existing_commands_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for existing commands file,
+and depending on <code class="docutils literal"><span class="pre">--overwrite-commands-file</span></code> setting,
 either delete it or throw a fatal error.</p>
 </dd></dl>
 
@@ -628,9 +629,9 @@ Be careful to Exception constants by reading two different sections.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>old_args</strong> (<em>dict</em>) &#8211; The recorded arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>old_args</strong> (<em>dict</em>) – The recorded arguments</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If one argument differs</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If one argument differs</td>
 </tr>
 </tbody>
 </table>
@@ -661,13 +662,13 @@ The submitted key can refer to <code class="docutils literal"><span class="pre">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) &#8211; The key</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) – The key</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding value</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em> or <em>list</em> or <em>dict</em> depending on the key</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If unknown key</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If unknown key</td>
 </tr>
 </tbody>
 </table>
@@ -675,27 +676,26 @@ The submitted key can refer to <code class="docutils literal"><span class="pre">
 
 <dl class="method">
 <dt id="esgprep.drs.handler.File.load_attributes">
-<code class="descname">load_attributes</code><span class="sig-paren">(</span><em>project</em>, <em>root</em>, <em>pattern</em>, <em>set_values</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#File.load_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.File.load_attributes" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_attributes</code><span class="sig-paren">(</span><em>root</em>, <em>pattern</em>, <em>set_values</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#File.load_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.File.load_attributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads DRS attributes catched from a regular expression match.
 The project facet is added in any case with lower case.
 The root facet is added by default.
 The dataset version is initially set to None.
-Can be overwrite by &#8220;set_values&#8221; pairs if submitted.</p>
+Can be overwrite by “set_values” pairs if submitted.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>project</strong> (<em>str</em>) &#8211; The project name</li>
-<li><strong>root</strong> (<em>str</em>) &#8211; The DRS tree root</li>
-<li><strong>pattern</strong> (<em>str</em>) &#8211; The regular expression to match</li>
-<li><strong>set_values</strong> (<em>dict</em>) &#8211; Key/value pairs of facet to set for the run</li>
+<li><strong>root</strong> (<em>str</em>) – The DRS tree root</li>
+<li><strong>pattern</strong> (<em>str</em>) – The regular expression to match</li>
+<li><strong>set_values</strong> (<em>dict</em>) – Key/value pairs of facet to set for the run</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> &#8211; If regular expression matching fails</li>
-<li><strong>Error</strong> &#8211; If invalid NetCDF file.</li>
+<li><strong>Error</strong> – If regular expression matching fails</li>
+<li><strong>Error</strong> – If invalid NetCDF file.</li>
 </ul>
 </td>
 </tr>
@@ -710,19 +710,19 @@ Can be overwrite by &#8220;set_values&#8221; pairs if submitted.</p>
 If a DRS attribute is missing regarding the list of facets,
 The DRS attributes are completed from the configuration file maptables.
 In the case of non-standard attribute, it gets the most similar key among netCDF attributes names.
-Attributes can be directly mapped with &#8220;set_keys&#8221; pairs if submitted.</p>
+Attributes can be directly mapped with “set_keys” pairs if submitted.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>facets</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) &#8211; The list of facet to check</li>
-<li><strong>config</strong> (<em>ESGConfigParser.SectionParser</em>) &#8211; The configuration parser</li>
-<li><strong>set_keys</strong> (<em>dict</em>) &#8211; Key/Attribute pairs to map for the run</li>
+<li><strong>facets</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – The list of facet to check</li>
+<li><strong>config</strong> (<em>ESGConfigParser.SectionParser</em>) – The configuration parser</li>
+<li><strong>set_keys</strong> (<em>dict</em>) – Key/Attribute pairs to map for the run</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If one facet checkup fails</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> – If one facet checkup fails</p>
 </td>
 </tr>
 </tbody>
@@ -733,12 +733,12 @@ Attributes can be directly mapped with &#8220;set_keys&#8221; pairs if submitted
 <dt id="esgprep.drs.handler.File.get_drs_parts">
 <code class="descname">get_drs_parts</code><span class="sig-paren">(</span><em>facets</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#File.get_drs_parts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.File.get_drs_parts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the DRS pairs required to build the DRS path. The DRS parts are included as an OrderedDict():
-{project : &#8216;CMIP5&#8217;, product: &#8216;output1&#8217;, ...}</p>
+{project : ‘CMIP5’, product: ‘output1’, …}</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>facets</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) &#8211; The list of facet to check</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>facets</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – The list of facet to check</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The ordered DRS parts</td>
 </tr>
@@ -763,13 +763,13 @@ The submitted key can refer to the DRS dataset parts of the DRS file parts.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) &#8211; The key</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) – The key</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The value</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em> or <em>list</em> or <em>dict</em> depending on the key</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If unknown key</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If unknown key</td>
 </tr>
 </tbody>
 </table>
@@ -785,12 +785,12 @@ Flags can be combine to obtain different behaviors.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>d_part</strong> (<em>boolean</em>) &#8211; True to append the dataset facets</li>
-<li><strong>f_part</strong> (<em>boolean</em>) &#8211; True to append the file facets</li>
-<li><strong>version</strong> (<em>boolean</em>) &#8211; True to append the version facet</li>
-<li><strong>file_folder</strong> (<em>boolean</em>) &#8211; True to append the folder for physical files</li>
-<li><strong>latest</strong> (<em>boolean</em>) &#8211; True to switch from upgrade to latest version</li>
-<li><strong>root</strong> (<em>boolean</em>) &#8211; True to prepend the DRS root directory</li>
+<li><strong>d_part</strong> (<em>boolean</em>) – True to append the dataset facets</li>
+<li><strong>f_part</strong> (<em>boolean</em>) – True to append the file facets</li>
+<li><strong>version</strong> (<em>boolean</em>) – True to append the version facet</li>
+<li><strong>file_folder</strong> (<em>boolean</em>) – True to append the folder for physical files</li>
+<li><strong>latest</strong> (<em>boolean</em>) – True to switch from upgrade to latest version</li>
+<li><strong>root</strong> (<em>boolean</em>) – True to prepend the DRS root directory</li>
 </ul>
 </td>
 </tr>
@@ -833,7 +833,7 @@ The arguments are the same as <a class="reference internal" href="#esgprep.drs.h
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If latest version exists and is the same as upgrade version</td>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If latest version exists and is the same as upgrade version</td>
 </tr>
 </tbody>
 </table>
@@ -854,8 +854,8 @@ The arguments are the same as <a class="reference internal" href="#esgprep.drs.h
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>commands_file</strong> (<em>str</em>) &#8211; The file to write command-lines statement if submitted</li>
-<li><strong>todo_only</strong> (<em>boolean</em>) &#8211; True to only print Unix command-lines to apply (i.e., as dry-run)</li>
+<li><strong>commands_file</strong> (<em>str</em>) – The file to write command-lines statement if submitted</li>
+<li><strong>todo_only</strong> (<em>boolean</em>) – True to only print Unix command-lines to apply (i.e., as dry-run)</li>
 </ul>
 </td>
 </tr>
@@ -872,9 +872,9 @@ Discards relative paths.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>root</strong> (<em>str</em>) &#8211; The DRS tree root</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>root</strong> (<em>str</em>) – The DRS tree root</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If missing user privileges</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If missing user privileges</td>
 </tr>
 </tbody>
 </table>
@@ -890,9 +890,9 @@ Only hardlinks could fail depending on the filesystem partition.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>root</strong> (<em>str</em>) &#8211; The DRS tree root</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>root</strong> (<em>str</em>) – The DRS tree root</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If migration is disallowed by filesystem configuration</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If migration is disallowed by filesystem configuration</td>
 </tr>
 </tbody>
 </table>
@@ -920,12 +920,12 @@ The <a class="reference internal" href="#esgprep.drs.handler.DRSLeaf" title="esg
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>nodes</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) &#8211; The list of node tags to the leaf</li>
-<li><strong>leaf</strong> (<em>str</em>) &#8211; The leaf name</li>
-<li><strong>label</strong> (<em>str</em>) &#8211; The leaf label</li>
-<li><strong>src</strong> (<em>str</em>) &#8211; The source of the leaf</li>
-<li><strong>mode</strong> (<em>str</em>) &#8211; The migration mode (e.g., &#8216;copy&#8217;, &#8216;move&#8217;, etc.)</li>
-<li><strong>origin</strong> (<em>str</em>) &#8211; The original file full path used for the DRSLeaf source</li>
+<li><strong>nodes</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – The list of node tags to the leaf</li>
+<li><strong>leaf</strong> (<em>str</em>) – The leaf name</li>
+<li><strong>label</strong> (<em>str</em>) – The leaf label</li>
+<li><strong>src</strong> (<em>str</em>) – The source of the leaf</li>
+<li><strong>mode</strong> (<em>str</em>) – The migration mode (e.g., ‘copy’, ‘move’, etc.)</li>
+<li><strong>origin</strong> (<em>str</em>) – The original file full path used for the DRSLeaf source</li>
 </ul>
 </td>
 </tr>
@@ -972,7 +972,7 @@ from the latest version if exists.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>todo_only</strong> (<em>boolean</em>) &#8211; Only print Unix command-line to do</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>todo_only</strong> (<em>boolean</em>) – Only print Unix command-line to do</td>
 </tr>
 </tbody>
 </table>
@@ -989,10 +989,10 @@ from the latest version if exists.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>line</strong> (<em>str</em>) &#8211; The command-line to write.</li>
-<li><strong>commands_file</strong> (<em>str</em>) &#8211; The output file to write command-lines, None if not.</li>
-<li><strong>todo_only</strong> (<em>boolean</em>) &#8211; True to only print Unix command-lines to apply (i.e., as dry-run)</li>
-<li><strong>mode</strong> (<em>str</em>) &#8211; File open() mode</li>
+<li><strong>line</strong> (<em>str</em>) – The command-line to write.</li>
+<li><strong>commands_file</strong> (<em>str</em>) – The output file to write command-lines, None if not.</li>
+<li><strong>todo_only</strong> (<em>boolean</em>) – True to only print Unix command-lines to apply (i.e., as dry-run)</li>
+<li><strong>mode</strong> (<em>str</em>) – File open() mode</li>
 </ul>
 </td>
 </tr>
@@ -1092,7 +1092,7 @@ from the latest version if exists.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; The command-line arguments parser</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – The command-line arguments parser</td>
 </tr>
 </tbody>
 </table>
@@ -1116,7 +1116,7 @@ from the latest version if exists.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; The command-line arguments parser</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – The command-line arguments parser</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The processing context</td>
 </tr>
@@ -1165,9 +1165,9 @@ from the latest version if exists.</p>
 <dd><p>Builds the mapfile full path depending on:</p>
 <blockquote>
 <div><ul class="simple">
-<li>the &#8211;mapfile name using tokens,</li>
+<li>the –mapfile name using tokens,</li>
 <li>an optional mapfile tree declared in configuration file with <code class="docutils literal"><span class="pre">mapfile_drs</span></code>,</li>
-<li>the &#8211;outdir output directory.</li>
+<li>the –outdir output directory.</li>
 </ul>
 </div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1175,12 +1175,12 @@ from the latest version if exists.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outdir</strong> (<em>str</em>) &#8211; The output directory (default is current working directory)</li>
-<li><strong>attributes</strong> (<em>dict</em>) &#8211; The facets values deduces from file full path</li>
-<li><strong>mapfile_name</strong> (<em>str</em>) &#8211; An optional mapfile name from the command-line</li>
-<li><strong>dataset_id</strong> (<em>str</em>) &#8211; The dataset id</li>
-<li><strong>dataset_version</strong> (<em>str</em>) &#8211; The dataset version</li>
-<li><strong>mapfile_drs</strong> (<em>str</em>) &#8211; The optional mapfile tree</li>
+<li><strong>outdir</strong> (<em>str</em>) – The output directory (default is current working directory)</li>
+<li><strong>attributes</strong> (<em>dict</em>) – The facets values deduces from file full path</li>
+<li><strong>mapfile_name</strong> (<em>str</em>) – An optional mapfile name from the command-line</li>
+<li><strong>dataset_id</strong> (<em>str</em>) – The dataset id</li>
+<li><strong>dataset_version</strong> (<em>str</em>) – The dataset version</li>
+<li><strong>mapfile_drs</strong> (<em>str</em>) – The optional mapfile tree</li>
 </ul>
 </td>
 </tr>
@@ -1196,17 +1196,18 @@ from the latest version if exists.</p>
 
 <dl class="function">
 <dt id="esgprep.mapfile.main.mapfile_entry">
-<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">mapfile_entry</code><span class="sig-paren">(</span><em>dataset_id</em>, <em>dataset_version</em>, <em>ffp</em>, <em>size</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#mapfile_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.mapfile_entry" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">mapfile_entry</code><span class="sig-paren">(</span><em>dataset_id</em>, <em>dataset_version</em>, <em>ffp</em>, <em>size</em>, <em>optional_attrs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#mapfile_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.mapfile_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds the mapfile entry corresponding to a processed file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dataset_id</strong> (<em>str</em>) &#8211; The dataset id</li>
-<li><strong>dataset_version</strong> (<em>str</em>) &#8211; The dataset version</li>
-<li><strong>ffp</strong> (<em>str</em>) &#8211; The file full path</li>
-<li><strong>size</strong> (<em>str</em>) &#8211; The file size</li>
+<li><strong>dataset_id</strong> (<em>str</em>) – The dataset id</li>
+<li><strong>dataset_version</strong> (<em>str</em>) – The dataset version</li>
+<li><strong>ffp</strong> (<em>str</em>) – The file full path</li>
+<li><strong>size</strong> (<em>str</em>) – The file size</li>
+<li><strong>optional_attrs</strong> (<em>dict</em>) – Optional attributes to append to mapfile lines</li>
 </ul>
 </td>
 </tr>
@@ -1225,15 +1226,15 @@ from the latest version if exists.</p>
 <code class="descclassname">esgprep.mapfile.main.</code><code class="descname">write</code><span class="sig-paren">(</span><em>outfile</em>, <em>entry</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inserts a mapfile entry.
 It generates a lockfile to avoid that several threads write on the same file at the same time.
-A LockFile is acquired and released after writing. Acquiring LockFile is timeouted if it&#8217;s locked by other thread.
+A LockFile is acquired and released after writing. Acquiring LockFile is timeouted if it’s locked by other thread.
 Each process adds one line to the appropriate mapfile</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outfile</strong> (<em>str</em>) &#8211; The output mapfile full path</li>
-<li><strong>entry</strong> (<em>str</em>) &#8211; The mapfile entry to write</li>
+<li><strong>outfile</strong> (<em>str</em>) – The output mapfile full path</li>
+<li><strong>entry</strong> (<em>str</em>) – The mapfile entry to write</li>
 </ul>
 </td>
 </tr>
@@ -1262,7 +1263,7 @@ Each process adds one line to the appropriate mapfile</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>collector_input</strong> (<em>tuple</em>) &#8211; A tuple with the file path and the processing context</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>collector_input</strong> (<em>tuple</em>) – A tuple with the file path and the processing context</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The output mapfile full path</td>
 </tr>
@@ -1288,7 +1289,7 @@ Each process adds one line to the appropriate mapfile</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; Command-line arguments parser</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Command-line arguments parser</td>
 </tr>
 </tbody>
 </table>
@@ -1312,7 +1313,7 @@ Each process adds one line to the appropriate mapfile</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) &#8211; The command-line arguments parser</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – The command-line arguments parser</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The processing context</td>
 </tr>
@@ -1369,13 +1370,13 @@ The submitted key can refer to <code class="docutils literal"><span class="pre">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) &#8211; The key</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) – The key</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding value</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em> or <em>list</em> or <em>dict</em> depending on the key</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If unknown key</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If unknown key</td>
 </tr>
 </tbody>
 </table>
@@ -1383,21 +1384,16 @@ The submitted key can refer to <code class="docutils literal"><span class="pre">
 
 <dl class="method">
 <dt id="esgprep.mapfile.handler.File.load_attributes">
-<code class="descname">load_attributes</code><span class="sig-paren">(</span><em>project</em>, <em>pattern</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.load_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.load_attributes" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_attributes</code><span class="sig-paren">(</span><em>pattern</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.load_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.load_attributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads DRS attributes catched from a regular expression match.
 The project facet is added in any case with lower case.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>project</strong> (<em>str</em>) &#8211; The project name</li>
-<li><strong>pattern</strong> (<em>str</em>) &#8211; The regular expression to match</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pattern</strong> (<em>str</em>) – The regular expression to match</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If regular expression matching fails</p>
-</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If regular expression matching fails</td>
 </tr>
 </tbody>
 </table>
@@ -1414,12 +1410,12 @@ the DRS attributes are completed from the configuration file maptables.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>facets</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) &#8211; The list of facet to check</li>
-<li><strong>config</strong> (<em>ESGConfigParser.SectionParser</em>) &#8211; The configuration parser</li>
+<li><strong>facets</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – The list of facet to check</li>
+<li><strong>config</strong> (<em>ESGConfigParser.SectionParser</em>) – The configuration parser</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If one facet checkup fails</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> – If one facet checkup fails</p>
 </td>
 </tr>
 </tbody>
@@ -1434,13 +1430,13 @@ the DRS attributes are completed from the configuration file maptables.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dataset_format</strong> (<em>str</em>) &#8211; The dataset template pattern</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dataset_format</strong> (<em>str</em>) – The dataset template pattern</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The resulting dataset identifier</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If a facet key is missing</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If a facet key is missing</td>
 </tr>
 </tbody>
 </table>
@@ -1455,7 +1451,7 @@ it follows the symlink to complete the DRS attributes.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>no_version</strong> (<em>boolean</em>) &#8211; True to not append version to the dataset ID</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>no_version</strong> (<em>boolean</em>) – True to not append version to the dataset ID</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The dataset version</td>
 </tr>
@@ -1473,13 +1469,13 @@ it follows the symlink to complete the DRS attributes.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>checksum_type</strong> (<em>str</em>) &#8211; Checksum type</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>checksum_type</strong> (<em>str</em>) – Checksum type</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The checksum</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If the checksum fails</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If the checksum fails</td>
 </tr>
 </tbody>
 </table>
@@ -1542,8 +1538,8 @@ it follows the symlink to complete the DRS attributes.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sources</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) &#8211; The list of sources to parse</li>
-<li><strong>data</strong> (<em>object</em>) &#8211; Any object to attach to each collected data</li>
+<li><strong>sources</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – The list of sources to parse</li>
+<li><strong>data</strong> (<em>object</em>) – Any object to attach to each collected data</li>
 </ul>
 </td>
 </tr>
@@ -1563,9 +1559,9 @@ it follows the symlink to complete the DRS attributes.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>item</strong> (<em>str</em>) &#8211; The collector item</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>item</strong> (<em>str</em>) – The collector item</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The collector item with the &#8220;data&#8221; object</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The collector item with the “data” object</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>tuple</em></td>
 </tr>
@@ -1589,7 +1585,7 @@ it follows the symlink to complete the DRS attributes.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dir_filter</strong> (<em>str</em>) &#8211; A regular expression to exclude directories from the collection</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dir_filter</strong> (<em>str</em>) – A regular expression to exclude directories from the collection</td>
 </tr>
 </tbody>
 </table>
@@ -1603,7 +1599,7 @@ it follows the symlink to complete the DRS attributes.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dir_format</strong> (<em>str</em>) &#8211; The regular expression of the directory format</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dir_format</strong> (<em>str</em>) – The regular expression of the directory format</td>
 </tr>
 </tbody>
 </table>
@@ -1666,9 +1662,9 @@ If a directory is submitted the logfile name is unique and formatted as follows:
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>log</strong> (<em>str</em>) &#8211; The logfile directory.</li>
-<li><strong>debug</strong> (<em>boolean</em>) &#8211; Debug mode.</li>
-<li><strong>level</strong> (<em>str</em>) &#8211; The log level.</li>
+<li><strong>log</strong> (<em>str</em>) – The logfile directory.</li>
+<li><strong>debug</strong> (<em>boolean</em>) – Debug mode.</li>
+<li><strong>level</strong> (<em>str</em>) – The log level.</li>
 </ul>
 </td>
 </tr>
@@ -1685,8 +1681,8 @@ If a directory is submitted the logfile name is unique and formatted as follows:
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>pattern</strong> (<em>str</em>) &#8211; The regular expression to catch</li>
-<li><strong>string</strong> (<em>str</em>) &#8211; The string to test</li>
+<li><strong>pattern</strong> (<em>str</em>) – The regular expression to catch</li>
+<li><strong>string</strong> (<em>str</em>) – The string to test</li>
 </ul>
 </td>
 </tr>
@@ -1710,9 +1706,9 @@ Only match at the beginning of the string.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>pattern</strong> (<em>str</em>) &#8211; The regular expression to match</li>
-<li><strong>string</strong> (<em>str</em>) &#8211; The string to test</li>
-<li><strong>negative</strong> (<em>boolean</em>) &#8211; True if negative matching (i.e., exclude the regex)</li>
+<li><strong>pattern</strong> (<em>str</em>) – The regular expression to match</li>
+<li><strong>string</strong> (<em>str</em>) – The string to test</li>
+<li><strong>negative</strong> (<em>boolean</em>) – True if negative matching (i.e., exclude the regex)</li>
 </ul>
 </td>
 </tr>
@@ -1734,7 +1730,7 @@ Only match at the beginning of the string.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) &#8211; The Pickle file path</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) – The Pickle file path</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The Pickle file content</td>
 </tr>
@@ -1753,51 +1749,9 @@ Only match at the beginning of the string.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>path</strong> (<em>str</em>) &#8211; The Pickle file path</li>
-<li><strong>data</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) &#8211; A list of data objects to store</li>
+<li><strong>path</strong> (<em>str</em>) – The Pickle file path</li>
+<li><strong>data</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – A list of data objects to store</li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.misc.cmd_exists">
-<code class="descclassname">esgprep.utils.misc.</code><code class="descname">cmd_exists</code><span class="sig-paren">(</span><em>cmd</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#cmd_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.cmd_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if a Shell command exists.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if exists.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>boolean</em></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.misc.as_pbar">
-<code class="descclassname">esgprep.utils.misc.</code><code class="descname">as_pbar</code><span class="sig-paren">(</span><em>iterable</em>, <em>desc</em>, <em>units</em>, <em>total=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#as_pbar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.as_pbar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build a progress pbar.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>iterable</strong> (<em>iterable</em>) &#8211; An iterable object</li>
-<li><strong>desc</strong> (<em>str</em>) &#8211; The progress bar description</li>
-<li><strong>units</strong> (<em>str</em>) &#8211; The progress bar units</li>
-<li><strong>total</strong> (<em>int</em>) &#8211; The number of iterations</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The progress bar object as an iterable</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>tqdm.tqdm</em> or <em>iter</em></p>
 </td>
 </tr>
 </tbody>
@@ -1812,7 +1766,7 @@ Only match at the beginning of the string.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>results</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) &#8211; The list to evaluate</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>results</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – The list to evaluate</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if no blocking errors</td>
 </tr>
@@ -1831,10 +1785,10 @@ Only match at the beginning of the string.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ffp</strong> (<em>str</em>) &#8211; The file full path</li>
-<li><strong>checksum_type</strong> (<em>str</em>) &#8211; Checksum type</li>
-<li><strong>human_readable</strong> (<em>boolean</em>) &#8211; True to return a human readable digested message</li>
-<li><strong>include_filename</strong> (<em>boolean</em>) &#8211; True to include filename in hash calculation</li>
+<li><strong>ffp</strong> (<em>str</em>) – The file full path</li>
+<li><strong>checksum_type</strong> (<em>str</em>) – Checksum type</li>
+<li><strong>human_readable</strong> (<em>boolean</em>) – True to return a human readable digested message</li>
+<li><strong>include_filename</strong> (<em>boolean</em>) – True to include filename in hash calculation</li>
 </ul>
 </td>
 </tr>
@@ -1844,7 +1798,7 @@ Only match at the beginning of the string.</p>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>str</em></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> &#8211; If the checksum fails</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> – If the checksum fails</p>
 </td>
 </tr>
 </tbody>
@@ -1881,13 +1835,13 @@ Only match at the beginning of the string.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) &#8211; The path list to check</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) – The path list to check</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The same path list</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If one of the directory does not exist</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If one of the directory does not exist</td>
 </tr>
 </tbody>
 </table>
@@ -1912,7 +1866,7 @@ Only match at the beginning of the string.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If invalid version format</td>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If invalid version format</td>
 </tr>
 </tbody>
 </table>
@@ -1928,13 +1882,13 @@ Only match at the beginning of the string.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pair</strong> (<em>str</em>) &#8211; The key/value pair to check</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pair</strong> (<em>str</em>) – The key/value pair to check</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The key/value pair</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>list</em></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If invalid pair syntax</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If invalid pair syntax</td>
 </tr>
 </tbody>
 </table>
@@ -1948,13 +1902,13 @@ Only match at the beginning of the string.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string</strong> (<em>str</em>) &#8211; The string to check</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string</strong> (<em>str</em>) – The string to check</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The Python regex</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>re.compile</em></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> &#8211; If invalid regular expression</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If invalid regular expression</td>
 </tr>
 </tbody>
 </table>
@@ -2021,7 +1975,7 @@ Only match at the beginning of the string.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="log.html" class="btn btn-neutral" title="Changelog" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="log.html" class="btn btn-neutral" title="Change Log" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -2052,7 +2006,7 @@ Only match at the beginning of the string.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.32',
+            VERSION:'2.7.36',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

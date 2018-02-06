@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.parser &mdash; esgprep 2.7.32 documentation</title>
+  <title>esgprep.utils.parser &mdash; esgprep 2.7.36 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.32 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -99,7 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
 </ul>
 
@@ -179,9 +179,8 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">HelpFormatter</span><span class="p">,</span> <span class="n">ArgumentTypeError</span><span class="p">,</span> <span class="n">Action</span><span class="p">,</span> <span class="n">ArgumentParser</span>
-<span class="kn">from</span> <span class="nn">gettext</span> <span class="k">import</span> <span class="n">gettext</span>
-
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">gettext</span> <span class="k">import</span> <span class="n">gettext</span>
 
 
 <div class="viewcode-block" id="MultilineFormatter"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.MultilineFormatter">[docs]</a><span class="k">class</span> <span class="nc">MultilineFormatter</span><span class="p">(</span><span class="n">HelpFormatter</span><span class="p">):</span>
@@ -235,8 +234,8 @@
             <span class="n">checked_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory_checker</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">checked_vals</span><span class="p">)</span>
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="DirectoryChecker.directory_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.DirectoryChecker.directory_checker">[docs]</a>    <span class="k">def</span> <span class="nf">directory_checker</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="DirectoryChecker.directory_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.DirectoryChecker.directory_checker">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">directory_checker</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if the supplied directory exists. The path is normalized without trailing slash.</span>
 
@@ -264,8 +263,8 @@
         <span class="n">checked_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_checker</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">checked_val</span><span class="p">)</span>
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="VersionChecker.version_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.VersionChecker.version_checker">[docs]</a>    <span class="k">def</span> <span class="nf">version_checker</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
+<div class="viewcode-block" id="VersionChecker.version_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.VersionChecker.version_checker">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">version_checker</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks the version format from command-line.</span>
 
@@ -366,7 +365,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.32',
+            VERSION:'2.7.36',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.main &mdash; esgprep 2.7.32 documentation</title>
+  <title>esgprep.drs.main &mdash; esgprep 2.7.36 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.32 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -99,7 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
 </ul>
 
@@ -174,15 +174,15 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">NoConfigOption</span>
+<span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">NoConfigKey</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">context</span> <span class="k">import</span> <span class="n">ProcessingContext</span>
 <span class="kn">from</span> <span class="nn">custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">load</span><span class="p">,</span> <span class="n">store</span><span class="p">,</span> <span class="n">as_pbar</span><span class="p">,</span> <span class="n">evaluate</span><span class="p">,</span> <span class="n">checksum</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">load</span><span class="p">,</span> <span class="n">store</span><span class="p">,</span> <span class="n">evaluate</span><span class="p">,</span> <span class="n">checksum</span>
 <span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">File</span><span class="p">,</span> <span class="n">DRSPath</span>
 
 
@@ -210,16 +210,18 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Instantiate file handler</span>
         <span class="n">fh</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
-        <span class="c1"># Try to get the appropriate project case or use lower case instead</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">project</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_pairs</span><span class="p">(</span><span class="s1">&#39;category_defaults&#39;</span><span class="p">,</span> <span class="s1">&#39;project&#39;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">NoConfigOption</span><span class="p">:</span>
-            <span class="n">project</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="c1"># Loads attributes from filename, netCDF attributes, command-line</span>
-        <span class="n">fh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span>
-                           <span class="n">root</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
                            <span class="n">pattern</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
                            <span class="n">set_values</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_values</span><span class="p">)</span>
+        <span class="c1"># Apply proper case to each attribute</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fh</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="c1"># Try to get the appropriate facet case for &quot;category_default&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fh</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_pairs</span><span class="p">(</span><span class="s1">&#39;category_defaults&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">NoConfigKey</span><span class="p">:</span>
+                <span class="c1"># If not specified keep facet case from local path, do nothing</span>
+                <span class="k">pass</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">check_facets</span><span class="p">(</span><span class="n">facets</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">,</span>
                         <span class="n">config</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
                         <span class="n">set_keys</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_keys</span><span class="p">)</span>
@@ -315,7 +317,6 @@
         <span class="n">incoming</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;src&#39;</span><span class="p">:</span> <span class="n">fh</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span>
                     <span class="s1">&#39;dst&#39;</span><span class="p">:</span> <span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                     <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
-                    <span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="n">fh</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">),</span>
                     <span class="s1">&#39;latest&#39;</span><span class="p">:</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span> <span class="ow">or</span> <span class="s1">&#39;Initial&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">fh</span><span class="o">.</span><span class="n">size</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -326,7 +327,10 @@
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> skipped</span><span class="se">\n</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.main.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
@@ -351,21 +355,23 @@
             <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
             <span class="n">ctx</span><span class="o">.</span><span class="n">scan_err_log</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="c1"># Rollback --commands_file value to command-line argument in any case</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">commands_file</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">commands_file</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Skipping incoming files scan (use &quot;--rescan&quot; to force it) -- &#39;</span> \
                   <span class="s1">&#39;Using cached DRS tree from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">use_pool</span><span class="p">:</span>
                 <span class="n">processes</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">processes</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-                <span class="n">processes</span> <span class="o">=</span> <span class="n">as_pbar</span><span class="p">(</span><span class="n">processes</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Scanning incoming files&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">nfiles</span><span class="p">)</span>
             <span class="c1"># Process supplied files</span>
             <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">processes</span><span class="p">]</span>
+        <span class="c1"># Close progress bar</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="c1"># Get number of files scanned (including skipped files)</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">scan_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
         <span class="c1"># Get number of scan errors</span>
@@ -419,7 +425,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.32',
+            VERSION:'2.7.36',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

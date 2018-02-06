@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.main &mdash; esgprep 2.7.32 documentation</title>
+  <title>esgprep.mapfile.main &mdash; esgprep 2.7.36 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.32 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -99,7 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
 </ul>
 
@@ -174,18 +174,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
 
-<span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">interpolate</span>
+<span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">NoConfigKey</span>
 <span class="kn">from</span> <span class="nn">lockfile</span> <span class="k">import</span> <span class="n">LockFile</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">context</span> <span class="k">import</span> <span class="n">ProcessingContext</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">as_pbar</span><span class="p">,</span> <span class="n">evaluate</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">evaluate</span>
 <span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">File</span>
 
 
@@ -233,7 +233,7 @@
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">mapfile_name</span><span class="p">)</span> <span class="o">+</span> <span class="n">WORKING_EXTENSION</span></div>
 
 
-<div class="viewcode-block" id="mapfile_entry"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.mapfile_entry">[docs]</a><span class="k">def</span> <span class="nf">mapfile_entry</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataset_version</span><span class="p">,</span> <span class="n">ffp</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="mapfile_entry"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.mapfile_entry">[docs]</a><span class="k">def</span> <span class="nf">mapfile_entry</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataset_version</span><span class="p">,</span> <span class="n">ffp</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">optional_attrs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Builds the mapfile entry corresponding to a processed file.</span>
 
@@ -241,6 +241,7 @@
 <span class="sd">    :param str dataset_version: The dataset version</span>
 <span class="sd">    :param str ffp: The file full path</span>
 <span class="sd">    :param str size: The file size</span>
+<span class="sd">    :param dict optional_attrs: Optional attributes to append to mapfile lines</span>
 <span class="sd">    :returns: The mapfile line/entry</span>
 <span class="sd">    :rtype: *str*</span>
 
@@ -251,7 +252,7 @@
         <span class="n">line</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">#</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataset_version</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
     <span class="n">line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
     <span class="n">line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">optional_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
             <span class="n">line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
     <span class="k">return</span> <span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span></div>
@@ -301,8 +302,15 @@
         <span class="c1"># Instantiate file handler</span>
         <span class="n">fh</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
         <span class="c1"># Matching between directory_format and file full path</span>
-        <span class="n">fh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>
-                           <span class="n">pattern</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="c1"># Apply proper case to each attribute</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fh</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="c1"># Try to get the appropriate facet case for &quot;category_default&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fh</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_pairs</span><span class="p">(</span><span class="s1">&#39;category_defaults&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">NoConfigKey</span><span class="p">:</span>
+                <span class="c1"># If not specified keep facet case from local path, do nothing</span>
+                <span class="k">pass</span>
         <span class="c1"># Deduce dataset_id</span>
         <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset</span><span class="p">:</span>
@@ -319,15 +327,18 @@
                                      <span class="n">dataset_version</span><span class="o">=</span><span class="n">dataset_version</span><span class="p">,</span>
                                      <span class="n">mapfile_drs</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">mapfile_drs</span><span class="p">)</span>
         <span class="c1"># Generate the corresponding mapfile entry/line</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="n">mapfile_entry</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span>
-                             <span class="n">dataset_version</span><span class="p">,</span>
-                             <span class="n">ffp</span><span class="p">,</span>
-                             <span class="n">fh</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
-                             <span class="n">mod_time</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">mtime</span><span class="p">,</span>
-                             <span class="n">checksum</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">checksum</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">),</span>
-                             <span class="n">checksum_type</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
-                             <span class="n">dataset_tech_notes</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">notes_url</span><span class="p">,</span>
-                             <span class="n">dataset_tech_notes_title</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">notes_title</span><span class="p">)</span>
+        <span class="n">optional_attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;mod_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">mtime</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">no_checksum</span><span class="p">:</span>
+            <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;checksum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">checksum</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">)</span>
+            <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;checksum_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;dataset_tech_notes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">notes_url</span>
+        <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;dataset_tech_notes_title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">notes_title</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">mapfile_entry</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span>
+                             <span class="n">dataset_version</span><span class="o">=</span><span class="n">dataset_version</span><span class="p">,</span>
+                             <span class="n">ffp</span><span class="o">=</span><span class="n">ffp</span><span class="p">,</span>
+                             <span class="n">size</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                             <span class="n">optional_attrs</span><span class="o">=</span><span class="n">optional_attrs</span><span class="p">)</span>
         <span class="n">write</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> &lt;-- </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">outfile</span><span class="p">))[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ffp</span><span class="p">))</span>
         <span class="c1"># Return mapfile name</span>
@@ -335,7 +346,10 @@
     <span class="c1"># Catch any exception into error log instead of stop the run</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> skipped</span><span class="se">\n</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
@@ -353,15 +367,15 @@
     <span class="c1"># Instantiate processing context</span>
     <span class="k">with</span> <span class="n">ProcessingContext</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">ctx</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan started&#39;</span><span class="p">)</span>
-        <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">use_pool</span><span class="p">:</span>
             <span class="n">processes</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">processes</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-            <span class="n">processes</span> <span class="o">=</span> <span class="n">as_pbar</span><span class="p">(</span><span class="n">processes</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Mapfile(s) generation&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;files&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">nfiles</span><span class="p">)</span>
         <span class="c1"># Process supplied files</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">processes</span><span class="p">]</span>
+        <span class="c1"># Close progress bar</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="c1"># Get number of files scanned (including skipped files)</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">scan_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
         <span class="c1"># Get number of scan errors</span>
@@ -410,7 +424,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.32',
+            VERSION:'2.7.36',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

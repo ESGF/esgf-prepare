@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.misc &mdash; esgprep 2.7.32 documentation</title>
+  <title>esgprep.utils.misc &mdash; esgprep 2.7.36 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.32 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -99,7 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
 </ul>
 
@@ -179,9 +179,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
 
@@ -303,42 +301,7 @@
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">f</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cmd_exists"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.cmd_exists">[docs]</a><span class="k">def</span> <span class="nf">cmd_exists</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checks if a Shell command exists.</span>
-
-<span class="sd">    :returns: True if exists.</span>
-<span class="sd">    :rtype: *boolean*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cmd</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">X_OK</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="p">)</span>
-    <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="as_pbar"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.as_pbar">[docs]</a><span class="k">def</span> <span class="nf">as_pbar</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Build a progress pbar.</span>
-
-<span class="sd">    :param *iterable* iterable: An iterable object</span>
-<span class="sd">    :param str desc: The progress bar description</span>
-<span class="sd">    :param str units: The progress bar units</span>
-<span class="sd">    :param int total: The number of iterations</span>
-<span class="sd">    :returns: The progress bar object as an iterable</span>
-<span class="sd">    :rtype: *tqdm.tqdm* or *iter*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span>
-                <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span>
-                <span class="n">total</span><span class="o">=</span><span class="n">total</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">),</span>
-                <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}{percentage:3.0f}</span><span class="s1">% |</span><span class="si">{bar}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">units</span><span class="p">,</span>
-                <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="evaluate"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.evaluate">[docs]</a><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
-    <span class="c1"># type: (object) -&gt; object</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluates a list depending on absence/presence of None values.</span>
 
@@ -370,8 +333,6 @@
 <span class="sd">    :raises Error: If the checksum fails</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">checksum_type</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">hash_algo</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">hashlib</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)()</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -384,7 +345,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">hash_algo</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">InvalidChecksumClient</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">InvalidChecksumType</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ChecksumFail</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span></div>
 </pre></div>
@@ -423,7 +384,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.32',
+            VERSION:'2.7.36',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

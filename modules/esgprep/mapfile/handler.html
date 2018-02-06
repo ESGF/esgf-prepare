@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.handler &mdash; esgprep 2.7.32 documentation</title>
+  <title>esgprep.mapfile.handler &mdash; esgprep 2.7.36 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.32 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -99,7 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
 </ul>
 
@@ -219,12 +219,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">KeyNotFound</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="File.load_attributes"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.load_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">load_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+<div class="viewcode-block" id="File.load_attributes"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.load_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">load_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads DRS attributes catched from a regular expression match.</span>
 <span class="sd">        The project facet is added in any case with lower case.</span>
 
-<span class="sd">        :param str project: The project name</span>
 <span class="sd">        :param str pattern: The regular expression to match</span>
 <span class="sd">        :raises Error: If regular expression matching fails</span>
 
@@ -233,11 +232,6 @@
             <span class="c1"># re.search() method is required to search through the entire string.</span>
             <span class="c1"># In this case we aim to match the regex starting from the filename (i.e., the end of the string)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
-            <span class="c1"># Only required to build proper dataset_id</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-            <span class="c1"># Set mip_era equal to project if exist (e.g., for CMIP6)</span>
-            <span class="k">if</span> <span class="s1">&#39;mip_era&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mip_era&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">]</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ExpressionNotMatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span></div>
 
@@ -337,7 +331,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.32',
+            VERSION:'2.7.36',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

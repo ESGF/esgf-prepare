@@ -1,8 +1,67 @@
 .. _log:
 
 
-Changelog
-=========
+Change Log
+==========
+
+`Unreleased <https://github.com/ESGF/esgf-prepare/tree/HEAD>`__
+---------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.7.35...HEAD>`__
+
+**Closed issues:**
+
+-  Tags missing and issue with publishing CORDEX data
+   `#18 <https://github.com/ESGF/esgf-prepare/issues/18>`__
+-  --commands-file option is being written to the tree file
+   `#17 <https://github.com/ESGF/esgf-prepare/issues/17>`__
+
+`v2.7.35 <https://github.com/ESGF/esgf-prepare/tree/v2.7.35>`__ (2018-02-02)
+----------------------------------------------------------------------------
+
+**Closed issues:**
+
+-  dataset\_id names
+   `#15 <https://github.com/ESGF/esgf-prepare/issues/15>`__
+-  use consistent delete command in "esgprep drs todo"
+   `#14 <https://github.com/ESGF/esgf-prepare/issues/14>`__
+-  unicode ascii conversion error in "esgprep drs tree"
+   `#12 <https://github.com/ESGF/esgf-prepare/issues/12>`__
+-  hard coded strings in directory\_format are ignored without warning
+   in "esgprep drs"
+   `#11 <https://github.com/ESGF/esgf-prepare/issues/11>`__
+-  root directory stored in tree file in "esgprep drs"
+   `#10 <https://github.com/ESGF/esgf-prepare/issues/10>`__
+-  "tree" file breaking logging in "esgprep drs"
+   `#9 <https://github.com/ESGF/esgf-prepare/issues/9>`__
+-  esgprep fails to install under esgf-installer
+   `#8 <https://github.com/ESGF/esgf-prepare/issues/8>`__
+-  enhancement: sanity check esg.ini for mistakes
+   `#7 <https://github.com/ESGF/esgf-prepare/issues/7>`__
+-  UnicodeEncode Error in fetchini/main.py
+   `#6 <https://github.com/ESGF/esgf-prepare/issues/6>`__
+-  The esg.cmip6.ini file is blank when downloaded.
+   `#5 <https://github.com/ESGF/esgf-prepare/issues/5>`__
+-  version tagging
+   `#4 <https://github.com/ESGF/esgf-prepare/issues/4>`__
+-  string facets shouldn't need options
+   `#1 <https://github.com/ESGF/esgf-prepare/issues/1>`__
+
+**Merged pull requests:**
+
+-  when max\_threads=1, do not create a thread pool
+   `#16 <https://github.com/ESGF/esgf-prepare/pull/16>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+-  Changes related to --commands-file
+   `#13 <https://github.com/ESGF/esgf-prepare/pull/13>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+-  updated pull request to include new commit
+   `#2 <https://github.com/ESGF/esgf-prepare/pull/2>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+
+Untagged older changes
+----------------------
 
 +------------+---------+-------------------------------------------------------------------------------------+
 | Date       | Version | Modifications                                                                       |
