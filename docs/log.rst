@@ -4,11 +4,11 @@
 Change Log
 ==========
 
-`Unreleased <https://github.com/ESGF/esgf-prepare/tree/HEAD>`__
----------------------------------------------------------------
+`v2.7.36 <https://github.com/ESGF/esgf-prepare/tree/v2.7.36>`__ (2018-02-06)
+----------------------------------------------------------------------------
 
 `Full
-Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.7.35...HEAD>`__
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.7.35...v2.7.36>`__
 
 **Closed issues:**
 
