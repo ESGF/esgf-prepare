@@ -22,4 +22,4 @@ Contacts
 ********
 
 To submit bugs, suggestions or ideas, please address your comments to `Guillaume LEVAVASSEUR <glipsl@ipsl.fr>`_
-or post your issue on our `GitHub repository <https://github.com/IS-ENES-Data/esgf-prepare/issues>`_.
+or post your issue on our `GitHub repository <https://github.com/ESGF/esgf-prepare/issues>`_.
