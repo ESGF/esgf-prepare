@@ -220,7 +220,7 @@ def get_args():
         choices=['list', 'tree', 'todo', 'upgrade'],
         metavar='action',
         type=str,
-        help=ACTION_HELP)
+        help=ACTION_HELP['mapfile'])
     drs.add_argument(
         'directory',
         action=DirectoryChecker,
@@ -312,6 +312,13 @@ def get_args():
         parents=[parent])
     mapfile._optionals.title = OPTIONAL
     mapfile._positionals.title = POSITIONAL
+    mapfile.add_argument(
+        'action',
+        choices=['make', 'show'],
+        metavar='action',
+        type=str,
+        default='make',
+        help=ACTION_HELP['mapfile'])
     mapfile.add_argument(
         'directory',
         action=DirectoryChecker,

@@ -84,7 +84,8 @@ class ProcessingContext(object):
         self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
         # Get mapfile DRS is set in configuration file
         try:
-            self.mapfile_drs = self.cfg.get('mapfile_drs')
+            _cfg = SectionParser(section='config:{}'.format(self.project), directory=self.config_dir)
+            self.mapfile_drs = _cfg.get('mapfile_drs')
         except NoConfigOption:
             self.mapfile_drs = None
         # Init data collector
