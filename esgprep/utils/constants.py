@@ -285,26 +285,14 @@ DRS_HELP = \
     """
 
 ACTION_HELP = \
-    {
-    'drs':
-        """
-        DRS action:|n
-        - "list" lists publication-level datasets,|n
-        - "tree" displays the final DRS tree,|n
-        - "todo" shows file operations pending for the next version,|n
-        - "upgrade" makes changes to upgrade datasets to the next version.
-        
-        """,
-
-    'mapfile':
-        """
-        Mapfile action:|n
-        - "make" generates the mapfiles,|n
-        - "show" displays expected mapfile paths.
-        
-        """
-    }
-
+    """
+    DRS action:|n
+    - "list" lists publication-level datasets,|n
+    - "tree" displays the final DRS tree,|n
+    - "todo" shows file operations pending for the next version,|n
+    - "upgrade" makes changes to upgrade datasets to the next version.
+    
+    """
 
 ROOT_HELP = \
     """
