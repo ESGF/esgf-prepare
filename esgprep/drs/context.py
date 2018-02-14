@@ -111,13 +111,20 @@ class ProcessingContext(object):
         # And exclude hidden files
         self.sources.FileFilter[uuid()] = ('^\..*$', True)
         # Init progress bar
-        if self.pbar:
-            nfiles = len(self.sources)
-            self.pbar = tqdm(desc='Scanning incoming files',
-                             total=nfiles,
-                             bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
-                             ncols=100,
-                             file=sys.stdout)
+        if self.scan:
+            if self.pbar:
+                nfiles = len(self.sources)
+                self.pbar = tqdm(desc='Scanning incoming files',
+                                 total=nfiles,
+                                 bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
+                                 ncols=100,
+                                 file=sys.stdout)
+        else:
+            msg = 'Skipping incoming files scan (use "--rescan" to force it) -- ' \
+                  'Using cached DRS tree from {}'.format(TREE_FILE)
+            if self.pbar:
+                print(msg)
+            logging.warning(msg)
         # Init threads pool
         if self.use_pool:
             self.pool = ThreadPool(int(self.threads))
