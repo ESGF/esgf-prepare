@@ -197,9 +197,9 @@ def run(args):
                 processes = itertools.imap(process, ctx.sources)
             # Process supplied files
             results = [x for x in processes]
-        # Close progress bar
-        if ctx.pbar:
-            ctx.pbar.close()
+            # Close progress bar
+            if ctx.pbar:
+                ctx.pbar.close()
         # Get number of files scanned (including skipped files)
         ctx.scan_files = len(results)
         # Get number of scan errors

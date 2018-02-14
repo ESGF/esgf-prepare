@@ -130,21 +130,6 @@ class ProcessingContext(object):
             self.pool = ThreadPool(int(self.threads))
         return self
 
-    def check_existing_commands_file(self):
-        """
-        Check for existing commands file,
-        and depending on ``--overwrite-commands-file`` setting,
-        either delete it or throw a fatal error.
-
-        """
-        if self.commands_file and os.path.exists(self.commands_file):
-            if self.overwrite_commands_file:
-                os.remove(self.commands_file)
-            else:
-                print "File '{}' already exists and '--overwrite-commands-file'" \
-                      "option not used.".format(self.commands_file)
-                sys.exit(1)
-
     def __exit__(self, *exc):
         # Close threads pool
         if self.use_pool:
@@ -180,6 +165,21 @@ class ProcessingContext(object):
                 # Some files have been skipped or failed during the scan
                 logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
                 sys.exit(2)
+
+    def check_existing_commands_file(self):
+        """
+        Check for existing commands file,
+        and depending on ``--overwrite-commands-file`` setting,
+        either delete it or throw a fatal error.
+
+        """
+        if self.commands_file and os.path.exists(self.commands_file):
+            if self.overwrite_commands_file:
+                os.remove(self.commands_file)
+            else:
+                print "File '{}' already exists and '--overwrite-commands-file'" \
+                      "option not used.".format(self.commands_file)
+                sys.exit(1)
 
     def get_checksum_type(self):
         """
