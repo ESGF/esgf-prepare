@@ -4,6 +4,12 @@
 Change Log
 ==========
 
+`v2.7.37 <https://github.com/ESGF/esgf-prepare/tree/v2.7.37>`__ (2018-02-14)
+----------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.7.36...v2.7.37>`__
+
 `v2.7.36 <https://github.com/ESGF/esgf-prepare/tree/v2.7.36>`__ (2018-02-06)
 ----------------------------------------------------------------------------
 
