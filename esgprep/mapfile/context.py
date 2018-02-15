@@ -15,7 +15,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
-from ESGConfigParser.custom_exceptions import NoConfigOption
+from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
 from tqdm import tqdm
 
 from constants import *
@@ -86,7 +86,7 @@ class ProcessingContext(object):
         try:
             _cfg = SectionParser(section='config:{}'.format(self.project), directory=self.config_dir)
             self.mapfile_drs = _cfg.get('mapfile_drs')
-        except NoConfigOption:
+        except NoConfigOption or NoConfigSection:
             self.mapfile_drs = None
         # Init data collector
         if self.pbar:
