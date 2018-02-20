@@ -112,8 +112,8 @@ class ProcessingContext(object):
         self.sources.FileFilter[uuid()] = ('^\..*$', True)
         # Init progress bar
         if self.scan:
-            if self.pbar:
-                nfiles = len(self.sources)
+            nfiles = len(self.sources)
+            if self.pbar and nfiles:
                 self.pbar = tqdm(desc='Scanning incoming files',
                                  total=nfiles,
                                  bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',

@@ -86,7 +86,7 @@ class ProcessingContext(object):
         try:
             _cfg = SectionParser(section='config:{}'.format(self.project), directory=self.config_dir)
             self.mapfile_drs = _cfg.get('mapfile_drs')
-        except NoConfigOption or NoConfigSection:
+        except (NoConfigOption, NoConfigSection):
             self.mapfile_drs = None
         # Init data collector
         if self.pbar:
@@ -111,8 +111,8 @@ class ProcessingContext(object):
             # If --latest-symlink, --version is set to "latest"
             self.sources.PathFilter['version_filter'] = '/{}'.format(self.version)
         # Init progress bar
-        if self.pbar:
-            nfiles = len(self.sources)
+        nfiles = len(self.sources)
+        if self.pbar and nfiles:
             self.pbar = tqdm(desc='Mapfile(s) generation',
                              total=nfiles,
                              bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
