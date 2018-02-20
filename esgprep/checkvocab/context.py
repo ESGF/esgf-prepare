@@ -80,10 +80,11 @@ class ProcessingContext(object):
         # Get the facet keys from pattern
         self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
         # Init progress bar
-        if self.pbar:
+        nfiles = len(self.sources)
+        if self.pbar and nfiles:
             self.sources = tqdm(self.sources,
                                 desc='Harvesting facets values from data',
-                                total=len(self.sources),
+                                total=nfiles,
                                 bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} ' + self.source_type,
                                 ncols=100,
                                 file=sys.stdout)
