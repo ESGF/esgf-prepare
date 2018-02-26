@@ -86,22 +86,24 @@ def remove(pattern, string):
     return re.compile(pattern).sub("", string)
 
 
-def match(pattern, string, negative=False):
+def match(pattern, string, inclusive=True):
     """
     Validates a string against a regular expression.
     Only match at the beginning of the string.
+    Default is to match inclusive regex.
 
     :param str pattern: The regular expression to match
     :param str string: The string to test
-    :param boolean negative: True if negative matching (i.e., exclude the regex)
+    :param boolean inclusive: False if negative matching (i.e., exclude the regex)
     :returns: True if it matches
     :rtype: *boolean*
 
     """
-    if negative:
-        return True if not re.search(pattern, string) else False
-    else:
+    # Assert inclusive and exclusive flag are mutually exclusive
+    if inclusive:
         return True if re.search(pattern, string) else False
+    else:
+        return True if not re.search(pattern, string) else False
 
 
 def load(path):

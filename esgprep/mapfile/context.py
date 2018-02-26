@@ -12,7 +12,6 @@ import logging
 import os
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
-from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
 from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
@@ -100,16 +99,19 @@ class ProcessingContext(object):
                                                   dir_format=self.cfg.translate('directory_format'))
         # Init file filter
         for file_filter in self.file_filter:
-            self.sources.FileFilter[uuid()] = file_filter
+            self.sources.FileFilter.add(regex=file_filter)
         # Init dir filter
-        self.sources.PathFilter['base_filter'] = (self.dir_filter, True)
+        self.sources.PathFilter.add(regex=self.dir_filter)
         if self.all:
             # Pick up all encountered versions by adding "/latest" exclusion
-            self.sources.PathFilter['version_filter'] = ('/latest', True)
+            self.sources.PathFilter.add(name='version_filter', regex='/latest', inclusive=False)
         elif self.version:
             # Pick up the specified version only (--version flag) by adding "/v{version}" inclusion
             # If --latest-symlink, --version is set to "latest"
-            self.sources.PathFilter['version_filter'] = '/{}'.format(self.version)
+            self.sources.PathFilter.add(name='version_filter', regex='/{}'.format(self.version))
+        else:
+            # Default behavior: pick up the latest version among encountered versions
+            self.sources.default = True
         # Init progress bar
         nfiles = len(self.sources)
         if self.pbar and nfiles:

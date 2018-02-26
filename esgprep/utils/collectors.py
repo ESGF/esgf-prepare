@@ -10,6 +10,7 @@
 import os
 import re
 import sys
+from uuid import uuid4 as uuid
 
 from esgprep.utils.misc import match, remove
 
@@ -52,16 +53,18 @@ class Collector(object):
         self.spinner = spinner
         self.sources = sources
         self.data = data
-        self.FileFilter = Filter()
+        self.FileFilter = FilterCollection()
+        self.PathFilter = FilterCollection()
         assert isinstance(self.sources, list)
 
     def __iter__(self):
         for source in self.sources:
             for root, _, filenames in os.walk(source, followlinks=True):
-                for filename in sorted(filenames):
-                    ffp = os.path.join(root, filename)
-                    if os.path.isfile(ffp) and self.FileFilter(filename):
-                        yield self.attach(ffp)
+                if self.PathFilter(root):
+                    for filename in sorted(filenames):
+                        ffp = os.path.join(root, filename)
+                        if os.path.isfile(ffp) and self.FileFilter(filename):
+                            yield self.attach(ffp)
 
     def __len__(self):
         """
@@ -91,13 +94,6 @@ class Collector(object):
         """
         return (item, self.data) if self.data else item
 
-    def first(self):
-        """
-        Returns the first iterator element.
-
-        """
-        return self.__iter__().next()
-
 
 class PathCollector(Collector):
     """
@@ -109,7 +105,7 @@ class PathCollector(Collector):
 
     def __init__(self, *args, **kwargs):
         super(PathCollector, self).__init__(*args, **kwargs)
-        self.PathFilter = Filter()
+        self.PathFilter = FilterCollection()
 
     def __iter__(self):
         """
@@ -139,6 +135,7 @@ class VersionedPathCollector(PathCollector):
     def __init__(self, dir_format, *args, **kwargs):
         super(VersionedPathCollector, self).__init__(*args, **kwargs)
         self.format = dir_format
+        self.default = False
 
     def __iter__(self):
         """
@@ -154,30 +151,24 @@ class VersionedPathCollector(PathCollector):
             if source_version:
                 # Path version takes priority on command-line flags and default behavior
                 # Overwrite the version filter
-                self.PathFilter['version_filter'] = '/{}'.format(source_version)
+                self.PathFilter.add(name='version_filter', regex='/{}'.format(source_version))
             for root, _, filenames in os.walk(source, followlinks=True):
-                # Reset version filter if latest_version exists to allow new filter for another dataset/version
-                if 'latest_version' in locals():
-                    try:
-                        del self.PathFilter['version_filter']
-                    except KeyError:
-                        pass
                 for filename in sorted(filenames):
                     ffp = os.path.join(root, filename)
                     path_version = self.version_finder(directory=root)
                     # If no version filter, and path version exists, set default behavior
-                    if path_version and 'version_filter' not in self.PathFilter:
+                    if path_version and self.default:
                         # Find latest version
                         path_versions = [v for v in os.listdir(ffp.split(path_version)[0]) if
                                          re.compile(r'^v[\d]+$').search(v)]
                         latest_version = sorted(path_versions)[-1]
                         # Pick up the latest version among encountered versions
-                        self.PathFilter['version_filter'] = '/{}'.format(latest_version)
+                        self.PathFilter.add(name='version_filter', regex='/{}'.format(latest_version))
                     if self.PathFilter(root):
                         # Dereference latest symlink (only) in the end
                         if path_version == 'latest':
-                            target = os.path.realpath(os.path.join(*re.split(r'/(latest)/', ffp)[:-1]))
-                            ffp = os.path.join(target, *re.split(r'/(latest)/', ffp)[-1:])
+                            target = os.path.realpath(os.path.join(*re.split(r'/latest/', ffp)[:-1]))
+                            ffp = os.path.join(target, *re.split(r'/latest/', ffp)[-1:])
                         if os.path.isfile(ffp) and self.FileFilter(filename):
                             yield self.attach(ffp)
 
@@ -224,7 +215,7 @@ class DatasetCollector(Collector):
                     yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', line))
 
 
-class Filter(dict):
+class FilterCollection(object):
     """
     Regex dictionary with a call method to evaluate a string against several regular expressions.
     The dictionary values are 2-tuples with the regular expression as a string and a boolean
@@ -233,17 +224,16 @@ class Filter(dict):
     """
     FILTER_TYPES = (str, re._pattern_type)
 
-    def __setitem__(self, key, value):
-        # Assertions on filters values
-        if isinstance(value, tuple):
-            assert len(value) == 2
-            assert isinstance(value[0], self.FILTER_TYPES)
-            assert isinstance(value[1], bool)
-        else:
-            assert isinstance(value, str)
-            # Set negative = False by default
-            value = (value, False)
-        dict.__setitem__(self, key, value)
+    def __init__(self):
+        self.filters = dict()
+
+    def add(self, name=None, regex='*', inclusive=True):
+        """Add new filter"""
+        if not name:
+            name = uuid()
+        assert isinstance(regex, self.FILTER_TYPES)
+        assert isinstance(inclusive, bool)
+        self.filters[name] = (regex, inclusive)
 
     def __call__(self, string):
-        return all([match(regex, string, negative=negative) for regex, negative in self.values()])
+        return all([match(regex, string, inclusive=inclusive) for regex, inclusive in self.filters.values()])
