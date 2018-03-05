@@ -108,7 +108,7 @@ def write(outfile, entry):
             mapfile.write(entry)
 
 
-def make(collector_input, show=False):
+def make(collector_input, show_mapfiles=False):
     """
     File process that:
 
@@ -124,6 +124,7 @@ def make(collector_input, show=False):
     Any error leads to skip the file. It does not stop the process.
 
     :param tuple collector_input: A tuple with the file path and the processing context
+    :param boolean show_mapfiles: Dry-run that only returns mapfiles to be generated
     :returns: The output mapfile full path
     :rtype: *str*
 
@@ -159,7 +160,7 @@ def make(collector_input, show=False):
                                      dataset_id=dataset_id,
                                      dataset_version=dataset_version,
                                      mapfile_drs=ctx.mapfile_drs)
-        if not show:
+        if not show_mapfiles:
             # Generate the corresponding mapfile entry/line
             optional_attrs = dict()
             optional_attrs['mod_time'] = fh.mtime
@@ -204,7 +205,7 @@ def show(collector_input):
     :rtype: *str*
 
     """
-    make(collector_input, show=True)
+    make(collector_input, show_mapfiles=True)
 
 
 def run(args):
@@ -251,4 +252,4 @@ def run(args):
                         print('{}: {}'.format('Mapfile(s) to be generated', ctx.nb_map))
                         print(mapfile)
                     logging.info(mapfile)
-                    logging.info('{} mapfile(s) to be generated'.format(self.nb_map))
+                    logging.info('{} mapfile(s) to be generated'.format(ctx.nb_map))
