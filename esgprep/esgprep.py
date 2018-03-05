@@ -319,6 +319,13 @@ def get_args():
     mapfile._optionals.title = OPTIONAL
     mapfile._positionals.title = POSITIONAL
     mapfile.add_argument(
+        'action',
+        choices=['make', 'show'],
+        metavar='action',
+        default='make',
+        type=str,
+        help=ACTION_HELP)
+    mapfile.add_argument(
         'directory',
         action=DirectoryChecker,
         nargs='+',

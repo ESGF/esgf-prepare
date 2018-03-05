@@ -39,6 +39,7 @@ class ProcessingContext(object):
         self.directory = args.directory
         self.mapfile_name = args.mapfile
         self.outdir = args.outdir
+        self.action = args.action
         self.notes_title = args.tech_notes_title
         self.notes_url = args.tech_notes_url
         self.no_version = args.no_version
@@ -135,10 +136,16 @@ class ProcessingContext(object):
         # Default is sys.exit(0)
         if self.scan_files and not self.scan_errors:
             # All files have been successfully scanned
-            # Print number of generated mapfiles
-            if self.pbar:
-                print('{}: {} (see {})'.format('Mapfile(s) generated', self.nb_map, self.outdir))
-            logging.info('{} mapfile(s) generated'.format(self.nb_map))
+            if self.action == 'show':
+                # Print mapfiles to be generated
+                if self.pbar:
+                    print('{}: {}'.format('Mapfile(s) to be generated', self.nb_map))
+                logging.info('{} mapfile(s) to be generated'.format(self.nb_map))
+            elif self.action == 'make':
+                # Print number of generated mapfiles
+                if self.pbar:
+                    print('{}: {} (see {})'.format('Mapfile(s) generated', self.nb_map, self.outdir))
+                logging.info('{} mapfile(s) generated'.format(self.nb_map))
             logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
         if not self.scan_files and not self.scan_errors:
             # Results list is empty = no files scanned/found

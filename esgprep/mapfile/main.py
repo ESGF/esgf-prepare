@@ -108,7 +108,7 @@ def write(outfile, entry):
             mapfile.write(entry)
 
 
-def process(collector_input):
+def make(collector_input, show=False):
     """
     File process that:
 
@@ -159,21 +159,22 @@ def process(collector_input):
                                      dataset_id=dataset_id,
                                      dataset_version=dataset_version,
                                      mapfile_drs=ctx.mapfile_drs)
-        # Generate the corresponding mapfile entry/line
-        optional_attrs = dict()
-        optional_attrs['mod_time'] = fh.mtime
-        if not ctx.no_checksum:
-            optional_attrs['checksum'] = fh.checksum(ctx.checksum_type)
-            optional_attrs['checksum_type'] = ctx.checksum_type.upper()
-        optional_attrs['dataset_tech_notes'] = ctx.notes_url
-        optional_attrs['dataset_tech_notes_title'] = ctx.notes_title
-        line = mapfile_entry(dataset_id=dataset_id,
-                             dataset_version=dataset_version,
-                             ffp=ffp,
-                             size=fh.size,
-                             optional_attrs=optional_attrs)
-        write(outfile, line)
-        logging.info('{} <-- {}'.format(os.path.splitext(os.path.basename(outfile))[0], ffp))
+        if not show:
+            # Generate the corresponding mapfile entry/line
+            optional_attrs = dict()
+            optional_attrs['mod_time'] = fh.mtime
+            if not ctx.no_checksum:
+                optional_attrs['checksum'] = fh.checksum(ctx.checksum_type)
+                optional_attrs['checksum_type'] = ctx.checksum_type.upper()
+            optional_attrs['dataset_tech_notes'] = ctx.notes_url
+            optional_attrs['dataset_tech_notes_title'] = ctx.notes_title
+            line = mapfile_entry(dataset_id=dataset_id,
+                                 dataset_version=dataset_version,
+                                 ffp=ffp,
+                                 size=fh.size,
+                                 optional_attrs=optional_attrs)
+            write(outfile, line)
+            logging.info('{} <-- {}'.format(os.path.splitext(os.path.basename(outfile))[0], ffp))
         # Return mapfile name
         return outfile
     # Catch any exception into error log instead of stop the run
@@ -183,6 +184,27 @@ def process(collector_input):
     finally:
         if ctx.pbar:
             ctx.pbar.update()
+
+
+def show(collector_input):
+    """
+    File process that:
+
+     * Handles file,
+     * Harvests directory attributes,
+     * Check DRS attributes against CV,
+     * Builds dataset ID,
+     * Deduces mapfile name,
+     * Show the corresponding mapfile entry.
+
+    Any error leads to skip the file. It does not stop the process.
+
+    :param tuple collector_input: A tuple with the file path and the processing context
+    :returns: The output mapfile full path
+    :rtype: *str*
+
+    """
+    make(collector_input, show=True)
 
 
 def run(args):
@@ -201,9 +223,9 @@ def run(args):
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
         if ctx.use_pool:
-            processes = ctx.pool.imap(process, ctx.sources)
+            processes = ctx.pool.imap(locals()[ctx.action](), ctx.sources)
         else:
-            processes = itertools.imap(process, ctx.sources)
+            processes = itertools.imap(locals()[ctx.action](), ctx.sources)
         # Process supplied files
         results = [x for x in processes]
         # Close progress bar
@@ -220,4 +242,13 @@ def run(args):
             # Remove mapfile working extension
             # A final mapfile is silently overwritten if already exists
             for mapfile in filter(None, set(results)):
-                os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
+                if ctx.action == 'make':
+                    os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
+                elif ctx.action == 'show':
+                    mapfile = mapfile.replace(WORKING_EXTENSION, '')
+                    # Print mapfiles to be generated
+                    if ctx.pbar:
+                        print('{}: {}'.format('Mapfile(s) to be generated', ctx.nb_map))
+                        print(mapfile)
+                    logging.info(mapfile)
+                    logging.info('{} mapfile(s) to be generated'.format(self.nb_map))
