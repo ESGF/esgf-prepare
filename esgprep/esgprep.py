@@ -219,6 +219,7 @@ def get_args():
         'action',
         choices=['list', 'tree', 'todo', 'upgrade'],
         metavar='action',
+        default='list',
         type=str,
         help=ACTION_HELP)
     drs.add_argument(
