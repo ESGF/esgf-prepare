@@ -289,7 +289,7 @@ class DRSLeaf(object):
         # Someone could use display outputs for parsing and further processing.
         # Any change of the line outputs can break this for users.
 
-        # --commands_file writes print statements ONLY in the submitted file
+        # --commands-file writes print statements ONLY in the submitted file
 
         # Make directory for destination path if not exist
         line = '{} {}'.format('mkdir -p', os.path.dirname(self.dst))
