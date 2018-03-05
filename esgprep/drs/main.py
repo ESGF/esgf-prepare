@@ -116,7 +116,8 @@ def process(collector_input):
                     for filename in filenames:
                         # Add latest files as tree leaves with version to upgrade instead of latest version
                         # i.e., copy latest dataset leaves to Tree
-                        if filename != fh.filename:
+                        # Except if file has be ignored from latest version (i.e., with known issue)
+                        if filename != fh.filename and filename not in ctx.ignore_from_latest:
                             src = os.path.join(root, filename)
                             ctx.tree.create_leaf(nodes=fph.items(root=True),
                                                  leaf=filename,

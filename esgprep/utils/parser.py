@@ -85,6 +85,38 @@ class DirectoryChecker(Action):
         return path
 
 
+class FileChecker(Action):
+    """
+    Custom action class for argument parser to use with the Python
+    `argparse <https://docs.python.org/2/library/argparse.html>`_ module.
+
+    """
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        if isinstance(values, list):
+            checked_vals = [self.file_checker(x) for x in values]
+        else:
+            checked_vals = self.file_checker(values)
+        setattr(namespace, self.dest, checked_vals)
+
+    @staticmethod
+    def file_checker(path):
+        """
+        Checks if the supplied files exists. The path is normalized without trailing slash.
+
+        :param str path: The path list to check
+        :returns: The same path list
+        :rtype: *str*
+        :raises Error: If one of the directory does not exist
+
+        """
+        path = os.path.abspath(os.path.normpath(path))
+        if not os.path.isfile(path):
+            msg = 'No such file: {}'.format(path)
+            raise ArgumentTypeError(msg)
+        return path
+
+
 class VersionChecker(Action):
     """
     Custom action class for argument parser to use with the Python

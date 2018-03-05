@@ -43,6 +43,9 @@ class ProcessingContext(object):
         self.commands_file = args.commands_file
         self.overwrite_commands_file = args.overwrite_commands_file
         self.upgrade_from_latest = args.upgrade_from_latest
+        if args.ignore_from_latest:
+            self.upgrade_from_latest = True
+            self.ignore_from_latest = open(args.ignore_from_latest, 'r').readlines()
         self.set_values = {}
         if args.set_value:
             self.set_values = dict(args.set_value)

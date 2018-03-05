@@ -16,7 +16,7 @@ from importlib import import_module
 from utils.constants import *
 from utils.misc import init_logging
 from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter, regex_validator, \
-    _ArgumentParser
+    _ArgumentParser, FileChecker
 
 __version__ = 'v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -264,7 +264,7 @@ def get_args():
     drs.add_argument(
         '--commands-file',
         metavar='TXT_FILE',
-        type=str,
+        action=FileChecker,
         help=COMMANDS_FILE_HELP)
     drs.add_argument(
         '--overwrite-commands-file',
@@ -276,6 +276,11 @@ def get_args():
         action='store_true',
         default=False,
         help=UPGRADE_FROM_LATEST_HELP)
+    drs.add_argument(
+        '--ignore-from-latest',
+        metavar='TXT_FILE',
+        action=FileChecker,
+        help=IGNORE_FROM_LATEST_HELP)
     group = drs.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--copy',

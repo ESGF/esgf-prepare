@@ -361,6 +361,16 @@ UPGRADE_FROM_LATEST_HELP = \
     
     """
 
+IGNORE_FROM_LATEST_HELP = \
+    """
+    A list of files to ignore for version upgrade from the latest|n
+    dataset version. Default is to consider the incoming files as|n
+    the complete content of the new version of the dataset.|n
+    It overwrites default behavior by enabling "--upgrade-from-latest".|n 
+    See the full documentation to get details on both methods.
+
+    """
+
 RESCAN_HELP = \
     """
     Force incoming files rescan.|n
