@@ -299,15 +299,15 @@ class DRSLeaf(object):
                 os.makedirs(os.path.dirname(self.dst))
             except OSError:
                 pass
-        # Print command-line to apply
-        line = '{} {} {}'.format(UNIX_COMMAND_LABEL[self.mode], self.src, self.dst)
-        print_cmd(line, commands_file, todo_only)
         # Unlink symbolic link if already exists
         if self.mode == 'symlink' and os.path.exists(self.dst):
             line = '{} {}'.format('rm -f', self.dst)
             print_cmd(line, commands_file, todo_only)
             if not todo_only:
                 os.remove(self.dst)
+        # Print command-line to apply
+        line = '{} {} {}'.format(UNIX_COMMAND_LABEL[self.mode], self.src, self.dst)
+        print_cmd(line, commands_file, todo_only)
         # Make upgrade depending on the migration mode
         if not todo_only:
             UNIX_COMMAND[self.mode](self.src, self.dst)

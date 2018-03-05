@@ -105,7 +105,6 @@ class PathCollector(Collector):
 
     def __init__(self, *args, **kwargs):
         super(PathCollector, self).__init__(*args, **kwargs)
-        self.PathFilter = FilterCollection()
 
     def __iter__(self):
         """

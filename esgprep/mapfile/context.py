@@ -98,8 +98,8 @@ class ProcessingContext(object):
                                                   spinner=False,
                                                   dir_format=self.cfg.translate('directory_format'))
         # Init file filter
-        for file_filter in self.file_filter:
-            self.sources.FileFilter.add(regex=file_filter)
+        for regex, inclusive in self.file_filter:
+            self.sources.FileFilter.add(regex=filter, inclusive=inclusive)
         # Init dir filter
         self.sources.PathFilter.add(regex=self.dir_filter)
         if self.all:
