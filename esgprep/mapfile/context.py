@@ -53,15 +53,15 @@ class ProcessingContext(object):
         self.dir_filter = args.ignore_dir
         self.file_filter = []
         if args.include_file:
-            self.file_filter.extend([(f, False) for f in args.include_file])
+            self.file_filter.extend([(f, True) for f in args.include_file])
         else:
             # Default includes netCDF only
-            self.file_filter.append(('^.*\.nc$', False))
+            self.file_filter.append(('^.*\.nc$', True))
         if args.exclude_file:
             # Default exclude hidden files
-            self.file_filter.extend([(f, True) for f in args.exclude_file])
+            self.file_filter.extend([(f, False) for f in args.exclude_file])
         else:
-            self.file_filter.append(('^\..*$', True))
+            self.file_filter.append(('^\..*$', False))
         self.all = args.all_versions
         if self.all:
             self.no_version = False
@@ -100,9 +100,9 @@ class ProcessingContext(object):
                                                   dir_format=self.cfg.translate('directory_format'))
         # Init file filter
         for regex, inclusive in self.file_filter:
-            self.sources.FileFilter.add(regex=filter, inclusive=inclusive)
+            self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
         # Init dir filter
-        self.sources.PathFilter.add(regex=self.dir_filter)
+        self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
         if self.all:
             # Pick up all encountered versions by adding "/latest" exclusion
             self.sources.PathFilter.add(name='version_filter', regex='/latest', inclusive=False)

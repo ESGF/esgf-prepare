@@ -110,7 +110,7 @@ def process(collector_input):
                                  src=fh.ffp,
                                  mode=ctx.mode)
             if ctx.upgrade_from_latest:
-                # Walk through the latest dataset version and create a simlink for each file with a different
+                # Walk through the latest dataset version and create a symlink for each file with a different
                 # filename than the processed one
                 for root, _, filenames in os.walk(fph.path(f_part=False, latest=True, root=True)):
                     for filename in filenames:

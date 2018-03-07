@@ -10,7 +10,6 @@
 import logging
 import re
 import sys
-from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
 from tqdm import tqdm
@@ -38,15 +37,15 @@ class ProcessingContext(object):
         self.dir_filter = args.ignore_dir
         self.file_filter = []
         if args.include_file:
-            self.file_filter.extend([(f, False) for f in args.include_file])
+            self.file_filter.extend([(f, True) for f in args.include_file])
         else:
             # Default includes netCDF only
-            self.file_filter.append(('^.*\.nc$', False))
+            self.file_filter.append(('^.*\.nc$', True))
         if args.exclude_file:
             # Default exclude hidden files
-            self.file_filter.extend([(f, True) for f in args.exclude_file])
+            self.file_filter.extend([(f, False) for f in args.exclude_file])
         else:
-            self.file_filter.append(('^\..*$', True))
+            self.file_filter.append(('^\..*$', False))
         self.scan_errors = 0
         self.any_undeclared = False
 
@@ -63,10 +62,10 @@ class ProcessingContext(object):
             else:
                 self.sources = PathCollector(sources=self.directory, spinner=False)
             # Init file filter
-            for file_filter in self.file_filter:
-                self.sources.FileFilter[uuid()] = file_filter
+            for regex, inclusive in self.file_filter:
+                self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
             # Init dir filter
-            self.sources.PathFilter['base_filter'] = (self.dir_filter, True)
+            self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
             self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
         else:
             # The source is a list of files (i.e., several dataset lists)

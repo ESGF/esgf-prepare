@@ -160,6 +160,7 @@ def make(collector_input, show_mapfiles=False):
                                      dataset_id=dataset_id,
                                      dataset_version=dataset_version,
                                      mapfile_drs=ctx.mapfile_drs)
+        # Dry-run: don't write mapfile to only show their paths
         if not show_mapfiles:
             # Generate the corresponding mapfile entry/line
             optional_attrs = dict()
@@ -205,7 +206,7 @@ def show(collector_input):
     :rtype: *str*
 
     """
-    make(collector_input, show_mapfiles=True)
+    return make(collector_input, show_mapfiles=True)
 
 
 def run(args):
@@ -224,9 +225,9 @@ def run(args):
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
         if ctx.use_pool:
-            processes = ctx.pool.imap(locals()[ctx.action](), ctx.sources)
+            processes = ctx.pool.imap(globals()[ctx.action], ctx.sources)
         else:
-            processes = itertools.imap(locals()[ctx.action](), ctx.sources)
+            processes = itertools.imap(globals()[ctx.action], ctx.sources)
         # Process supplied files
         results = [x for x in processes]
         # Close progress bar
@@ -240,16 +241,14 @@ def run(args):
         ctx.nb_map = len(filter(None, set(results)))
         # Evaluates the scan results to finalize mapfiles writing
         if evaluate(results):
-            # Remove mapfile working extension
-            # A final mapfile is silently overwritten if already exists
             for mapfile in filter(None, set(results)):
-                if ctx.action == 'make':
-                    os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
-                elif ctx.action == 'show':
-                    mapfile = mapfile.replace(WORKING_EXTENSION, '')
+                # Remove mapfile working extension
+                mapfile = mapfile.replace(WORKING_EXTENSION, '')
+                if ctx.action == 'show':
                     # Print mapfiles to be generated
                     if ctx.pbar:
-                        print('{}: {}'.format('Mapfile(s) to be generated', ctx.nb_map))
                         print(mapfile)
                     logging.info(mapfile)
-                    logging.info('{} mapfile(s) to be generated'.format(ctx.nb_map))
+                elif ctx.action == 'make':
+                    # A final mapfile is silently overwritten if already exists
+                    os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))

@@ -12,7 +12,6 @@ import os
 import re
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
-from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
 from tqdm import tqdm
@@ -43,9 +42,11 @@ class ProcessingContext(object):
         self.commands_file = args.commands_file
         self.overwrite_commands_file = args.overwrite_commands_file
         self.upgrade_from_latest = args.upgrade_from_latest
-        if args.ignore_from_latest:
+        try:
+            self.ignore_from_latest = open(args.ignore_from_latest, 'r').read().splitlines()
             self.upgrade_from_latest = True
-            self.ignore_from_latest = open(args.ignore_from_latest, 'r').readlines()
+        except:
+            self.ignore_from_latest = list()
         self.set_values = {}
         if args.set_value:
             self.set_values = dict(args.set_value)
@@ -110,9 +111,9 @@ class ProcessingContext(object):
             self.sources = Collector(sources=self.directory, spinner=False, data=self)
         # Init file filter
         # Only supports netCDF files
-        self.sources.FileFilter[uuid()] = ('^.*\.nc$', False)
+        self.sources.FileFilter.add(regex='^.*\.nc$')
         # And exclude hidden files
-        self.sources.FileFilter[uuid()] = ('^\..*$', True)
+        self.sources.FileFilter.add(regex='^\..*$', inclusive=False)
         # Init progress bar
         if self.scan:
             nfiles = len(self.sources)
