@@ -126,16 +126,6 @@ Overwrite the dataset identifier
 
 .. warning:: All files will belong to the specified dataset, regardless of the DRS.
 
-Print mapfiles to be generated
-******************************
-
-.. code-block:: bash
-
-    $> esgprep mapfile show --project PROJECT_ID /PATH/TO/SCAN/
-
-.. note:: This will consider all parameters set on the command-line according to the mapfile path
-    (e.g., ``mapfile_drs`` attribute, ``--dataset`` flag etc.)
-
 Exit status
 ***********
 
