@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.main &mdash; esgprep 2.7.36 documentation</title>
+  <title>esgprep.mapfile.main &mdash; esgprep 2.7.38 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.38 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -186,7 +186,7 @@
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">context</span> <span class="k">import</span> <span class="n">ProcessingContext</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">evaluate</span>
-<span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">File</span>
+<span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">File</span><span class="p">,</span> <span class="n">Dataset</span>
 
 
 <div class="viewcode-block" id="get_output_mapfile"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.get_output_mapfile">[docs]</a><span class="k">def</span> <span class="nf">get_output_mapfile</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">mapfile_name</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataset_version</span><span class="p">,</span> <span class="n">mapfile_drs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -296,56 +296,62 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Deserialize inputs from collector</span>
-    <span class="n">ffp</span><span class="p">,</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">collector_input</span>
+    <span class="n">source</span><span class="p">,</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">collector_input</span>
     <span class="c1"># Block to avoid program stop if a thread fails</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># Instantiate file handler</span>
-        <span class="n">fh</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">source_type</span> <span class="o">==</span> <span class="s1">&#39;file&#39;</span><span class="p">:</span>
+            <span class="c1"># Instantiate source handle as file</span>
+            <span class="n">sh</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Instantiate source handler as dataset</span>
+            <span class="n">sh</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
         <span class="c1"># Matching between directory_format and file full path</span>
-        <span class="n">fh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">)</span>
         <span class="c1"># Apply proper case to each attribute</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fh</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">sh</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
             <span class="c1"># Try to get the appropriate facet case for &quot;category_default&quot;</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">fh</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_pairs</span><span class="p">(</span><span class="s1">&#39;category_defaults&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                <span class="n">sh</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_pairs</span><span class="p">(</span><span class="s1">&#39;category_defaults&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">NoConfigKey</span><span class="p">:</span>
                 <span class="c1"># If not specified keep facet case from local path, do nothing</span>
                 <span class="k">pass</span>
         <span class="c1"># Deduce dataset_id</span>
         <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset</span><span class="p">:</span>
-            <span class="n">fh</span><span class="o">.</span><span class="n">check_facets</span><span class="p">(</span><span class="n">facets</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">,</span>
+            <span class="n">sh</span><span class="o">.</span><span class="n">check_facets</span><span class="p">(</span><span class="n">facets</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">,</span>
                             <span class="n">config</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
-            <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">get_dataset_id</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">get_dataset_id</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="c1"># Deduce dataset_version</span>
-        <span class="n">dataset_version</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">get_dataset_version</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">no_version</span><span class="p">)</span>
+        <span class="n">dataset_version</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">get_dataset_version</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">no_version</span><span class="p">)</span>
         <span class="c1"># Build mapfile name depending on the --mapfile flag and appropriate tokens</span>
         <span class="n">outfile</span> <span class="o">=</span> <span class="n">get_output_mapfile</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span>
-                                     <span class="n">attributes</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">attributes</span><span class="p">,</span>
+                                     <span class="n">attributes</span><span class="o">=</span><span class="n">sh</span><span class="o">.</span><span class="n">attributes</span><span class="p">,</span>
                                      <span class="n">mapfile_name</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">mapfile_name</span><span class="p">,</span>
                                      <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span>
                                      <span class="n">dataset_version</span><span class="o">=</span><span class="n">dataset_version</span><span class="p">,</span>
                                      <span class="n">mapfile_drs</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">mapfile_drs</span><span class="p">)</span>
-        <span class="c1"># Generate the corresponding mapfile entry/line</span>
-        <span class="n">optional_attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;mod_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">mtime</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">no_checksum</span><span class="p">:</span>
-            <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;checksum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">checksum</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">)</span>
-            <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;checksum_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;dataset_tech_notes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">notes_url</span>
-        <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;dataset_tech_notes_title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">notes_title</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="n">mapfile_entry</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span>
-                             <span class="n">dataset_version</span><span class="o">=</span><span class="n">dataset_version</span><span class="p">,</span>
-                             <span class="n">ffp</span><span class="o">=</span><span class="n">ffp</span><span class="p">,</span>
-                             <span class="n">size</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
-                             <span class="n">optional_attrs</span><span class="o">=</span><span class="n">optional_attrs</span><span class="p">)</span>
-        <span class="n">write</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> &lt;-- </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">outfile</span><span class="p">))[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ffp</span><span class="p">))</span>
+        <span class="c1"># Dry-run: don&#39;t write mapfile to only show their paths</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;make&#39;</span><span class="p">:</span>
+            <span class="c1"># Generate the corresponding mapfile entry/line</span>
+            <span class="n">optional_attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;mod_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">mtime</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">no_checksum</span><span class="p">:</span>
+                <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;checksum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">checksum</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">)</span>
+                <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;checksum_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;dataset_tech_notes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">notes_url</span>
+            <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;dataset_tech_notes_title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">notes_title</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">mapfile_entry</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span>
+                                 <span class="n">dataset_version</span><span class="o">=</span><span class="n">dataset_version</span><span class="p">,</span>
+                                 <span class="n">ffp</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+                                 <span class="n">size</span><span class="o">=</span><span class="n">sh</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                                 <span class="n">optional_attrs</span><span class="o">=</span><span class="n">optional_attrs</span><span class="p">)</span>
+            <span class="n">write</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> &lt;-- </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">outfile</span><span class="p">))[</span><span class="mi">0</span><span class="p">],</span> <span class="n">source</span><span class="p">))</span>
         <span class="c1"># Return mapfile name</span>
         <span class="k">return</span> <span class="n">outfile</span>
     <span class="c1"># Catch any exception into error log instead of stop the run</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> skipped</span><span class="se">\n</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> skipped</span><span class="se">\n</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
@@ -366,12 +372,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Instantiate processing context</span>
     <span class="k">with</span> <span class="n">ProcessingContext</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">ctx</span><span class="p">:</span>
+        <span class="c1"># If dataset ID is submitted for &quot;show&quot; action skip scan</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan started&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">use_pool</span><span class="p">:</span>
             <span class="n">processes</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">processes</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
-        <span class="c1"># Process supplied files</span>
+        <span class="c1"># Process supplied sources</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">processes</span><span class="p">]</span>
         <span class="c1"># Close progress bar</span>
         <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
@@ -384,10 +391,17 @@
         <span class="n">ctx</span><span class="o">.</span><span class="n">nb_map</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">results</span><span class="p">)))</span>
         <span class="c1"># Evaluates the scan results to finalize mapfiles writing</span>
         <span class="k">if</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
-            <span class="c1"># Remove mapfile working extension</span>
-            <span class="c1"># A final mapfile is silently overwritten if already exists</span>
             <span class="k">for</span> <span class="n">mapfile</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">results</span><span class="p">)):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapfile</span><span class="p">,</span> <span class="n">mapfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span></div>
+                <span class="c1"># Remove mapfile working extension</span>
+                <span class="n">mapfile</span> <span class="o">=</span> <span class="n">mapfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;show&#39;</span><span class="p">:</span>
+                    <span class="c1"># Print mapfiles to be generated</span>
+                    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">mapfile</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">mapfile</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;make&#39;</span><span class="p">:</span>
+                    <span class="c1"># A final mapfile is silently overwritten if already exists</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapfile</span><span class="p">,</span> <span class="n">mapfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
@@ -424,7 +438,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.36',
+            VERSION:'2.7.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

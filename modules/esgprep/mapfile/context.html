@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.context &mdash; esgprep 2.7.36 documentation</title>
+  <title>esgprep.mapfile.context &mdash; esgprep 2.7.38 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.38 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -179,14 +179,13 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="k">import</span> <span class="n">Pool</span> <span class="k">as</span> <span class="n">ThreadPool</span>
-<span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid4</span> <span class="k">as</span> <span class="n">uuid</span>
 
 <span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">SectionParser</span>
-<span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">NoConfigOption</span>
+<span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">NoConfigOption</span><span class="p">,</span> <span class="n">NoConfigSection</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.collectors</span> <span class="k">import</span> <span class="n">VersionedPathCollector</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.collectors</span> <span class="k">import</span> <span class="n">VersionedPathCollector</span><span class="p">,</span> <span class="n">DatasetCollector</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
 
 
@@ -207,6 +206,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapfile_name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">mapfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">outdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;make&#39;</span>  <span class="c1"># args.action</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes_title</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">tech_notes_title</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes_url</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">tech_notes_url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">no_version</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">no_version</span>
@@ -220,15 +220,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dir_filter</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">ignore_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">include_file</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">f</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">include_file</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">f</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">include_file</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Default includes netCDF only</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;^.*\.nc$&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;^.*\.nc$&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">exclude_file</span><span class="p">:</span>
             <span class="c1"># Default exclude hidden files</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">f</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">exclude_file</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">f</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">exclude_file</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;^\..*$&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;^\..*$&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">all_versions</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">no_version</span> <span class="o">=</span> <span class="kc">False</span>
@@ -248,40 +248,55 @@
         <span class="c1"># Init configuration parser</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SectionParser</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;project:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">),</span> <span class="n">directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_facets</span><span class="p">(</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">,</span> <span class="n">filename_pattern</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># Get mapfile DRS is set in configuration file</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mapfile_drs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapfile_drs&#39;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">NoConfigOption</span><span class="p">:</span>
+            <span class="n">_cfg</span> <span class="o">=</span> <span class="n">SectionParser</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;config:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">),</span> <span class="n">directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapfile_drs</span> <span class="o">=</span> <span class="n">_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapfile_drs&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">NoConfigOption</span><span class="p">,</span> <span class="n">NoConfigSection</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mapfile_drs</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Init data collector</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">VersionedPathCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span>
-                                                  <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                                                  <span class="n">dir_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
+            <span class="c1"># The source is a list of directories</span>
+            <span class="c1"># Instantiate file collector to walk through the tree</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_type</span> <span class="o">=</span> <span class="s1">&#39;file&#39;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">VersionedPathCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span>
+                                                      <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                                      <span class="n">dir_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">VersionedPathCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span>
+                                                      <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                                      <span class="n">spinner</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                      <span class="n">dir_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">,</span> <span class="n">filename_pattern</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Init file filter</span>
+            <span class="k">for</span> <span class="n">regex</span><span class="p">,</span> <span class="n">inclusive</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">FileFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="n">inclusive</span><span class="p">)</span>
+            <span class="c1"># Init dir filter</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_filter</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+                <span class="c1"># Pick up all encountered versions by adding &quot;/latest&quot; exclusion</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;version_filter&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="s1">&#39;/latest&#39;</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
+                <span class="c1"># Pick up the specified version only (--version flag) by adding &quot;/v{version}&quot; inclusion</span>
+                <span class="c1"># If --latest-symlink, --version is set to &quot;latest&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;version_filter&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Default behavior: pick up the latest version among encountered versions</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">VersionedPathCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span>
-                                                  <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                                                  <span class="n">spinner</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                                  <span class="n">dir_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">))</span>
-        <span class="c1"># Init file filter</span>
-        <span class="k">for</span> <span class="n">file_filter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">[</span><span class="n">uuid</span><span class="p">()]</span> <span class="o">=</span> <span class="n">file_filter</span>
-        <span class="c1"># Init dir filter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;base_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_filter</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-            <span class="c1"># Pick up all encountered versions by adding &quot;/latest&quot; exclusion</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;version_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;/latest&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
-            <span class="c1"># Pick up the specified version only (--version flag) by adding &quot;/v{version}&quot; inclusion</span>
-            <span class="c1"># If --latest-symlink, --version is set to &quot;latest&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;version_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_type</span> <span class="o">=</span> <span class="s1">&#39;dataset&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">DatasetCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">],</span>
+                                            <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                            <span class="n">spinner</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">)</span>
         <span class="c1"># Init progress bar</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-            <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
+        <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span> <span class="ow">and</span> <span class="n">nfiles</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Mapfile(s) generation&#39;</span><span class="p">,</span>
                              <span class="n">total</span><span class="o">=</span><span class="n">nfiles</span><span class="p">,</span>
-                             <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}</span><span class="s1">: </span><span class="si">{percentage:3.0f}</span><span class="s1">% | </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
+                             <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}</span><span class="s1">: </span><span class="si">{percentage:3.0f}</span><span class="s1">% | </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> &#39;</span>
+                                        <span class="o">+</span> <span class="n">SOURCE_TYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">source_type</span><span class="p">],</span>
                              <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                              <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
         <span class="c1"># Init threads pool</span>
@@ -299,10 +314,16 @@
         <span class="c1"># Default is sys.exit(0)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_errors</span><span class="p">:</span>
             <span class="c1"># All files have been successfully scanned</span>
-            <span class="c1"># Print number of generated mapfiles</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1"> (see </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Mapfile(s) generated&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_map</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">))</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> mapfile(s) generated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_map</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;show&#39;</span><span class="p">:</span>
+                <span class="c1"># Print mapfiles to be generated</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Mapfile(s) to be generated&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_map</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> mapfile(s) to be generated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_map</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;make&#39;</span><span class="p">:</span>
+                <span class="c1"># Print number of generated mapfiles</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1"> (see </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Mapfile(s) generated&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_map</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> mapfile(s) generated&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_map</span><span class="p">))</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_errors</span><span class="p">:</span>
             <span class="c1"># Results list is empty = no files scanned/found</span>
@@ -391,7 +412,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.36',
+            VERSION:'2.7.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

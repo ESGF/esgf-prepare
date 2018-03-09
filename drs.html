@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Manage local data through the DRS &mdash; esgprep 2.7.36 documentation</title>
+  <title>Manage local data through the DRS &mdash; esgprep 2.7.38 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.36 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.38 documentation" href="index.html"/>
         <link rel="next" title="Check CV against configuration INI files" href="check-vocab.html"/>
         <link rel="prev" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/> 
 
@@ -353,9 +353,20 @@ incoming is considered to be the same as in the previous version, and a symlink 
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --upgrade-from-latest
 </pre></div>
 </div>
+<p>By construction, method <em>(b)</em> might not support to simply delete a file between versions, rather than modifying it.
+The associated flag <code class="docutils literal"><span class="pre">--ignore-from-latest</span></code> allows you to submit a list of filenames to ignore during the version
+upgrade (i.e., files to be deleted between versions).</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --ignore-from-latest /PATH/TO/FILENAMES.TXT
+</pre></div>
+</div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">Method <em>(b)</em> might not support any way to simply delete a file between versions, rather than modifying it.</p>
+<p class="last">If <code class="docutils literal"><span class="pre">--ignore-from-latest</span></code> is submitted, <code class="docutils literal"><span class="pre">--upgrade-from-latest</span></code> is set to <code class="docutils literal"><span class="pre">True</span></code> by default.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We highly recommend to use the <code class="docutils literal"><span class="pre">tree</span></code>  action to see what the upgraded tree looks like before applying
+the upgrade.</p>
 </div>
 </div>
 <div class="section" id="exit-status">
@@ -432,7 +443,7 @@ incomplete DRS tree. See the error logfile.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.36',
+            VERSION:'2.7.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

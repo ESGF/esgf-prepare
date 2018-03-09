@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.handler &mdash; esgprep 2.7.36 documentation</title>
+  <title>esgprep.drs.handler &mdash; esgprep 2.7.38 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.38 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -456,7 +456,7 @@
         <span class="c1"># Someone could use display outputs for parsing and further processing.</span>
         <span class="c1"># Any change of the line outputs can break this for users.</span>
 
-        <span class="c1"># --commands_file writes print statements ONLY in the submitted file</span>
+        <span class="c1"># --commands-file writes print statements ONLY in the submitted file</span>
 
         <span class="c1"># Make directory for destination path if not exist</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;mkdir -p&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
@@ -466,15 +466,15 @@
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
                 <span class="k">pass</span>
-        <span class="c1"># Print command-line to apply</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">UNIX_COMMAND_LABEL</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
-        <span class="n">print_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">commands_file</span><span class="p">,</span> <span class="n">todo_only</span><span class="p">)</span>
         <span class="c1"># Unlink symbolic link if already exists</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;symlink&#39;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">):</span>
             <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;rm -f&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
             <span class="n">print_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">commands_file</span><span class="p">,</span> <span class="n">todo_only</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">todo_only</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
+        <span class="c1"># Print command-line to apply</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">UNIX_COMMAND_LABEL</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
+        <span class="n">print_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">commands_file</span><span class="p">,</span> <span class="n">todo_only</span><span class="p">)</span>
         <span class="c1"># Make upgrade depending on the migration mode</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">todo_only</span><span class="p">:</span>
             <span class="n">UNIX_COMMAND</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span></div>
@@ -762,7 +762,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.36',
+            VERSION:'2.7.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

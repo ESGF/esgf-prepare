@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.7.36 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.7.38 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.36 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.7.38 documentation" href="index.html"/>
         <link rel="prev" title="Change Log" href="log.html"/> 
 
   
@@ -1358,12 +1358,12 @@ Incomplete mapfiles from a previous run are silently removed.</p>
 </tbody>
 </table>
 <dl class="class">
-<dt id="esgprep.mapfile.handler.File">
-<em class="property">class </em><code class="descclassname">esgprep.mapfile.handler.</code><code class="descname">File</code><span class="sig-paren">(</span><em>ffp</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.mapfile.handler.Source">
+<em class="property">class </em><code class="descclassname">esgprep.mapfile.handler.</code><code class="descname">Source</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#Source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.Source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handler providing methods to deal with file processing.</p>
 <dl class="method">
-<dt id="esgprep.mapfile.handler.File.get">
-<code class="descname">get</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.get" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.mapfile.handler.Source.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#Source.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.Source.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the attribute value corresponding to the key.
 The submitted key can refer to <code class="docutils literal"><span class="pre">File.key</span></code> or <code class="docutils literal"><span class="pre">File.attributes[key]</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1383,8 +1383,8 @@ The submitted key can refer to <code class="docutils literal"><span class="pre">
 </dd></dl>
 
 <dl class="method">
-<dt id="esgprep.mapfile.handler.File.load_attributes">
-<code class="descname">load_attributes</code><span class="sig-paren">(</span><em>pattern</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.load_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.load_attributes" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.mapfile.handler.Source.load_attributes">
+<code class="descname">load_attributes</code><span class="sig-paren">(</span><em>pattern</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#Source.load_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.Source.load_attributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads DRS attributes catched from a regular expression match.
 The project facet is added in any case with lower case.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1400,8 +1400,8 @@ The project facet is added in any case with lower case.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="esgprep.mapfile.handler.File.check_facets">
-<code class="descname">check_facets</code><span class="sig-paren">(</span><em>facets</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.check_facets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.check_facets" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.mapfile.handler.Source.check_facets">
+<code class="descname">check_facets</code><span class="sig-paren">(</span><em>facets</em>, <em>config</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#Source.check_facets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.Source.check_facets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks each facet against the controlled vocabulary.
 If a DRS attribute is missing regarding the list of facets,
 the DRS attributes are completed from the configuration file maptables.</p>
@@ -1423,8 +1423,8 @@ the DRS attributes are completed from the configuration file maptables.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="esgprep.mapfile.handler.File.get_dataset_id">
-<code class="descname">get_dataset_id</code><span class="sig-paren">(</span><em>dataset_format</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.get_dataset_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.get_dataset_id" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.mapfile.handler.Source.get_dataset_id">
+<code class="descname">get_dataset_id</code><span class="sig-paren">(</span><em>dataset_format</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#Source.get_dataset_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.Source.get_dataset_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds the dataset identifier from the dataset template interpolation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1443,8 +1443,8 @@ the DRS attributes are completed from the configuration file maptables.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="esgprep.mapfile.handler.File.get_dataset_version">
-<code class="descname">get_dataset_version</code><span class="sig-paren">(</span><em>no_version=False</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.get_dataset_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.get_dataset_version" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.mapfile.handler.Source.get_dataset_version">
+<code class="descname">get_dataset_version</code><span class="sig-paren">(</span><em>no_version=False</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#Source.get_dataset_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.Source.get_dataset_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the dataset version. If the version facet cannot be deduced from full path,
 it follows the symlink to complete the DRS attributes.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1461,6 +1461,18 @@ it follows the symlink to complete the DRS attributes.</p>
 </table>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="esgprep.mapfile.handler.Dataset">
+<em class="property">class </em><code class="descclassname">esgprep.mapfile.handler.</code><code class="descname">Dataset</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset handler class</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="esgprep.mapfile.handler.File">
+<em class="property">class </em><code class="descclassname">esgprep.mapfile.handler.</code><code class="descname">File</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File" title="Permalink to this definition">¶</a></dt>
+<dd><p>File handler class</p>
 <dl class="method">
 <dt id="esgprep.mapfile.handler.File.checksum">
 <code class="descname">checksum</code><span class="sig-paren">(</span><em>checksum_type</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.checksum" title="Permalink to this definition">¶</a></dt>
@@ -1569,12 +1581,6 @@ it follows the symlink to complete the DRS attributes.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="esgprep.utils.collectors.Collector.first">
-<code class="descname">first</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collector.first"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collector.first" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the first iterator element.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
@@ -1616,16 +1622,22 @@ it follows the symlink to complete the DRS attributes.</p>
 
 <dl class="class">
 <dt id="esgprep.utils.collectors.DatasetCollector">
-<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">DatasetCollector</code><span class="sig-paren">(</span><em>sources</em>, <em>spinner=True</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#DatasetCollector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.DatasetCollector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">DatasetCollector</code><span class="sig-paren">(</span><em>versioned=True</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#DatasetCollector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.DatasetCollector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Collector class to yield datasets from a list of files to read.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="esgprep.utils.collectors.Filter">
-<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Filter</code><a class="reference internal" href="modules/esgprep/utils/collectors.html#Filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Filter" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.utils.collectors.FilterCollection">
+<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">FilterCollection</code><a class="reference internal" href="modules/esgprep/utils/collectors.html#FilterCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.FilterCollection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Regex dictionary with a call method to evaluate a string against several regular expressions.
 The dictionary values are 2-tuples with the regular expression as a string and a boolean
 indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.</p>
+<dl class="method">
+<dt id="esgprep.utils.collectors.FilterCollection.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>name=None</em>, <em>regex='*'</em>, <em>inclusive=True</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#FilterCollection.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.FilterCollection.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add new filter</p>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="module-esgprep.utils.misc"></span><table class="docutils field-list" frame="void" rules="none">
@@ -1698,9 +1710,10 @@ If a directory is submitted the logfile name is unique and formatted as follows:
 
 <dl class="function">
 <dt id="esgprep.utils.misc.match">
-<code class="descclassname">esgprep.utils.misc.</code><code class="descname">match</code><span class="sig-paren">(</span><em>pattern</em>, <em>string</em>, <em>negative=False</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.match" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">esgprep.utils.misc.</code><code class="descname">match</code><span class="sig-paren">(</span><em>pattern</em>, <em>string</em>, <em>inclusive=True</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.match" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validates a string against a regular expression.
-Only match at the beginning of the string.</p>
+Only match at the beginning of the string.
+Default is to match inclusive regex.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1708,7 +1721,7 @@ Only match at the beginning of the string.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>pattern</strong> (<em>str</em>) – The regular expression to match</li>
 <li><strong>string</strong> (<em>str</em>) – The string to test</li>
-<li><strong>negative</strong> (<em>boolean</em>) – True if negative matching (i.e., exclude the regex)</li>
+<li><strong>inclusive</strong> (<em>boolean</em>) – False if negative matching (i.e., exclude the regex)</li>
 </ul>
 </td>
 </tr>
@@ -1831,6 +1844,33 @@ Only match at the beginning of the string.</p>
 <dt id="esgprep.utils.parser.DirectoryChecker.directory_checker">
 <em class="property">static </em><code class="descname">directory_checker</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#DirectoryChecker.directory_checker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.DirectoryChecker.directory_checker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if the supplied directory exists. The path is normalized without trailing slash.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) – The path list to check</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The same path list</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If one of the directory does not exist</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="esgprep.utils.parser.FileChecker">
+<em class="property">class </em><code class="descclassname">esgprep.utils.parser.</code><code class="descname">FileChecker</code><span class="sig-paren">(</span><em>option_strings</em>, <em>dest</em>, <em>nargs=None</em>, <em>const=None</em>, <em>default=None</em>, <em>type=None</em>, <em>choices=None</em>, <em>required=False</em>, <em>help=None</em>, <em>metavar=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#FileChecker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.FileChecker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom action class for argument parser to use with the Python
+<a class="reference external" href="https://docs.python.org/2/library/argparse.html">argparse</a> module.</p>
+<dl class="staticmethod">
+<dt id="esgprep.utils.parser.FileChecker.file_checker">
+<em class="property">static </em><code class="descname">file_checker</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#FileChecker.file_checker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.FileChecker.file_checker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the supplied files exists. The path is normalized without trailing slash.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2006,7 +2046,7 @@ Only match at the beginning of the string.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.36',
+            VERSION:'2.7.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

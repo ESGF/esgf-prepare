@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.handler &mdash; esgprep 2.7.36 documentation</title>
+  <title>esgprep.mapfile.handler &mdash; esgprep 2.7.38 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.38 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -185,23 +185,19 @@
 <span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">checksum</span>
 
 
-<div class="viewcode-block" id="File"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File">[docs]</a><span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Source"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.Source">[docs]</a><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handler providing methods to deal with file processing.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ffp</span><span class="p">):</span>
-        <span class="c1"># Retrieve file full path</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ffp</span> <span class="o">=</span> <span class="n">ffp</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="c1"># Retrieve source</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
         <span class="c1"># File attributes as dict(): {institute: &#39;IPSL&#39;, project : &#39;CMIP5&#39;, ...}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># Retrieve file size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span>
-        <span class="c1"># Retrieve file mtime</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mtime</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span>
 
-<div class="viewcode-block" id="File.get"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="Source.get"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.Source.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the attribute value corresponding to the key.</span>
 <span class="sd">        The submitted key can refer to ``File.key`` or ``File.attributes[key]``.</span>
@@ -219,7 +215,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">KeyNotFound</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="File.load_attributes"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.load_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">load_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+<div class="viewcode-block" id="Source.load_attributes"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.Source.load_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">load_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads DRS attributes catched from a regular expression match.</span>
 <span class="sd">        The project facet is added in any case with lower case.</span>
@@ -231,11 +227,11 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># re.search() method is required to search through the entire string.</span>
             <span class="c1"># In this case we aim to match the regex starting from the filename (i.e., the end of the string)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ExpressionNotMatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">ExpressionNotMatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="File.check_facets"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.check_facets">[docs]</a>    <span class="k">def</span> <span class="nf">check_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<div class="viewcode-block" id="Source.check_facets"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.Source.check_facets">[docs]</a>    <span class="k">def</span> <span class="nf">check_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">facets</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks each facet against the controlled vocabulary.</span>
 <span class="sd">        If a DRS attribute is missing regarding the list of facets,</span>
@@ -254,7 +250,7 @@
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">NoConfigOption</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_map&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">facet</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="File.get_dataset_id"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.get_dataset_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_format</span><span class="p">):</span>
+<div class="viewcode-block" id="Source.get_dataset_id"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.Source.get_dataset_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_format</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Builds the dataset identifier from the dataset template interpolation.</span>
 
@@ -269,7 +265,7 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MissingPatternKey</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">dataset_format</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="File.get_dataset_version"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.get_dataset_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_version</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Source.get_dataset_version"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.Source.get_dataset_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_version</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve the dataset version. If the version facet cannot be deduced from full path,</span>
 <span class="sd">        it follows the symlink to complete the DRS attributes.</span>
@@ -282,7 +278,31 @@
         <span class="k">if</span> <span class="s1">&#39;version&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">no_version</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">(</span><span class="n">Source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dataset handler class</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Dataset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="File"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File">[docs]</a><span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="n">Source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    File handler class</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">File</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Retrieve file size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span>
+        <span class="c1"># Retrieve file mtime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mtime</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span>
 
 <div class="viewcode-block" id="File.checksum"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.handler.File.checksum">[docs]</a>    <span class="k">def</span> <span class="nf">checksum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -294,7 +314,7 @@
 <span class="sd">        :raises Error: If the checksum fails</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">checksum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">checksum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
@@ -331,7 +351,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.36',
+            VERSION:'2.7.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

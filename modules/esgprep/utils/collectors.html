@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.collectors &mdash; esgprep 2.7.36 documentation</title>
+  <title>esgprep.utils.collectors &mdash; esgprep 2.7.38 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.38 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -177,6 +177,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid4</span> <span class="k">as</span> <span class="n">uuid</span>
 
 <span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">match</span><span class="p">,</span> <span class="n">remove</span>
 
@@ -219,16 +220,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">spinner</span> <span class="o">=</span> <span class="n">spinner</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">sources</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">FileFilter</span> <span class="o">=</span> <span class="n">Filter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileFilter</span> <span class="o">=</span> <span class="n">FilterCollection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span> <span class="o">=</span> <span class="n">FilterCollection</span><span class="p">()</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">filenames</span><span class="p">):</span>
-                    <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-                        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">filenames</span><span class="p">):</span>
+                        <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+                            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -256,14 +259,7 @@
 <span class="sd">        :rtype: *tuple*</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="k">else</span> <span class="n">item</span></div>
-
-<div class="viewcode-block" id="Collector.first"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.Collector.first">[docs]</a>    <span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the first iterator element.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span><span class="o">.</span><span class="n">next</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="k">else</span> <span class="n">item</span></div></div>
 
 
 <div class="viewcode-block" id="PathCollector"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.PathCollector">[docs]</a><span class="k">class</span> <span class="nc">PathCollector</span><span class="p">(</span><span class="n">Collector</span><span class="p">):</span>
@@ -276,7 +272,6 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PathCollector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span> <span class="o">=</span> <span class="n">Filter</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -306,6 +301,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_format</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VersionedPathCollector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">dir_format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -321,30 +317,24 @@
             <span class="k">if</span> <span class="n">source_version</span><span class="p">:</span>
                 <span class="c1"># Path version takes priority on command-line flags and default behavior</span>
                 <span class="c1"># Overwrite the version filter</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;version_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_version</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;version_filter&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_version</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-                <span class="c1"># Reset version filter if latest_version exists to allow new filter for another dataset/version</span>
-                <span class="k">if</span> <span class="s1">&#39;latest_version&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">():</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;version_filter&#39;</span><span class="p">]</span>
-                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                        <span class="k">pass</span>
                 <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">filenames</span><span class="p">):</span>
                     <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
                     <span class="n">path_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_finder</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
                     <span class="c1"># If no version filter, and path version exists, set default behavior</span>
-                    <span class="k">if</span> <span class="n">path_version</span> <span class="ow">and</span> <span class="s1">&#39;version_filter&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">path_version</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
                         <span class="c1"># Find latest version</span>
                         <span class="n">path_versions</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">ffp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">path_version</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span>
                                          <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^v[\d]+$&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
                         <span class="n">latest_version</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">path_versions</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                         <span class="c1"># Pick up the latest version among encountered versions</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">[</span><span class="s1">&#39;version_filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">latest_version</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;version_filter&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">latest_version</span><span class="p">))</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
                         <span class="c1"># Dereference latest symlink (only) in the end</span>
                         <span class="k">if</span> <span class="n">path_version</span> <span class="o">==</span> <span class="s1">&#39;latest&#39;</span><span class="p">:</span>
-                            <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/(latest)/&#39;</span><span class="p">,</span> <span class="n">ffp</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-                            <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/(latest)/&#39;</span><span class="p">,</span> <span class="n">ffp</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">:])</span>
+                            <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/latest/&#39;</span><span class="p">,</span> <span class="n">ffp</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                            <span class="n">ffp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/latest/&#39;</span><span class="p">,</span> <span class="n">ffp</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">:])</span>
                         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
                             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
 
@@ -376,6 +366,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">versioned</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DatasetCollector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">versioned</span> <span class="o">=</span> <span class="n">versioned</span>
+
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Yields datasets to process from a text file. Each line may contain the dataset with optional</span>
@@ -386,12 +380,21 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;((\.v|#)[0-9]+)?\s*$&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span></div>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">versioned</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;((\.v|#)[0-9]+)?\s*$&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">versioned</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;((\.v|#)[0-9]+)?\s*$&#39;</span><span class="p">,</span> <span class="n">source</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Filter"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.Filter">[docs]</a><span class="k">class</span> <span class="nc">Filter</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="FilterCollection"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.FilterCollection">[docs]</a><span class="k">class</span> <span class="nc">FilterCollection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Regex dictionary with a call method to evaluate a string against several regular expressions.</span>
 <span class="sd">    The dictionary values are 2-tuples with the regular expression as a string and a boolean</span>
@@ -400,20 +403,19 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">FILTER_TYPES</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">_pattern_type</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="c1"># Assertions on filters values</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">FILTER_TYPES</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-            <span class="c1"># Set negative = False by default</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="nb">dict</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FilterCollection.add"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.collectors.FilterCollection.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add new filter&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">uuid</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FILTER_TYPES</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inclusive</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">inclusive</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">match</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">negative</span><span class="o">=</span><span class="n">negative</span><span class="p">)</span> <span class="k">for</span> <span class="n">regex</span><span class="p">,</span> <span class="n">negative</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span></div>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">match</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="n">inclusive</span><span class="p">)</span> <span class="k">for</span> <span class="n">regex</span><span class="p">,</span> <span class="n">inclusive</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span></div>
 </pre></div>
 
            </div>
@@ -450,7 +452,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.36',
+            VERSION:'2.7.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

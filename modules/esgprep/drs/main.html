@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.main &mdash; esgprep 2.7.36 documentation</title>
+  <title>esgprep.drs.main &mdash; esgprep 2.7.38 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.38 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -277,13 +277,14 @@
                                  <span class="n">src</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">ffp</span><span class="p">,</span>
                                  <span class="n">mode</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">upgrade_from_latest</span><span class="p">:</span>
-                <span class="c1"># Walk through the latest dataset version and create a simlink for each file with a different</span>
+                <span class="c1"># Walk through the latest dataset version and create a symlink for each file with a different</span>
                 <span class="c1"># filename than the processed one</span>
                 <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">f_part</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
                     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
                         <span class="c1"># Add latest files as tree leaves with version to upgrade instead of latest version</span>
                         <span class="c1"># i.e., copy latest dataset leaves to Tree</span>
-                        <span class="k">if</span> <span class="n">filename</span> <span class="o">!=</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span><span class="p">:</span>
+                        <span class="c1"># Except if file has be ignored from latest version (i.e., with known issue)</span>
+                        <span class="k">if</span> <span class="n">filename</span> <span class="o">!=</span> <span class="n">fh</span><span class="o">.</span><span class="n">filename</span> <span class="ow">and</span> <span class="n">filename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ignore_from_latest</span><span class="p">:</span>
                             <span class="n">src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
                             <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">fph</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                                                  <span class="n">leaf</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
@@ -357,11 +358,6 @@
             <span class="n">results</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
             <span class="c1"># Rollback --commands_file value to command-line argument in any case</span>
             <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">commands_file</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">commands_file</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Skipping incoming files scan (use &quot;--rescan&quot; to force it) -- &#39;</span> \
-                  <span class="s1">&#39;Using cached DRS tree from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">use_pool</span><span class="p">:</span>
                 <span class="n">processes</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
@@ -369,9 +365,9 @@
                 <span class="n">processes</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
             <span class="c1"># Process supplied files</span>
             <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">processes</span><span class="p">]</span>
-        <span class="c1"># Close progress bar</span>
-        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="c1"># Close progress bar</span>
+            <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="c1"># Get number of files scanned (including skipped files)</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">scan_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
         <span class="c1"># Get number of scan errors</span>
@@ -425,7 +421,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.36',
+            VERSION:'2.7.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

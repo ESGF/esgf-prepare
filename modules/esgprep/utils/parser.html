@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.parser &mdash; esgprep 2.7.36 documentation</title>
+  <title>esgprep.utils.parser &mdash; esgprep 2.7.38 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.36 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.7.38 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -252,6 +252,38 @@
         <span class="k">return</span> <span class="n">path</span></div></div>
 
 
+<div class="viewcode-block" id="FileChecker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.FileChecker">[docs]</a><span class="k">class</span> <span class="nc">FileChecker</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom action class for argument parser to use with the Python</span>
+<span class="sd">    `argparse &lt;https://docs.python.org/2/library/argparse.html&gt;`_ module.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">checked_vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">file_checker</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">checked_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_checker</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">checked_vals</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FileChecker.file_checker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.FileChecker.file_checker">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">file_checker</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the supplied files exists. The path is normalized without trailing slash.</span>
+
+<span class="sd">        :param str path: The path list to check</span>
+<span class="sd">        :returns: The same path list</span>
+<span class="sd">        :rtype: *str*</span>
+<span class="sd">        :raises Error: If one of the directory does not exist</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;No such file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span></div></div>
+
+
 <div class="viewcode-block" id="VersionChecker"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.parser.VersionChecker">[docs]</a><span class="k">class</span> <span class="nc">VersionChecker</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom action class for argument parser to use with the Python</span>
@@ -365,7 +397,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.36',
+            VERSION:'2.7.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
