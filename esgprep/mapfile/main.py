@@ -19,7 +19,7 @@ from lockfile import LockFile
 from constants import *
 from context import ProcessingContext
 from esgprep.utils.misc import evaluate
-from handler import File
+from handler import File, Dataset
 
 
 def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_version, mapfile_drs=None):
@@ -108,7 +108,7 @@ def write(outfile, entry):
             mapfile.write(entry)
 
 
-def make(collector_input, show_mapfiles=False):
+def process(collector_input):
     """
     File process that:
 
@@ -124,89 +124,71 @@ def make(collector_input, show_mapfiles=False):
     Any error leads to skip the file. It does not stop the process.
 
     :param tuple collector_input: A tuple with the file path and the processing context
-    :param boolean show_mapfiles: Dry-run that only returns mapfiles to be generated
     :returns: The output mapfile full path
     :rtype: *str*
 
     """
     # Deserialize inputs from collector
-    ffp, ctx = collector_input
+    source, ctx = collector_input
     # Block to avoid program stop if a thread fails
     try:
-        # Instantiate file handler
-        fh = File(ffp)
+        if ctx.source_type == 'file':
+            # Instantiate source handle as file
+            sh = File(source)
+        else:
+            # Instantiate source handler as dataset
+            sh = Dataset(source)
         # Matching between directory_format and file full path
-        fh.load_attributes(pattern=ctx.pattern)
+        sh.load_attributes(pattern=ctx.pattern)
         # Apply proper case to each attribute
-        for key in fh.attributes:
+        for key in sh.attributes:
             # Try to get the appropriate facet case for "category_default"
             try:
-                fh.attributes[key] = ctx.cfg.get_options_from_pairs('category_defaults', key)
+                sh.attributes[key] = ctx.cfg.get_options_from_pairs('category_defaults', key)
             except NoConfigKey:
                 # If not specified keep facet case from local path, do nothing
                 pass
         # Deduce dataset_id
         dataset_id = ctx.dataset
         if not ctx.dataset:
-            fh.check_facets(facets=ctx.facets,
+            sh.check_facets(facets=ctx.facets,
                             config=ctx.cfg)
-            dataset_id = fh.get_dataset_id(ctx.cfg.get('dataset_id', raw=True))
+            dataset_id = sh.get_dataset_id(ctx.cfg.get('dataset_id', raw=True))
         # Deduce dataset_version
-        dataset_version = fh.get_dataset_version(ctx.no_version)
+        dataset_version = sh.get_dataset_version(ctx.no_version)
         # Build mapfile name depending on the --mapfile flag and appropriate tokens
         outfile = get_output_mapfile(outdir=ctx.outdir,
-                                     attributes=fh.attributes,
+                                     attributes=sh.attributes,
                                      mapfile_name=ctx.mapfile_name,
                                      dataset_id=dataset_id,
                                      dataset_version=dataset_version,
                                      mapfile_drs=ctx.mapfile_drs)
         # Dry-run: don't write mapfile to only show their paths
-        if not show_mapfiles:
+        if ctx.action == 'make':
             # Generate the corresponding mapfile entry/line
             optional_attrs = dict()
-            optional_attrs['mod_time'] = fh.mtime
+            optional_attrs['mod_time'] = sh.mtime
             if not ctx.no_checksum:
-                optional_attrs['checksum'] = fh.checksum(ctx.checksum_type)
+                optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
                 optional_attrs['checksum_type'] = ctx.checksum_type.upper()
             optional_attrs['dataset_tech_notes'] = ctx.notes_url
             optional_attrs['dataset_tech_notes_title'] = ctx.notes_title
             line = mapfile_entry(dataset_id=dataset_id,
                                  dataset_version=dataset_version,
-                                 ffp=ffp,
-                                 size=fh.size,
+                                 ffp=source,
+                                 size=sh.size,
                                  optional_attrs=optional_attrs)
             write(outfile, line)
-            logging.info('{} <-- {}'.format(os.path.splitext(os.path.basename(outfile))[0], ffp))
+            logging.info('{} <-- {}'.format(os.path.splitext(os.path.basename(outfile))[0], source))
         # Return mapfile name
         return outfile
     # Catch any exception into error log instead of stop the run
     except Exception as e:
-        logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
+        logging.error('{} skipped\n{}: {}'.format(source, e.__class__.__name__, e.message))
         return None
     finally:
         if ctx.pbar:
             ctx.pbar.update()
-
-
-def show(collector_input):
-    """
-    File process that:
-
-     * Handles file,
-     * Harvests directory attributes,
-     * Check DRS attributes against CV,
-     * Builds dataset ID,
-     * Deduces mapfile name,
-     * Show the corresponding mapfile entry.
-
-    Any error leads to skip the file. It does not stop the process.
-
-    :param tuple collector_input: A tuple with the file path and the processing context
-    :returns: The output mapfile full path
-    :rtype: *str*
-
-    """
-    return make(collector_input, show_mapfiles=True)
 
 
 def run(args):
@@ -223,12 +205,13 @@ def run(args):
     """
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
+        # If dataset ID is submitted for "show" action skip scan
         logging.info('==> Scan started')
         if ctx.use_pool:
-            processes = ctx.pool.imap(globals()[ctx.action], ctx.sources)
+            processes = ctx.pool.imap(process, ctx.sources)
         else:
-            processes = itertools.imap(globals()[ctx.action], ctx.sources)
-        # Process supplied files
+            processes = itertools.imap(process, ctx.sources)
+        # Process supplied sources
         results = [x for x in processes]
         # Close progress bar
         if ctx.pbar:

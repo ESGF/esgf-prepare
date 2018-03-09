@@ -13,7 +13,7 @@ from datetime import datetime
 VERSION = '2.7.38'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=2, day=22).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=3, day=7).strftime("%Y-%d-%m")
 
 # Help
 PROGRAM_DESC = \
@@ -284,15 +284,24 @@ DRS_HELP = \
     
     """
 
-ACTION_HELP = \
-    """
-    DRS action:|n
-    - "list" lists publication-level datasets,|n
-    - "tree" displays the final DRS tree,|n
-    - "todo" shows file operations pending for the next version,|n
-    - "upgrade" makes changes to upgrade datasets to the next version.
-    
-    """
+ACTION_HELP = {
+    'drs':
+        """
+        DRS action:|n
+        - "list" lists publication-level datasets (default),|n
+        - "tree" displays the final DRS tree,|n
+        - "todo" shows file operations pending for the next version,|n
+        - "upgrade" makes changes to upgrade datasets to the next version.
+        
+        """,
+    'mapfile':
+        """
+        Mapfile action:|n
+        - "make" generates mapfiles (default),|n
+        - "show" dry-run to prints mapfile paths.
+        
+        """
+}
 
 ROOT_HELP = \
     """

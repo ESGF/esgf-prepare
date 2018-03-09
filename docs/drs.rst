@@ -179,7 +179,18 @@ The option ``--upgrade-from-latest`` allows you to toggle to method *(b)*:
 
     $> esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --upgrade-from-latest
 
-.. warning:: Method *(b)* might not support any way to simply delete a file between versions, rather than modifying it.
+By construction, method *(b)* might not support to simply delete a file between versions, rather than modifying it.
+The associated flag ``--ignore-from-latest`` allows you to submit a list of filenames to ignore during the version
+upgrade (i.e., files to be deleted between versions).
+
+.. code-block:: bash
+
+    $> esgprep drs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --ignore-from-latest /PATH/TO/FILENAMES.TXT
+
+.. warning:: If ``--ignore-from-latest`` is submitted, ``--upgrade-from-latest`` is set to ``True`` by default.
+
+.. note:: We highly recommend to use the ``tree``  action to see what the upgraded tree looks like before applying
+    the upgrade.
 
 Exit status
 ***********

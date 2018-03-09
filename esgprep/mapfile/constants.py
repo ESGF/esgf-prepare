@@ -13,3 +13,9 @@ IGNORED_KEYS = ['root', 'project', 'filename', 'period_start', 'period_end']
 
 # Mapfile extension during processing
 WORKING_EXTENSION = '.part'
+
+# Source type label
+SOURCE_TYPE = {
+    'file': 'file(s)',
+    'dataset': 'dataset(s)'
+}

@@ -72,9 +72,9 @@ class ProcessingContext(object):
             # Instantiate dataset collector to parse the files
             self.source_type = 'datasets'
             if self.pbar:
-                self.sources = DatasetCollector(self.dataset_list)
+                self.sources = DatasetCollector(self.dataset_list, versioned=False)
             else:
-                self.sources = DatasetCollector(self.dataset_list, spinner=False)
+                self.sources = DatasetCollector(self.dataset_list, spinner=False, versioned=False)
             self.pattern = self.cfg.translate('dataset_id')
         # Get the facet keys from pattern
         self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))

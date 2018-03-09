@@ -18,21 +18,17 @@ from esgprep.utils.custom_exceptions import *
 from esgprep.utils.misc import checksum
 
 
-class File(object):
+class Source(object):
     """
     Handler providing methods to deal with file processing.
 
     """
 
-    def __init__(self, ffp):
-        # Retrieve file full path
-        self.ffp = ffp
+    def __init__(self, source):
+        # Retrieve source
+        self.source = source
         # File attributes as dict(): {institute: 'IPSL', project : 'CMIP5', ...}
         self.attributes = {}
-        # Retrieve file size
-        self.size = os.stat(self.ffp).st_size
-        # Retrieve file mtime
-        self.mtime = os.stat(self.ffp).st_mtime
 
     def get(self, key):
         """
@@ -64,9 +60,9 @@ class File(object):
         try:
             # re.search() method is required to search through the entire string.
             # In this case we aim to match the regex starting from the filename (i.e., the end of the string)
-            self.attributes = re.search(pattern, self.ffp).groupdict()
+            self.attributes = re.search(pattern, self.source).groupdict()
         except:
-            raise ExpressionNotMatch(self.ffp, pattern)
+            raise ExpressionNotMatch(self.source, pattern)
 
     def check_facets(self, facets, config):
         """
@@ -117,6 +113,30 @@ class File(object):
         else:
             return None
 
+
+class Dataset(Source):
+    """
+    Dataset handler class
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(Dataset, self).__init__(*args, **kwargs)
+
+
+class File(Source):
+    """
+    File handler class
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(File, self).__init__(*args, **kwargs)
+        # Retrieve file size
+        self.size = os.stat(self.source).st_size
+        # Retrieve file mtime
+        self.mtime = os.stat(self.source).st_mtime
+
     def checksum(self, checksum_type):
         """
         Does the checksum by the Shell avoiding Python memory limits.
@@ -127,4 +147,4 @@ class File(object):
         :raises Error: If the checksum fails
 
         """
-        return checksum(self.ffp, checksum_type)
+        return checksum(self.source, checksum_type)

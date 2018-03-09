@@ -68,7 +68,7 @@ PER dataset.
 Organize your mapfiles
 **********************
 
-The mapfile(s)are generated into a ``mapfile`` folder created in your working directory (if exists). This can be
+The mapfile(s) are generated into a ``mapfile`` folder created in your working directory (if exists). This can be
 changed by submitting an output directory for your mapfiles.
 
 In addition, a ``mapfile_drs`` attribute can be added into the corresponding project section of the configuration INI
@@ -125,6 +125,16 @@ Overwrite the dataset identifier
     $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --dataset DATASET_NAME
 
 .. warning:: All files will belong to the specified dataset, regardless of the DRS.
+
+Print mapfiles to be generated
+******************************
+
+.. code-block:: bash
+
+    $> esgprep mapfile show --project PROJECT_ID /PATH/TO/SCAN/
+
+.. note:: This will consider all parameters set on the command-line according to the mapfile path
+    (e.g., ``mapfile_drs`` attribute, ``--dataset`` flag etc.)
 
 Exit status
 ***********

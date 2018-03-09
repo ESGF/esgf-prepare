@@ -199,6 +199,10 @@ class DatasetCollector(Collector):
 
     """
 
+    def __init__(self, versioned=True, *args, **kwargs):
+        super(DatasetCollector, self).__init__(*args, **kwargs)
+        self.versioned = versioned
+
     def __iter__(self):
         """
         Yields datasets to process from a text file. Each line may contain the dataset with optional
@@ -209,9 +213,18 @@ class DatasetCollector(Collector):
 
         """
         for source in self.sources:
-            with open(source) as f:
-                for line in f:
-                    yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', line))
+            if os.path.isfile(source):
+                with open(source) as f:
+                    for line in f:
+                        if self.versioned:
+                            yield self.attach(line)
+                        else:
+                            yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', line))
+            else:
+                if self.versioned:
+                    yield self.attach(source)
+                else:
+                    yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', source))
 
 
 class FilterCollection(object):

@@ -18,7 +18,7 @@ from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
 from tqdm import tqdm
 
 from constants import *
-from esgprep.utils.collectors import VersionedPathCollector
+from esgprep.utils.collectors import VersionedPathCollector, DatasetCollector
 from esgprep.utils.custom_exceptions import *
 
 
@@ -39,7 +39,7 @@ class ProcessingContext(object):
         self.directory = args.directory
         self.mapfile_name = args.mapfile
         self.outdir = args.outdir
-        self.action = args.action
+        self.action = 'make'  # args.action
         self.notes_title = args.tech_notes_title
         self.notes_url = args.tech_notes_url
         self.no_version = args.no_version
@@ -81,7 +81,6 @@ class ProcessingContext(object):
         # Init configuration parser
         self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
         self.facets = self.cfg.get_facets('dataset_id')
-        self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
         # Get mapfile DRS is set in configuration file
         try:
             _cfg = SectionParser(section='config:{}'.format(self.project), directory=self.config_dir)
@@ -89,36 +88,48 @@ class ProcessingContext(object):
         except (NoConfigOption, NoConfigSection):
             self.mapfile_drs = None
         # Init data collector
-        if self.pbar:
-            self.sources = VersionedPathCollector(sources=self.directory,
-                                                  data=self,
-                                                  dir_format=self.cfg.translate('directory_format'))
+        if self.directory:
+            # The source is a list of directories
+            # Instantiate file collector to walk through the tree
+            self.source_type = 'file'
+            if self.pbar:
+                self.sources = VersionedPathCollector(sources=self.directory,
+                                                      data=self,
+                                                      dir_format=self.cfg.translate('directory_format'))
+            else:
+                self.sources = VersionedPathCollector(sources=self.directory,
+                                                      data=self,
+                                                      spinner=False,
+                                                      dir_format=self.cfg.translate('directory_format'))
+            self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
+            # Init file filter
+            for regex, inclusive in self.file_filter:
+                self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
+            # Init dir filter
+            self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
+            if self.all:
+                # Pick up all encountered versions by adding "/latest" exclusion
+                self.sources.PathFilter.add(name='version_filter', regex='/latest', inclusive=False)
+            elif self.version:
+                # Pick up the specified version only (--version flag) by adding "/v{version}" inclusion
+                # If --latest-symlink, --version is set to "latest"
+                self.sources.PathFilter.add(name='version_filter', regex='/{}'.format(self.version))
+            else:
+                # Default behavior: pick up the latest version among encountered versions
+                self.sources.default = True
         else:
-            self.sources = VersionedPathCollector(sources=self.directory,
-                                                  data=self,
-                                                  spinner=False,
-                                                  dir_format=self.cfg.translate('directory_format'))
-        # Init file filter
-        for regex, inclusive in self.file_filter:
-            self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
-        # Init dir filter
-        self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
-        if self.all:
-            # Pick up all encountered versions by adding "/latest" exclusion
-            self.sources.PathFilter.add(name='version_filter', regex='/latest', inclusive=False)
-        elif self.version:
-            # Pick up the specified version only (--version flag) by adding "/v{version}" inclusion
-            # If --latest-symlink, --version is set to "latest"
-            self.sources.PathFilter.add(name='version_filter', regex='/{}'.format(self.version))
-        else:
-            # Default behavior: pick up the latest version among encountered versions
-            self.sources.default = True
+            self.source_type = 'dataset'
+            self.sources = DatasetCollector(sources=[self.dataset],
+                                            data=self,
+                                            spinner=False)
+            self.pattern = self.cfg.translate('dataset_id')
         # Init progress bar
         nfiles = len(self.sources)
         if self.pbar and nfiles:
             self.pbar = tqdm(desc='Mapfile(s) generation',
                              total=nfiles,
-                             bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
+                             bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} '
+                                        + SOURCE_TYPE[self.source_type],
                              ncols=100,
                              file=sys.stdout)
         # Init threads pool
