@@ -4,6 +4,25 @@
 Change Log
 ==========
 
+`v2.7.39 <https://github.com/ESGF/esgf-prepare/tree/v2.7.39>`__ (2018-03-09)
+----------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.7.39...HEAD>`__
+
+**Fixed bugs:**
+
+-  Wrong collector filtering in default mode for mapfile generation
+   `#22 <https://github.com/ESGF/esgf-prepare/issues/22>`__
+
+**Closed issues:**
+
+-  Remove files from an input list during DRS migration
+   `#21 <https://github.com/ESGF/esgf-prepare/issues/21>`__
+-  wrong order of commands in "esgprep drs todo" output when updating
+   "latest" symlink
+   `#20 <https://github.com/ESGF/esgf-prepare/issues/20>`__
+
 `v2.7.38 <https://github.com/ESGF/esgf-prepare/tree/v2.7.38>`__ (2018-02-22)
 ----------------------------------------------------------------------------
 
