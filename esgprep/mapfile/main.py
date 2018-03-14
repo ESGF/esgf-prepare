@@ -226,12 +226,11 @@ def run(args):
         if evaluate(results):
             for mapfile in filter(None, set(results)):
                 # Remove mapfile working extension
-                mapfile = mapfile.replace(WORKING_EXTENSION, '')
                 if ctx.action == 'show':
                     # Print mapfiles to be generated
                     if ctx.pbar:
-                        print(mapfile)
-                    logging.info(mapfile)
+                        print(mapfile.replace(WORKING_EXTENSION, ''))
+                    logging.info(mapfile.replace(WORKING_EXTENSION, ''))
                 elif ctx.action == 'make':
                     # A final mapfile is silently overwritten if already exists
                     os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
