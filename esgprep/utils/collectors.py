@@ -166,8 +166,9 @@ class VersionedPathCollector(PathCollector):
                     if self.PathFilter(root):
                         # Dereference latest symlink (only) in the end
                         if path_version == 'latest':
-                            target = os.path.realpath(os.path.join(*re.split(r'/latest/', ffp)[:-1]))
-                            ffp = os.path.join(target, *re.split(r'/latest/', ffp)[-1:])
+                            # Keep parentheses in pattern to get "latest" part of the split list
+                            target = os.path.realpath(os.path.join(*re.split(r'/(latest)/', ffp)[:-1]))
+                            ffp = os.path.join(target, *re.split(r'/(latest)/', ffp)[-1:])
                         if os.path.isfile(ffp) and self.FileFilter(filename):
                             yield self.attach(ffp)
 
