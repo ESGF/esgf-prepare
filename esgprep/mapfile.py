@@ -29,18 +29,9 @@ def get_args():
     :rtype: *argparse.Namespace*
 
     """
-    # Workaround to run the test suite without subparsers and their required flags
-    if len(sys.argv[1:]) == 1 and sys.argv[1:][-1] == '--test':
-        return argparse.Namespace(**{'cmd': None, 'test': True, 'log': None, 'v': False})
-    if len(sys.argv[1:]) == 2 and sys.argv[1:][-1] == '--test':
-        return argparse.Namespace(**{'cmd': sys.argv[1:][-2], 'test': True, 'log': None, 'v': False})
-
-    ################################
-    # Main parser for "esgmapfile" #
-    ################################
     main = _ArgumentParser(
         prog='esgmapfile',
-        description=PROGRAM_DESC,
+        description=PROGRAM_DESC['mapfile'],
         formatter_class=MultilineFormatter,
         add_help=False,
         epilog=EPILOG)
@@ -66,9 +57,7 @@ def get_args():
         metavar='',
         help='')
 
-    #######################################
-    # Parent parser with common arguments #
-    #######################################
+    # Parent parser with common arguments
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument(
         '-h', '--help',
@@ -98,9 +87,7 @@ def get_args():
         default=False,
         help=TEST_HELP['parent'])
 
-    ###################################
-    # Subparser for "esgmapfile make" #
-    ###################################
+    # Subparser for "esgmapfile make"
     make = subparsers.add_parser(
         'make',
         prog='esgmapfile make',
@@ -204,9 +191,8 @@ def get_args():
         action='store_true',
         default=False,
         help=NO_CLEANUP_HELP)
-    ###################################
-    # Subparser for "esgmapfile show" #
-    ###################################
+
+    # Subparser for "esgmapfile show"
     show = subparsers.add_parser(
         'show',
         prog='esgmapfile show',
@@ -250,14 +236,14 @@ def run():
     setattr(args, 'pbar', True if not args.log and not args.debug else False)
     # Run program
     if args.test:
-        test = import_module('.test', package='esgprep.mapfile')
-        test.run()
+        print('"esgmapfile" test suite not available. Coming soon!')
+        exit()
+        #  test = import_module('.test', package='esgprep.mapfile')
+        #  test.run()
     else:
         main = import_module('.main', package='esgprep.mapfile')
         main.run(args)
 
 
 if __name__ == "__main__":
-    # PyCharm workaround
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     run()

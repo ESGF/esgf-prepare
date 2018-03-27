@@ -16,16 +16,16 @@ PIP installation from GitHub
 
 .. code-block:: bash
 
-   pip install -e git://github.com/IS-ENES-Data/esgf-prepare.git@master#egg=esgprep
+   pip install -e git://github.com/ESGF/esgf-prepare.git@master#egg=esgprep
 
 Installation from GitHub
 ************************
 
-1. Clone `our GitHub project <https://github.com/IS-ENES-Data/esgf-prepare>`_:
+1. Clone `our GitHub project <https://github.com/ESGF/esgf-prepare>`_:
 
 .. code-block:: bash
 
-   git clone git://github.com/IS-ENES-Data/esgf-prepare.git
+   git clone git://github.com/ESGF/esgf-prepare.git
 
 2. Run the ``setup.py``:
 

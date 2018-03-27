@@ -10,29 +10,99 @@
 from datetime import datetime
 
 # Program version
-VERSION = '2.7.40'
+VERSION = '2.8.0'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=3, day=14).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=3, day=20).strftime("%Y-%d-%m")
 
 # Help
-PROGRAM_DESC = \
-    """
-    The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers
-    to easily prepare their data before publishing to an ESGF node. "esgprep" provides python command-lines
-    covering several steps of ESGF publication workflow:|n|n
+PROGRAM_DESC = {
+    'fetch-ini':
+        """
+        The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers
+        to easily prepare their data before publishing to an ESGF node. "esgprep" provides python command-lines
+        covering several steps of ESGF publication workflow.|n|n
     
-    i. Fetch proper configuration files from ESGF GitHub repository,|n|n
-    
-    ii. Data Reference Syntax management,|n|n
-    
-    iii. Check DRS vocabulary against configuration files,|n|n
-    
-    iv. Generate mapfiles.|n|n
-    
-    See full documentation and references at http://esgf.github.io/esgf-prepare/.
-    
-    """
+        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that 
+        are the primary means of configuring the ESGF publisher. The "esg.<project_id>.ini" files declare all facets
+        and allowed values according to the Data Reference Syntax (DRS) and the controlled vocabularies of the
+        corresponding project. "esgfetchini" allows you to properly download and deploy those configuration files
+        hosted on a GitHub repository. Keep in mind that the fetched files have to be reviewed to ensure a correct
+        configuration of your publication. The supplied configuration directory is used to write the files retrieved
+        from GitHub.|n|n
+        
+        See full documentation and references at:|n
+        http://esgf.github.io/esgf-prepare/.|n|n
+
+        The default values are displayed next to the corresponding flags.
+        
+        """,
+    'drs':
+        """
+        The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers
+        to easily prepare their data before publishing to an ESGF node. "esgprep" provides python command-lines
+        covering several steps of ESGF publication workflow.|n|n
+        
+        The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a
+        proper publication on ESGF node. "esgdrs" command is designed to help ESGF datanode managers to prepare
+        incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of
+        publication-level datasets to minimise disk usage. Only CMORized netCDF files are supported as incoming
+        files.|n|n
+        
+        See full documentation and references at:|n
+        http://esgf.github.io/esgf-prepare/.|n|n
+
+        The default values are displayed next to the corresponding flags.
+        
+        """,
+    'checkvocab':
+        """
+        The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers
+        to easily prepare their data before publishing to an ESGF node. "esgprep" provides python command-lines
+        covering several steps of ESGF publication workflow.|n|n
+        
+        In the case that your data already follows the appropriate directory structure, you may want to check that all 
+        values of each facet are correctly declared in the "esg.<project_id>.ini" sections. "esgcheckvocab" 
+        allows you to easily check the configuration file attributes by scanning your data tree. It requires that your 
+        directory structure strictly follows the project DRS including the dataset version.|n|n
+        
+        See full documentation and references at:|n
+        http://esgf.github.io/esgf-prepare/.|n|n
+
+        The default values are displayed next to the corresponding flags.
+        
+        """,
+    'mapfile':
+        """
+        The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers
+        to easily prepare their data before publishing to an ESGF node. "esgprep" provides python command-lines
+        covering several steps of ESGF publication workflow.|n|n
+        
+        The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes
+        a file to publish on the following format:|n|n
+        
+        dataset_ID | absolute_path | size_bytes [ | option=value ]|n|n
+        
+        1. All values have to be pipe-separated.|n
+        2. The dataset identifier, the absolute path and the size (in bytes) are required.|n
+        3. Adding the version number to the dataset identifier is strongly recommended to publish in a in bulk.|n
+        4. Strongly recommended optional values are:|n
+        - mod_time: last modification date of the file (since Unix EPOCH time, i.e., seconds since January, 1st,
+        1970),|n
+        - checksum: file checksum,|n
+        - checksum_type: checksum type (MD5 or the default SHA256).|n
+        5. Your directory structure has to strictly follows the tree fixed by the DRS including the version facet.|n
+        6. To store ONE mapfile PER dataset is strongly recommended.|n|n
+        
+        "esgmapfile" allows you to easily generate ESGF mapfiles upon local ESGF datanode or not.|n|n
+        
+        See full documentation and references at:|n
+        http://esgf.github.io/esgf-prepare/.|n|n
+
+        The default values are displayed next to the corresponding flags.
+        
+        """
+    }
 
 EPILOG = \
     """
@@ -100,20 +170,6 @@ VERBOSE_HELP = \
 
 SUBCOMMANDS = \
     """Subcommands"""
-
-FETCHINI_DESC = \
-    """
-    The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that 
-    are the primary means of configuring the ESGF publisher. The "esg.<project_id>.ini" files declare all facets
-    and allowed values according to the Data Reference Syntax (DRS) and the controlled vocabularies of the
-    corresponding project. "esgprep fetch-ini" allows you to properly download and deploy those configuration files
-    hosted on a GitHub repository. Keep in mind that the fetched files have to be reviewed to ensure a correct
-    configuration of your publication. The supplied configuration directory is used to write the files retrieved
-    from GitHub.|n|n
-    
-    The default values are displayed next to the corresponding flags.
-    
-    """
 
 FETCHINI_HELP = \
     """
@@ -191,17 +247,6 @@ DEVEL_HELP = \
     
     """
 
-CHECKVOCAB_DESC = \
-    """
-    In the case that your data already follows the appropriate directory structure, you may want to check that all 
-    values of each facet are correctly declared in the "esg.<project_id>.ini" sections. "esgprep check-vocab" 
-    allows you to easily check the configuration file attributes by scanning your data tree. It requires that your 
-    directory structure strictly follows the project DRS including the dataset version.|n|n
-    
-    The default values are displayed next to the corresponding flags.
-    
-    """
-
 CHECKVOCAB_HELP = \
     """
     Checks configuration file vocabulary.|n
@@ -263,18 +308,6 @@ EXCLUDE_FILE_HELP = \
     Default only exclude files (with names not|n
     starting with ".").
 
-    """
-
-DRS_DESC = \
-    """
-    The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a
-    proper publication on ESGF node. "esgprep drs" command is designed to help ESGF datanode managers to prepare
-    incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of
-    publication-level datasets to minimise disk usage. Only CMORized netCDF files are supported as incoming
-    files.|n|n
-    
-    The default values are displayed next to the corresponding flags.
-    
     """
 
 DRS_HELP = \
@@ -416,30 +449,6 @@ MAX_THREADS_HELP = \
     Number of maximal threads to simultaneously process|n
     several files (useful if checksum calculation is|n
     enabled). Set to one seems sequential processing.
-    
-    """
-
-MAPFILE_DESC = \
-    """
-    The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes
-    a file to publish on the following format:|n|n
-    
-    dataset_ID | absolute_path | size_bytes [ | option=value ]|n|n
-    
-    1. All values have to be pipe-separated.|n
-    2. The dataset identifier, the absolute path and the size (in bytes) are required.|n
-    3. Adding the version number to the dataset identifier is strongly recommended to publish in a in bulk.|n
-    4. Strongly recommended optional values are:|n
-    - mod_time: last modification date of the file (since Unix EPOCH time, i.e., seconds since January, 1st,
-    1970),|n
-    - checksum: file checksum,|n
-    - checksum_type: checksum type (MD5 or the default SHA256).|n
-    5. Your directory structure has to strictly follows the tree fixed by the DRS including the version facet.|n
-    6. To store ONE mapfile PER dataset is strongly recommended.|n|n
-    
-    "esgprep mapfile" allows you to easily generate ESGF mapfiles upon local ESGF datanode or not.|n|n
-    
-    The default values are displayed next to the corresponding flags.
     
     """
 
