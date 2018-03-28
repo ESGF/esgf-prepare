@@ -74,6 +74,22 @@ class KeyNotFound(Exception):
         super(self.__class__, self).__init__(self.msg)
 
 
+class ProjectError(Exception):
+    """
+    Raised when the "project" value is not found in DRS path or dataset identifier.
+
+    """
+
+    def __init__(self, project, ):
+        self.msg = "Inconsistent path or dataset"
+        self.msg += "\n<key: '{}'>".format(key)
+        if keys:
+            self.msg += "\n<found keys: '{}'>".format(', '.join(keys))
+        super(self.__class__, self).__init__(self.msg)
+
+
+
+
 class InvalidChecksumType(Exception):
     """
     Raised when checksum type in unknown.

@@ -84,6 +84,7 @@ class ProcessingContext(object):
         self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
         # check if --commands-file argument specifies existing file
         self.check_existing_commands_file()
+        # TODO: allow hard-coded elements in the DRS?
         # Warn user about unconsidered hard-coded elements
         for pattern_element in self.cfg.get('directory_format').strip().split("/"):
             if not re.match(re.compile(r'%\([\w]+\)s'), pattern_element):
