@@ -13,7 +13,7 @@ import os
 import re
 from datetime import datetime
 
-from ESGConfigParser import interpolate, NoConfigKey
+from ESGConfigParser import interpolate
 from lockfile import LockFile
 
 from constants import *
@@ -140,20 +140,16 @@ def process(collector_input):
             sh = Dataset(source)
         # Matching between directory_format and file full path
         sh.load_attributes(pattern=ctx.pattern)
-        # Apply proper case to each attribute
-        for key in sh.attributes:
-            # Try to get the appropriate facet case for "category_default"
-            try:
-                sh.attributes[key] = ctx.cfg.get_options_from_pairs('category_defaults', key)
-            except NoConfigKey:
-                # If not specified keep facet case from local path, do nothing
-                pass
         # Deduce dataset_id
         dataset_id = ctx.dataset
         if not ctx.dataset:
             sh.check_facets(facets=ctx.facets,
                             config=ctx.cfg)
             dataset_id = sh.get_dataset_id(ctx.cfg.get('dataset_id', raw=True))
+        # Ensure that the first facet is ALWAYS the same as the called project section (case insensitive)
+        assert dataset_id.lower().startswith(ctx.project.lower()), 'Inconsistent dataset identifier. ' \
+                                                                   'Must start with "{}/" ' \
+                                                                   '(case-insensitive)'.format(ctx.project)
         # Deduce dataset_version
         dataset_version = sh.get_dataset_version(ctx.no_version)
         # Build mapfile name depending on the --mapfile flag and appropriate tokens

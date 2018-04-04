@@ -48,6 +48,19 @@ class DuplicatedFile(Exception):
         super(self.__class__, self).__init__(self.msg)
 
 
+class NoVersionPattern(Exception):
+    """
+    Raised if no version facet found in the destination format.
+
+    """
+
+    def __init__(self, format, patterns):
+        self.msg = "No version pattern found."
+        self.msg += "\n<format: '{}'>".format(format)
+        self.msg += "\n<available patterns: '{}'>".format(patterns)
+        super(self.__class__, self).__init__(self.msg)
+
+
 class ReadAccessDenied(Exception):
     """
     Raised when user has no read access.

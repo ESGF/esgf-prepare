@@ -10,8 +10,6 @@
 import itertools
 import logging
 
-from ESGConfigParser.custom_exceptions import NoConfigKey
-
 from constants import *
 from context import ProcessingContext
 from custom_exceptions import *
@@ -47,14 +45,7 @@ def process(collector_input):
         fh.load_attributes(root=ctx.root,
                            pattern=ctx.pattern,
                            set_values=ctx.set_values)
-        # Apply proper case to each attribute
-        for key in fh.attributes:
-            # Try to get the appropriate facet case for "category_default"
-            try:
-                fh.attributes[key] = ctx.cfg.get_options_from_pairs('category_defaults', key)
-            except NoConfigKey:
-                # If not specified keep facet case from local path, do nothing
-                pass
+        # Checks the facet values provided by the loaded attributes
         fh.check_facets(facets=ctx.facets,
                         config=ctx.cfg,
                         set_keys=ctx.set_keys)
@@ -62,6 +53,10 @@ def process(collector_input):
         parts = fh.get_drs_parts(ctx.facets)
         # Instantiate file DRS path handler
         fph = DRSPath(parts)
+        # Ensure that the called project section is ALWAYS part of the DRS path elements (case insensitive)
+        assert fph.path().lower().startswith(ctx.project.lower()), 'Inconsistent DRS path. ' \
+                                                                   'Must start with "{}/" ' \
+                                                                   '(case-insensitive)'.format(ctx.project)
         # If a latest version already exists make some checks FIRST to stop files to not process
         if fph.v_latest:
             # Latest version should be older than upgrade version
