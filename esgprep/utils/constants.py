@@ -13,7 +13,7 @@ from datetime import datetime
 VERSION = '2.8.0'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=3, day=20).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=4, day=4).strftime("%Y-%d-%m")
 
 # Help
 INTRO = \
