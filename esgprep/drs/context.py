@@ -8,7 +8,6 @@
 """
 
 import logging
-import os
 import re
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
@@ -17,6 +16,7 @@ from ESGConfigParser import SectionParser
 from tqdm import tqdm
 
 from constants import *
+from custom_exceptions import *
 from esgprep.utils.collectors import Collector
 from esgprep.utils.custom_exceptions import *
 from esgprep.utils.misc import load
@@ -86,15 +86,33 @@ class ProcessingContext(object):
         self.check_existing_commands_file()
         # TODO: allow hard-coded elements in the DRS?
         # Warn user about unconsidered hard-coded elements
+        self.facets = self.cfg.get_facets('directory_format')
         for pattern_element in self.cfg.get('directory_format').strip().split("/"):
-            if not re.match(re.compile(r'%\([\w]+\)s'), pattern_element):
+            try:
+                #
+                key = re.match(re.compile(r'%\(([\w]+)\)s'), pattern_element).groups()[0]
+                idx = self.facets.index(key)
+            except AttributeError:
+                # Splitted pattern is not %(*)s
+                # insert hard-coded string in self.facets to be part of DRS path
+                # Find a way to name if to avoid check_facets
+
+
+
                 msg = 'Hard-coded DRS elements (as "{}") in "directory_format"' \
                       'are not supported.'.format(pattern_element)
                 if self.pbar:
                     print(msg)
                 logging.warning(msg)
+            else:
+
+
+
                 break
-        self.facets = self.cfg.get_facets('directory_format')
+
+        # Raise error when %(version)s is not part of the final directory format
+        if 'version' not in self.facets:
+            raise NoVersionPattern(self.cfg.get('directory_format'), facets)
         self.pattern = self.cfg.translate('filename_format')
         # Init DRS tree
         self.tree = DRSTree(self.root, self.version, self.mode, self.commands_file)
