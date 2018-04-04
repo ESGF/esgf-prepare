@@ -9,16 +9,13 @@
 
 import argparse
 import os
-import sys
-import unittest
 from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, keyval_converter, regex_validator, \
-    _ArgumentParser, FileChecker
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser
 
-__version__ = 'v{} {}'.format(VERSION, VERSION_DATE)
+__version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
 
 def get_args():
@@ -91,9 +88,9 @@ def get_args():
     make = subparsers.add_parser(
         'make',
         prog='esgmapfile make',
-        description=MAPFILE_DESC,
+        description=MAPFILE_SUBCOMMANDS['make'],
         formatter_class=MultilineFormatter,
-        help=MAPFILE_HELP,
+        help=MAPFILE_HELPS['make'],
         add_help=False,
         parents=[parent])
     make._optionals.title = OPTIONAL
@@ -182,7 +179,7 @@ def get_args():
         help=DATASET_HELP)
     make.add_argument(
         '--max-threads',
-        metavar=4,
+        metavar='4',
         type=int,
         default=4,
         help=MAX_THREADS_HELP)
@@ -196,9 +193,9 @@ def get_args():
     show = subparsers.add_parser(
         'show',
         prog='esgmapfile show',
-        description=MAPFILE_DESC,
+        description=MAPFILE_SUBCOMMANDS['show'],
         formatter_class=MultilineFormatter,
-        help=MAPFILE_HELP,
+        help=MAPFILE_HELPS['show'],
         add_help=False,
         parents=[parent])
     show._optionals.title = OPTIONAL
@@ -218,8 +215,7 @@ def get_args():
         '--directory',
         metavar='DIRECTORY',
         type=str,
-        help=DIRECTORY_HELP
-    )
+        help=DATASET_HELP)
     return main.parse_args()
 
 
