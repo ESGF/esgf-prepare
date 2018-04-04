@@ -11,6 +11,7 @@ import logging
 import re
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
+from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
 from tqdm import tqdm
@@ -82,37 +83,31 @@ class ProcessingContext(object):
         self.checksum_type = self.get_checksum_type()
         # Init configuration parser
         self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
-        # check if --commands-file argument specifies existing file
+        # Check if --commands-file argument specifies existing file
         self.check_existing_commands_file()
-        # TODO: allow hard-coded elements in the DRS?
-        # Warn user about unconsidered hard-coded elements
+        # Get DRS facets
         self.facets = self.cfg.get_facets('directory_format')
+        # Raise error when %(version)s is not part of the final directory format
+        if 'version' not in self.facets:
+            raise NoVersionPattern(self.cfg.get('directory_format'), self.facets)
+        # Consider hard-coded elements in directory format
+        idx = 0
         for pattern_element in self.cfg.get('directory_format').strip().split("/"):
             try:
-                #
+                # If pattern is %(...)s
+                # Get its index in the list of facets
                 key = re.match(re.compile(r'%\(([\w]+)\)s'), pattern_element).groups()[0]
                 idx = self.facets.index(key)
             except AttributeError:
-                # Splitted pattern is not %(*)s
-                # insert hard-coded string in self.facets to be part of DRS path
-                # Find a way to name if to avoid check_facets
-
-
-
-                msg = 'Hard-coded DRS elements (as "{}") in "directory_format"' \
-                      'are not supported.'.format(pattern_element)
-                if self.pbar:
-                    print(msg)
-                logging.warning(msg)
-            else:
-
-
-
-                break
-
-        # Raise error when %(version)s is not part of the final directory format
-        if 'version' not in self.facets:
-            raise NoVersionPattern(self.cfg.get('directory_format'), facets)
+                # If pattern is not %(...)s
+                # Generate a uuid()
+                key = str(uuid())
+                # Insert hard-coded string in self.facets to be part of DRS path
+                self.facets.insert(idx + 1, key)
+                # Set the value using --set-value
+                self.set_values[key] = pattern_element
+                # Add the uuid to the ignored keys
+                IGNORED_KEYS.append(key)
         self.pattern = self.cfg.translate('filename_format')
         # Init DRS tree
         self.tree = DRSTree(self.root, self.version, self.mode, self.commands_file)

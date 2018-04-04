@@ -243,7 +243,7 @@ class FilterCollection(object):
     def add(self, name=None, regex='*', inclusive=True):
         """Add new filter"""
         if not name:
-            name = uuid()
+            name = str(uuid())
         assert isinstance(regex, self.FILTER_TYPES)
         assert isinstance(inclusive, bool)
         self.filters[name] = (regex, inclusive)
