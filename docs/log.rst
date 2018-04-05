@@ -4,6 +4,49 @@
 Change Log
 ==========
 
+`Unreleased <https://github.com/ESGF/esgf-prepare/tree/HEAD>`__
+---------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.8.0...HEAD>`__
+
+**Closed issues:**
+
+-  temporary files persisted
+   `#24 <https://github.com/ESGF/esgf-prepare/issues/24>`__
+-  add option to show path of mapfile
+   `#19 <https://github.com/ESGF/esgf-prepare/issues/19>`__
+
+`v2.8.0 <https://github.com/ESGF/esgf-prepare/tree/v2.8.0>`__ (2018-04-05)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.7.40...v2.8.0>`__
+
+**Closed issues:**
+
+-  update doc location message
+   `#23 <https://github.com/ESGF/esgf-prepare/issues/23>`__
+
+`v2.7.40 <https://github.com/ESGF/esgf-prepare/tree/v2.7.40>`__ (2018-03-14)
+----------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.7.39...v2.7.40>`__
+
+**Fixed bugs:**
+
+-  Wrong collector filtering in default mode for mapfile generation
+   `#22 <https://github.com/ESGF/esgf-prepare/issues/22>`__
+
+**Closed issues:**
+
+-  Remove files from an input list during DRS migration
+   `#21 <https://github.com/ESGF/esgf-prepare/issues/21>`__
+-  wrong order of commands in "esgprep drs todo" output when updating
+   "latest" symlink
+   `#20 <https://github.com/ESGF/esgf-prepare/issues/20>`__
+
 `v2.7.39 <https://github.com/ESGF/esgf-prepare/tree/v2.7.39>`__ (2018-03-09)
 ----------------------------------------------------------------------------
 
