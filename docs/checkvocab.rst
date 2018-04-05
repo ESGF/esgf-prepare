@@ -14,14 +14,14 @@ perform a similar operation without scanning the file system, and the facet valu
 dataset ID pattern.
 
 .. note::
-    ``esgprep check-vocab`` is useless if you rebuilt your DRS tree using ``esgprep drs`` with official configuration INI files.
+    ``esgcheckvocab`` is useless if you rebuilt your DRS tree using ``esgdrs`` with official configuration INI files.
 
 Check from the directory structure
 **********************************
 
 .. code-block:: bash
 
-    $> esgprep check-vocab --directory /PATH/TO/SCAN/ --project PROJECT_ID
+    $> esgcheckvocab  --project PROJECT_ID --directory /PATH/TO/SCAN/
 
 Check from a dataset list
 *************************
@@ -31,7 +31,13 @@ The file must contain one dataset ID per line. This can be without version, or w
 
 .. code-block:: bash
 
-    $> esgprep check-vocab --dataset-list /PATH/TO/TXT_FILE/ --project PROJECT_ID
+    $> esgcheckvocab --project PROJECT_ID --dataset-list /PATH/TO/TXT_FILE
+
+If no file submitted, the standard input is used:
+
+.. code-block:: bash
+
+    $> esgcheckvocab --project PROJECT_ID --dataset-list < /PATH/TO/TXT_FILE
 
 Exit status
 ***********

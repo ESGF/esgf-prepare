@@ -52,7 +52,7 @@ ESGF community for the following projects:
  * ISIMIP-FT
 
 They can be downloaded from `the GitHub repository <https://github.com/ESGF/config/tree/devel/publisher-configs/ini>`_
-or using ``esgprep fetch-ini``.
+or using ``esgfetchini``.
 If no ``esg.<project_id>.ini`` corresponds to your project you can made your own following `the ESGF Best Practices
 document <https://acme-climate.atlassian.net/wiki/x/JADm>`_:
 
@@ -70,4 +70,4 @@ document <https://acme-climate.atlassian.net/wiki/x/JADm>`_:
  * Make sure the ``dataset_id`` and the ``directory_format`` options reflect your directory structure accordingly.
 
 .. note:: Feel free to submit your own ``esg.<project_id>.ini`` in order to add it to the GitHub repository and make
-    it available trough ``esgprep fetch-ini`` command-line.
+    it available trough ``esgfetchini`` command-line.

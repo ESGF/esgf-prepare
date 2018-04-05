@@ -4,22 +4,27 @@
 Generic usage
 =============
 
-.. note:: All the following arguments can be safely combined and add to the subcommand arguments.
+.. note:: All the following arguments can be safely combined and add to each of the esgprep **COMMAND**:
+    - ``esgfetchini``
+    - ``esgdrs``
+    - ``esgcheckvocab``
+    - ``esgmapfile``
 
 Check the help
 **************
 
 .. code-block:: bash
 
-    $> esgprep -h
-    $> esgprep SUBCOMMAND -h
+    $> COMMAND [SUBCOMMAND] -h
 
 Check the version
 *****************
 
 .. code-block:: bash
 
-    $> esgprep -v
+    $> COMMAND -v
+
+.. note:: The program version will be the same for all the esgprep tools.
 
 Run the test suite
 ******************
@@ -29,8 +34,7 @@ Run the test suite
 
 .. code-block:: bash
 
-    $> esgprep --test
-    $> esgprep SUBCOMMAND --test
+    $> COMMAND --test
 
 Debug mode
 **********
@@ -40,22 +44,22 @@ verbose mode displaying each step with useful additional information.
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND --debug
+    $> COMMAND [SUBCOMMAND] --debug
 
 .. warning::
-    The verbose mode is silently activated in the case of a logfile (i.e., no progress bars).
+    This debug/verbose mode is silently activated in the case of a logfile (i.e., no progress bars).
 
 
 Specify the project
 *******************
 
 The ``--project`` argument is used to parse the corresponding configuration INI file. It is **always required**
-(except for ``fetch-ini`` subcommand). This argument is case-sensitive and has to correspond to a section name of
+(except for ``esgfetchini`` subcommand). This argument is case-sensitive and has to correspond to a section name of
 the configuration file(s).
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND --project PROJECT_ID
+    $> COMMAND [SUBCOMMAND] --project PROJECT_ID
 
 Submit a configuration directory
 ********************************
@@ -66,10 +70,10 @@ fetch and read the configuration files.
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND -i /PATH/TO/CONFIG/
+    $> COMMAND [SUBCOMMAND] -i /PATH/TO/CONFIG/
 
 .. note::
-    In the case of ``fetch-ini`` subcommand, if you're not on an ESGF node and ``/esg/config/esgcet`` doesn't exist,
+    In the case of ``esgfetchini`` command, if you're not on an ESGF node and ``/esg/config/esgcet`` doesn't exist,
     the configuration file(s) are fetched into an ``ini`` folder in your working directory.
 
 Use a logfile
@@ -83,13 +87,13 @@ It can be changed by adding a optional logfile directory to the flag.
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND --log
-    $> esgprep SUBCOMMAND --log /PATH/TO/LOGDIR/
+    $> COMMAND [SUBCOMMAND] --log
+    $> COMMAND [SUBCOMMAND] --log /PATH/TO/LOGDIR/
 
 Use filters
 ***********
 
-``esgprep check-vocab`` and ``esgprep mapfile`` subcommands will scan your local archive to achieve proper data
+``esgcheckvocab`` and ``esgmapfile`` subcommands will scan your local archive to achieve proper data
 management. In such a scan, you can filter the file discovery by using a Python regular expression
 (see `re <https://docs.python.org/2/library/re.html>`_ Python library).
 
@@ -99,31 +103,31 @@ with:
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND --ignore-dir PYTHON_REGEX
+    $> COMMAND [SUBCOMMAND] --ignore-dir PYTHON_REGEX
 
 ``esgprep`` only considers unhidden NetCDF files by default excuding the regular expression ``^\..*$`` and
 including the following one ``.*\.nc$``. It can be independently change with:
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND --include-file PYTHON_REGEX --exclude-file PYTHON_REGEX
+    $> COMMAND [SUBCOMMAND] --include-file PYTHON_REGEX --exclude-file PYTHON_REGEX
 
 Keep in mind that ``--ignore-dir`` and ``--exclude-file`` specifie a directory pattern **NOT** to be matched, while
 ``--include-file`` specifies a filename pattern **TO BE** matched.
 
-.. warning:: ``esgprep fetch-ini`` does not allow those features and ``esgprep drs`` only works with unhidden
+.. warning:: ``esgfetchini`` does not allow those features and ``esgdrs`` only works with unhidden
     NetCDF files.
 
-Use multiprocessing
-*******************
+Use multithreading
+******************
 
-``esgprep`` uses a multiprocessing interface. This is useful to process a large amount of data, especially in the case
+``esgprep`` uses a multithreading interface. This is useful to process a large amount of data, especially in the case
 of ``drs`` and ``mapfile`` subcommands with file checksum computation. Set the number of maximal threads to
 simultaneously process several files (4 threads is the default and one seems sequential processing).
 
 .. code-block:: bash
 
-    $> esgprep SUBCOMMAND --max-threads 4
+    $> COMMAND [SUBCOMMAND] --max-threads 4
 
 Exit status
 ***********

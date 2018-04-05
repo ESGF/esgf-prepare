@@ -618,7 +618,7 @@ DATASET_NAME_HELP = \
 NO_CLEANUP_HELP = \
     """
     Disables output directory cleanup prior to mapfile|n
-    process. This is recommended if several "esgprep mapfile"|n
+    process. This is recommended if several "esgmapfile"|n
     instances run with the same output directory.
     
     """

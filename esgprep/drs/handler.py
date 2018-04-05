@@ -361,6 +361,9 @@ class DRSLeaf(object):
                     else:
                         # Other OSError
                         raise MigrationDenied(self.src, self.src, self.mode, e.strerror)
+                finally:
+                    if os.path.exists(dst):
+                        os.remove(dst)
 
 
 class DRSTree(Tree):

@@ -19,9 +19,9 @@ Without project argument, all the configuration files will be downloaded.
 
 .. code-block:: bash
 
-    $> esgprep fetch-ini
-    $> esgprep fetch-ini --project PROJECT_ID
-    $> esgprep fetch-ini --project PROJECT_ID1 PROJECT_ID2
+    $> esgfetchini
+    $> esgfetchini --project PROJECT_ID
+    $> esgfetchini --project PROJECT_ID1 PROJECT_ID2
 
 .. warning::
    If a configuration file already exists, the default is to overwrite it only if local and remote checksums are different.
@@ -31,14 +31,14 @@ Keep existing file(s)
 
 .. code-block:: bash
 
-    $> esgprep fetch-ini -k
+    $> esgfetchini -k
 
 Enforce overwriting
 *******************
 
 .. code-block:: bash
 
-    $> esgprep fetch-ini -o
+    $> esgfetchini -o
 
 .. warning:: ``-o`` and ``-k`` cannot be used simultaneously.
 
@@ -52,8 +52,8 @@ When overwriting existing files, two backup modes can be enabled:
 
 .. code-block:: bash
 
-    $> esgprep fetch-ini -b
-    $> esgprep fetch-ini -b keep_versions
+    $> esgfetchini -b
+    $> esgfetchini -b keep_versions
 
 Use your GitHub account
 ***********************
@@ -62,7 +62,7 @@ To avoid the Github API rate limit, submit your GitHub username and password.
 
 .. code-block:: bash
 
-    $> esgprep fetch-ini --gh-user MY_GH_USER --gh-password MY_GH_PASSWORD
+    $> esgfetchini --gh-user MY_GH_USER --gh-password MY_GH_PASSWORD
 
 Exit status
 ***********

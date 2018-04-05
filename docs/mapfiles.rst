@@ -21,7 +21,10 @@ describes a file to publish, using the following format:
  5. Your directory structure has to strictly follows the tree fixed by the DRS including the version facet.
  6. To store ONE mapfile PER dataset is strongly recommended.
 
-``esgprep mapfile`` is a flexible command-line allowing you to easily generate mapfiles
+Several ``esgmapfile`` actions are available to manage your mapfiles:
+
+ - ``make`` generates the mapfiles,
+ - ``show`` displays the expected mapfiles path to be generated.
 
 Default mapfile generation
 **************************
@@ -32,7 +35,7 @@ directory is used.
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/
 
 Mapfile without files checksums
 *******************************
@@ -41,14 +44,14 @@ Because this could be time consuming ``--no-checksum`` allows you not include th
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
 
 Mapfile without DRS versions
 ****************************
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-version
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-version
 
 Mapfile name using tokens
 *************************
@@ -61,9 +64,9 @@ PER dataset.
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile {dataset_id}.{job_id}
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile {date}.{job_id}
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile MY_MAPFILE.{version}.{date}
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --mapfile {dataset_id}.{job_id}
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --mapfile {date}.{job_id}
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --mapfile MY_MAPFILE.{version}.{date}
 
 Organize your mapfiles
 **********************
@@ -78,35 +81,35 @@ will be added to the output directory if submitted.
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --outdir /PATH/TO/MY_MAPFILES/
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --outdir /PATH/TO/MY_MAPFILES/
 
 The output directory is cleaned up prior to mapfile process to avoid uncompleted mapfiles. In the case of several
-``esgprep mapfile`` instances run with the same output directory it is recommended to disable the cleanup:
+``esgmapfile`` instances run with the same output directory it is recommended to disable the cleanup:
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-cleanup
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-cleanup
 
 Walking through *latest* directories only
 *****************************************
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --latest-symlink
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --latest-symlink
 
 Walking through a particular version only
 *****************************************
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --version VERSION
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --version VERSION
 
 Walking through all versions
 ****************************
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --all-versions
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --all-versions
 
 .. warning:: This disables ``--no-version``.
 
@@ -115,16 +118,51 @@ Add technical notes
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --tech-notes-url URL --tech-notes-title TITLE
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --tech-notes-url URL --tech-notes-title TITLE
 
 Overwrite the dataset identifier
 ********************************
 
 .. code-block:: bash
 
-    $> esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --dataset DATASET_NAME
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --dataset-name DATASET_NAME
 
 .. warning:: All files will belong to the specified dataset, regardless of the DRS.
+
+Show the expected mapfile name and path
+**************************************
+
+The ``show`` works as a "dry-run" of the ``make`` and supports different types inputs.
+You can show the mapfiles full path to be generated from:
+
+ - a directory to scan:
+
+.. code-block:: bash
+
+    $> esgmapfile show --project PROJECT_ID --directory /PATH/TO/SCAN
+
+ - a text file with one dataset ID per line:
+
+.. code-block:: bash
+
+    $> esgmapfile show --project PROJECT_ID --dataset-list /PATH/TO/TXT_FILE
+
+ - a unique dataset ID:
+
+.. code-block:: bash
+
+    $> esgmapfile show --project PROJECT_ID --dataset-id DATASET_ID
+
+In the case of ``--dataset-list`` and ``--dataset-id`` if no file or dataset ID submitted, the standard input is used.
+
+.. code-block:: bash
+
+    $> esgmapfile show --project PROJECT_ID --dataset-list < /PATH/TO/TXT_FILE
+    $> esgmapfile show --project PROJECT_ID --dataset-id < DATASET_ID
+
+.. warning:: In the case of dataset IDs the version suffix is expected.
+
+.. note:: All the ``make`` arguments can be safely combined with ``show``.
 
 Exit status
 ***********

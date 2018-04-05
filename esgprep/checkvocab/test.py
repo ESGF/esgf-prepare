@@ -12,7 +12,7 @@ import unittest
 
 class CheckVocabTest(unittest.TestCase):
     """
-    ``esgprep check-vocab`` test cases.
+    ``esgcheckvocab`` test cases.
 
     """
 

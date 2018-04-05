@@ -24,9 +24,9 @@ the *Data Reference Syntax* on local filesystems and/or generate mapfiles for ES
    installation
    configuration
    usage
-   fetch-ini
+   fetchini
    drs
-   check-vocab
+   checkvocab
    mapfiles
    faq
    credits

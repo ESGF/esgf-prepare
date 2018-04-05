@@ -12,7 +12,7 @@ import unittest
 
 class FetchiniTest(unittest.TestCase):
     """
-    ``esgprep fetch-ini`` test cases.
+    ``esgfetchini`` test cases.
     
     """
 
