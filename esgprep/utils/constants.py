@@ -16,6 +16,15 @@ VERSION = '2.8.0'
 VERSION_DATE = datetime(year=2018, month=4, day=4).strftime("%Y-%d-%m")
 
 # Help
+TITLE = \
+    """
+     ___ ___ ___ ___ ___ ___ ___ 
+    | -_|_ -| . | . |  _| -_| . |
+    |___|___|_  |  _|_| |___|  _|
+            |___|_|         |_| 
+
+    """
+
 INTRO = \
     """
     The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers
@@ -41,72 +50,79 @@ PROGRAM_DESC = {
     'fetchini':
         """
         {}|n|n
+        
+        {}|n|n
     
-        The ESGF publishing client and most of other ESGF tool rely on configuration files of different kinds, that 
-        are the primary means of configuring the ESGF publisher. The "esg.<project_id>.ini" files declare all facets
-        and allowed values according to the Data Reference Syntax (DRS) and the controlled vocabularies of the
-        corresponding project. "esgfetchini" allows you to properly download and deploy those configuration files
-        hosted on a GitHub repository. Keep in mind that the fetched files have to be reviewed to ensure a correct
-        configuration of your publication. The supplied configuration directory is used to write the files retrieved
-        from GitHub.|n|n
+        Most of other ESGF tool rely on configuration files of different kinds. The "esg.<project_id>.ini" files 
+        declare all the facets and allowed values according to the Data Reference Syntax (DRS) and the controlled 
+        vocabularies of the corresponding project. "esgfetchini" allows you to properly download and deploy those 
+        configuration files hosted on an official GitHub repository. Keep in mind that the fetched files have to be 
+        reviewed to ensure a correct configuration of your side.|n|n
         
         {}|n|n
 
         {}
         
-        """.format(INTRO, URL, DEFAULT),
+        """.format(TITLE, INTRO, URL, DEFAULT),
     'drs':
         """
         {}|n|n
         
-        The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a
-        proper publication on ESGF node. "esgdrs" command is designed to help ESGF datanode managers to prepare
-        incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of
-        publication-level datasets to minimise disk usage. Only MIP-compliant netCDF files are supported as incoming
-        files.|n|n
+        {}|n|n
+        
+        The Data Reference Syntax (DRS) defines the way the data of a given project have to follow on your filesystem. 
+        This allows a proper publication on the ESGF. "esgdrs" has been designed to help ESGF datanode managers to 
+        prepare incoming data for publication, placing files in the DRS directory structure, and manage multiple 
+        versions of publication-level datasets to minimise disk usage. Only MIP-compliant netCDF files are supported 
+        as incoming files.|n|n
         
         {}|n|n
 
         {}
         
-        """.format(INTRO, URL, DEFAULT),
+        """.format(TITLE, INTRO, URL, DEFAULT),
     'checkvocab':
         """
         {}|n|n
         
+        {}|n|n
+        
         In the case that your data already follows the appropriate directory structure, you may want to check that all 
         values of each facet are correctly declared in the "esg.<project_id>.ini" sections. "esgcheckvocab" 
-        allows you to easily check the configuration file attributes by scanning your data tree. It requires that your 
-        directory structure strictly follows the project DRS including the dataset version.|n|n
+        allows you to easily check the configuration file attributes by scanning your data tree or give (a list of) 
+        dataset identifiers. It requires that your directory structure or dataset format strictly follows the project 
+        Data Reference Syntax (DRS) including the dataset version.|n|n
         
         {}|n|n
 
         {}
         
-        """.format(INTRO, URL, DEFAULT),
+        """.format(TITLE, INTRO, URL, DEFAULT),
     'mapfile':
         """
         {}|n|n
         
+        {}|n|n
+        
         The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes
-        a file to publish. It's highly recommended to use mapfile as ESGF publisher inputs. "esgmapfile" allows you to 
-        easily generate ESGF mapfiles upon local ESGF datanode or not. It requires that your directory structure 
-        strictly follows the project DRS including the dataset version.|n|n        
+        a file to publish. It's highly recommended to use mapfile as inputs for ESGF publication. "esgmapfile" allows 
+        you to easily generate and manage your ESGF mapfiles. It requires that your directory structure strictly 
+        follows the project Data Reference Syntax (DRS) including the dataset version.|n|n        
         
         {}|n|n
 
         {}
         
-        """.format(INTRO, URL, DEFAULT)
+        """.format(TITLE, INTRO, URL, DEFAULT)
 }
 
 EPILOG = \
     """
     Developed by:|n
     Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.fr)|n
-    Berger, K. (DKRZ - berger@dkrz.de)|n
-    Iwi, A. (STFC/CEDA - alan.iwi@stfc.ac.uk)|n
-    Stephens, A. (STFC/CEDA - ag.stephens@stfc.ac.uk)
+    Berger, K.      (DKRZ      - berger@dkrz.de)|n
+    Iwi, A.         (STFC/CEDA - alan.iwi@stfc.ac.uk)|n
+    Stephens, A.    (STFC/CEDA - ag.stephens@stfc.ac.uk)
     
     """
 
@@ -295,6 +311,8 @@ EXCLUDE_FILE_HELP = \
 DRS_SUBCOMMANDS = {
     'list':
         """
+        {}|n|n
+        
         The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a
         proper publication on ESGF node.|n|n
         
@@ -302,15 +320,17 @@ DRS_SUBCOMMANDS = {
         can easily check how many files are part of each dataset with their respective size. The version status
         is also print to check which is the current latest dataset version in the root directory structure and the
         dataset version to upgrade. Each run also produces a temporary file which stores the scan results to be used 
-        by other subcommands. This is useful in the case of a lot of files to scan.|n|n
+        by next subcommands avoiding to rescan a lot of files.|n|n
 
         {}|n|n
 
         {}
 
-        """.format(URL, DEFAULT),
+        """.format(TITLE, URL, DEFAULT),
     'tree':
         """
+        {}|n|n
+        
         The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a
         proper publication on ESGF node.|n|n
         
@@ -322,13 +342,15 @@ DRS_SUBCOMMANDS = {
 
         {}
 
-        """.format(URL, DEFAULT),
+        """.format(TITLE, URL, DEFAULT),
     'todo':
         """
+        {}|n|n
+                
         The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a
         proper publication on ESGF node.|n|n
         
-        "esgdrs todo" subcommand allows you to checker deeper what are the Unix commands to be run on your filesystem
+        "esgdrs todo" subcommand allows you to check deeper which Unix commands would be run on your filesystem
         in order to upgrade your datasets versions. Be careful that "esgdrs" is also able to remove incoming files in
         some particular case (see --upgrade-from-latest and --ignore-from-latest options).|n|n
     
@@ -336,9 +358,11 @@ DRS_SUBCOMMANDS = {
     
         {}
     
-        """.format(URL, DEFAULT),
+        """.format(TITLE, URL, DEFAULT),
     'upgrade':
         """
+        {}|n|n
+                
         The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a
         proper publication on ESGF node.|n|n
             
@@ -350,13 +374,13 @@ DRS_SUBCOMMANDS = {
     
         {}
     
-        """.format(URL, DEFAULT)
+        """.format(TITLE, URL, DEFAULT)
 }
 
 DRS_HELPS = {
     'list':
         """
-        Lists publication-level datasets.|n
+        Lists publication-level datasets (default).|n
         See "esgdrs list -h" for full help.
     
         """,
@@ -538,7 +562,7 @@ MAPFILE_SUBCOMMANDS = {
 MAPFILE_HELPS = {
     'make':
         """
-        Generates ESGF mapfiles.|n
+        Generates ESGF mapfiles (default).|n
         See "esgmapfile make -h" for full help.
     
         """,
