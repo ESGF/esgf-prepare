@@ -23,7 +23,7 @@ setup(name='esgprep',
                         'tqdm>=4.11.2'],
       platforms=['Unix'],
       zip_safe=False,
-      entry_points={'console_scripts': ['esgmapfile=esgprep:esgmapfile:run',
+      entry_points={'console_scripts': ['esgmapfile=esgprep.esgmapfile:run',
                                         'esgdrs=esgprep.esgdrs:run',
                                         'esgfetchini=esgprep.esgfetchini:run',
                                         'esgcheckvocab=esgprep.esgcheckvocab:run'
