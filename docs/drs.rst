@@ -12,7 +12,6 @@ in a way that minimises disk usage.
 .. warning:: Only CMORized netCDF files are supported as incoming files.
 
 Several ``esgdrs`` actions are available to manage your local archive:
-
  - ``list`` lists publication-level datasets,
  - ``tree`` displays the final DRS tree,
  - ``todo`` shows file operations pending for the next version,

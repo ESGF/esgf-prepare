@@ -4,11 +4,11 @@
 Generic usage
 =============
 
-.. note:: All the following arguments can be safely combined and add to each of the esgprep **COMMAND**:
-    - ``esgfetchini``
-    - ``esgdrs``
-    - ``esgcheckvocab``
-    - ``esgmapfile``
+All the following arguments can be safely combined and add to each of the esgprep **COMMAND**:
+ - ``esgfetchini``
+ - ``esgdrs``
+ - ``esgcheckvocab``
+ - ``esgmapfile``
 
 Check the help
 **************

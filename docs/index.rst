@@ -1,8 +1,14 @@
 .. _index:
 
 
-``esgprep`` toolbox
-===================
+.. code-block:: text
+
+    ███████╗███████╗ ██████╗ ██████╗ ██████╗ ███████╗██████╗
+    ██╔════╝██╔════╝██╔════╝ ██╔══██╗██╔══██╗██╔════╝██╔══██╗
+    █████╗  ███████╗██║  ███╗██████╔╝██████╔╝█████╗  ██████╔╝
+    ██╔══╝  ╚════██║██║   ██║██╔═══╝ ██╔══██╗██╔══╝  ██╔═══╝
+    ███████╗███████║╚██████╔╝██║     ██║  ██║███████╗██║
+    ╚══════╝╚══════╝ ╚═════╝ ╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝
 
 The Earth System Grid Federation (`ESGF <https://esgf.llnl.gov/>`_) publication process requires a strong and effective
 data management, which could also be a burden. The ESGF ``esgprep`` toolbox is a piece of software that enables data

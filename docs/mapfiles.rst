@@ -1,8 +1,8 @@
 .. _mapfiles:
 
 
-Generation mapfiles for ESGF publication
-========================================
+Generate mapfile for ESGF publication
+=====================================
 
 The publication process on the ESGF nodes requires *mapfiles*. Mapfiles are text files where each line
 describes a file to publish, using the following format:
@@ -22,7 +22,6 @@ describes a file to publish, using the following format:
  6. To store ONE mapfile PER dataset is strongly recommended.
 
 Several ``esgmapfile`` actions are available to manage your mapfiles:
-
  - ``make`` generates the mapfiles,
  - ``show`` displays the expected mapfiles path to be generated.
 
@@ -130,7 +129,7 @@ Overwrite the dataset identifier
 .. warning:: All files will belong to the specified dataset, regardless of the DRS.
 
 Show the expected mapfile name and path
-**************************************
+***************************************
 
 The ``show`` works as a "dry-run" of the ``make`` and supports different types inputs.
 You can show the mapfiles full path to be generated from:
