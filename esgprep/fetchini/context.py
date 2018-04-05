@@ -12,8 +12,8 @@ import os
 import re
 import sys
 
-from tqdm import tqdm
 from requests.auth import HTTPBasicAuth
+from tqdm import tqdm
 
 from constants import *
 from misc import gh_request_content

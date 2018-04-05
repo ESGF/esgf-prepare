@@ -7,6 +7,7 @@
 
 """
 
+import argparse
 import os
 import re
 import sys
@@ -194,3 +195,28 @@ class _ArgumentParser(ArgumentParser):
         """
         self.print_usage(sys.stderr)
         self.exit(99, gettext('%s: error: %s\n') % (self.prog, message))
+
+    def set_default_subparser(self, name, args=None):
+        """
+        Set default sub-parser. Call after setup, just before parse_args().
+
+        """
+        subparser_found = False
+        for arg in sys.argv[1:]:
+            # Breaks if global option without sub-parser
+            if arg in ['-h', '--help', '-v', '--version', '--test']:
+                break
+        else:
+            for x in self._subparsers._actions:
+                if not isinstance(x, argparse._SubParsersAction):
+                    continue
+                for sp_name in x._name_parser_map.keys():
+                    if sp_name in sys.argv[1:]:
+                        subparser_found = True
+            if not subparser_found:
+                # If no subparser found insert the default one in first position
+                # This implies no global options without a sub_parsers specified
+                if args is None:
+                    sys.argv.insert(1, name)
+                else:
+                    args.insert(0, name)

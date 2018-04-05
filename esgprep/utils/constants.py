@@ -378,7 +378,7 @@ DRS_HELPS = {
         See "esgdrs upgrade -h" for full help.
     
         """
-    }
+}
 
 ROOT_HELP = \
     """
@@ -533,7 +533,7 @@ MAPFILE_SUBCOMMANDS = {
         {}
         
         """.format(URL, DEFAULT)
-    }
+}
 
 MAPFILE_HELPS = {
     'make':

@@ -54,7 +54,6 @@ def get_args():
         dest='action',
         metavar='',
         help='')
-
     # Parent parser with common arguments
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument(
@@ -166,7 +165,6 @@ def get_args():
         type=int,
         default=4,
         help=MAX_THREADS_HELP)
-
     # Subparser for "esgdrs list"
     list = subparsers.add_parser(
         'list',
@@ -178,7 +176,6 @@ def get_args():
         parents=[parent])
     list._optionals.title = OPTIONAL
     list._positionals.title = POSITIONAL
-
     # Subparser for "esgdrs tree"
     tree = subparsers.add_parser(
         'tree',
@@ -190,7 +187,6 @@ def get_args():
         parents=[parent])
     tree._optionals.title = OPTIONAL
     tree._positionals.title = POSITIONAL
-
     # Subparser for "esgdrs todo"
     todo = subparsers.add_parser(
         'todo',
@@ -202,7 +198,6 @@ def get_args():
         parents=[parent])
     todo._optionals.title = OPTIONAL
     todo._positionals.title = POSITIONAL
-
     # Subparser for "esgdrs upgrade"
     upgrade = subparsers.add_parser(
         'upgrade',
@@ -214,7 +209,7 @@ def get_args():
         parents=[parent])
     upgrade._optionals.title = OPTIONAL
     upgrade._positionals.title = POSITIONAL
-
+    main.set_default_subparser('list')
     return main.parse_args()
 
 

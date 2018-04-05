@@ -55,7 +55,6 @@ def get_args():
         dest='action',
         metavar='',
         help='')
-
     # Parent parser with common arguments
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument(
@@ -173,7 +172,6 @@ def get_args():
         action='store_true',
         default=False,
         help=NO_CLEANUP_HELP)
-
     # Subparser for "esgmapfile make"
     make = subparsers.add_parser(
         'make',
@@ -190,8 +188,6 @@ def get_args():
         action=DirectoryChecker,
         nargs='+',
         help=DIRECTORY_HELP['mapfile'])
-
-
     # Subparser for "esgmapfile show"
     show = subparsers.add_parser(
         'show',
@@ -223,7 +219,9 @@ def get_args():
         nargs='?',
         default=sys.stdin,
         help=DATASET_ID_HELP)
+    main.set_default_subparser('make')
     return main.parse_args()
+
 
 def run():
     """
