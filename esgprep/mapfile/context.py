@@ -36,20 +36,13 @@ class ProcessingContext(object):
         self.pbar = args.pbar
         self.config_dir = args.i
         self.project = args.project
-        self.directory = args.directory
+        self.action = args.action
         self.mapfile_name = args.mapfile
         self.outdir = args.outdir
-        self.action = 'make'  # args.action
-        self.notes_title = args.tech_notes_title
-        self.notes_url = args.tech_notes_url
         self.no_version = args.no_version
         self.threads = args.max_threads
         self.use_pool = (self.threads > 1)
-        self.dataset = args.dataset
-        if not args.no_cleanup:
-            self.clean()
-        self.no_cleanup = args.no_cleanup
-        self.no_checksum = args.no_checksum
+        self.dataset_name = args.dataset_name
         self.dir_filter = args.ignore_dir
         self.file_filter = []
         if args.include_file:
@@ -70,6 +63,16 @@ class ProcessingContext(object):
             self.version = 'v{}'.format(args.version)
         if args.latest_symlink:
             self.version = 'latest'
+        self.notes_title = args.tech_notes_title
+        self.notes_url = args.tech_notes_url
+        if not args.no_cleanup:
+            self.clean()
+        self.no_cleanup = args.no_cleanup
+        self.no_checksum = args.no_checksum
+        self.directory = args.directory
+        if self.action == 'show':
+            self.dataset_list = args.dataset_list
+            self.dataset_id = args.dataset_id
         self.scan_errors = None
         self.scan_files = None
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename
@@ -101,6 +104,7 @@ class ProcessingContext(object):
                                                       data=self,
                                                       spinner=False,
                                                       dir_format=self.cfg.translate('directory_format'))
+            # Translate directory format pattern
             self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
             # Init file filter
             for regex, inclusive in self.file_filter:
@@ -117,12 +121,23 @@ class ProcessingContext(object):
             else:
                 # Default behavior: pick up the latest version among encountered versions
                 self.sources.default = True
-        else:
+        elif self.dataset_list:
+            # The source is a list of dataset from a TXT file
             self.source_type = 'dataset'
-            self.sources = DatasetCollector(sources=[self.dataset],
+            with open(self.dataset_list) as f:
+                self.sources = DatasetCollector(sources=[x.strip() for x in f.readlines() if x.strip()],
+                                                data=self,
+                                                spinner=False)
+            # Translate dataset_id format
+            self.pattern = self.cfg.translate('dataset_id', sep='.')
+        else:
+            # The source is a dataset ID (potentially from stdin)
+            self.source_type = 'dataset'
+            self.sources = DatasetCollector(sources=[self.dataset_id],
                                             data=self,
                                             spinner=False)
-            self.pattern = self.cfg.translate('dataset_id')
+            # Translate dataset_id format
+            self.pattern = self.cfg.translate('dataset_id', sep='.')
         # Init progress bar
         nfiles = len(self.sources)
         if self.pbar and nfiles:

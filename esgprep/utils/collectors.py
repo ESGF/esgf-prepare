@@ -214,18 +214,10 @@ class DatasetCollector(Collector):
 
         """
         for source in self.sources:
-            if os.path.isfile(source):
-                with open(source) as f:
-                    for line in f:
-                        if self.versioned:
-                            yield self.attach(line)
-                        else:
-                            yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', line))
+            if self.versioned:
+                yield self.attach(source)
             else:
-                if self.versioned:
-                    yield self.attach(source)
-                else:
-                    yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', source))
+                yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', source))
 
 
 class FilterCollection(object):

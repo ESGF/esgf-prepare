@@ -141,8 +141,8 @@ def process(collector_input):
         # Matching between directory_format and file full path
         sh.load_attributes(pattern=ctx.pattern)
         # Deduce dataset_id
-        dataset_id = ctx.dataset
-        if not ctx.dataset:
+        dataset_id = ctx.dataset_name
+        if not ctx.dataset_name:
             sh.check_facets(facets=ctx.facets,
                             config=ctx.cfg)
             dataset_id = sh.get_dataset_id(ctx.cfg.get('dataset_id', raw=True))

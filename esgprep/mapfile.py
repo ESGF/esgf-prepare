@@ -9,11 +9,13 @@
 
 import argparse
 import os
+import sys
 from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser, \
+    FileChecker
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -83,6 +85,94 @@ def get_args():
         action='store_true',
         default=False,
         help=TEST_HELP['parent'])
+    parent.add_argument(
+        '--project',
+        metavar='PROJECT_ID',
+        type=str,
+        required=True,
+        help=PROJECT_HELP['mapfile'])
+    parent.add_argument(
+        '--mapfile',
+        metavar='{dataset_id}.{version}.map',
+        type=str,
+        default='{dataset_id}.{version}.map',
+        help=MAPFILE_NAME_HELP)
+    parent.add_argument(
+        '--outdir',
+        metavar='CWD/mapfiles',
+        type=str,
+        default=os.path.join(os.getcwd(), 'mapfiles'),
+        help=OUTDIR_HELP)
+    group = parent.add_mutually_exclusive_group(required=False)
+    group.add_argument(
+        '--all-versions',
+        action='store_true',
+        default=False,
+        help=ALL_VERSIONS_HELP)
+    group.add_argument(
+        '--version',
+        metavar=datetime.now().strftime("%Y%m%d"),
+        action=VersionChecker,
+        help=SET_VERSION_HELP['mapfile'])
+    group.add_argument(
+        '--latest-symlink',
+        action='store_true',
+        default=False,
+        help=LATEST_SYMLINK_HELP)
+    parent.add_argument(
+        '--no-version',
+        action='store_true',
+        default=False,
+        help=NO_VERSION_HELP)
+    parent.add_argument(
+        '--ignore-dir',
+        metavar="PYTHON_REGEX",
+        type=str,
+        default='^.*/(files|\.[\w]*).*$',
+        help=IGNORE_DIR_HELP)
+    parent.add_argument(
+        '--include-file',
+        metavar='PYTHON_REGEX',
+        type=regex_validator,
+        action='append',
+        help=INCLUDE_FILE_HELP)
+    parent.add_argument(
+        '--exclude-file',
+        metavar='PYTHON_REGEX',
+        type=regex_validator,
+        action='append',
+        help=EXCLUDE_FILE_HELP)
+    parent.add_argument(
+        '--dataset-name',
+        metavar='DATASET_NAME',
+        type=str,
+        help=DATASET_NAME_HELP)
+    parent.add_argument(
+        '--max-threads',
+        metavar='4',
+        type=int,
+        default=4,
+        help=MAX_THREADS_HELP)
+    parent.add_argument(
+        '--no-checksum',
+        action='store_true',
+        default=False,
+        help=NO_CHECKSUM_HELP)
+    parent.add_argument(
+        '--tech-notes-url',
+        metavar='URL',
+        type=str,
+        help=TECH_NOTES_URL_HELP)
+    parent.add_argument(
+        '--tech-notes-title',
+        metavar='TITLE',
+        type=str,
+        help=TECH_NOTES_TITLE_HELP)
+    parent.add_argument(
+        '--no-cleanup',
+        action='store_true',
+        default=False,
+        help=NO_CLEANUP_HELP)
 
     # Subparser for "esgmapfile make"
     make = subparsers.add_parser(
@@ -100,94 +190,7 @@ def get_args():
         action=DirectoryChecker,
         nargs='+',
         help=DIRECTORY_HELP['mapfile'])
-    make.add_argument(
-        '--project',
-        metavar='PROJECT_ID',
-        type=str,
-        required=True,
-        help=PROJECT_HELP['mapfile'])
-    make.add_argument(
-        '--mapfile',
-        metavar='{dataset_id}.{version}.map',
-        type=str,
-        default='{dataset_id}.{version}.map',
-        help=MAPFILE_NAME_HELP)
-    make.add_argument(
-        '--outdir',
-        metavar='CWD/mapfiles',
-        type=str,
-        default=os.path.join(os.getcwd(), 'mapfiles'),
-        help=OUTDIR_HELP)
-    group = make.add_mutually_exclusive_group(required=False)
-    group.add_argument(
-        '--all-versions',
-        action='store_true',
-        default=False,
-        help=ALL_VERSIONS_HELP)
-    group.add_argument(
-        '--version',
-        metavar=datetime.now().strftime("%Y%m%d"),
-        action=VersionChecker,
-        help=SET_VERSION_HELP['mapfile'])
-    group.add_argument(
-        '--latest-symlink',
-        action='store_true',
-        default=False,
-        help=LATEST_SYMLINK_HELP)
-    make.add_argument(
-        '--no-version',
-        action='store_true',
-        default=False,
-        help=NO_VERSION_HELP)
-    make.add_argument(
-        '--no-checksum',
-        action='store_true',
-        default=False,
-        help=NO_CHECKSUM_HELP)
-    make.add_argument(
-        '--ignore-dir',
-        metavar="PYTHON_REGEX",
-        type=str,
-        default='^.*/(files|\.[\w]*).*$',
-        help=IGNORE_DIR_HELP)
-    make.add_argument(
-        '--include-file',
-        metavar='PYTHON_REGEX',
-        type=regex_validator,
-        action='append',
-        help=INCLUDE_FILE_HELP)
-    make.add_argument(
-        '--exclude-file',
-        metavar='PYTHON_REGEX',
-        type=regex_validator,
-        action='append',
-        help=EXCLUDE_FILE_HELP)
-    make.add_argument(
-        '--tech-notes-url',
-        metavar='URL',
-        type=str,
-        help=TECH_NOTES_URL_HELP)
-    make.add_argument(
-        '--tech-notes-title',
-        metavar='TITLE',
-        type=str,
-        help=TECH_NOTES_TITLE_HELP)
-    make.add_argument(
-        '--dataset',
-        metavar='DATASET_ID',
-        type=str,
-        help=DATASET_HELP)
-    make.add_argument(
-        '--max-threads',
-        metavar='4',
-        type=int,
-        default=4,
-        help=MAX_THREADS_HELP)
-    make.add_argument(
-        '--no-cleanup',
-        action='store_true',
-        default=False,
-        help=NO_CLEANUP_HELP)
+
 
     # Subparser for "esgmapfile show"
     show = subparsers.add_parser(
@@ -202,22 +205,25 @@ def get_args():
     show._positionals.title = POSITIONAL
     group = show.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        '--dataset',
-        metavar='DATASET_ID',
-        type=str,
-        help=DATASET_HELP)
+        '--directory',
+        action=DirectoryChecker,
+        nargs='+',
+        help=DIRECTORY_HELP['mapfile'])
     group.add_argument(
         '--dataset-list',
+        metavar='TXT_FILE',
+        action=FileChecker,
+        nargs='?',
+        default=sys.stdin,
+        help=DATASET_LIST_HELP)
+    group.add_argument(
+        '--dataset-id',
         metavar='DATASET_ID',
         type=str,
-        help=DATASET_HELP)
-    group.add_argument(
-        '--directory',
-        metavar='DIRECTORY',
-        type=str,
-        help=DATASET_HELP)
+        nargs='?',
+        default=sys.stdin,
+        help=DATASET_ID_HELP)
     return main.parse_args()
-
 
 def run():
     """

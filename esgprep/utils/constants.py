@@ -167,13 +167,6 @@ VERBOSE_HELP = \
 SUBCOMMANDS = \
     """Subcommands"""
 
-FETCHINI_HELP = \
-    """
-    Fetchs INI files from GitHub.|n
-    See "esgprep fetch-ini -h" for full help.
-    
-    """
-
 PROJECT_HELP = {
     'fetchini':
         """
@@ -243,13 +236,6 @@ DEVEL_HELP = \
     
     """
 
-CHECKVOCAB_HELP = \
-    """
-    Checks configuration file vocabulary.|n
-    See "esgprep check-vocab -h" for full help.
-    
-    """
-
 DIRECTORY_HELP = {
     'checkvocab':
         """
@@ -304,13 +290,6 @@ EXCLUDE_FILE_HELP = \
     Default only exclude files (with names not|n
     starting with ".").
 
-    """
-
-DRS_HELP = \
-    """
-    Manages the Data Reference Syntax on your filesystem.|n
-    See "esgprep drs -h" for full help.
-    
     """
 
 DRS_SUBCOMMANDS = {
@@ -629,7 +608,7 @@ TECH_NOTES_TITLE_HELP = \
     
     """
 
-DATASET_HELP = \
+DATASET_NAME_HELP = \
     """
     String name of the dataset. If specified, all files will|n
     belong to the specified dataset, regardless of the DRS.
@@ -641,5 +620,12 @@ NO_CLEANUP_HELP = \
     Disables output directory cleanup prior to mapfile|n
     process. This is recommended if several "esgprep mapfile"|n
     instances run with the same output directory.
+    
+    """
+
+DATASET_ID_HELP = \
+    """
+    The dataset identifier coma-separated with or without|n
+    the ending version. If not, the standard input is used.
     
     """
