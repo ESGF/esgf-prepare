@@ -149,7 +149,9 @@ class VersionedPathCollector(PathCollector):
             source_version = self.version_finder(directory=source)
             if source_version:
                 # Path version takes priority on command-line flags and default behavior
-                # Overwrite the version filter
+                # Set default behavior to false
+                self.default = False
+                # And overwrite the version filter
                 self.PathFilter.add(name='version_filter', regex='/{}'.format(source_version))
             for root, _, filenames in os.walk(source, followlinks=True):
                 for filename in sorted(filenames):
