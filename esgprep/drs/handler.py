@@ -67,7 +67,6 @@ class File(object):
     def load_attributes(self, root, pattern, set_values):
         """
         Loads DRS attributes catched from a regular expression match.
-        The project facet is added in any case with lower case.
         The root facet is added by default.
         The dataset version is initially set to None.
         Can be overwrite by "set_values" pairs if submitted.
@@ -107,7 +106,6 @@ class File(object):
         The DRS attributes are completed from the configuration file maptables.
         In the case of non-standard attribute, it gets the most similar key among netCDF attributes names.
         Attributes can be directly mapped with "set_keys" pairs if submitted.
-
 
         :param list facets: The list of facet to check
         :param ESGConfigParser.SectionParser config: The configuration parser

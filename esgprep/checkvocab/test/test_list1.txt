@@ -1,5 +1,0 @@
-my.dataset.id
-my.dataset.id.
-my.dataset.id.v1
-my.dataset.id.v20140405
-my.dataset.id#v20120305

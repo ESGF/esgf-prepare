@@ -42,19 +42,6 @@ class NoNetCDFAttribute(Exception):
         super(self.__class__, self).__init__(self.msg)
 
 
-class NoNetCDFVariable(Exception):
-    """
-    Raised when a NetCDF variable is missing.
-
-    """
-
-    def __init__(self, variable, path):
-        self.msg = "Variable not found"
-        self.msg += "\n<variable: '{}'>".format(variable)
-        self.msg += "\n<file: '{}'>".format(path)
-        super(self.__class__, self).__init__(self.msg)
-
-
 ############################
 # Miscellaneous exceptions #
 ############################
@@ -68,20 +55,6 @@ class KeyNotFound(Exception):
 
     def __init__(self, key, keys=None):
         self.msg = "Key not found"
-        self.msg += "\n<key: '{}'>".format(key)
-        if keys:
-            self.msg += "\n<found keys: '{}'>".format(', '.join(keys))
-        super(self.__class__, self).__init__(self.msg)
-
-
-class ProjectError(Exception):
-    """
-    Raised when the "project" value is not found in DRS path or dataset identifier.
-
-    """
-
-    def __init__(self, project, ):
-        self.msg = "Inconsistent path or dataset"
         self.msg += "\n<key: '{}'>".format(key)
         if keys:
             self.msg += "\n<found keys: '{}'>".format(', '.join(keys))
