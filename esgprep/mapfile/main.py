@@ -18,7 +18,7 @@ from lockfile import LockFile
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.misc import evaluate
+from esgprep.utils.misc import evaluate, remove
 from handler import File, Dataset
 
 
@@ -225,8 +225,8 @@ def run(args):
                 if ctx.action == 'show':
                     # Print mapfiles to be generated
                     if ctx.pbar:
-                        print(mapfile.replace(WORKING_EXTENSION, ''))
-                    logging.info(mapfile.replace(WORKING_EXTENSION, ''))
+                        print(remove(WORKING_EXTENSION, mapfile))
+                    logging.info(remove(WORKING_EXTENSION, mapfile))
                 elif ctx.action == 'make':
                     # A final mapfile is silently overwritten if already exists
-                    os.rename(mapfile, mapfile.replace(WORKING_EXTENSION, ''))
+                    os.rename(mapfile, remove(WORKING_EXTENSION, mapfile))

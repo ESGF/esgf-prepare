@@ -108,7 +108,7 @@ class ProcessingContext(object):
                 self.set_values[key] = pattern_element
                 # Add the uuid to the ignored keys
                 IGNORED_KEYS.append(key)
-        self.pattern = self.cfg.translate('filename_format', sep='_')
+        self.pattern = self.cfg.translate('filename_format', version_pattern=False, sep='_')
         # Init DRS tree
         self.tree = DRSTree(self.root, self.version, self.mode, self.commands_file)
         # Disable file scan if a previous DRS tree have generated using same context and no "list" action
