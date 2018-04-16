@@ -10,12 +10,12 @@
 import argparse
 import os
 import sys
+from argparse import FileType
 from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser, \
-    DirectoryType
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -202,13 +202,13 @@ def get_args():
     group = show.add_mutually_exclusive_group(required=True)
     group.add_argument(
         '--directory',
-        type=DirectoryType,
+        action=DirectoryChecker,
         nargs='+',
         help=DIRECTORY_HELP['mapfile'])
     group.add_argument(
         '--dataset-list',
         metavar='TXT_FILE',
-        type=argparse.FileType('r'),
+        type=FileType('r'),
         nargs='?',
         const=sys.stdin,
         help=DATASET_LIST_HELP)
@@ -235,9 +235,9 @@ def run():
     # Get command-line arguments
     args = get_args()
     # Initialize logger depending on log and debug mode
-    init_logging(log=args.log, debug=args.debug, quiet=args.quiet)
-    # Print progress bar if no log and no debug mode
-    setattr(args, 'pbar', True if not args.log and not args.debug else False)
+    init_logging(log=args.log, debug=args.debug)
+    # Print progress bar if no log, no debug and no silent mode
+    setattr(args, 'pbar', True if not args.log and not args.debug and not args.quiet else False)
     # Run program
     if args.test:
         print('"esgmapfile" test suite not available. Coming soon!')

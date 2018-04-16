@@ -9,12 +9,12 @@
 
 import argparse
 import os
+from argparse import FileType
 from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, _ArgumentParser, FileChecker, \
-    keyval_converter
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, _ArgumentParser, keyval_converter
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -126,7 +126,7 @@ def get_args():
     parent.add_argument(
         '--commands-file',
         metavar='TXT_FILE',
-        action=FileChecker,
+        type=FileType('r'),
         help=COMMANDS_FILE_HELP)
     parent.add_argument(
         '--overwrite-commands-file',
@@ -141,7 +141,7 @@ def get_args():
     parent.add_argument(
         '--ignore-from-latest',
         metavar='TXT_FILE',
-        action=FileChecker,
+        type=FileType('r'),
         help=IGNORE_FROM_LATEST_HELP)
     group = parent.add_mutually_exclusive_group(required=False)
     group.add_argument(

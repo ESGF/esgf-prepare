@@ -9,11 +9,12 @@
 
 import os
 import sys
+from argparse import FileType
 from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, regex_validator, _ArgumentParser, FileChecker
+from utils.parser import MultilineFormatter, DirectoryChecker, regex_validator, _ArgumentParser
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -76,7 +77,7 @@ def get_args():
     group.add_argument(
         '--dataset-list',
         metavar='TXT_FILE',
-        action=FileChecker,
+        type=FileType('r'),
         nargs='?',
         default=sys.stdin,
         help=DATASET_LIST_HELP)
