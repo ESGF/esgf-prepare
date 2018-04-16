@@ -220,3 +220,28 @@ class _ArgumentParser(ArgumentParser):
                     sys.argv.insert(1, name)
                 else:
                     args.insert(0, name)
+
+class DirectoryType(object):
+    """
+    Instances of DirType are typically passed as type= arguments to the
+    ArgumentParser add_argument() method.
+
+    """
+    def __call__(self, string):
+        # the special argument "-" means sys.std{in,out}
+        if string == '-':
+            return sys.stdin
+
+        # all other arguments are used as file names
+        msg = 'No such directory: {}'.format(string)
+        try:
+            string = os.path.abspath(os.path.normpath(string))
+            if os.path.isdir(string):
+                return string
+            else:
+                raise ArgumentTypeError(msg)
+        except AttributeError:
+            raise ArgumentTypeError(msg)
+
+    def __repr__(self):
+        return '{}'.format(type(self).__name__)

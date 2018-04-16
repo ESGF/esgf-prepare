@@ -124,10 +124,9 @@ class ProcessingContext(object):
         elif self.dataset_list:
             # The source is a list of dataset from a TXT file
             self.source_type = 'dataset'
-            with open(self.dataset_list) as f:
-                self.sources = DatasetCollector(sources=[x.strip() for x in f.readlines() if x.strip()],
-                                                data=self,
-                                                spinner=False)
+            self.sources = DatasetCollector(sources=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
+                                            data=self,
+                                            spinner=False)
             # Translate dataset_id format
             self.pattern = self.cfg.translate('dataset_id', sep='.')
         else:

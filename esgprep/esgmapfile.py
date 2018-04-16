@@ -15,7 +15,7 @@ from importlib import import_module
 from utils.constants import *
 from utils.misc import init_logging
 from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser, \
-    FileChecker
+    DirectoryType
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -202,22 +202,22 @@ def get_args():
     group = show.add_mutually_exclusive_group(required=True)
     group.add_argument(
         '--directory',
-        action=DirectoryChecker,
+        type=DirectoryType,
         nargs='+',
         help=DIRECTORY_HELP['mapfile'])
     group.add_argument(
         '--dataset-list',
         metavar='TXT_FILE',
-        action=FileChecker,
+        type=argparse.FileType('r'),
         nargs='?',
-        default=sys.stdin,
+        const=sys.stdin,
         help=DATASET_LIST_HELP)
     group.add_argument(
         '--dataset-id',
         metavar='DATASET_ID',
         type=str,
         nargs='?',
-        default=sys.stdin,
+        const=sys.stdin,
         help=DATASET_ID_HELP)
     main.set_default_subparser('make')
     return main.parse_args()
