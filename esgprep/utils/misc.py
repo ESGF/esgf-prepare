@@ -35,7 +35,7 @@ class LogFilter(object):
         return log_record.levelno <= self.level
 
 
-def init_logging(log, debug=False, level='INFO'):
+def init_logging(log, debug=False, level='INFO', quiet=False):
     """
     Initiates the logging configuration (output, date/message formatting).
     If a directory is submitted the logfile name is unique and formatted as follows:
@@ -43,6 +43,7 @@ def init_logging(log, debug=False, level='INFO'):
 
     :param str log: The logfile directory.
     :param boolean debug: Debug mode.
+    :param boolean quiet: Silent mode.
     :param str level: The log level.
 
     """
@@ -60,17 +61,18 @@ def init_logging(log, debug=False, level='INFO'):
     error_handler.setLevel(logging.ERROR)
     error_handler.setFormatter(formatter)
     logging.getLogger().addHandler(error_handler)
-    if log:
-        stream_handler = logging.FileHandler(filename='{}.log'.format(logfile), delay=True)
-    else:
-        if debug:
-            stream_handler = logging.StreamHandler()
+    if not quiet:
+        if log:
+            stream_handler = logging.FileHandler(filename='{}.log'.format(logfile), delay=True)
         else:
-            stream_handler = logging.NullHandler()
-    stream_handler.setLevel(logging.__dict__[level])
-    stream_handler.addFilter(LogFilter(logging.WARNING))
-    stream_handler.setFormatter(formatter)
-    logging.getLogger().addHandler(stream_handler)
+            if debug:
+                stream_handler = logging.StreamHandler()
+            else:
+                stream_handler = logging.NullHandler()
+        stream_handler.setLevel(logging.__dict__[level])
+        stream_handler.addFilter(LogFilter(logging.WARNING))
+        stream_handler.setFormatter(formatter)
+        logging.getLogger().addHandler(stream_handler)
 
 
 def remove(pattern, string):

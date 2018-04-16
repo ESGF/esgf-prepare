@@ -653,3 +653,9 @@ DATASET_ID_HELP = \
     the ending version. If not, the standard input is used.
     
     """
+
+QUIET_HELP = \
+    """
+    Display only results without any other information.
+
+    """

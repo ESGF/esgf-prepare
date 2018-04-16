@@ -216,9 +216,13 @@ def get_args():
         '--dataset-id',
         metavar='DATASET_ID',
         type=str,
-        nargs='?',
-        const=sys.stdin,
+        nargs='+',
         help=DATASET_ID_HELP)
+    show.add_argument(
+        '--quiet',
+        action='store_true',
+        default=False,
+        help=QUIET_HELP)
     main.set_default_subparser('make')
     return main.parse_args()
 
@@ -231,7 +235,7 @@ def run():
     # Get command-line arguments
     args = get_args()
     # Initialize logger depending on log and debug mode
-    init_logging(log=args.log, debug=args.debug)
+    init_logging(log=args.log, debug=args.debug, quiet=args.quiet)
     # Print progress bar if no log and no debug mode
     setattr(args, 'pbar', True if not args.log and not args.debug else False)
     # Run program
