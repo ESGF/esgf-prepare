@@ -44,7 +44,7 @@ class ProcessingContext(object):
         self.use_pool = (self.threads > 1)
         self.dataset_name = args.dataset_name
         self.dir_filter = args.ignore_dir
-        self.basename = args.basename
+        self.basename = args.basename if hasattr(args, 'basename') else False
         self.quiet = args.quiet if hasattr(args, 'quiet') else False
         self.file_filter = []
         if args.include_file:
