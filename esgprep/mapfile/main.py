@@ -13,7 +13,7 @@ import os
 import re
 from datetime import datetime
 
-from ESGConfigParser import interpolate
+from ESGConfigParser import interpolate, MissingPatternKey
 from lockfile import LockFile
 
 from constants import *
@@ -22,7 +22,7 @@ from esgprep.utils.misc import evaluate, remove
 from handler import File, Dataset
 
 
-def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_version, mapfile_drs=None):
+def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_version, mapfile_drs=None, basename=False):
     """
     Builds the mapfile full path depending on:
 
@@ -36,15 +36,20 @@ def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_ver
     :param str dataset_id: The dataset id
     :param str dataset_version: The dataset version
     :param str mapfile_drs: The optional mapfile tree
+    :param boolean basename: True to only get mapfile name without root directory
     :returns: The mapfile full path
     :rtype: *str*
 
     """
     # Deduce output directory from --outdir and 'mapfile_drs'
-    if mapfile_drs:
-        outdir = os.path.join(outdir, interpolate(mapfile_drs, attributes))
-    else:
-        outdir = os.path.realpath(outdir)
+    if not basename:
+        if mapfile_drs:
+            try:
+                outdir = os.path.join(outdir, interpolate(mapfile_drs, attributes))
+            except:
+                raise MissingPatternKey(attributes.keys(), mapfile_drs)
+        else:
+            outdir = os.path.realpath(outdir)
     # Create output directory if not exists, catch OSError instead
     try:
         os.makedirs(outdir)
@@ -63,7 +68,10 @@ def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_ver
     if re.compile(r'{job_id}').search(mapfile_name):
         mapfile_name = re.sub(r'{job_id}', str(os.getpid()), mapfile_name)
     # Add a "working extension" pending for the end of process
-    return os.path.join(outdir, mapfile_name) + WORKING_EXTENSION
+    if basename:
+        return mapfile_name + WORKING_EXTENSION
+    else:
+        return os.path.join(outdir, mapfile_name) + WORKING_EXTENSION
 
 
 def mapfile_entry(dataset_id, dataset_version, ffp, size, optional_attrs):
@@ -158,7 +166,8 @@ def process(collector_input):
                                      mapfile_name=ctx.mapfile_name,
                                      dataset_id=dataset_id,
                                      dataset_version=dataset_version,
-                                     mapfile_drs=ctx.mapfile_drs)
+                                     mapfile_drs=ctx.mapfile_drs,
+                                     basename=ctx.basename)
         # Dry-run: don't write mapfile to only show their paths
         if ctx.action == 'make':
             # Generate the corresponding mapfile entry/line

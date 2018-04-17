@@ -659,3 +659,11 @@ QUIET_HELP = \
     Display only results without any other information.
 
     """
+
+BASENAME_HELP = \
+    """
+    Display result basename only (i.e., mapfile name without|n
+    root directory).|n
+    Default prints the full mapfile path.
+
+    """

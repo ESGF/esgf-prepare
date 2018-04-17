@@ -44,6 +44,7 @@ class ProcessingContext(object):
         self.use_pool = (self.threads > 1)
         self.dataset_name = args.dataset_name
         self.dir_filter = args.ignore_dir
+        self.basename = args.basename
         self.file_filter = []
         if args.include_file:
             self.file_filter.extend([(f, True) for f in args.include_file])

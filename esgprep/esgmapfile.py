@@ -223,6 +223,11 @@ def get_args():
         action='store_true',
         default=False,
         help=QUIET_HELP)
+    show.add_argument(
+        '--basename',
+        action='store_true',
+        default=False,
+        help=BASENAME_HELP)
     main.set_default_subparser('make')
     return main.parse_args()
 
