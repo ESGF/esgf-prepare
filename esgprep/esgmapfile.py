@@ -241,7 +241,10 @@ def run():
     # Initialize logger depending on log and debug mode
     init_logging(log=args.log, debug=args.debug)
     # Print progress bar if no log, no debug and no silent mode
-    setattr(args, 'pbar', True if not args.log and not args.debug and not args.quiet else False)
+    if hasattr(args, 'quiet'):
+        setattr(args, 'pbar', True if not args.log and not args.debug and not args.quiet else False)
+    else:
+        setattr(args, 'pbar', True if not args.log and not args.debug else False)
     # Run program
     if args.test:
         print('"esgmapfile" test suite not available. Coming soon!')

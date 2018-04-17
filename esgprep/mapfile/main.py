@@ -233,7 +233,7 @@ def run(args):
                 # Remove mapfile working extension
                 if ctx.action == 'show':
                     # Print mapfiles to be generated
-                    if ctx.pbar or args.quiet:
+                    if ctx.pbar or ctx.quiet:
                         print(remove(WORKING_EXTENSION, mapfile))
                     logging.info(remove(WORKING_EXTENSION, mapfile))
                 elif ctx.action == 'make':
