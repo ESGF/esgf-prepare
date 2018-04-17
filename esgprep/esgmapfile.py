@@ -216,7 +216,6 @@ def get_args():
         '--dataset-id',
         metavar='DATASET_ID',
         type=str,
-        nargs='+',
         help=DATASET_ID_HELP)
     show.add_argument(
         '--quiet',
