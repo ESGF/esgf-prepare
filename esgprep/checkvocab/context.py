@@ -72,14 +72,13 @@ class ProcessingContext(object):
             # The source is a list of files (i.e., several dataset lists)
             # Instantiate dataset collector to parse the files
             self.source_type = 'datasets'
-            with open(self.dataset_list) as f:
-                if self.pbar:
-                    self.sources = DatasetCollector(source=[x.strip() for x in f.readlines() if x.strip()],
-                                                    versioned=False)
-                else:
-                    self.sources = DatasetCollector(source=[x.strip() for x in f.readlines() if x.strip()],
-                                                    spinner=False,
-                                                    versioned=False)
+            if self.pbar:
+                self.sources = DatasetCollector(source=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
+                                                versioned=False)
+            else:
+                self.sources = DatasetCollector(source=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
+                                                spinner=False,
+                                                versioned=False)
             self.pattern = self.cfg.translate('dataset_id', version_pattern=False, sep='.')
         # Get the facet keys from pattern
         self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
