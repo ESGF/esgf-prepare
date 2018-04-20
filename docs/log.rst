@@ -4,14 +4,16 @@
 Change Log
 ==========
 
-`Unreleased <https://github.com/ESGF/esgf-prepare/tree/HEAD>`__
----------------------------------------------------------------
+`v2.8.1 <https://github.com/ESGF/esgf-prepare/tree/v2.8.1>`__ (2018-04-20)
+--------------------------------------------------------------------------
 
 `Full
-Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.8.0...HEAD>`__
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.8.0...v2.8.1>`__
 
 **Closed issues:**
 
+-  failure in esgtest\_publish and manual test
+   `#25 <https://github.com/ESGF/esgf-prepare/issues/25>`__
 -  temporary files persisted
    `#24 <https://github.com/ESGF/esgf-prepare/issues/24>`__
 -  add option to show path of mapfile
