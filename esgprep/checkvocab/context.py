@@ -67,7 +67,7 @@ class ProcessingContext(object):
                 self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
             # Init dir filter
             self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
-            self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
+            self.pattern = self.cfg.translate('directory_format', add_ending_filename=True)
         else:
             # The source is a list of files (i.e., several dataset lists)
             # Instantiate dataset collector to parse the files
@@ -79,7 +79,7 @@ class ProcessingContext(object):
                 self.sources = DatasetCollector(source=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
                                                 spinner=False,
                                                 versioned=False)
-            self.pattern = self.cfg.translate('dataset_id', version_pattern=False, sep='.')
+            self.pattern = self.cfg.translate('dataset_id')
         # Get the facet keys from pattern
         self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
         # Init progress bar

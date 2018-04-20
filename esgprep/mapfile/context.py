@@ -107,7 +107,7 @@ class ProcessingContext(object):
                                                       spinner=False,
                                                       dir_format=self.cfg.translate('directory_format'))
             # Translate directory format pattern
-            self.pattern = self.cfg.translate('directory_format', filename_pattern=True)
+            self.pattern = self.cfg.translate('directory_format', add_ending_filename=True)
             # Init file filter
             for regex, inclusive in self.file_filter:
                 self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
@@ -130,7 +130,7 @@ class ProcessingContext(object):
                                             data=self,
                                             spinner=False)
             # Translate dataset_id format
-            self.pattern = self.cfg.translate('dataset_id', sep='.')
+            self.pattern = self.cfg.translate('dataset_id', add_ending_version=True, sep='.')
         else:
             # The source is a dataset ID (potentially from stdin)
             self.source_type = 'dataset'
@@ -138,7 +138,7 @@ class ProcessingContext(object):
                                             data=self,
                                             spinner=False)
             # Translate dataset_id format
-            self.pattern = self.cfg.translate('dataset_id', sep='.')
+            self.pattern = self.cfg.translate('dataset_id', add_ending_version=True, sep='.')
         # Init progress bar
         nfiles = len(self.sources)
         if self.pbar and nfiles:
