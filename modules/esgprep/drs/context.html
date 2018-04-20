@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.context &mdash; esgprep 2.7.39 documentation</title>
+  <title>esgprep.drs.context &mdash; esgprep 2.8.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.39 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.8.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                2.7
+                2.8
               </div>
             
           
@@ -93,10 +93,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fetchini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../check-vocab.html">Check CV against configuration INI files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../checkvocab.html">Check CV against configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
@@ -175,15 +175,16 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="k">import</span> <span class="n">Pool</span> <span class="k">as</span> <span class="n">ThreadPool</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid4</span> <span class="k">as</span> <span class="n">uuid</span>
 
 <span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">SectionParser</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.collectors</span> <span class="k">import</span> <span class="n">Collector</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">load</span>
@@ -249,19 +250,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_checksum_type</span><span class="p">()</span>
         <span class="c1"># Init configuration parser</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SectionParser</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;project:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">),</span> <span class="n">directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span>
-        <span class="c1"># check if --commands-file argument specifies existing file</span>
+        <span class="c1"># Check if --commands-file argument specifies existing file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_existing_commands_file</span><span class="p">()</span>
-        <span class="c1"># Warn user about unconsidered hard-coded elements</span>
-        <span class="k">for</span> <span class="n">pattern_element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\([\w]+\)s&#39;</span><span class="p">),</span> <span class="n">pattern_element</span><span class="p">):</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Hard-coded DRS elements (as &quot;</span><span class="si">{}</span><span class="s1">&quot;) in &quot;directory_format&quot;&#39;</span> \
-                      <span class="s1">&#39;are not supported.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pattern_element</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                <span class="k">break</span>
+        <span class="c1"># Get DRS facets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_facets</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;filename_format&#39;</span><span class="p">)</span>
+        <span class="c1"># Raise error when %(version)s is not part of the final directory format</span>
+        <span class="k">if</span> <span class="s1">&#39;version&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NoVersionPattern</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span>
+        <span class="c1"># Consider hard-coded elements in directory format</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">pattern_element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># If pattern is %(...)s</span>
+                <span class="c1"># Get its index in the list of facets</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([\w]+)\)s&#39;</span><span class="p">),</span> <span class="n">pattern_element</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c1"># If pattern is not %(...)s</span>
+                <span class="c1"># Generate a uuid()</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="p">())</span>
+                <span class="c1"># Insert hard-coded string in self.facets to be part of DRS path</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                <span class="c1"># Set the value using --set-value</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">pattern_element</span>
+                <span class="c1"># Add the uuid to the ignored keys</span>
+                <span class="n">IGNORED_KEYS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;filename_format&#39;</span><span class="p">,</span> <span class="n">version_pattern</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
         <span class="c1"># Init DRS tree</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">DRSTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span><span class="p">)</span>
         <span class="c1"># Disable file scan if a previous DRS tree have generated using same context and no &quot;list&quot; action</span>
@@ -372,7 +386,7 @@
 
 <div class="viewcode-block" id="ProcessingContext.check_args"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.context.ProcessingContext.check_args">[docs]</a>    <span class="k">def</span> <span class="nf">check_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks command-line argument to avoid discrepancies between ``esgprep drs`` steps.</span>
+<span class="sd">        Checks command-line argument to avoid discrepancies between ``esgdrs`` steps.</span>
 
 <span class="sd">        :param *dict* old_args: The recorded arguments</span>
 <span class="sd">        :raises Error: If one argument differs</span>
@@ -422,7 +436,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.39',
+            VERSION:'2.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

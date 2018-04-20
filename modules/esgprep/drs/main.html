@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.main &mdash; esgprep 2.7.39 documentation</title>
+  <title>esgprep.drs.main &mdash; esgprep 2.8.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.39 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.8.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                2.7
+                2.8
               </div>
             
           
@@ -93,10 +93,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fetchini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../check-vocab.html">Check CV against configuration INI files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../checkvocab.html">Check CV against configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
@@ -177,8 +177,6 @@
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">NoConfigKey</span>
-
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">context</span> <span class="k">import</span> <span class="n">ProcessingContext</span>
 <span class="kn">from</span> <span class="nn">custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
@@ -214,14 +212,7 @@
         <span class="n">fh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
                            <span class="n">pattern</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
                            <span class="n">set_values</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_values</span><span class="p">)</span>
-        <span class="c1"># Apply proper case to each attribute</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fh</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
-            <span class="c1"># Try to get the appropriate facet case for &quot;category_default&quot;</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">fh</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_pairs</span><span class="p">(</span><span class="s1">&#39;category_defaults&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">NoConfigKey</span><span class="p">:</span>
-                <span class="c1"># If not specified keep facet case from local path, do nothing</span>
-                <span class="k">pass</span>
+        <span class="c1"># Checks the facet values provided by the loaded attributes</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">check_facets</span><span class="p">(</span><span class="n">facets</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">,</span>
                         <span class="n">config</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
                         <span class="n">set_keys</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_keys</span><span class="p">)</span>
@@ -229,6 +220,10 @@
         <span class="n">parts</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">get_drs_parts</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span>
         <span class="c1"># Instantiate file DRS path handler</span>
         <span class="n">fph</span> <span class="o">=</span> <span class="n">DRSPath</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="c1"># Ensure that the called project section is ALWAYS part of the DRS path elements (case insensitive)</span>
+        <span class="k">assert</span> <span class="n">fph</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span> <span class="s1">&#39;Inconsistent DRS path. &#39;</span> \
+                                                                   <span class="s1">&#39;Must start with &quot;</span><span class="si">{}</span><span class="s1">/&quot; &#39;</span> \
+                                                                   <span class="s1">&#39;(case-insensitive)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
         <span class="c1"># If a latest version already exists make some checks FIRST to stop files to not process</span>
         <span class="k">if</span> <span class="n">fph</span><span class="o">.</span><span class="n">v_latest</span><span class="p">:</span>
             <span class="c1"># Latest version should be older than upgrade version</span>
@@ -421,7 +416,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.39',
+            VERSION:'2.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

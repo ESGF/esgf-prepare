@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generic usage &mdash; esgprep 2.7.39 documentation</title>
+  <title>Generic usage &mdash; esgprep 2.8.0 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.39 documentation" href="index.html"/>
-        <link rel="next" title="Fetch ESGF configuration INI files" href="fetch-ini.html"/>
+    <link rel="top" title="esgprep 2.8.0 documentation" href="index.html"/>
+        <link rel="next" title="Fetch ESGF configuration INI files" href="fetchini.html"/>
         <link rel="prev" title="Configuration" href="configuration.html"/> 
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                2.7
+                2.8
               </div>
             
           
@@ -102,13 +102,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#submit-a-configuration-directory">Submit a configuration directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#use-a-logfile">Use a logfile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#use-filters">Use filters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#use-multiprocessing">Use multiprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#use-multithreading">Use multithreading</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV against configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkvocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
@@ -179,21 +179,30 @@
             
   <div class="section" id="generic-usage">
 <span id="usage"></span><h1>Generic usage<a class="headerlink" href="#generic-usage" title="Permalink to this headline">¶</a></h1>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">All the following arguments can be safely combined and add to the subcommand arguments.</p>
-</div>
+<dl class="docutils">
+<dt>All the following arguments can be safely combined and add to each of the esgprep <strong>COMMAND</strong>:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">esgfetchini</span></code></li>
+<li><code class="docutils literal"><span class="pre">esgdrs</span></code></li>
+<li><code class="docutils literal"><span class="pre">esgcheckvocab</span></code></li>
+<li><code class="docutils literal"><span class="pre">esgmapfile</span></code></li>
+</ul>
+</dd>
+</dl>
 <div class="section" id="check-the-help">
 <h2>Check the help<a class="headerlink" href="#check-the-help" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep -h
-$&gt; esgprep SUBCOMMAND -h
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND <span class="o">[</span>SUBCOMMAND<span class="o">]</span> -h
 </pre></div>
 </div>
 </div>
 <div class="section" id="check-the-version">
 <h2>Check the version<a class="headerlink" href="#check-the-version" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep -v
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND -v
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The program version will be the same for all the esgprep tools.</p>
 </div>
 </div>
 <div class="section" id="run-the-test-suite">
@@ -202,8 +211,7 @@ $&gt; esgprep SUBCOMMAND -h
 <p class="first admonition-title">Warning</p>
 <p class="last">Not available for the time being.</p>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep --test
-$&gt; esgprep SUBCOMMAND --test
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND --test
 </pre></div>
 </div>
 </div>
@@ -211,20 +219,20 @@ $&gt; esgprep SUBCOMMAND --test
 <h2>Debug mode<a class="headerlink" href="#debug-mode" title="Permalink to this headline">¶</a></h2>
 <p>Some progress bars informs you about the processing status of the different subcommands. You can switch to a more
 verbose mode displaying each step with useful additional information.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --debug
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND <span class="o">[</span>SUBCOMMAND<span class="o">]</span> --debug
 </pre></div>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">The verbose mode is silently activated in the case of a logfile (i.e., no progress bars).</p>
+<p class="last">This debug/verbose mode is silently activated in the case of a logfile (i.e., no progress bars).</p>
 </div>
 </div>
 <div class="section" id="specify-the-project">
 <h2>Specify the project<a class="headerlink" href="#specify-the-project" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">--project</span></code> argument is used to parse the corresponding configuration INI file. It is <strong>always required</strong>
-(except for <code class="docutils literal"><span class="pre">fetch-ini</span></code> subcommand). This argument is case-sensitive and has to correspond to a section name of
+(except for <code class="docutils literal"><span class="pre">esgfetchini</span></code> subcommand). This argument is case-sensitive and has to correspond to a section name of
 the configuration file(s).</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --project PROJECT_ID
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND <span class="o">[</span>SUBCOMMAND<span class="o">]</span> --project PROJECT_ID
 </pre></div>
 </div>
 </div>
@@ -233,12 +241,12 @@ the configuration file(s).</p>
 <p>By default, the configuration files are fetched or read from <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code> that is the usual configuration
 directory on ESGF nodes. If you’re preparing your data outside of an ESGF node, you can submit another directory to
 fetch and read the configuration files.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND -i /PATH/TO/CONFIG/
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND <span class="o">[</span>SUBCOMMAND<span class="o">]</span> -i /PATH/TO/CONFIG/
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">In the case of <code class="docutils literal"><span class="pre">fetch-ini</span></code> subcommand, if you’re not on an ESGF node and <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code> doesn’t exist,
+<p class="last">In the case of <code class="docutils literal"><span class="pre">esgfetchini</span></code> command, if you’re not on an ESGF node and <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code> doesn’t exist,
 the configuration file(s) are fetched into an <code class="docutils literal"><span class="pre">ini</span></code> folder in your working directory.</p>
 </div>
 </div>
@@ -249,41 +257,41 @@ Other information are logged into a file named <code class="docutils literal"><s
 If not, the standard output is used following the verbose mode.
 By default, the logfiles are stored in a <code class="docutils literal"><span class="pre">logs</span></code> folder created in your current working directory (if not exists).
 It can be changed by adding a optional logfile directory to the flag.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --log
-$&gt; esgprep SUBCOMMAND --log /PATH/TO/LOGDIR/
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND <span class="o">[</span>SUBCOMMAND<span class="o">]</span> --log
+$&gt; COMMAND <span class="o">[</span>SUBCOMMAND<span class="o">]</span> --log /PATH/TO/LOGDIR/
 </pre></div>
 </div>
 </div>
 <div class="section" id="use-filters">
 <h2>Use filters<a class="headerlink" href="#use-filters" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">check-vocab</span></code> and <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code> subcommands will scan your local archive to achieve proper data
+<p><code class="docutils literal"><span class="pre">esgcheckvocab</span></code> and <code class="docutils literal"><span class="pre">esgmapfile</span></code> subcommands will scan your local archive to achieve proper data
 management. In such a scan, you can filter the file discovery by using a Python regular expression
 (see <a class="reference external" href="https://docs.python.org/2/library/re.html">re</a> Python library).</p>
 <p>The default is to walk through your local filesystem ignoring the <code class="docutils literal"><span class="pre">files</span></code> and <code class="docutils literal"><span class="pre">latest</span></code> version levels
 and any hidden folders by using the following regular expression: <code class="docutils literal"><span class="pre">^.*/(files|latest|\.[\w]*).*$</span></code>. It can be change
 with:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --ignore-dir PYTHON_REGEX
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND <span class="o">[</span>SUBCOMMAND<span class="o">]</span> --ignore-dir PYTHON_REGEX
 </pre></div>
 </div>
 <p><code class="docutils literal"><span class="pre">esgprep</span></code> only considers unhidden NetCDF files by default excuding the regular expression <code class="docutils literal"><span class="pre">^\..*$</span></code> and
 including the following one <code class="docutils literal"><span class="pre">.*\.nc$</span></code>. It can be independently change with:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --include-file PYTHON_REGEX --exclude-file PYTHON_REGEX
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND <span class="o">[</span>SUBCOMMAND<span class="o">]</span> --include-file PYTHON_REGEX --exclude-file PYTHON_REGEX
 </pre></div>
 </div>
 <p>Keep in mind that <code class="docutils literal"><span class="pre">--ignore-dir</span></code> and <code class="docutils literal"><span class="pre">--exclude-file</span></code> specifie a directory pattern <strong>NOT</strong> to be matched, while
 <code class="docutils literal"><span class="pre">--include-file</span></code> specifies a filename pattern <strong>TO BE</strong> matched.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last"><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">fetch-ini</span></code> does not allow those features and <code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">drs</span></code> only works with unhidden
+<p class="last"><code class="docutils literal"><span class="pre">esgfetchini</span></code> does not allow those features and <code class="docutils literal"><span class="pre">esgdrs</span></code> only works with unhidden
 NetCDF files.</p>
 </div>
 </div>
-<div class="section" id="use-multiprocessing">
-<h2>Use multiprocessing<a class="headerlink" href="#use-multiprocessing" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">esgprep</span></code> uses a multiprocessing interface. This is useful to process a large amount of data, especially in the case
+<div class="section" id="use-multithreading">
+<h2>Use multithreading<a class="headerlink" href="#use-multithreading" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">esgprep</span></code> uses a multithreading interface. This is useful to process a large amount of data, especially in the case
 of <code class="docutils literal"><span class="pre">drs</span></code> and <code class="docutils literal"><span class="pre">mapfile</span></code> subcommands with file checksum computation. Set the number of maximal threads to
 simultaneously process several files (4 threads is the default and one seems sequential processing).</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep SUBCOMMAND --max-threads <span class="m">4</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND <span class="o">[</span>SUBCOMMAND<span class="o">]</span> --max-threads <span class="m">4</span>
 </pre></div>
 </div>
 </div>
@@ -311,7 +319,7 @@ simultaneously process several files (4 threads is the default and one seems seq
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="fetch-ini.html" class="btn btn-neutral float-right" title="Fetch ESGF configuration INI files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="fetchini.html" class="btn btn-neutral float-right" title="Fetch ESGF configuration INI files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="configuration.html" class="btn btn-neutral" title="Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -345,7 +353,7 @@ simultaneously process several files (4 threads is the default and one seems seq
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.39',
+            VERSION:'2.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

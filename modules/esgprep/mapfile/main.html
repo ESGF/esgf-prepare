@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.main &mdash; esgprep 2.7.39 documentation</title>
+  <title>esgprep.mapfile.main &mdash; esgprep 2.8.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.7.39 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.8.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                2.7
+                2.8
               </div>
             
           
@@ -93,10 +93,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fetchini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../check-vocab.html">Check CV against configuration INI files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generation mapfiles for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../checkvocab.html">Check CV against configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
@@ -180,16 +180,16 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 
-<span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">NoConfigKey</span>
+<span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">MissingPatternKey</span>
 <span class="kn">from</span> <span class="nn">lockfile</span> <span class="k">import</span> <span class="n">LockFile</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">context</span> <span class="k">import</span> <span class="n">ProcessingContext</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">evaluate</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">evaluate</span><span class="p">,</span> <span class="n">remove</span>
 <span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">File</span><span class="p">,</span> <span class="n">Dataset</span>
 
 
-<div class="viewcode-block" id="get_output_mapfile"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.get_output_mapfile">[docs]</a><span class="k">def</span> <span class="nf">get_output_mapfile</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">mapfile_name</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataset_version</span><span class="p">,</span> <span class="n">mapfile_drs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_output_mapfile"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.get_output_mapfile">[docs]</a><span class="k">def</span> <span class="nf">get_output_mapfile</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">mapfile_name</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataset_version</span><span class="p">,</span> <span class="n">mapfile_drs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">basename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Builds the mapfile full path depending on:</span>
 
@@ -203,15 +203,20 @@
 <span class="sd">    :param str dataset_id: The dataset id</span>
 <span class="sd">    :param str dataset_version: The dataset version</span>
 <span class="sd">    :param str mapfile_drs: The optional mapfile tree</span>
+<span class="sd">    :param boolean basename: True to only get mapfile name without root directory</span>
 <span class="sd">    :returns: The mapfile full path</span>
 <span class="sd">    :rtype: *str*</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Deduce output directory from --outdir and &#39;mapfile_drs&#39;</span>
-    <span class="k">if</span> <span class="n">mapfile_drs</span><span class="p">:</span>
-        <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">mapfile_drs</span><span class="p">,</span> <span class="n">attributes</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">basename</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mapfile_drs</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">mapfile_drs</span><span class="p">,</span> <span class="n">attributes</span><span class="p">))</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MissingPatternKey</span><span class="p">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">mapfile_drs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
     <span class="c1"># Create output directory if not exists, catch OSError instead</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
@@ -230,7 +235,10 @@
     <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="si">{job_id}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">mapfile_name</span><span class="p">):</span>
         <span class="n">mapfile_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="si">{job_id}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()),</span> <span class="n">mapfile_name</span><span class="p">)</span>
     <span class="c1"># Add a &quot;working extension&quot; pending for the end of process</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">mapfile_name</span><span class="p">)</span> <span class="o">+</span> <span class="n">WORKING_EXTENSION</span></div>
+    <span class="k">if</span> <span class="n">basename</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mapfile_name</span> <span class="o">+</span> <span class="n">WORKING_EXTENSION</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">mapfile_name</span><span class="p">)</span> <span class="o">+</span> <span class="n">WORKING_EXTENSION</span></div>
 
 
 <div class="viewcode-block" id="mapfile_entry"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.main.mapfile_entry">[docs]</a><span class="k">def</span> <span class="nf">mapfile_entry</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataset_version</span><span class="p">,</span> <span class="n">ffp</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">optional_attrs</span><span class="p">):</span>
@@ -307,20 +315,16 @@
             <span class="n">sh</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
         <span class="c1"># Matching between directory_format and file full path</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">load_attributes</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">pattern</span><span class="p">)</span>
-        <span class="c1"># Apply proper case to each attribute</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">sh</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
-            <span class="c1"># Try to get the appropriate facet case for &quot;category_default&quot;</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">sh</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_options_from_pairs</span><span class="p">(</span><span class="s1">&#39;category_defaults&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">NoConfigKey</span><span class="p">:</span>
-                <span class="c1"># If not specified keep facet case from local path, do nothing</span>
-                <span class="k">pass</span>
         <span class="c1"># Deduce dataset_id</span>
-        <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset</span><span class="p">:</span>
+        <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset_name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">dataset_name</span><span class="p">:</span>
             <span class="n">sh</span><span class="o">.</span><span class="n">check_facets</span><span class="p">(</span><span class="n">facets</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">facets</span><span class="p">,</span>
                             <span class="n">config</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
             <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">get_dataset_id</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="c1"># Ensure that the first facet is ALWAYS the same as the called project section (case insensitive)</span>
+        <span class="k">assert</span> <span class="n">dataset_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span> <span class="s1">&#39;Inconsistent dataset identifier. &#39;</span> \
+                                                                   <span class="s1">&#39;Must start with &quot;</span><span class="si">{}</span><span class="s1">/&quot; &#39;</span> \
+                                                                   <span class="s1">&#39;(case-insensitive)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
         <span class="c1"># Deduce dataset_version</span>
         <span class="n">dataset_version</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">get_dataset_version</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">no_version</span><span class="p">)</span>
         <span class="c1"># Build mapfile name depending on the --mapfile flag and appropriate tokens</span>
@@ -329,7 +333,8 @@
                                      <span class="n">mapfile_name</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">mapfile_name</span><span class="p">,</span>
                                      <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span>
                                      <span class="n">dataset_version</span><span class="o">=</span><span class="n">dataset_version</span><span class="p">,</span>
-                                     <span class="n">mapfile_drs</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">mapfile_drs</span><span class="p">)</span>
+                                     <span class="n">mapfile_drs</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">mapfile_drs</span><span class="p">,</span>
+                                     <span class="n">basename</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
         <span class="c1"># Dry-run: don&#39;t write mapfile to only show their paths</span>
         <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;make&#39;</span><span class="p">:</span>
             <span class="c1"># Generate the corresponding mapfile entry/line</span>
@@ -393,15 +398,14 @@
         <span class="k">if</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">mapfile</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">results</span><span class="p">)):</span>
                 <span class="c1"># Remove mapfile working extension</span>
-                <span class="n">mapfile</span> <span class="o">=</span> <span class="n">mapfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;show&#39;</span><span class="p">:</span>
                     <span class="c1"># Print mapfiles to be generated</span>
-                    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="n">mapfile</span><span class="p">)</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">mapfile</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pbar</span> <span class="ow">or</span> <span class="n">ctx</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">remove</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="n">mapfile</span><span class="p">))</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">remove</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="n">mapfile</span><span class="p">))</span>
                 <span class="k">elif</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;make&#39;</span><span class="p">:</span>
                     <span class="c1"># A final mapfile is silently overwritten if already exists</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapfile</span><span class="p">,</span> <span class="n">mapfile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span></div>
+                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapfile</span><span class="p">,</span> <span class="n">remove</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="n">mapfile</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
@@ -438,7 +442,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.7.39',
+            VERSION:'2.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

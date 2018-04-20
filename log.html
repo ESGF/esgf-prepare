@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Change Log &mdash; esgprep 2.7.39 documentation</title>
+  <title>Change Log &mdash; esgprep 2.8.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.39 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.8.0 documentation" href="index.html"/>
         <link rel="next" title="Code documentation" href="autodoc.html"/>
         <link rel="prev" title="Credits" href="credits.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                2.7
+                2.8
               </div>
             
           
@@ -94,13 +94,16 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV against configuration INI files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkvocab.html">Check CV against configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-8-0-2018-04-05">v2.8.0 (2018-04-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-7-40-2018-03-14">v2.7.40 (2018-03-14)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-7-39-2018-03-09">v2.7.39 (2018-03-09)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-7-38-2018-02-22">v2.7.38 (2018-02-22)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-7-37-2018-02-14">v2.7.37 (2018-02-14)</a></li>
@@ -175,6 +178,46 @@
             
   <div class="section" id="change-log">
 <span id="log"></span><h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="unreleased">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.8.0...HEAD">Full
+Changelog</a></p>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>temporary files persisted
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/24">#24</a></li>
+<li>add option to show path of mapfile
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/19">#19</a></li>
+</ul>
+</div>
+<div class="section" id="v2-8-0-2018-04-05">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.8.0">v2.8.0</a> (2018-04-05)<a class="headerlink" href="#v2-8-0-2018-04-05" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.7.40...v2.8.0">Full
+Changelog</a></p>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>update doc location message
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/23">#23</a></li>
+</ul>
+</div>
+<div class="section" id="v2-7-40-2018-03-14">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.7.40">v2.7.40</a> (2018-03-14)<a class="headerlink" href="#v2-7-40-2018-03-14" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.7.39...v2.7.40">Full
+Changelog</a></p>
+<p><strong>Fixed bugs:</strong></p>
+<ul class="simple">
+<li>Wrong collector filtering in default mode for mapfile generation
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/22">#22</a></li>
+</ul>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>Remove files from an input list during DRS migration
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/21">#21</a></li>
+<li>wrong order of commands in “esgprep drs todo” output when updating
+“latest” symlink
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/20">#20</a></li>
+</ul>
+</div>
 <div class="section" id="v2-7-39-2018-03-09">
 <h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.7.39">v2.7.39</a> (2018-03-09)<a class="headerlink" href="#v2-7-39-2018-03-09" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.7.39...HEAD">Full
@@ -464,7 +507,7 @@ in “esgprep drs”
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.39',
+            VERSION:'2.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

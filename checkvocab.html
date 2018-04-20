@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Frequently asked questions &mdash; esgprep 2.8.0 documentation</title>
+  <title>Check CV against configuration INI files &mdash; esgprep 2.8.0 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="esgprep 2.8.0 documentation" href="index.html"/>
-        <link rel="next" title="Credits" href="credits.html"/>
-        <link rel="prev" title="Generation mapfiles for ESGF publication" href="mapfiles.html"/> 
+        <link rel="next" title="Generation mapfiles for ESGF publication" href="mapfiles.html"/>
+        <link rel="prev" title="Manage local data through the DRS" href="drs.html"/> 
 
   
   <script src="static/js/modernizr.min.js"></script>
@@ -96,9 +96,14 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="checkvocab.html">Check CV against configuration INI files</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Check CV against configuration INI files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#check-from-the-directory-structure">Check from the directory structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#check-from-a-dataset-list">Check from a dataset list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generation mapfiles for ESGF publication</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
@@ -146,13 +151,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Frequently asked questions</li>
+      <li>Check CV against configuration INI files</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="sources/faq.rst.txt" rel="nofollow"> View page source</a>
+            <a href="sources/checkvocab.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -165,8 +170,59 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="frequently-asked-questions">
-<span id="faq"></span><h1>Frequently asked questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="check-cv-against-configuration-ini-files">
+<span id="check-vocab"></span><h1>Check CV against configuration INI files<a class="headerlink" href="#check-cv-against-configuration-ini-files" title="Permalink to this headline">¶</a></h1>
+<p>In the case that your data already follows the appropriate directory structure, you may want to check that all
+values of each facet are correctly declared in the <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> sections. The <code class="docutils literal"><span class="pre">check-vocab</span></code> command
+allows you to easily check the configuration file attributes by scanning your data tree, and the facet values
+will be derived from the directory pattern.</p>
+<p>Alternatively, you may supply a list of dataset IDs in a text file. In this case, the <code class="docutils literal"><span class="pre">check-vocab</span></code> command will
+perform a similar operation without scanning the file system, and the facet values will be derived from the
+dataset ID pattern.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">esgcheckvocab</span></code> is useless if you rebuilt your DRS tree using <code class="docutils literal"><span class="pre">esgdrs</span></code> with official configuration INI files.</p>
+</div>
+<div class="section" id="check-from-the-directory-structure">
+<h2>Check from the directory structure<a class="headerlink" href="#check-from-the-directory-structure" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgcheckvocab  --project PROJECT_ID --directory /PATH/TO/SCAN/
+</pre></div>
+</div>
+</div>
+<div class="section" id="check-from-a-dataset-list">
+<h2>Check from a dataset list<a class="headerlink" href="#check-from-a-dataset-list" title="Permalink to this headline">¶</a></h2>
+<p>The file must contain one dataset ID per line. This can be without version, or with a version suffix of the form
+<code class="docutils literal"><span class="pre">.v&lt;version&gt;</span></code> or <code class="docutils literal"><span class="pre">#&lt;version&gt;</span></code> which is ignored.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgcheckvocab --project PROJECT_ID --dataset-list /PATH/TO/TXT_FILE
+</pre></div>
+</div>
+<p>If no file submitted, the standard input is used:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgcheckvocab --project PROJECT_ID --dataset-list &lt; /PATH/TO/TXT_FILE
+</pre></div>
+</div>
+</div>
+<div class="section" id="exit-status">
+<h2>Exit status<a class="headerlink" href="#exit-status" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="first docutils">
+<dt>Status = 0</dt>
+<dd>All the files have been successfully scanned and there were no undeclared values in the configuration INI files.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Status = 1</dt>
+<dd>Some scan errors occurred. Some files have been skipped or failed during the scan. See the error logfile.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Status = 2</dt>
+<dd>There were undeclared values in the configuration INI files. See the error logfile.</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</div>
 </div>
 
 
@@ -179,10 +235,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="credits.html" class="btn btn-neutral float-right" title="Credits" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mapfiles.html" class="btn btn-neutral float-right" title="Generation mapfiles for ESGF publication" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="mapfiles.html" class="btn btn-neutral" title="Generation mapfiles for ESGF publication" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="drs.html" class="btn btn-neutral" title="Manage local data through the DRS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

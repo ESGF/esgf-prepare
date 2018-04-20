@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generation mapfiles for ESGF publication &mdash; esgprep 2.7.39 documentation</title>
+  <title>Generate mapfile for ESGF publication &mdash; esgprep 2.8.0 documentation</title>
   
 
   
@@ -35,9 +35,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.7.39 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.8.0 documentation" href="index.html"/>
         <link rel="next" title="Frequently asked questions" href="faq.html"/>
-        <link rel="prev" title="Check CV against configuration INI files" href="check-vocab.html"/> 
+        <link rel="prev" title="Check CV against configuration INI files" href="checkvocab.html"/> 
 
   
   <script src="static/js/modernizr.min.js"></script>
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                2.7
+                2.8
               </div>
             
           
@@ -94,10 +94,10 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fetch-ini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="check-vocab.html">Check CV against configuration INI files</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Generation mapfiles for ESGF publication</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="checkvocab.html">Check CV against configuration INI files</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Generate mapfile for ESGF publication</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#default-mapfile-generation">Default mapfile generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mapfile-without-files-checksums">Mapfile without files checksums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mapfile-without-drs-versions">Mapfile without DRS versions</a></li>
@@ -108,6 +108,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#walking-through-all-versions">Walking through all versions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#add-technical-notes">Add technical notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overwrite-the-dataset-identifier">Overwrite the dataset identifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#show-the-expected-mapfile-name-and-path">Show the expected mapfile name and path</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
@@ -159,7 +160,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Generation mapfiles for ESGF publication</li>
+      <li>Generate mapfile for ESGF publication</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -178,8 +179,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="generation-mapfiles-for-esgf-publication">
-<span id="mapfiles"></span><h1>Generation mapfiles for ESGF publication<a class="headerlink" href="#generation-mapfiles-for-esgf-publication" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="generate-mapfile-for-esgf-publication">
+<span id="mapfiles"></span><h1>Generate mapfile for ESGF publication<a class="headerlink" href="#generate-mapfile-for-esgf-publication" title="Permalink to this headline">¶</a></h1>
 <p>The publication process on the ESGF nodes requires <em>mapfiles</em>. Mapfiles are text files where each line
 describes a file to publish, using the following format:</p>
 <p><code class="docutils literal"><span class="pre">dataset_ID</span> <span class="pre">|</span> <span class="pre">absolute_path</span> <span class="pre">|</span> <span class="pre">size_bytes</span> <span class="pre">[</span> <span class="pre">|</span> <span class="pre">option=value</span> <span class="pre">]</span></code></p>
@@ -202,26 +203,33 @@ describes a file to publish, using the following format:</p>
 <li>To store ONE mapfile PER dataset is strongly recommended.</li>
 </ol>
 </div></blockquote>
-<p><code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code> is a flexible command-line allowing you to easily generate mapfiles</p>
+<dl class="docutils">
+<dt>Several <code class="docutils literal"><span class="pre">esgmapfile</span></code> actions are available to manage your mapfiles:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">make</span></code> generates the mapfiles,</li>
+<li><code class="docutils literal"><span class="pre">show</span></code> displays the expected mapfiles path to be generated.</li>
+</ul>
+</dd>
+</dl>
 <div class="section" id="default-mapfile-generation">
 <h2>Default mapfile generation<a class="headerlink" href="#default-mapfile-generation" title="Permalink to this headline">¶</a></h2>
 <p>The default behavior is to pick up the latest version in the DRS. This required version with a date format
 (e.g., v20151023). If the version is directly specified in positional argument, the version number from supplied
 directory is used.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/
 </pre></div>
 </div>
 </div>
 <div class="section" id="mapfile-without-files-checksums">
 <h2>Mapfile without files checksums<a class="headerlink" href="#mapfile-without-files-checksums" title="Permalink to this headline">¶</a></h2>
 <p>Because this could be time consuming <code class="docutils literal"><span class="pre">--no-checksum</span></code> allows you not include the file checksum into your mapfile(s).</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
 </pre></div>
 </div>
 </div>
 <div class="section" id="mapfile-without-drs-versions">
 <h2>Mapfile without DRS versions<a class="headerlink" href="#mapfile-without-drs-versions" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-version
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-version
 </pre></div>
 </div>
 </div>
@@ -232,9 +240,9 @@ can be specified for the output mapfile(s) name using several tokens. Substrings
 <code class="docutils literal"><span class="pre">{job_id}</span></code> or <code class="docutils literal"><span class="pre">{date}</span></code> (in YYYYDDMM) will be substituted where found. If <code class="docutils literal"><span class="pre">{dataset_id}</span></code> is not present in mapfile
 name, then all datasets will be written to a single mapfile, overriding the default behavior of producing ONE mapfile
 PER dataset.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile <span class="o">{</span>dataset_id<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
-$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile <span class="o">{</span>date<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
-$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --mapfile MY_MAPFILE.<span class="o">{</span>version<span class="o">}</span>.<span class="o">{</span>date<span class="o">}</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --mapfile <span class="o">{</span>dataset_id<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
+$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --mapfile <span class="o">{</span>date<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
+$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --mapfile MY_MAPFILE.<span class="o">{</span>version<span class="o">}</span>.<span class="o">{</span>date<span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -246,30 +254,30 @@ changed by submitting an output directory for your mapfiles.</p>
 file(s) (see <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">Configuration</span></a>). In the same way as the <code class="docutils literal"><span class="pre">directory_format</span></code> it defines a tree depending on the
 facets. Each mapfile is then written into the corresponding output directory. This <code class="docutils literal"><span class="pre">mapfile_drs</span></code> directory structure
 will be added to the output directory if submitted.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --outdir /PATH/TO/MY_MAPFILES/
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --outdir /PATH/TO/MY_MAPFILES/
 </pre></div>
 </div>
 <p>The output directory is cleaned up prior to mapfile process to avoid uncompleted mapfiles. In the case of several
-<code class="docutils literal"><span class="pre">esgprep</span> <span class="pre">mapfile</span></code> instances run with the same output directory it is recommended to disable the cleanup:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --no-cleanup
+<code class="docutils literal"><span class="pre">esgmapfile</span></code> instances run with the same output directory it is recommended to disable the cleanup:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-cleanup
 </pre></div>
 </div>
 </div>
 <div class="section" id="walking-through-latest-directories-only">
 <h2>Walking through <em>latest</em> directories only<a class="headerlink" href="#walking-through-latest-directories-only" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --latest-symlink
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --latest-symlink
 </pre></div>
 </div>
 </div>
 <div class="section" id="walking-through-a-particular-version-only">
 <h2>Walking through a particular version only<a class="headerlink" href="#walking-through-a-particular-version-only" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --version VERSION
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --version VERSION
 </pre></div>
 </div>
 </div>
 <div class="section" id="walking-through-all-versions">
 <h2>Walking through all versions<a class="headerlink" href="#walking-through-all-versions" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --all-versions
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --all-versions
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -279,18 +287,54 @@ will be added to the output directory if submitted.</p>
 </div>
 <div class="section" id="add-technical-notes">
 <h2>Add technical notes<a class="headerlink" href="#add-technical-notes" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --tech-notes-url URL --tech-notes-title TITLE
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --tech-notes-url URL --tech-notes-title TITLE
 </pre></div>
 </div>
 </div>
 <div class="section" id="overwrite-the-dataset-identifier">
 <h2>Overwrite the dataset identifier<a class="headerlink" href="#overwrite-the-dataset-identifier" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgprep mapfile --project PROJECT_ID /PATH/TO/SCAN/ --dataset DATASET_NAME
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --dataset-name DATASET_NAME
 </pre></div>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">All files will belong to the specified dataset, regardless of the DRS.</p>
+</div>
+</div>
+<div class="section" id="show-the-expected-mapfile-name-and-path">
+<h2>Show the expected mapfile name and path<a class="headerlink" href="#show-the-expected-mapfile-name-and-path" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">show</span></code> works as a “dry-run” of the <code class="docutils literal"><span class="pre">make</span></code> and supports different types inputs.
+You can show the mapfiles full path to be generated from:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a directory to scan:</li>
+</ul>
+</div></blockquote>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>   $&gt; esgmapfile show --project PROJECT_ID --directory /PATH/TO/SCAN
+
+- a text file with one dataset ID per line:
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>   $&gt; esgmapfile show --project PROJECT_ID --dataset-list /PATH/TO/TXT_FILE
+
+- a unique dataset ID:
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile show --project PROJECT_ID --dataset-id DATASET_ID
+</pre></div>
+</div>
+<p>In the case of <code class="docutils literal"><span class="pre">--dataset-list</span></code> and <code class="docutils literal"><span class="pre">--dataset-id</span></code> if no file or dataset ID submitted, the standard input is used.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile show --project PROJECT_ID --dataset-list &lt; /PATH/TO/TXT_FILE
+$&gt; esgmapfile show --project PROJECT_ID --dataset-id &lt; DATASET_ID
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">In the case of dataset IDs the version suffix is expected.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All the <code class="docutils literal"><span class="pre">make</span></code> arguments can be safely combined with <code class="docutils literal"><span class="pre">show</span></code>.</p>
 </div>
 </div>
 <div class="section" id="exit-status">
@@ -336,7 +380,7 @@ mapfiles. See the error logfile.</dd>
         <a href="faq.html" class="btn btn-neutral float-right" title="Frequently asked questions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="check-vocab.html" class="btn btn-neutral" title="Check CV against configuration INI files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="checkvocab.html" class="btn btn-neutral" title="Check CV against configuration INI files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -367,7 +411,7 @@ mapfiles. See the error logfile.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.7.39',
+            VERSION:'2.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
