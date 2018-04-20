@@ -7,7 +7,7 @@ Code documentation
 esgfetchini
 ***********
 
-.. automodule:: esgprep.fetchini
+.. automodule:: esgprep.esgfetchini
 .. automodule:: esgprep.fetchini.constants
 .. automodule:: esgprep.fetchini.main
 .. automodule:: esgprep.fetchini.context
@@ -17,7 +17,7 @@ esgfetchini
 esgdrs
 ******
 
-.. automodule:: esgprep.drs
+.. automodule:: esgprep.esgdrs
 .. automodule:: esgprep.drs.constants
 .. automodule:: esgprep.drs.main
 .. automodule:: esgprep.drs.context
@@ -26,7 +26,7 @@ esgdrs
 
 esgcheckvocab
 *************
-.. automodule:: esgprep.checkvocab
+.. automodule:: esgprep.esgcheckvocab
 .. automodule:: esgprep.checkvocab.constants
 .. automodule:: esgprep.checkvocab.main
 .. automodule:: esgprep.checkvocab.context
@@ -35,7 +35,7 @@ esgcheckvocab
 esgmapfile
 **********
 
-.. automodule:: esgprep.mapfile
+.. automodule:: esgprep.esgmapfile
 .. automodule:: esgprep.mapfile.constants
 .. automodule:: esgprep.mapfile.main
 .. automodule:: esgprep.mapfile.context
