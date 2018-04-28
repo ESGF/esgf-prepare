@@ -87,11 +87,10 @@ class File(object):
         except IOError:
             raise InvalidNetCDFFile(self.ffp)
         # Get attributes from filename, overwriting existing ones
-        try:
-            # re.search() method is required to search through the entire string.
-            self.attributes.update(re.search(pattern, self.filename).groupdict())
-        except:
+        match = re.search(pattern, self.filename)
+        if not match:
             raise ExpressionNotMatch(self.filename, pattern)
+        self.attributes.update(match.groupdict())
         # Get attributes from command-line, overwriting existing ones
         self.attributes.update(set_values)
         # Set version to None
