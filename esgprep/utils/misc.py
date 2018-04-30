@@ -183,5 +183,7 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
             return hash_algo.digest()
     except AttributeError:
         raise InvalidChecksumType(checksum_type)
+    except KeyboardInterrupt:
+        raise
     except:
         raise ChecksumFail(ffp, checksum_type)
