@@ -243,8 +243,4 @@ class ProcessingContext(object):
         :rtype: *dict*
 
         """
-        checksums = dict()
-        for entry in checksum_file.read().splitlines():
-            value, key = entry.split()
-            checksums[key] = value
-        return checksums
+        return dict([(k, v) for v, k in [entry.split() for entry in checksum_file.read().splitlines()]])
