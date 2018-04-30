@@ -594,6 +594,15 @@ OUTDIR_HELP = \
     
     """
 
+CHECKSUMS_FROM_HELP = \
+    """
+    Get the checksums from an submitted file. This checksum|n
+    file must have the same format as the output of the UNIX|n
+    command-lines "*sum". If the case of unfound checksums,|n
+    it falls back to compute the checksum as normal.
+
+    """
+
 ALL_VERSIONS_HELP = \
     """
     Generates mapfile(s) with all versions found in the|n

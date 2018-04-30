@@ -18,7 +18,7 @@ from lockfile import LockFile
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.misc import evaluate, remove
+from esgprep.utils.misc import evaluate, remove, get_checksum_pattern
 from handler import File, Dataset
 
 
@@ -174,7 +174,22 @@ def process(collector_input):
             optional_attrs = dict()
             optional_attrs['mod_time'] = sh.mtime
             if not ctx.no_checksum:
-                optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
+                if ctx.checksums_from:
+                    if source in ctx.checksums_from.keys():
+                        if re.match(get_checksum_pattern(ctx.checksum_type), ctx.checksums_from[source]):
+                            optional_attrs['checksum'] = ctx.checksums_from[source]
+
+                        else:
+                            logging.warning('Invalid {} checksum pattern: {} -- '
+                                            'Recomputing checksum.'.format(ctx.checksum_type,
+                                                                           ctx.checksums_from[source]))
+                            optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
+                    else:
+                        logging.warning('Entry not found in checksum file: {} -- '
+                                        'Recomputing checksum.'.format(ctx.checksums_from[source]))
+                        optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
+                else:
+                    optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
                 optional_attrs['checksum_type'] = ctx.checksum_type.upper()
             optional_attrs['dataset_tech_notes'] = ctx.notes_url
             optional_attrs['dataset_tech_notes_title'] = ctx.notes_title

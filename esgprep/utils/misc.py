@@ -187,3 +187,16 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
         raise
     except:
         raise ChecksumFail(ffp, checksum_type)
+
+def get_checksum_pattern(checksum_type):
+    """
+    Build the checksum pattern depending on the checksum type.
+
+    :param str checksum_type: The checksum type
+    :return: The checksum pattern
+    :rtype: *re.Object*
+
+    """
+    hash_algo = getattr(hashlib, checksum_type)()
+    checksum_length = len(hash_algo.hexdigest())
+    return re.compile('^[0-9a-f]{{{}}}$'.format(checksum_length))

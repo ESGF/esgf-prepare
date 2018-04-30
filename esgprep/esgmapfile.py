@@ -188,6 +188,11 @@ def get_args():
         action=DirectoryChecker,
         nargs='+',
         help=DIRECTORY_HELP['mapfile'])
+    make.add_argument(
+        '--checksums-from',
+        metavar='CHECKSUM_FILE',
+        type=FileType('r'),
+        help=CHECKSUMS_FROM_HELP)
     # Subparser for "esgmapfile show"
     show = subparsers.add_parser(
         'show',

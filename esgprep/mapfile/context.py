@@ -75,6 +75,9 @@ class ProcessingContext(object):
         if self.action == 'show':
             self.dataset_list = args.dataset_list
             self.dataset_id = args.dataset_id
+        self.checksums_from = None
+        if args.checksums_from:
+            self.checksums_from = self.load_checksums(args.checksums_from)
         self.scan_errors = None
         self.scan_files = None
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename
@@ -225,3 +228,20 @@ class ProcessingContext(object):
             for filename in fnmatch.filter(filenames, '*{}'.format(WORKING_EXTENSION)):
                 os.remove(os.path.join(root, filename))
         logging.info('{} cleaned'.format(self.outdir))
+
+    @staticmethod
+    def load_checksums(checksum_file):
+        """
+        Convert checksums file input as dictionary where (key: value) pairs respectively
+        are the file path and its checksum.
+
+        :param FileObject checksum_file: The submitted checksum file
+        :returns: The loaded checksums
+        :rtype: *dict*
+
+        """
+        checksums = dict()
+        for entry in checksum_file.read().splitlines():
+            value, key = entry.split()
+            checksums[key] = value
+        return checksums
