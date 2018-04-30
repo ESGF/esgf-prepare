@@ -44,7 +44,7 @@ class ProcessingContext(object):
         self.overwrite_commands_file = args.overwrite_commands_file
         self.upgrade_from_latest = args.upgrade_from_latest
         try:
-            self.ignore_from_latest = open(args.ignore_from_latest, 'r').read().splitlines()
+            self.ignore_from_latest = args.ignore_from_latest.read().splitlines()
             self.upgrade_from_latest = True
         except TypeError, IOError:
             self.ignore_from_latest = list()
