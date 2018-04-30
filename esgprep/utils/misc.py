@@ -172,7 +172,8 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
     try:
         hash_algo = getattr(hashlib, checksum_type)()
         with open(ffp, 'rb') as f:
-            for block in iter(lambda: f.read(os.stat(ffp).st_blksize), b''):
+            blocksize = os.stat(ffp).st_blksize
+            for block in iter(lambda: f.read(blocksize), b''):
                 hash_algo.update(block)
         if include_filename:
             hash_algo.update(os.path.basename(ffp))
