@@ -154,6 +154,8 @@ def process(collector_input):
             ctx.tree.paths[fph.path(f_part=False)] = [incoming]
         logging.info('{} <-- {}'.format(fph.path(f_part=False), fh.filename))
         return True
+    except KeyboardInterrupt:
+        raise
     except Exception as e:
         logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         return None
