@@ -126,7 +126,7 @@ def get_args():
     parent.add_argument(
         '--commands-file',
         metavar='TXT_FILE',
-        type=FileType('r'),
+        type=str,
         help=COMMANDS_FILE_HELP)
     parent.add_argument(
         '--overwrite-commands-file',
