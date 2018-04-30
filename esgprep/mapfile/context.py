@@ -65,18 +65,21 @@ class ProcessingContext(object):
             self.version = 'v{}'.format(args.version)
         if args.latest_symlink:
             self.version = 'latest'
-        self.notes_title = args.tech_notes_title
-        self.notes_url = args.tech_notes_url
         if not args.no_cleanup:
             self.clean()
         self.no_cleanup = args.no_cleanup
-        self.no_checksum = args.no_checksum
         self.directory = args.directory
-        if self.action == 'show':
+        if hasattr(args, 'dataset_list'):
             self.dataset_list = args.dataset_list
+        if hasattr(args, 'dataset_id'):
             self.dataset_id = args.dataset_id
-        self.checksums_from = None
-        if args.checksums_from:
+        if hasattr(args, 'no_checksum'):
+            self.no_checksum = args.no_checksum
+        if hasattr(args, 'tech_notes_title'):
+            self.notes_title = args.tech_notes_title
+        if hasattr(args, 'tech_notes_url'):
+            self.notes_url = args.tech_notes_url
+        if hasattr(args, 'checksums_from'):
             self.checksums_from = self.load_checksums(args.checksums_from)
         self.scan_errors = None
         self.scan_files = None

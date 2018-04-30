@@ -153,21 +153,6 @@ def get_args():
         default=4,
         help=MAX_THREADS_HELP)
     parent.add_argument(
-        '--no-checksum',
-        action='store_true',
-        default=False,
-        help=NO_CHECKSUM_HELP)
-    parent.add_argument(
-        '--tech-notes-url',
-        metavar='URL',
-        type=str,
-        help=TECH_NOTES_URL_HELP)
-    parent.add_argument(
-        '--tech-notes-title',
-        metavar='TITLE',
-        type=str,
-        help=TECH_NOTES_TITLE_HELP)
-    parent.add_argument(
         '--no-cleanup',
         action='store_true',
         default=False,
@@ -188,6 +173,21 @@ def get_args():
         action=DirectoryChecker,
         nargs='+',
         help=DIRECTORY_HELP['mapfile'])
+    make.add_argument(
+        '--no-checksum',
+        action='store_true',
+        default=False,
+        help=NO_CHECKSUM_HELP)
+    make.add_argument(
+        '--tech-notes-url',
+        metavar='URL',
+        type=str,
+        help=TECH_NOTES_URL_HELP)
+    make.add_argument(
+        '--tech-notes-title',
+        metavar='TITLE',
+        type=str,
+        help=TECH_NOTES_TITLE_HELP)
     make.add_argument(
         '--checksums-from',
         metavar='CHECKSUM_FILE',
