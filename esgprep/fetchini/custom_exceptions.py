@@ -7,6 +7,7 @@
 
 """
 
+from datetime import datetime
 
 ###################################
 # Exceptions for GitHub connexion #
@@ -45,8 +46,12 @@ class GitHubAPIRateLimit(GitHubException):
 
     """
 
-    def __init__(self):
-        self.msg = "GitHub API rate limit exceeded (try again in 60 minutes or submit GitHub user/password)"
+    def __init__(self, reset_time):
+        reset_delta = datetime.fromtimestamp(reset_time) - datetime.now()
+        hours, remainder = divmod(reset_delta.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        self.msg = "GitHub API rate limit exceeded ; submit GitHub user/password to release the rate limit."
+        self.msg += "<time_to_reset: {}hour(s) {} minute(s) {}second(s)>".format(hours, minutes, seconds)
         super(self.__class__, self).__init__(self.msg)
 
 

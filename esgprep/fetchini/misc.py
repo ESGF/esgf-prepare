@@ -33,6 +33,7 @@ def gh_request_content(url, auth=None):
     elif r.status_code == 401:
         raise GitHubUnauthorized()
     elif r.status_code == 403:
+        reset = r.json()['resources']['core']['reset']
         raise GitHubAPIRateLimit()
     elif r.status_code == 404:
         raise GitHubFileNotFound()
