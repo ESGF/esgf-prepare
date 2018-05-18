@@ -26,6 +26,7 @@ setup(name='esgprep',
       entry_points={'console_scripts': ['esgmapfile=esgprep.esgmapfile:run',
                                         'esgdrs=esgprep.esgdrs:run',
                                         'esgfetchini=esgprep.esgfetchini:run',
+                                        'esgfetchtables=esgprep.esgfetchtables:run',
                                         'esgcheckvocab=esgprep.esgcheckvocab:run'
                                         ]},
       classifiers=['Development Status :: 5 - Production/Stable',
