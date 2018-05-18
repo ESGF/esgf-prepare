@@ -64,6 +64,23 @@ PROGRAM_DESC = {
         {}
         
         """.format(TITLE, INTRO, URL, DEFAULT),
+    'fetchtables':
+        """
+        {}|n|n
+    
+        {}|n|n
+    
+        Some of ESGF quality control tools rely on tables describing the variables, their coordinates and attributes.
+        Those tables are produced to standardize data for ESGF through the Climate Model Output Rewriter (CMOR). The
+        CMOR tables are available for different projects. "esgfetchtables" allows you to properly download those 
+        tables hosted on an official GitHub repository. Keep in mind that the fetched files have to be 
+        reviewed to ensure a correct configuration of your side.|n|n
+    
+        {}|n|n
+    
+        {}
+    
+        """.format(TITLE, INTRO, URL, DEFAULT),
     'drs':
         """
         {}|n|n
@@ -252,6 +269,19 @@ DEVEL_HELP = \
     
     """
 
+BRANCH_HELP = \
+    """
+    Fetch from a GitHub branch.|n
+    Default is to fetch from master branch.
+
+    """
+
+TAG_HELP = \
+    """
+    Fetch from a GitHub tag.
+
+    """
+
 DIRECTORY_HELP = {
     'checkvocab':
         """
@@ -295,7 +325,6 @@ INCLUDE_FILE_HELP = \
     """
     Filter files matching the regular expression.|n
     Duplicate the flag to set several filters.|n
-    Default only include NetCDF files.
     
     """
 
@@ -303,8 +332,6 @@ EXCLUDE_FILE_HELP = \
     """
     Filter files NON-matching the regular expression.|n
     Duplicate the flag to set several filters.|n
-    Default only exclude files (with names not|n
-    starting with ".").
 
     """
 
@@ -592,6 +619,24 @@ OUTDIR_HELP = \
     defined per project section in INI files and joined to|n
     build a mapfiles tree.
     
+    """
+
+TABLES_DIR_HELP = \
+    """
+    Top CMOR tables output directory containing |n
+    "<PROJECT>-cmor-tables" folder(s).|n
+    If not specified, the usual datanode directory|n
+    is used.
+    
+    """
+
+NO_REF_FOLDER_HELP = \
+    """
+    Disable table subfolder depending on the GitHub|n
+    Reference (i.e., a tag or branch). Default is to |n
+    build output directory as:|n
+    "<TABLES_DIR>/<PROJECT>-cmor-table/<GH_REF>|n
+
     """
 
 CHECKSUMS_FROM_HELP = \

@@ -125,19 +125,19 @@ def get_args():
         help=NO_VERSION_HELP)
     parent.add_argument(
         '--ignore-dir',
-        metavar="PYTHON_REGEX",
+        metavar='^.*/(files|\.[\w]*).*$',
         type=str,
         default='^.*/(files|\.[\w]*).*$',
         help=IGNORE_DIR_HELP)
     parent.add_argument(
         '--include-file',
-        metavar='PYTHON_REGEX',
+        metavar='^.*\.nc$',
         type=regex_validator,
         action='append',
         help=INCLUDE_FILE_HELP)
     parent.add_argument(
         '--exclude-file',
-        metavar='PYTHON_REGEX',
+        metavar='^\..*$',
         type=regex_validator,
         action='append',
         help=EXCLUDE_FILE_HELP)

@@ -12,7 +12,7 @@ from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, _ArgumentParser
+from utils.parser import MultilineFormatter, _ArgumentParser
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -50,7 +50,7 @@ def get_args():
     main.add_argument(
         '-i',
         metavar='/esg/config/esgcet',
-        action=DirectoryChecker,
+        type=str,
         default='/esg/config/esgcet',
         help=INI_HELP)
     main.add_argument(
