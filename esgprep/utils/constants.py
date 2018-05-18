@@ -632,7 +632,7 @@ TABLES_DIR_HELP = \
 
 NO_REF_FOLDER_HELP = \
     """
-    Disable table subfolder depending on the GitHub|n
+    Disable table sub-folder depending on the GitHub|n
     Reference (i.e., a tag or branch). Default is to |n
     build output directory as:|n
     "<TABLES_DIR>/<PROJECT>-cmor-table/<GH_REF>|n
