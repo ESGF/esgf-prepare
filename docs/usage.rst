@@ -116,7 +116,7 @@ Keep in mind that ``--ignore-dir`` and ``--exclude-file`` specifie a directory p
 ``--include-file`` specifies a filename pattern **TO BE** matched.
 
 .. warning:: ``esgfetchini`` does not allow those features and ``esgdrs`` only works with unhidden
-    NetCDF files.
+    NetCDF files. ``esgfetchtables`` only supports ``--include-file`` and ``--exclude-file`` flags.
 
 Use multithreading
 ******************

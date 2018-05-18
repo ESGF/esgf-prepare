@@ -11,8 +11,14 @@ esgfetchini
 .. automodule:: esgprep.fetchini.constants
 .. automodule:: esgprep.fetchini.main
 .. automodule:: esgprep.fetchini.context
-.. automodule:: esgprep.fetchini.custom_exceptions
-.. automodule:: esgprep.fetchini.misc
+
+esgfetchtables
+**************
+
+.. automodule:: esgprep.esgfetchtables
+.. automodule:: esgprep.fetchtables.constants
+.. automodule:: esgprep.fetchtables.main
+.. automodule:: esgprep.fetchtables.context
 
 esgdrs
 ******

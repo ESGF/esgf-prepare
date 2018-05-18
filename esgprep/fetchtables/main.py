@@ -128,8 +128,12 @@ def make_outdir(tables_dir, repository, reference=None):
         try:
             os.makedirs(outdir)
             logging.warning('{} created'.format(outdir))
-        except OSError:
-            # If default tables directory does not exists
+        except OSError as e:
+            # If default tables directory does not exists and without write access
+            print 'Cannot use "{}" because of OSError ({} - {}) -- Use "{}" instead.'.format(outdir,
+                                                                                             e.errno,
+                                                                                             e.message,
+                                                                                             os.getcwd())
             outdir = os.path.join(os.getcwd(), repository)
             if reference:
                 outdir = os.path.join(outdir, reference)

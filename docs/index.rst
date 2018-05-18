@@ -31,6 +31,7 @@ the *Data Reference Syntax* on local filesystems and/or generate mapfiles for ES
    configuration
    usage
    fetchini
+   fetchtables
    drs
    checkvocab
    mapfiles

@@ -1,4 +1,4 @@
-.. _fetch-ini:
+.. _fetchini:
 
 
 Fetch ESGF configuration INI files
@@ -25,6 +25,13 @@ Without project argument, all the configuration files will be downloaded.
 
 .. warning::
    If a configuration file already exists, the default is to overwrite it only if local and remote checksums are different.
+
+Fetch file(s) from the devel branch
+***********************************
+
+.. code-block:: bash
+
+    $> esgfetchini --devel
 
 Keep existing file(s)
 *********************
@@ -58,7 +65,7 @@ When overwriting existing files, two backup modes can be enabled:
 Use your GitHub account
 ***********************
 
-To avoid the Github API rate limit, submit your GitHub username and password.
+To release the Github API rate limit, submit your GitHub username and password.
 
 .. code-block:: bash
 

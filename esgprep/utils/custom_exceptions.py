@@ -131,7 +131,7 @@ class GitHubAPIRateLimit(GitHubException):
         hours, remainder = divmod(reset_delta.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
         self.msg = "GitHub API rate limit exceeded ; submit GitHub user/password to release the rate limit."
-        self.msg += "\n<time_to_reset: {} hour(s) {} minute(s) {} second(s)>".format(hours, minutes, seconds)
+        self.msg += "\n<time to reset: {} hour(s) {} minute(s) {} second(s)>".format(hours, minutes, seconds)
         super(self.__class__, self).__init__(self.msg)
 
 
