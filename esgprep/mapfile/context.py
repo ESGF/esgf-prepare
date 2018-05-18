@@ -80,7 +80,10 @@ class ProcessingContext(object):
         if hasattr(args, 'tech_notes_url'):
             self.notes_url = args.tech_notes_url
         if hasattr(args, 'checksums_from'):
-            self.checksums_from = self.load_checksums(args.checksums_from)
+            if args.checksums_from:
+                self.checksums_from = self.load_checksums(args.checksums_from)
+            else:
+                self.checksums_from = args.checksums_from
         self.scan_errors = None
         self.scan_files = None
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename
