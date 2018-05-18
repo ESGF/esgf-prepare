@@ -13,7 +13,6 @@ import re
 import sys
 
 from requests.auth import HTTPBasicAuth
-from tqdm import tqdm
 
 from constants import *
 from misc import gh_request_content
@@ -38,7 +37,7 @@ class ProcessingContext(object):
         self.backup_mode = args.b
         self.gh_user = args.gh_user
         self.gh_password = args.gh_password
-        self.outdir = os.path.realpath(os.path.normpath(args.tables_dir))
+        self.tables_dir = os.path.realpath(os.path.normpath(args.tables_dir))
         self.no_ref_folder = args.no_ref_folder
         self.url = GITHUB_CONTENT_API
         self.ref_url = GITHUB_REFS_API
@@ -67,17 +66,6 @@ class ProcessingContext(object):
         self.auth = self.authenticate()
         # Init the project list to retrieve
         self.targets = self.target_projects()
-        # Init progress bar
-        nfiles = len(self.targets)
-        if self.pbar and nfiles:
-            self.targets = tqdm(self.targets,
-                                desc='Fetching project(s) config',
-                                total=nfiles,
-                                bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
-                                ncols=100,
-                                file=sys.stdout)
-        elif not nfiles:
-            logging.info('No files found on remote repository')
         return self
 
     def __exit__(self, *exc):

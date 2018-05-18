@@ -9,10 +9,12 @@
 
 import logging
 import os
+import sys
 from datetime import datetime
 from hashlib import sha1
 
 import requests
+from tqdm import tqdm
 
 from constants import *
 from context import ProcessingContext
@@ -108,30 +110,33 @@ def githash(outfile):
     return unicode(s.hexdigest())
 
 
-def make_outdir(outdir=None):
+def make_outdir(tables_dir, repository, reference=None):
     """
-    Build the output directory as follows:
-     - If ESGF node and args.outdir = /usr/local/ -> exists
-     - If not ESGF node and args.outdir = /esg/config/esgcet -> doesn't exist -> use $PWD/ini instead
-     - If ESGF node and args.outdir = other -> if not exists make it
-     - If not ESGF node and args.out = other -> if not exists make it
+    Build the output directory.
 
-    :param str repo: The GitHub repository name
-    :param str ref: The GitHub reference name
-    :param str outdir: The local output directory submitted
+    :param str tables_dir: The CMOR tables directory submitted
+    :param str repository: The GitHub repository name
+    :param str reference: The GitHub reference name (tag or branch)
 
     """
+
+    outdir = os.path.join(tables_dir, repository)
+    if reference:
+        outdir = os.path.join(outdir, reference)
     # If directory does not already exist
     if not os.path.isdir(outdir):
         try:
             os.makedirs(outdir)
             logging.warning('{} created'.format(outdir))
         except OSError:
-            raise OSError
-            # outdir = '{}/ini'.format(os.getcwd())
-            # if not os.path.isdir(self.config_dir):
-            #     os.makedirs(self.config_dir)
-            #     logging.warning('{} created'.format(self.config_dir))
+            # If default tables directory does not exists
+            outdir = os.path.join(os.getcwd(), repository)
+            if reference:
+                outdir = os.path.join(outdir, reference)
+            if not os.path.isdir(outdir):
+                os.makedirs(outdir)
+                logging.warning('{} created'.format(outdir))
+    return outdir
 
 
 def run(args):
@@ -160,20 +165,31 @@ def run(args):
                 if ctx.ref not in refs:
                     raise GitHubReferenceNotFound(ctx.ref, refs)
                 # Build output directory
-                ctx.outdir = os.path.join(ctx.outdir, repo)
                 if not ctx.no_ref_folder:
-                    ctx.outdir = os.path.join(ctx.outdir, ctx.ref)
-                make_outdir(ctx.outdir)
+                    outdir = make_outdir(ctx.tables_dir, repo, ctx.ref)
+                else:
+                    outdir = make_outdir(ctx.tables_dir, repo)
                 # Set repository url
                 url = ctx.url.format(repo)
                 url += GITHUB_API_PARAMETER.format('ref', ctx.ref)
                 # Get the list of files to fetch
                 r = gh_request_content(url=url, auth=ctx.auth)
                 files = [f['name'] for f in r.json() if ctx.file_filter(f)]
+                # Init progress bar
+                nfiles = len(files)
+                if ctx.pbar and nfiles:
+                    files = tqdm(files,
+                                 desc='Fetching {} tables'.format(project),
+                                 total=nfiles,
+                                 bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
+                                 ncols=100,
+                                 file=sys.stdout)
+                elif not nfiles:
+                    logging.info('No files found on remote repository')
                 # Get the files
                 for f in files:
                     # Set output file full path
-                    outfile = os.path.join(ctx.outdir, f)
+                    outfile = os.path.join(outdir, f)
                     # Set full file url
                     url = ctx.url.format(repo)
                     url += '/{}'.format(f)

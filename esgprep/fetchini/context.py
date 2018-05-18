@@ -87,12 +87,14 @@ class ProcessingContext(object):
          - If not ESGF node and args.i = other -> if not exists make it
 
         """
+        # If directory does not already exist
         if not os.path.isdir(self.config_dir):
             try:
                 os.makedirs(self.config_dir)
                 logging.warning('{} created'.format(self.config_dir))
             except OSError:
-                self.config_dir = '{}/ini'.format(os.getcwd())
+                # If default directory does not exists
+                self.config_dir = os.path.join(os.getcwd(), 'ini')
                 if not os.path.isdir(self.config_dir):
                     os.makedirs(self.config_dir)
                     logging.warning('{} created'.format(self.config_dir))

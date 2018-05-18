@@ -94,7 +94,7 @@ def get_args():
         '--no-ref-folder',
         action='store_true',
         default=False,
-        help=NO_TAG_FOLDER_HELP)
+        help=NO_REF_FOLDER_HELP)
     main.add_argument(
         '--gh-user',
         metavar='USERNAME',
