@@ -16,8 +16,8 @@ import requests
 
 from constants import *
 from context import ProcessingContext
-from custom_exceptions import GitHubException
-from misc import gh_request_content
+from esgprep.utils.custom_exceptions import GitHubException
+from esgprep.utils.misc import gh_request_content
 
 
 def backup(f, mode=None):

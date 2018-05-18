@@ -16,7 +16,7 @@ from requests.auth import HTTPBasicAuth
 from tqdm import tqdm
 
 from constants import *
-from misc import gh_request_content
+from esgprep.utils.misc import gh_request_content
 
 
 class ProcessingContext(object):

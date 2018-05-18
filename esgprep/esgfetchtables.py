@@ -73,7 +73,7 @@ def get_args():
         help=PROJECT_HELP['fetchini'])
     group = main.add_mutually_exclusive_group(required=False)
     group.add_argument(
-        '-k ',
+        '-k',
         action='store_true',
         default=False,
         help=KEEP_HELP)
@@ -105,13 +105,13 @@ def get_args():
         metavar='PASSWORD',
         type=str,
         help=GITHUB_PASSWORD_HELP)
-    group = main.add_mutually_exclusive_group(required=True)
-    group.add_argument(
+    ref = main.add_mutually_exclusive_group(required=False)
+    ref.add_argument(
         '--tag',
         metavar='TAG',
         type=str,
         help=TAG_HELP)
-    group.add_argument(
+    ref.add_argument(
         '--branch',
         metavar='master',
         type=str,

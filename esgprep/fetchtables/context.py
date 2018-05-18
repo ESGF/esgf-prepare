@@ -15,8 +15,8 @@ import sys
 from requests.auth import HTTPBasicAuth
 
 from constants import *
-from misc import gh_request_content
-from utils.collectors import FilterCollection
+from esgprep.utils.collectors import FilterCollection
+from esgprep.utils.misc import gh_request_content
 
 
 class ProcessingContext(object):
@@ -48,17 +48,18 @@ class ProcessingContext(object):
             self.ref = args.tag
             self.ref_url += '/tags'
         self.file_filter = FilterCollection()
-        self.file_filter = []
         if args.include_file:
-            self.file_filter.extend([(f, True) for f in args.include_file])
+            for regex in args.include_file:
+                self.file_filter.add(regex=regex, inclusive=True)
         else:
             # Default include all files
-            self.file_filter.append(('^.*$', True))
+            self.file_filter.add(regex='^.*$', inclusive=True)
         if args.exclude_file:
-            self.file_filter.extend([(f, False) for f in args.exclude_file])
+            for regex in args.exclude_file:
+                self.file_filter.add(regex=regex, inclusive=False)
         else:
             # Default exclude hidden files
-            self.file_filter.append(('^\..*$', False))
+            self.file_filter.add(regex='^\..*$', inclusive=False)
         self.error = False
 
     def __enter__(self):

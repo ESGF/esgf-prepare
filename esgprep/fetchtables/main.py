@@ -18,8 +18,8 @@ from tqdm import tqdm
 
 from constants import *
 from context import ProcessingContext
-from custom_exceptions import GitHubException, GitHubReferenceNotFound
-from misc import gh_request_content
+from esgprep.utils.custom_exceptions import GitHubException, GitHubReferenceNotFound
+from esgprep.utils.misc import gh_request_content
 
 
 def backup(f, mode=None):
@@ -174,7 +174,7 @@ def run(args):
                 url += GITHUB_API_PARAMETER.format('ref', ctx.ref)
                 # Get the list of files to fetch
                 r = gh_request_content(url=url, auth=ctx.auth)
-                files = [f['name'] for f in r.json() if ctx.file_filter(f)]
+                files = [f['name'] for f in r.json() if ctx.file_filter(f['name'])]
                 # Init progress bar
                 nfiles = len(files)
                 if ctx.pbar and nfiles:

@@ -23,7 +23,6 @@ from treelib.tree import DuplicatedNodeIdError
 
 from constants import *
 from custom_exceptions import *
-from esgprep.utils.constants import *
 from esgprep.utils.custom_exceptions import *
 from esgprep.utils.misc import checksum
 
