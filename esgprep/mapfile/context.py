@@ -248,6 +248,6 @@ class ProcessingContext(object):
         """
         checksums = dict()
         for checksum, path in [entry.split() for entry in checksum_file.read().splitlines()]:
-            path = os.path.realpath(os.path.normpath(path))
+            path = os.path.abspath(os.path.normpath(path))
             checksums[path] = checksum
         return checksums
