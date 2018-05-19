@@ -197,7 +197,12 @@ def run(args):
                     # Set full file url
                     url = ctx.url.format(repo)
                     url += '/{}'.format(f)
-                    url += GITHUB_API_PARAMETER.format('ref', ctx.ref)
+                    # Particular case of CMIP6_CV.json file
+                    # which has to be fetched from master in any case
+                    if f == 'CMIP6_CV.json':
+                        url += GITHUB_API_PARAMETER.format('ref', 'master')
+                    else:
+                        url += GITHUB_API_PARAMETER.format('ref', ctx.ref)
                     # Get GitHub file content
                     r = gh_request_content(url=url, auth=ctx.auth)
                     sha = r.json()['sha']
