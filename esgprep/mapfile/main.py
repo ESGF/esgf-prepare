@@ -178,7 +178,6 @@ def process(collector_input):
                     if source in ctx.checksums_from.keys():
                         if re.match(get_checksum_pattern(ctx.checksum_type), ctx.checksums_from[source]):
                             optional_attrs['checksum'] = ctx.checksums_from[source]
-
                         else:
                             logging.warning('Invalid {} checksum pattern: {} -- '
                                             'Recomputing checksum.'.format(ctx.checksum_type,

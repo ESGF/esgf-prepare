@@ -246,4 +246,8 @@ class ProcessingContext(object):
         :rtype: *dict*
 
         """
-        return dict([(k, v) for v, k in [entry.split() for entry in checksum_file.read().splitlines()]])
+        checksums = dict()
+        for checksum, path in [entry.split() for entry in checksum_file.read().splitlines()]:
+            path = os.path.realpath(os.path.normpath(path))
+            checksums[path] = checksum
+        return checksums
