@@ -185,7 +185,7 @@ def process(collector_input):
                             optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
                     else:
                         logging.warning('Entry not found in checksum file: {} -- '
-                                        'Recomputing checksum.'.format(ctx.checksums_from[source]))
+                                        'Recomputing checksum.'.format(source))
                         optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
                 else:
                     optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
