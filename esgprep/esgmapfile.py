@@ -15,7 +15,7 @@ from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser, processes_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -147,11 +147,11 @@ def get_args():
         type=str,
         help=DATASET_NAME_HELP)
     parent.add_argument(
-        '--max-threads',
+        '--max-processes',
         metavar='4',
-        type=int,
+        type=processes_validator,
         default=4,
-        help=MAX_THREADS_HELP)
+        help=MAX_PROCESSES_HELP)
     parent.add_argument(
         '--no-cleanup',
         action='store_true',

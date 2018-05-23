@@ -155,6 +155,20 @@ def regex_validator(string):
         raise ArgumentTypeError(msg)
 
 
+def processes_validator(value):
+    """
+    Validates the max processes number.
+
+    :param str value: The max processes number submitted
+    :return:
+    """
+    pnum = int(value)
+    if not pnum > 1 or not pnum == -1:
+        msg = 'Invalid processes number. Should be a positive integer or "-1".'
+        raise ArgumentTypeError(msg)
+    return pnum
+
+
 class _ArgumentParser(ArgumentParser):
     def error(self, message):
         """

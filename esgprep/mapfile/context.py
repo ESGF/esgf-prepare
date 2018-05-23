@@ -12,6 +12,7 @@ import logging
 import os
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.managers import SyncManager
 
 from ESGConfigParser import SectionParser
 from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
@@ -33,15 +34,27 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
+        # TODO: register pbar and cfg class type
+        SyncManager.register('graph', Graph, exposed=('get_graph', 'has_graph', 'set_graph', '__call__'))
+        SyncManager.register('graph', Graph, exposed=('get_graph', 'has_graph', 'set_graph', '__call__'))
+        self.ProcessContext = SyncManager()
+        self.ProcessContext.start()
+        # DiGraph creation
+        global graph
+        graph = manager.graph()
+
         self.pbar = args.pbar
+
         self.config_dir = args.i
-        self.project = args.project
+
+        self.project = self.ProcessContext.Value('c', args.project)
+
         self.action = args.action
         self.mapfile_name = args.mapfile
         self.outdir = args.outdir
         self.no_version = args.no_version
-        self.threads = args.max_threads
-        self.use_pool = (self.threads > 1)
+        self.processes = args.max_processes
+        self.use_pool = (self.processes != 1)
         self.dataset_name = args.dataset_name
         self.dir_filter = args.ignore_dir
         self.basename = args.basename if hasattr(args, 'basename') else False
@@ -93,11 +106,11 @@ class ProcessingContext(object):
         # Get checksum client
         self.checksum_type = self.get_checksum_type()
         # Init configuration parser
-        self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
+        self.cfg = SectionParser(section='project:{}'.format(self.project.value), directory=self.config_dir)
         self.facets = self.cfg.get_facets('dataset_id')
         # Get mapfile DRS is set in configuration file
         try:
-            _cfg = SectionParser(section='config:{}'.format(self.project), directory=self.config_dir)
+            _cfg = SectionParser(section='config:{}'.format(self.project.value), directory=self.config_dir)
             self.mapfile_drs = _cfg.get('mapfile_drs')
         except (NoConfigOption, NoConfigSection):
             self.mapfile_drs = None
@@ -157,16 +170,9 @@ class ProcessingContext(object):
                                         + SOURCE_TYPE[self.source_type],
                              ncols=100,
                              file=sys.stdout)
-        # Init threads pool
-        if self.use_pool:
-            self.pool = ThreadPool(int(self.threads))
         return self
 
     def __exit__(self, *exc):
-        # Close threads pool
-        if self.use_pool:
-            self.pool.close()
-            self.pool.join()
         # Decline outputs depending on the scan results
         # Raise errors when one or several files have been skipped or failed
         # Default is sys.exit(0)

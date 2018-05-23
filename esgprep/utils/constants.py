@@ -539,11 +539,13 @@ SYMLINK_HELP = \
     
     """
 
-MAX_THREADS_HELP = \
+MAX_PROCESSES_HELP = \
     """
-    Number of maximal threads to simultaneously process|n
+    Number of maximal processes to simultaneously treat|n
     several files (useful if checksum calculation is|n
     enabled). Set to one seems sequential processing.
+    Set to "-1" seems all available resources as returned|n
+    by "multiprocessing.cpu_count()"
     
     """
 

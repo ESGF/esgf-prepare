@@ -12,6 +12,7 @@ import logging
 import os
 import re
 from datetime import datetime
+from multiprocessing import Pool
 
 from ESGConfigParser import interpolate, MissingPatternKey
 from lockfile import LockFile
@@ -116,7 +117,7 @@ def write(outfile, entry):
             mapfile.write(entry)
 
 
-def process(collector_input):
+def process(source):
     """
     File process that:
 
@@ -131,67 +132,65 @@ def process(collector_input):
 
     Any error leads to skip the file. It does not stop the process.
 
-    :param tuple collector_input: A tuple with the file path and the processing context
+    :param str source: The source to process could be a path or a dataset ID
     :returns: The output mapfile full path
     :rtype: *str*
 
     """
-    # Deserialize inputs from collector
-    source, ctx = collector_input
     # Block to avoid program stop if a thread fails
     try:
-        if ctx.source_type == 'file':
+        if source_type == 'file':
             # Instantiate source handle as file
             sh = File(source)
         else:
             # Instantiate source handler as dataset
             sh = Dataset(source)
         # Matching between directory_format and file full path
-        sh.load_attributes(pattern=ctx.pattern)
+        sh.load_attributes(pattern=pattern)
         # Deduce dataset_id
-        dataset_id = ctx.dataset_name
-        if not ctx.dataset_name:
-            sh.check_facets(facets=ctx.facets,
-                            config=ctx.cfg)
-            dataset_id = sh.get_dataset_id(ctx.cfg.get('dataset_id', raw=True))
+        dataset_id = dataset_name
+        if not dataset_name:
+            sh.check_facets(facets=facets,
+                            config=cfg)
+            dataset_id = sh.get_dataset_id(cfg.get('dataset_id', raw=True))
         # Ensure that the first facet is ALWAYS the same as the called project section (case insensitive)
-        assert dataset_id.lower().startswith(ctx.project.lower()), 'Inconsistent dataset identifier. ' \
-                                                                   'Must start with "{}/" ' \
-                                                                   '(case-insensitive)'.format(ctx.project)
+        assert dataset_id.lower().startswith(project.lower()), 'Inconsistent dataset identifier. ' \
+                                                               'Must start with "{}/" ' \
+                                                               '(case-insensitive)'.format(project)
         # Deduce dataset_version
-        dataset_version = sh.get_dataset_version(ctx.no_version)
+        dataset_version = sh.get_dataset_version(no_version)
         # Build mapfile name depending on the --mapfile flag and appropriate tokens
-        outfile = get_output_mapfile(outdir=ctx.outdir,
+        outfile = get_output_mapfile(outdir=outdir,
                                      attributes=sh.attributes,
-                                     mapfile_name=ctx.mapfile_name,
+                                     mapfile_name=mapfile_name,
                                      dataset_id=dataset_id,
                                      dataset_version=dataset_version,
-                                     mapfile_drs=ctx.mapfile_drs,
-                                     basename=ctx.basename)
+                                     mapfile_drs=mapfile_drs,
+                                     basename=basename)
         # Dry-run: don't write mapfile to only show their paths
-        if ctx.action == 'make':
+        if action == 'make':
             # Generate the corresponding mapfile entry/line
             optional_attrs = dict()
             optional_attrs['mod_time'] = sh.mtime
-            if not ctx.no_checksum:
-                if ctx.checksums_from:
-                    if source in ctx.checksums_from.keys():
-                        if re.match(get_checksum_pattern(ctx.checksum_type), ctx.checksums_from[source]):
-                            optional_attrs['checksum'] = ctx.checksums_from[source]
+            if not no_checksum:
+                if checksums_from:
+                    if source in checksums_from.keys():
+                        if re.match(get_checksum_pattern(checksum_type), checksums_from[source]):
+                            optional_attrs['checksum'] = checksums_from[source]
                         else:
                             logging.warning('Invalid {} checksum pattern: {} -- '
-                                            'Recomputing checksum.'.format(ctx.checksum_type,
-                                                                           ctx.checksums_from[source]))
-                            optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
+                                            'Recomputing checksum.'.format(checksum_type,
+                                                                           checksums_from[source]))
+                            optional_attrs['checksum'] = sh.checksum(checksum_type)
                     else:
                         logging.warning('Entry not found in checksum file: {} -- '
                                         'Recomputing checksum.'.format(source))
-                        optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
+                        optional_attrs['checksum'] = sh.checksum(checksum_type)
                 else:
-                    optional_attrs['checksum'] = sh.checksum(ctx.checksum_type)
-                optional_attrs['checksum_type'] = ctx.checksum_type.upper()
-            optional_attrs['dataset_tech_notes'] = ctx.notes_url
-            optional_attrs['dataset_tech_notes_title'] = ctx.notes_title
+                    optional_attrs['checksum'] = sh.checksum(checksum_type)
+                optional_attrs['checksum_type'] = checksum_type.upper()
+            optional_attrs['dataset_tech_notes'] = notes_url
+            optional_attrs['dataset_tech_notes_title'] = notes_title
             line = mapfile_entry(dataset_id=dataset_id,
                                  dataset_version=dataset_version,
                                  ffp=source,
@@ -206,8 +205,22 @@ def process(collector_input):
         logging.error('{} skipped\n{}: {}'.format(source, e.__class__.__name__, e.message))
         return None
     finally:
-        if ctx.pbar:
-            ctx.pbar.update()
+        if pbar:
+            pbar.update()
+
+
+def initializer(keys, values):
+    """
+    Initialize process context by setting particular variables as global variables.
+
+    :param list keys: Argument name
+    :param list values: Argument value
+
+    """
+    assert len(keys) == len(values)
+    for i, key in enumerate(keys):
+        global key
+        key = values[i]
 
 
 def run(args):
@@ -224,14 +237,21 @@ def run(args):
     """
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
-        # If dataset ID is submitted for "show" action skip scan
         logging.info('==> Scan started')
+        # Init processes pool
+        ProcessContext = {key: getattr(ctx, key) for key in PROCESS_VARS
+        # TODO: not pass manager directly but only the proxies
+        pool = Pool(processes=ctx.processes, initializer=initializer, initargs=(ProcessContext.keys(),
+                                                                                ProcessContext.values()))
         if ctx.use_pool:
-            processes = ctx.pool.imap(process, ctx.sources)
+            processes = pool.imap(process, ctx.sources)
         else:
             processes = itertools.imap(process, ctx.sources)
         # Process supplied sources
         results = [x for x in processes]
+        # Close pool of workers
+        pool.close()
+        pool.join()
         # Close progress bar
         if ctx.pbar:
             ctx.pbar.close()
