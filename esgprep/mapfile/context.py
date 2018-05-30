@@ -21,8 +21,8 @@ from constants import *
 from esgprep.utils.collectors import VersionedPathCollector, DatasetCollector
 from esgprep.utils.custom_exceptions import *
 
-SyncManager.register('pbar', tqdm, exposed=('get_graph', 'has_graph', 'set_graph', '__call__'))
-SyncManager.register('cfg', SectionParser, exposed=('get_graph', 'has_graph', 'set_graph', '__call__'))
+SyncManager.register('pbar', tqdm, exposed=('update', 'close'))
+SyncManager.register('cfg', SectionParser, exposed=('get'))
 
 class ProcessManager(SyncManager):
     pass

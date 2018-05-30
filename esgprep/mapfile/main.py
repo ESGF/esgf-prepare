@@ -243,7 +243,7 @@ def run(args):
         manager = ProcessManager()
         manager.start()
         # Init processes pool
-        ProcessContext = {key: getattr(ctx, name) for name in PROCESS_VARS}
+        ProcessContext = {name: getattr(ctx, name) for name in PROCESS_VARS}
         ProcessContext['pbar'] = manager.pbar()
         ProcessContext['cfg'] = manager.cfg()
         ProcessContext['facets'] = manager.list(ctx.facets)
@@ -260,7 +260,7 @@ def run(args):
         pool.join()
         # Close progress bar
         if ctx.pbar:
-            ctx.pbar.close()
+            ProcessContext['pbar'].close()
         # Get number of files scanned (including skipped files)
         ctx.scan_files = len(results)
         # Get number of scan errors

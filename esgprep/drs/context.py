@@ -11,6 +11,8 @@ import logging
 import re
 import sys
 from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.managers import SyncManager
+
 from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
@@ -22,6 +24,19 @@ from esgprep.utils.collectors import Collector
 from esgprep.utils.custom_exceptions import *
 from esgprep.utils.misc import load
 from handler import DRSTree, DRSPath
+
+SyncManager.register('pbar', tqdm, exposed=('update', 'close'))
+SyncManager.register('cfg', SectionParser, exposed=('get'))
+SyncManager.register('tree', DRSTree, exposed=('create_leaf',
+                                               'get_display_lengths',
+                                               'check_uniqueness',
+                                               'list',
+                                               'todo',
+                                               'tree'
+                                               'upgrade'))
+
+class ProcessManager(SyncManager):
+    pass
 
 
 class ProcessingContext(object):

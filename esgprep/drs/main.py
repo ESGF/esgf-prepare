@@ -9,9 +9,10 @@
 
 import itertools
 import logging
+from multiprocessing import Pool
 
 from constants import *
-from context import ProcessingContext
+from context import ProcessingContext, ProcessManager
 from custom_exceptions import *
 from esgprep.utils.misc import load, store, evaluate, checksum
 from handler import File, DRSPath
@@ -164,6 +165,20 @@ def process(collector_input):
             ctx.pbar.update()
 
 
+def initializer(keys, values):
+    """
+    Initialize process context by setting particular variables as global variables.
+
+    :param list keys: Argument name
+    :param list values: Argument value
+
+    """
+    assert len(keys) == len(values)
+    for i, key in enumerate(keys):
+        global key
+        key = values[i]
+
+
 def run(args):
     """
     Main process that:
@@ -180,38 +195,51 @@ def run(args):
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
+        # Init process manager
+        manager = ProcessManager()
+        manager.start()
+        # Init processes pool
+        ProcessContext = {name: getattr(ctx, name) for name in PROCESS_VARS}
+        ProcessContext['pbar'] = manager.pbar()
+        ProcessContext['cfg'] = manager.cfg()
+        ProcessContext['facets'] = manager.list(ctx.facets)
+        ProcessContext['tree'] = manager.tree()
+        pool = Pool(processes=ctx.processes, initializer=initializer, initargs=(ProcessContext.keys(),
+                                                                                ProcessContext.values()))
+
+        tree = ProcessContext['tree']
         if not ctx.scan:
             reader = load(TREE_FILE)
             _ = reader.next()
-            ctx.tree = reader.next()
+            tree = reader.next()
             ctx.scan_err_log = reader.next()
             results = reader.next()
             # Rollback --commands_file value to command-line argument in any case
-            ctx.tree.commands_file = ctx.commands_file
+            tree.commands_file = ctx.commands_file
         else:
             if ctx.use_pool:
-                processes = ctx.pool.imap(process, ctx.sources)
+                processes = pool.imap(process, ctx.sources)
             else:
                 processes = itertools.imap(process, ctx.sources)
             # Process supplied files
             results = [x for x in processes]
             # Close progress bar
-            if ctx.pbar:
-                ctx.pbar.close()
+            if ProcessContext['pbar']:
+                ProcessContext['pbar'].close()
         # Get number of files scanned (including skipped files)
         ctx.scan_files = len(results)
         # Get number of scan errors
         ctx.scan_errors = results.count(None)
         # Backup tree context for later usage with other command lines
         store(TREE_FILE, data=[{key: ctx.__getattribute__(key) for key in CONTROLLED_ARGS},
-                               ctx.tree,
+                               tree,
                                ctx.scan_err_log,
                                results])
         logging.warning('DRS tree recorded for next usage onto {}.'.format(TREE_FILE))
         # Evaluates the scan results to trigger the DRS tree action
         if evaluate(results):
             # Check upgrade uniqueness
-            ctx.tree.check_uniqueness(ctx.checksum_type)
+            tree.check_uniqueness(ctx.checksum_type)
             # Apply tree action
-            ctx.tree.get_display_lengths()
-            getattr(ctx.tree, ctx.action)()
+            tree.get_display_lengths()
+            getattr(tree, ctx.action)()

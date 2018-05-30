@@ -38,5 +38,16 @@ CONTROLLED_ARGS = ['directory',
                    'upgrade_from_latest',
                    'ignore_from_latest']
 
+# List of variable required by each process
+PROCESS_VARS = ['root',
+                'pattern',
+                'set_values',
+                'set_keys',
+                'project',
+                'checksum_type',
+                'mode',
+                'upgrade_from_latest',
+                'ignore_from_latest']
+
 # Tree context file
 TREE_FILE = '/tmp/DRSTree_{}.pkl'.format(environ['USER'])
