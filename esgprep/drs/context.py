@@ -46,7 +46,7 @@ class ProcessingContext(object):
         try:
             self.ignore_from_latest = args.ignore_from_latest.read().splitlines()
             self.upgrade_from_latest = True
-        except TypeError, IOError:
+        except (TypeError, IOError, AttributeError):
             self.ignore_from_latest = list()
         self.set_values = {}
         if args.set_value:
