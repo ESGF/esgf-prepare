@@ -63,14 +63,15 @@ def process(collector_input):
             if int(DRSPath.TREE_VERSION[1:]) <= int(fph.v_latest[1:]):
                 raise OlderUpgrade(DRSPath.TREE_VERSION, fph.v_latest)
             # Walk through the latest dataset version to check its uniqueness with file checksums
-            dset_nid = fph.path(f_part=False, latest=True, root=True)
-            if dset_nid not in ctx.tree.hash.keys():
-                ctx.tree.hash[dset_nid] = dict()
-                ctx.tree.hash[dset_nid]['latest'] = dict()
-                for root, _, filenames in os.walk(fph.path(f_part=False, latest=True, root=True)):
-                    for filename in filenames:
-                        ctx.tree.hash[dset_nid]['latest'][filename] = checksum(os.path.join(root, filename),
-                                                                               ctx.checksum_type)
+            if not ctx.no_checksum:
+                dset_nid = fph.path(f_part=False, latest=True, root=True)
+                if dset_nid not in ctx.tree.hash.keys():
+                    ctx.tree.hash[dset_nid] = dict()
+                    ctx.tree.hash[dset_nid]['latest'] = dict()
+                    for root, _, filenames in os.walk(fph.path(f_part=False, latest=True, root=True)):
+                        for filename in filenames:
+                            ctx.tree.hash[dset_nid]['latest'][filename] = checksum(os.path.join(root, filename),
+                                                                                   ctx.checksum_type)
             # Pickup the latest file version
             latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
             # Check latest file if exists
@@ -211,7 +212,8 @@ def run(args):
         # Evaluates the scan results to trigger the DRS tree action
         if evaluate(results):
             # Check upgrade uniqueness
-            ctx.tree.check_uniqueness(ctx.checksum_type)
+            if not ctx.no_checksum:
+                ctx.tree.check_uniqueness(ctx.checksum_type)
             # Apply tree action
             ctx.tree.get_display_lengths()
             getattr(ctx.tree, ctx.action)()
