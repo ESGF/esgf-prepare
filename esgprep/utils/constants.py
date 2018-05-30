@@ -253,13 +253,15 @@ BACKUP_HELP = \
 
 GITHUB_USER_HELP = \
     """
-    GitHub username.
+    GitHub username.|n
+    Default is the GH_USER environment variable if exists.
     
     """
 
 GITHUB_PASSWORD_HELP = \
     """
-    GitHub password.
+    GitHub password.|n
+    Default is the GH_PASSWORD environment variable if exists.
     
     """
 
