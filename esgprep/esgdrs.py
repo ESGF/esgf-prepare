@@ -14,7 +14,8 @@ from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, _ArgumentParser, keyval_converter
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, _ArgumentParser, keyval_converter, \
+    processes_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -160,11 +161,11 @@ def get_args():
         default=False,
         help=SYMLINK_HELP)
     parent.add_argument(
-        '--max-threads',
+        '--max-processes',
         metavar='4',
-        type=int,
+        type=processes_validator,
         default=4,
-        help=MAX_THREADS_HELP)
+        help=MAX_PROCESSES_HELP)
     # Subparser for "esgdrs list"
     list = subparsers.add_parser(
         'list',

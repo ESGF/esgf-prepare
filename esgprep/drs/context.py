@@ -69,8 +69,8 @@ class ProcessingContext(object):
         self.set_keys = {}
         if args.set_key:
             self.set_keys = dict(args.set_key)
-        self.threads = args.max_threads
-        self.use_pool = (self.threads > 1)
+        self.processes = args.max_processes
+        self.use_pool = (self.processes != 1)
         self.project = args.project
         self.action = args.action
         if args.copy:
