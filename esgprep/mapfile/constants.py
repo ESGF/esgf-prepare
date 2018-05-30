@@ -16,8 +16,6 @@ PROCESS_VARS = ['project',
                 'source_type',
                 'pattern',
                 'dataset_name',
-                'facets',
-                'cfg',
                 'no_version',
                 'outdir',
                 'mapfile_name',
@@ -27,8 +25,7 @@ PROCESS_VARS = ['project',
                 'checksums_from',
                 'checksum_type',
                 'notes_url',
-                'notes_title',
-                'pbar']
+                'notes_title']
 
 # Mapfile extension during processing
 WORKING_EXTENSION = '.part'

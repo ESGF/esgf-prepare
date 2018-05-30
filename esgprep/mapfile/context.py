@@ -11,7 +11,6 @@ import fnmatch
 import logging
 import os
 import sys
-from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing.managers import SyncManager
 
 from ESGConfigParser import SectionParser
@@ -22,6 +21,11 @@ from constants import *
 from esgprep.utils.collectors import VersionedPathCollector, DatasetCollector
 from esgprep.utils.custom_exceptions import *
 
+SyncManager.register('pbar', tqdm, exposed=('get_graph', 'has_graph', 'set_graph', '__call__'))
+SyncManager.register('cfg', SectionParser, exposed=('get_graph', 'has_graph', 'set_graph', '__call__'))
+
+class ProcessManager(SyncManager):
+    pass
 
 class ProcessingContext(object):
     """
@@ -34,21 +38,9 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
-        # TODO: register pbar and cfg class type
-        SyncManager.register('graph', Graph, exposed=('get_graph', 'has_graph', 'set_graph', '__call__'))
-        SyncManager.register('graph', Graph, exposed=('get_graph', 'has_graph', 'set_graph', '__call__'))
-        self.ProcessContext = SyncManager()
-        self.ProcessContext.start()
-        # DiGraph creation
-        global graph
-        graph = manager.graph()
-
         self.pbar = args.pbar
-
         self.config_dir = args.i
-
-        self.project = self.ProcessContext.Value('c', args.project)
-
+        self.project = args.project
         self.action = args.action
         self.mapfile_name = args.mapfile
         self.outdir = args.outdir

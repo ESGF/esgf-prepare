@@ -163,10 +163,14 @@ def processes_validator(value):
     :return:
     """
     pnum = int(value)
-    if not pnum > 1 or not pnum == -1:
+    if pnum < 1 and pnum != -1:
         msg = 'Invalid processes number. Should be a positive integer or "-1".'
         raise ArgumentTypeError(msg)
-    return pnum
+    if pnum == -1:
+        # Max processes = None corresponds to cpu.count() in Pool creation
+        return  None
+    else:
+        return pnum
 
 
 class _ArgumentParser(ArgumentParser):

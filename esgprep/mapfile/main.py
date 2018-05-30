@@ -13,12 +13,13 @@ import os
 import re
 from datetime import datetime
 from multiprocessing import Pool
+from multiprocessing.managers import SyncManager
 
 from ESGConfigParser import interpolate, MissingPatternKey
 from lockfile import LockFile
 
 from constants import *
-from context import ProcessingContext
+from context import ProcessingContext, ProcessManager
 from esgprep.utils.misc import evaluate, remove, get_checksum_pattern
 from handler import File, Dataset
 
@@ -238,9 +239,14 @@ def run(args):
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
+        # Init process manager
+        manager = ProcessManager()
+        manager.start()
         # Init processes pool
-        ProcessContext = {key: getattr(ctx, key) for key in PROCESS_VARS
-        # TODO: not pass manager directly but only the proxies
+        ProcessContext = {key: getattr(ctx, name) for name in PROCESS_VARS}
+        ProcessContext['pbar'] = manager.pbar()
+        ProcessContext['cfg'] = manager.cfg()
+        ProcessContext['facets'] = manager.list(ctx.facets)
         pool = Pool(processes=ctx.processes, initializer=initializer, initargs=(ProcessContext.keys(),
                                                                                 ProcessContext.values()))
         if ctx.use_pool:
