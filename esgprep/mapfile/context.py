@@ -113,11 +113,9 @@ class ProcessingContext(object):
             self.source_type = 'file'
             if self.pbar:
                 self.sources = VersionedPathCollector(sources=self.directory,
-                                                      data=self,
                                                       dir_format=self.cfg.translate('directory_format'))
             else:
                 self.sources = VersionedPathCollector(sources=self.directory,
-                                                      data=self,
                                                       spinner=False,
                                                       dir_format=self.cfg.translate('directory_format'))
             # Translate directory format pattern
@@ -141,7 +139,6 @@ class ProcessingContext(object):
             # The source is a list of dataset from a TXT file
             self.source_type = 'dataset'
             self.sources = DatasetCollector(sources=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
-                                            data=self,
                                             spinner=False)
             # Translate dataset_id format
             self.pattern = self.cfg.translate('dataset_id', add_ending_version=True, sep='.')
@@ -149,7 +146,6 @@ class ProcessingContext(object):
             # The source is a dataset ID (potentially from stdin)
             self.source_type = 'dataset'
             self.sources = DatasetCollector(sources=[self.dataset_id],
-                                            data=self,
                                             spinner=False)
             # Translate dataset_id format
             self.pattern = self.cfg.translate('dataset_id', add_ending_version=True, sep='.')

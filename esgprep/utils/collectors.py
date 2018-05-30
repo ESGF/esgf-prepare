@@ -43,16 +43,14 @@ class Collector(object):
     Base collector class to yield regular NetCDF files.
 
     :param list sources: The list of sources to parse
-    :param object data: Any object to attach to each collected data
     :returns: The data collector
     :rtype: *iter*
 
     """
 
-    def __init__(self, sources, spinner=True, data=None):
+    def __init__(self, sources, spinner=True):
         self.spinner = spinner
         self.sources = sources
-        self.data = data
         self.FileFilter = FilterCollection()
         self.PathFilter = FilterCollection()
         assert isinstance(self.sources, list)
@@ -64,7 +62,7 @@ class Collector(object):
                     for filename in sorted(filenames):
                         ffp = os.path.join(root, filename)
                         if os.path.isfile(ffp) and self.FileFilter(filename):
-                            yield self.attach(ffp)
+                            yield ffp
 
     def __len__(self):
         """
@@ -82,17 +80,6 @@ class Collector(object):
         sys.stdout.write('\r\033[K')
         sys.stdout.flush()
         return s
-
-    def attach(self, item):
-        """
-        Attach any object to the each collector item.
-
-        :param str item: The collector item
-        :returns: The collector item with the "data" object
-        :rtype: *tuple*
-
-        """
-        return (item, self.data) if self.data else item
 
 
 class PathCollector(Collector):
@@ -120,7 +107,7 @@ class PathCollector(Collector):
                     for filename in sorted(filenames):
                         ffp = os.path.join(root, filename)
                         if os.path.isfile(ffp) and self.FileFilter(filename):
-                            yield self.attach(ffp)
+                            yield ffp
 
 
 class VersionedPathCollector(PathCollector):
@@ -172,7 +159,7 @@ class VersionedPathCollector(PathCollector):
                             target = os.path.realpath(os.path.join(*re.split(r'/(latest)/', ffp)[:-1]))
                             ffp = os.path.join(target, *re.split(r'/(latest)/', ffp)[-1:])
                         if os.path.isfile(ffp) and self.FileFilter(filename):
-                            yield self.attach(ffp)
+                            yield ffp
 
     def version_finder(self, directory):
         """
@@ -217,9 +204,9 @@ class DatasetCollector(Collector):
         """
         for source in self.sources:
             if self.versioned:
-                yield self.attach(source)
+                yield source
             else:
-                yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', source))
+                yield remove('((\.v|#)[0-9]+)?\s*$', source)
 
 
 class FilterCollection(object):
