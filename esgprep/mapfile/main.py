@@ -214,14 +214,13 @@ def initializer(keys, values):
     """
     Initialize process context by setting particular variables as global variables.
 
-    :param list keys: Argument name
-    :param list values: Argument value
+    :param list keys: Argument name list
+    :param list values: Argument value list
 
     """
     assert len(keys) == len(values)
     for i, key in enumerate(keys):
-        global key
-        key = values[i]
+        globals()[key] = values[i]
 
 
 def run(args):
