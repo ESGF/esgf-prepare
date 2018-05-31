@@ -253,13 +253,15 @@ BACKUP_HELP = \
 
 GITHUB_USER_HELP = \
     """
-    GitHub username.
+    GitHub username.|n
+    Default is the GH_USER environment variable if exists.
     
     """
 
 GITHUB_PASSWORD_HELP = \
     """
-    GitHub password.
+    GitHub password.|n
+    Default is the GH_PASSWORD environment variable if exists.
     
     """
 
@@ -470,11 +472,18 @@ SET_KEY_HELP = \
     This overwrites facet auto-detection.
     
     """
-NO_CHECKSUM_HELP = \
-    """
-    Does not include files checksums into the mapfile(s).
-    
-    """
+NO_CHECKSUM_HELP = {
+    'mapfile':
+        """
+        Does not include files checksums into the mapfile(s).
+        
+        """,
+    'drs':
+        """
+        Disable checksumming during DRS process.
+        
+        """
+}
 
 COMMANDS_FILE_HELP = \
     """

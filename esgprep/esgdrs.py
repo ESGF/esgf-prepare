@@ -161,6 +161,11 @@ def get_args():
         default=False,
         help=SYMLINK_HELP)
     parent.add_argument(
+        '--no-checksum',
+        action='store_true',
+        default=False,
+        help=NO_CHECKSUM_HELP['drs'])
+    parent.add_argument(
         '--max-processes',
         metavar='4',
         type=processes_validator,

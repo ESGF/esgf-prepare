@@ -88,10 +88,14 @@ class ProcessingContext(object):
         self.scan_files = None
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename
         if self.commands_file and self.action != 'todo':
-            print '"{}" action ignores "--commands-file" argument.'.format(self.action)
+            print 'WARNING :: "{}" action ignores "--commands-file" argument.'.format(self.action)
             self.commands_file = None
         if self.overwrite_commands_file and not self.commands_file:
-            print '--overwrite-commands-file ignored'
+            print 'WARNING :: "--overwrite-commands-file" ignored'
+        self.no_checksum = args.no_checksum
+        if self.no_checksum:
+            print 'WARNING :: Checksumming disabled, DRS breach could occur -- ' \
+                  'It is highly recommend to activate checksumming processes.'
 
     def __enter__(self):
         # Get checksum client
@@ -153,7 +157,7 @@ class ProcessingContext(object):
                                  ncols=100,
                                  file=sys.stdout)
         else:
-            msg = 'Skipping incoming files scan (use "--rescan" to force it) -- ' \
+            msg = 'WARNING :: Skipping incoming files scan (use "--rescan" to force it) -- ' \
                   'Using cached DRS tree from {}'.format(TREE_FILE)
             if self.pbar:
                 print(msg)
@@ -210,7 +214,7 @@ class ProcessingContext(object):
             if self.overwrite_commands_file:
                 os.remove(self.commands_file)
             else:
-                print "File '{}' already exists and '--overwrite-commands-file'" \
+                print "WARNING :: File '{}' already exists and '--overwrite-commands-file'" \
                       "option not used.".format(self.commands_file)
                 sys.exit(1)
 

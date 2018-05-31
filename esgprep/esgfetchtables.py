@@ -99,11 +99,13 @@ def get_args():
         '--gh-user',
         metavar='USERNAME',
         type=str,
+        default=os.environ['GH_USER'] if 'GH_USER' in os.environ.keys() else None,
         help=GITHUB_USER_HELP)
     main.add_argument(
         '--gh-password',
         metavar='PASSWORD',
         type=str,
+        default=os.environ['GH_PASSWORD'] if 'GH_PASSWORD' in os.environ.keys() else None,
         help=GITHUB_PASSWORD_HELP)
     ref = main.add_mutually_exclusive_group(required=False)
     ref.add_argument(

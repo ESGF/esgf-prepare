@@ -177,7 +177,7 @@ def get_args():
         '--no-checksum',
         action='store_true',
         default=False,
-        help=NO_CHECKSUM_HELP)
+        help=NO_CHECKSUM_HELP['mapfile'])
     make.add_argument(
         '--tech-notes-url',
         metavar='URL',
