@@ -79,8 +79,9 @@ class Collector(object):
         for _ in self.__iter__():
             progress.next()
             s += 1
-        sys.stdout.write('\r\033[K')
-        sys.stdout.flush()
+        if self.spinner:
+            sys.stdout.write('\r\033[K')
+            sys.stdout.flush()
         return s
 
     def attach(self, item):
