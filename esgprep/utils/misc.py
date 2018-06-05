@@ -13,8 +13,22 @@ import os
 import pickle
 import re
 import requests
-
 from custom_exceptions import *
+
+class ProcessContext(object):
+    """
+    Encapsulates the processing context/information for child process.
+
+    :param dict args: Dictionary of argument to pass to child process
+    :returns: The processing context
+    :rtype: *ProcessContext*
+
+    """
+
+    def __init__(self, args):
+        assert isinstance(args, dict)
+        for key, value in args.items():
+            setattr(self, key, value)
 
 
 class LogFilter(object):
@@ -43,7 +57,6 @@ def init_logging(log, debug=False, level='INFO'):
 
     :param str log: The logfile directory.
     :param boolean debug: Debug mode.
-    :param boolean quiet: Silent mode.
     :param str level: The log level.
 
     """

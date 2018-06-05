@@ -155,20 +155,6 @@ HELP = \
     
     """
 
-TEST_HELP = {
-    'program':
-        """
-        Run the full test suite.
-        
-        """,
-
-    'parent':
-        """
-        Run the test suite.
-        
-        """
-}
-
 VERSION_HELP = \
     """
     Program version.

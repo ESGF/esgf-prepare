@@ -38,11 +38,6 @@ def get_args():
         action='help',
         help=HELP)
     main.add_argument(
-        '--test',
-        action='store_true',
-        default=False,
-        help=TEST_HELP['program'])
-    main.add_argument(
         '-v', '--version',
         action='version',
         version='%(prog)s ({})'.format(__version__),
@@ -146,14 +141,8 @@ def run():
     # Print progress bar if no log and no debug mode
     setattr(args, 'pbar', True if not args.log and not args.debug else False)
     # Run program
-    if args.test:
-        print('"esgfetchtables" test suite not available. Coming soon!')
-        exit()
-        #  test = import_module('.test', package='esgprep.mapfile')
-        #  test.run()
-    else:
-        main = import_module('.main', package='esgprep.fetchtables')
-        main.run(args)
+    main = import_module('.main', package='esgprep.fetchtables')
+    main.run(args)
 
 
 if __name__ == "__main__":

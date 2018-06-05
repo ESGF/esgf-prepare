@@ -190,7 +190,7 @@ class _ArgumentParser(ArgumentParser):
         subparser_found = False
         for arg in sys.argv[1:]:
             # Breaks if global option without sub-parser
-            if arg in ['-h', '--help', '-v', '--version', '--test']:
+            if arg in ['-h', '--help', '-v', '--version']:
                 break
         else:
             for x in self._subparsers._actions:

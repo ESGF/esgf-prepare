@@ -22,10 +22,12 @@ from esgprep.utils.collectors import VersionedPathCollector, DatasetCollector
 from esgprep.utils.custom_exceptions import *
 
 SyncManager.register('pbar', tqdm, exposed=('update', 'close'))
-SyncManager.register('cfg', SectionParser, exposed=('get'))
+SyncManager.register('cfg', SectionParser, exposed='get')
+
 
 class ProcessManager(SyncManager):
     pass
+
 
 class ProcessingContext(object):
     """
@@ -46,7 +48,6 @@ class ProcessingContext(object):
         self.notes_title = None
         self.notes_url = None
         self.checksums_from = None
-
         self.pbar = args.pbar
         self.config_dir = args.i
         self.project = args.project
@@ -106,11 +107,11 @@ class ProcessingContext(object):
         # Get checksum client
         self.checksum_type = self.get_checksum_type()
         # Init configuration parser
-        self.cfg = SectionParser(section='project:{}'.format(self.project.value), directory=self.config_dir)
+        self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
         self.facets = self.cfg.get_facets('dataset_id')
         # Get mapfile DRS is set in configuration file
         try:
-            _cfg = SectionParser(section='config:{}'.format(self.project.value), directory=self.config_dir)
+            _cfg = SectionParser(section='config:{}'.format(self.project), directory=self.config_dir)
             self.mapfile_drs = _cfg.get('mapfile_drs')
         except (NoConfigOption, NoConfigSection):
             self.mapfile_drs = None
