@@ -38,6 +38,15 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
+
+        self.version = None
+        self.dataset_list = None
+        self.dataset_id = None
+        self.no_checksum = None
+        self.notes_title = None
+        self.notes_url = None
+        self.checksums_from = None
+
         self.pbar = args.pbar
         self.config_dir = args.i
         self.project = args.project
@@ -65,7 +74,6 @@ class ProcessingContext(object):
         self.all = args.all_versions
         if self.all:
             self.no_version = False
-        self.version = None
         if args.version:
             self.version = 'v{}'.format(args.version)
         if args.latest_symlink:
@@ -77,7 +85,7 @@ class ProcessingContext(object):
         if hasattr(args, 'dataset_list'):
             self.dataset_list = args.dataset_list
         if hasattr(args, 'dataset_id'):
-            self.dataset_id = args.dataset_id
+            self.dataset_id = args.dataset_id        
         if hasattr(args, 'no_checksum'):
             self.no_checksum = args.no_checksum
         if hasattr(args, 'tech_notes_title'):
