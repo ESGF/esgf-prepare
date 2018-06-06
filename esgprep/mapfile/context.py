@@ -41,7 +41,6 @@ class ProcessingContext(object):
         self.notes_title = None
         self.notes_url = None
         self.checksums_from = None
-
         self.pbar = args.pbar
         self.config_dir = args.i
         self.project = args.project

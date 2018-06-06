@@ -10,10 +10,10 @@
 from datetime import datetime
 
 # Program version
-VERSION = '2.9.0'
+VERSION = '2.8.1'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=5, day=18).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=6, day=6).strftime("%Y-%d-%m")
 
 # Help
 TITLE = \
