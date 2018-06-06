@@ -168,7 +168,7 @@ def processes_validator(value):
         raise ArgumentTypeError(msg)
     if pnum == -1:
         # Max processes = None corresponds to cpu.count() in Pool creation
-        return  None
+        return None
     else:
         return pnum
 

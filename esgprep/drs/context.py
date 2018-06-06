@@ -10,9 +10,7 @@
 import logging
 import re
 import sys
-from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing.managers import SyncManager
-
 from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
@@ -25,8 +23,8 @@ from esgprep.utils.custom_exceptions import *
 from esgprep.utils.misc import load
 from handler import DRSTree, DRSPath
 
-SyncManager.register('pbar', tqdm, exposed=('update', 'close'))
-SyncManager.register('cfg', SectionParser, exposed=('get'))
+SyncManager.register('pbar', tqdm, exposed='update')
+SyncManager.register('cfg', SectionParser, exposed=('get', 'check_options', 'get_option_from_map'))
 SyncManager.register('tree', DRSTree, exposed=('create_leaf',
                                                'get_display_lengths',
                                                'check_uniqueness',
@@ -34,6 +32,7 @@ SyncManager.register('tree', DRSTree, exposed=('create_leaf',
                                                'todo',
                                                'tree'
                                                'upgrade'))
+
 
 class ProcessManager(SyncManager):
     pass
@@ -61,6 +60,10 @@ class ProcessingContext(object):
         try:
             self.ignore_from_latest = args.ignore_from_latest.read().splitlines()
             self.upgrade_from_latest = True
+        except (TypeError, IOError, AttributeError):
+            self.ignore_from_latest = list()
+        try:
+            self.ignore_from_incoming = args.ignore_from_incoming.read().splitlines()
         except (TypeError, IOError, AttributeError):
             self.ignore_from_latest = list()
         self.set_values = {}
@@ -139,9 +142,9 @@ class ProcessingContext(object):
                 self.scan = False
         # Init data collector
         if self.pbar:
-            self.sources = Collector(sources=self.directory, data=self)
+            self.sources = Collector(sources=self.directory)
         else:
-            self.sources = Collector(sources=self.directory, spinner=False, data=self)
+            self.sources = Collector(sources=self.directory, spinner=False)
         # Init file filter
         # Only supports netCDF files
         self.sources.FileFilter.add(regex='^.*\.nc$')
@@ -162,16 +165,9 @@ class ProcessingContext(object):
             if self.pbar:
                 print(msg)
             logging.warning(msg)
-        # Init threads pool
-        if self.use_pool:
-            self.pool = ThreadPool(int(self.threads))
         return self
 
     def __exit__(self, *exc):
-        # Close threads pool
-        if self.use_pool:
-            self.pool.close()
-            self.pool.join()
         # Decline outputs depending on the scan results
         # Raise errors when one or several files have been skipped or failed
         # Default is sys.exit(0)

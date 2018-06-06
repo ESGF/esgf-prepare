@@ -495,11 +495,20 @@ UPGRADE_FROM_LATEST_HELP = \
 
 IGNORE_FROM_LATEST_HELP = \
     """
-    A list of files to ignore for version upgrade from the latest|n
+    A list of filename to ignore for version upgrade from the latest|n
     dataset version. Default is to consider the incoming files as|n
     the complete content of the new version of the dataset.|n
     It overwrites default behavior by enabling "--upgrade-from-latest".|n 
     See the full documentation to get details on both methods.
+
+    """
+
+IGNORE_FROM_INCOMING_HELP = \
+    """
+    A list of filename to ignore for version upgrade from the incoming|n
+    files. Default is to consider the incoming files as|n
+    the complete content of the new version of the dataset.|n
+    It allows to filter incoming files to consider.
 
     """
 

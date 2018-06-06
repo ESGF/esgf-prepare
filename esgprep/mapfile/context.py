@@ -21,7 +21,7 @@ from constants import *
 from esgprep.utils.collectors import VersionedPathCollector, DatasetCollector
 from esgprep.utils.custom_exceptions import *
 
-SyncManager.register('pbar', tqdm, exposed=('update', 'close'))
+SyncManager.register('pbar', tqdm, exposed='update')
 SyncManager.register('cfg', SectionParser, exposed='get')
 
 
@@ -86,7 +86,7 @@ class ProcessingContext(object):
         if hasattr(args, 'dataset_list'):
             self.dataset_list = args.dataset_list
         if hasattr(args, 'dataset_id'):
-            self.dataset_id = args.dataset_id        
+            self.dataset_id = args.dataset_id
         if hasattr(args, 'no_checksum'):
             self.no_checksum = args.no_checksum
         if hasattr(args, 'tech_notes_title'):

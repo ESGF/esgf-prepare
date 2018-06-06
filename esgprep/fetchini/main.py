@@ -10,7 +10,6 @@
 import logging
 import os
 
-
 import requests
 
 from constants import *

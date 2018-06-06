@@ -134,6 +134,11 @@ def get_args():
         metavar='TXT_FILE',
         type=FileType('r'),
         help=IGNORE_FROM_LATEST_HELP)
+    parent.add_argument(
+        '--ignore-from-incoming',
+        metavar='TXT_FILE',
+        type=FileType('r'),
+        help=IGNORE_FROM_INCOMING_HELP)
     group = parent.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--copy',

@@ -15,7 +15,8 @@ from importlib import import_module
 
 from utils.constants import *
 from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser, processes_validator
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser, \
+    processes_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 

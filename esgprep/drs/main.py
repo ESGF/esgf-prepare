@@ -18,7 +18,7 @@ from esgprep.utils.misc import load, store, evaluate, checksum, ProcessContext
 from handler import File, DRSPath
 
 
-def process(collector_input):
+def process(ffp):
     """
     process(collector_input)
 
@@ -31,54 +31,56 @@ def process(collector_input):
      * Populates the DRS tree crating the appropriate leaves,
      * Stores dataset statistics.
 
-    :param tuple collector_input: A tuple with the file path and the processing context
-    :return: True on success
-    :rtype: *boolean*
+
+    :param str ffp: The file full path to process
 
     """
-    # Deserialize inputs from collector
-    ffp, ctx = collector_input
+    # Declare context from initializer to avoid IDE warnings
+    global cctx
     # Block to avoid program stop if a thread fails
     try:
         # Instantiate file handler
         fh = File(ffp)
+        # Ignore files from incoming
+        if fh.filename in cctx.ignore_from_incoming:
+            return False
         # Loads attributes from filename, netCDF attributes, command-line
-        fh.load_attributes(root=ctx.root,
-                           pattern=ctx.pattern,
-                           set_values=ctx.set_values)
+        fh.load_attributes(root=cctx.root,
+                           pattern=cctx.pattern,
+                           set_values=cctx.set_values)
         # Checks the facet values provided by the loaded attributes
-        fh.check_facets(facets=ctx.facets,
-                        config=ctx.cfg,
-                        set_keys=ctx.set_keys)
+        fh.check_facets(facets=cctx.facets,
+                        config=cctx.cfg,
+                        set_keys=cctx.set_keys)
         # Get parts of DRS path
-        parts = fh.get_drs_parts(ctx.facets)
+        parts = fh.get_drs_parts(cctx.facets)
         # Instantiate file DRS path handler
         fph = DRSPath(parts)
         # Ensure that the called project section is ALWAYS part of the DRS path elements (case insensitive)
-        assert fph.path().lower().startswith(ctx.project.lower()), 'Inconsistent DRS path. ' \
-                                                                   'Must start with "{}/" ' \
-                                                                   '(case-insensitive)'.format(ctx.project)
+        assert fph.path().lower().startswith(cctx.project.lower()), 'Inconsistent DRS path. ' \
+                                                                    'Must start with "{}/" ' \
+                                                                    '(case-insensitive)'.format(cctx.project)
         # If a latest version already exists make some checks FIRST to stop files to not process
         if fph.v_latest:
             # Latest version should be older than upgrade version
             if int(DRSPath.TREE_VERSION[1:]) <= int(fph.v_latest[1:]):
                 raise OlderUpgrade(DRSPath.TREE_VERSION, fph.v_latest)
             # Walk through the latest dataset version to check its uniqueness with file checksums
-            if not ctx.no_checksum:
+            if not cctx.no_checksum:
                 dset_nid = fph.path(f_part=False, latest=True, root=True)
-                if dset_nid not in ctx.tree.hash.keys():
-                    ctx.tree.hash[dset_nid] = dict()
-                    ctx.tree.hash[dset_nid]['latest'] = dict()
+                if dset_nid not in cctx.tree.hash.keys():
+                    cctx.tree.hash[dset_nid] = dict()
+                    cctx.tree.hash[dset_nid]['latest'] = dict()
                     for root, _, filenames in os.walk(fph.path(f_part=False, latest=True, root=True)):
                         for filename in filenames:
-                            ctx.tree.hash[dset_nid]['latest'][filename] = checksum(os.path.join(root, filename),
-                                                                                   ctx.checksum_type)
+                            cctx.tree.hash[dset_nid]['latest'][filename] = checksum(os.path.join(root, filename),
+                                                                                    cctx.checksum_type)
             # Pickup the latest file version
             latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
             # Check latest file if exists
             if os.path.exists(latest_file):
-                latest_checksum = checksum(latest_file, ctx.checksum_type)
-                current_checksum = checksum(fh.ffp, ctx.checksum_type)
+                latest_checksum = checksum(latest_file, cctx.checksum_type)
+                current_checksum = checksum(fh.ffp, cctx.checksum_type)
                 # Check if processed file is a duplicate in comparison with latest version
                 if latest_checksum == current_checksum:
                     fh.is_duplicate = True
@@ -88,25 +90,25 @@ def process(collector_input):
             src = ['..'] * len(fph.items(d_part=False))
             src.extend(fph.items(d_part=False, file_folder=True))
             src.append(fh.filename)
-            ctx.tree.create_leaf(nodes=fph.items(root=True),
-                                 leaf=fh.filename,
-                                 label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
-                                 src=os.path.join(*src),
-                                 mode='symlink',
-                                 origin=fh.ffp)
+            cctx.tree.create_leaf(nodes=fph.items(root=True),
+                                  leaf=fh.filename,
+                                  label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
+                                  src=os.path.join(*src),
+                                  mode='symlink',
+                                  origin=fh.ffp)
             # Add the "latest" node for symlink
-            ctx.tree.create_leaf(nodes=fph.items(f_part=False, version=False, root=True),
-                                 leaf='latest',
-                                 label='{}{}{}'.format('latest', LINK_SEPARATOR, fph.v_upgrade),
-                                 src=fph.v_upgrade,
-                                 mode='symlink')
+            cctx.tree.create_leaf(nodes=fph.items(f_part=False, version=False, root=True),
+                                  leaf='latest',
+                                  label='{}{}{}'.format('latest', LINK_SEPARATOR, fph.v_upgrade),
+                                  src=fph.v_upgrade,
+                                  mode='symlink')
             # Add the processed file to the "files" node
-            ctx.tree.create_leaf(nodes=fph.items(file_folder=True, root=True),
-                                 leaf=fh.filename,
-                                 label=fh.filename,
-                                 src=fh.ffp,
-                                 mode=ctx.mode)
-            if ctx.upgrade_from_latest:
+            cctx.tree.create_leaf(nodes=fph.items(file_folder=True, root=True),
+                                  leaf=fh.filename,
+                                  label=fh.filename,
+                                  src=fh.ffp,
+                                  mode=cctx.mode)
+            if cctx.upgrade_from_latest:
                 # Walk through the latest dataset version and create a symlink for each file with a different
                 # filename than the processed one
                 for root, _, filenames in os.walk(fph.path(f_part=False, latest=True, root=True)):
@@ -114,18 +116,18 @@ def process(collector_input):
                         # Add latest files as tree leaves with version to upgrade instead of latest version
                         # i.e., copy latest dataset leaves to Tree
                         # Except if file has be ignored from latest version (i.e., with known issue)
-                        if filename != fh.filename and filename not in ctx.ignore_from_latest:
+                        if filename != fh.filename and filename not in cctx.ignore_from_latest:
                             src = os.path.join(root, filename)
-                            ctx.tree.create_leaf(nodes=fph.items(root=True),
-                                                 leaf=filename,
-                                                 label='{}{}{}'.format(filename, LINK_SEPARATOR, os.readlink(src)),
-                                                 src=os.readlink(src),
-                                                 mode='symlink',
-                                                 origin=os.path.realpath(src))
+                            cctx.tree.create_leaf(nodes=fph.items(root=True),
+                                                  leaf=filename,
+                                                  label='{}{}{}'.format(filename, LINK_SEPARATOR, os.readlink(src)),
+                                                  src=os.readlink(src),
+                                                  mode='symlink',
+                                                  origin=os.path.realpath(src))
         else:
             # Pickup the latest file version
             latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
-            if ctx.upgrade_from_latest:
+            if cctx.upgrade_from_latest:
                 # If upgrade from latest is activated, raise the error, no duplicated files allowed
                 # Because incoming must only contain modifed/corrected files
                 raise DuplicatedFile(latest_file, fh.ffp)
@@ -136,24 +138,24 @@ def process(collector_input):
                 # default (i.e., moving files). In the case of --copy or --link, keep duplicates
                 # in place into the incoming directory
                 src = os.readlink(latest_file)
-                ctx.tree.create_leaf(nodes=fph.items(root=True),
-                                     leaf=fh.filename,
-                                     label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, src),
-                                     src=src,
-                                     mode='symlink',
-                                     origin=fh.ffp)
-                if ctx.mode == 'move':
-                    ctx.tree.duplicates.append(fh.ffp)
+                cctx.tree.create_leaf(nodes=fph.items(root=True),
+                                      leaf=fh.filename,
+                                      label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, src),
+                                      src=src,
+                                      mode='symlink',
+                                      origin=fh.ffp)
+                if cctx.mode == 'move':
+                    cctx.tree.duplicates.append(fh.ffp)
         # Record entry for list()
         incoming = {'src': fh.ffp,
                     'dst': fph.path(root=True),
                     'filename': fh.filename,
                     'latest': fph.v_latest or 'Initial',
                     'size': fh.size}
-        if fph.path(f_part=False) in ctx.tree.paths.keys():
-            ctx.tree.paths[fph.path(f_part=False)].append(incoming)
+        if fph.path(f_part=False) in cctx.tree.paths.keys():
+            cctx.tree.paths[fph.path(f_part=False)].append(incoming)
         else:
-            ctx.tree.paths[fph.path(f_part=False)] = [incoming]
+            cctx.tree.paths[fph.path(f_part=False)] = [incoming]
         logging.info('{} <-- {}'.format(fph.path(f_part=False), fh.filename))
         return True
     except KeyboardInterrupt:
@@ -162,8 +164,8 @@ def process(collector_input):
         logging.error('{} skipped\n{}: {}'.format(ffp, e.__class__.__name__, e.message))
         return None
     finally:
-        if ctx.pbar:
-            ctx.pbar.update()
+        if cctx.pbar:
+            cctx.pbar.update()
 
 
 def initializer(keys, values):
