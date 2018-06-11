@@ -44,9 +44,9 @@ def get_args():
         help=VERSION_HELP)
     main.add_argument(
         '-i',
-        metavar='/esg/config/esgcet',
+        metavar='$ESGINI',
         type=str,
-        default='/esg/config/esgcet',
+        default=os.environ['ESGINI'] if 'ESGINI' in os.environ.keys() else '/esg/config/esgcet',
         help=INI_HELP)
     main.add_argument(
         '--log',

@@ -10,23 +10,15 @@
 import fnmatch
 import logging
 import os
-import sys
 from multiprocessing.managers import SyncManager
+from multiprocessing import Lock, Value
 
 from ESGConfigParser import SectionParser
 from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
-from tqdm import tqdm
 
 from constants import *
 from esgprep.utils.collectors import VersionedPathCollector, DatasetCollector
 from esgprep.utils.custom_exceptions import *
-
-SyncManager.register('pbar', tqdm, exposed='update')
-SyncManager.register('cfg', SectionParser, exposed='get')
-
-
-class ProcessManager(SyncManager):
-    pass
 
 
 class ProcessingContext(object):
@@ -40,7 +32,6 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
-
         self.version = None
         self.dataset_list = None
         self.dataset_id = None
@@ -102,6 +93,15 @@ class ProcessingContext(object):
         self.scan_files = None
         self.scan_err_log = logging.getLogger().handlers[0].baseFilename
         self.nb_map = None
+        if self.use_pool:
+            # Use process manager
+            manager = SyncManager()
+            manager.start()
+            self.progress = manager.Value('i', 0)
+        else:
+            self.progress = Value('i', 0)
+        self.lock = Lock()
+        self.nbsources = None
 
     def __enter__(self):
         # Get checksum client
@@ -158,21 +158,13 @@ class ProcessingContext(object):
                                             spinner=False)
             # Translate dataset_id format
             self.pattern = self.cfg.translate('dataset_id', add_ending_version=True, sep='.')
-        # Init progress bar
-        nfiles = len(self.sources)
-        if self.pbar and nfiles:
-            self.pbar = tqdm(desc='Mapfile(s) generation',
-                             total=nfiles,
-                             bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} '
-                                        + SOURCE_TYPE[self.source_type],
-                             ncols=100,
-                             file=sys.stdout)
+        # Get number of sources
+        self.nbsources = len(self.sources)
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, exc_type, exc_val, traceback):
         # Decline outputs depending on the scan results
         # Raise errors when one or several files have been skipped or failed
-        # Default is sys.exit(0)
         if self.scan_files and not self.scan_errors:
             # All files have been successfully scanned
             if self.action == 'show':
@@ -191,7 +183,6 @@ class ProcessingContext(object):
             if self.pbar:
                 print('No files found')
             logging.warning('==> No files found')
-            sys.exit(1)
         if self.scan_files and self.scan_errors:
             # Print number of scan errors in any case
             if self.pbar:
@@ -201,11 +192,9 @@ class ProcessingContext(object):
             if self.scan_errors == self.scan_files:
                 # All files have been skipped or failed during the scan
                 logging.warning('==> All files have been ignored or have failed leading to no mapfile.')
-                sys.exit(3)
             else:
                 # Some files have been skipped or failed during the scan
                 logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
-                sys.exit(2)
 
     def get_checksum_type(self):
         """

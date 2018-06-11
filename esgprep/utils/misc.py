@@ -12,7 +12,6 @@ import logging
 import os
 import pickle
 import re
-
 import requests
 
 from custom_exceptions import *
@@ -54,6 +53,37 @@ class LogFilter(object):
 
 def init_logging(log, debug=False, level='INFO'):
     """
+    if --debug --> INFO mode linéaire ERROR/EXCEPTION dans log error
+    if --log --> INFO mode log ERROR/EXCEPTION dans log error
+
+    add_logging_level('PROGRESS', 1)
+
+    logging.
+
+    Par défaut sans --debug ni --log :
+    Mapfile Generation  - logging.PROGRESS -  StreamHandler - LogFilter(PROGRESS)
+    Mapfile generated
+    See log error
+
+    Avec --debug:    --> logging.debug <= > logging.error / Stream Handler
+    Scan started
+    mapfile <---- file
+    etc.
+    Scan end
+    See log error
+
+    Avec --log:
+    Mapfile Generation
+    Mapfile generated
+    See log <--- mode lineaire
+    See log error
+
+    Avec --debug et --log
+    Mapfile Generation
+    Mapfile generated
+    See log <--- mode lineraire
+    See log error
+
     Initiates the logging configuration (output, date/message formatting).
     If a directory is submitted the logfile name is unique and formatted as follows:
     ``name-YYYYMMDD-HHMMSS-JOBID.log``If ``None`` the standard output is used.
@@ -72,7 +102,23 @@ def init_logging(log, debug=False, level='INFO'):
         logfile = os.path.join(log, logname)
     else:
         logfile = os.path.join(os.getcwd(), logname)
-    logging.getLogger().setLevel(logging.DEBUG)
+#    logging.getLogger().setLevel(logging.DEBUG)
+
+    # Create stream handler for progress bar
+    add_logging_level('PROGRESS', 1)
+    # Print progress bar in all cases except if debug mode without log.
+    if not (debug and not log):
+        progress_handler = logging.StreamHandler()
+        progress_handler.setLevel(logging.PROGRESS)
+        progress_handler.setFormatter(formatter)
+        logging.getLogger().addHandler(progress_handler)
+
+    # Create file handler for debug mode
+
+    stream_handler = logging.FileHandler(filename='{}.log'.format(logfile), delay=True)
+
+
+
     error_handler = logging.FileHandler(filename='{}.err'.format(logfile), delay=True)
     error_handler.setLevel(logging.ERROR)
     error_handler.setFormatter(formatter)
@@ -89,6 +135,37 @@ def init_logging(log, debug=False, level='INFO'):
     stream_handler.setFormatter(formatter)
     logging.getLogger().addHandler(stream_handler)
 
+
+def add_logging_level(levelName, levelNum, methodName=None):
+    """
+    Comprehensively adds a new logging level to the ``logging`` module and the
+    currently configured logging class.
+
+    :param str levelName: Attribute of the logging module
+    :param int levelNum: Attribute value of the new logging level
+    :param str methodName: Level method name ``levelName.lower()`` by default
+
+    :raise: Error if the level name is already an attribute of the logging module
+    :raise: Error if the method name is already present
+
+    """
+    if not methodName:
+        methodName = levelName.lower()
+    if hasattr(logging, levelName):
+       raise AttributeError('{} already defined in logging module'.format(levelName))
+    if hasattr(logging, methodName):
+       raise AttributeError('{} already defined in logging module'.format(methodName))
+    if hasattr(logging.getLoggerClass(), methodName):
+       raise AttributeError('{} already defined in logger class'.format(methodName))
+    def logForLevel(self, message, *args, **kwargs):
+        if self.isEnabledFor(levelNum):
+            self._log(levelNum, message, args, **kwargs)
+    def logToRoot(message, *args, **kwargs):
+        logging.log(levelNum, message, *args, **kwargs)
+    logging.addLevelName(levelNum, levelName)
+    setattr(logging, levelName, levelNum)
+    setattr(logging.getLoggerClass(), methodName, logForLevel)
+    setattr(logging, methodName, logToRoot)
 
 def remove(pattern, string):
     """

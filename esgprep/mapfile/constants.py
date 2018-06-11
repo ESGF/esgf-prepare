@@ -25,7 +25,11 @@ PROCESS_VARS = ['project',
                 'checksums_from',
                 'checksum_type',
                 'notes_url',
-                'notes_title']
+                'notes_title',
+                'cfg',
+                'facets',
+                'nbsources',
+                'lock']
 
 # Mapfile extension during processing
 WORKING_EXTENSION = '.part'

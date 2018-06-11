@@ -11,14 +11,15 @@ import itertools
 import logging
 import os
 import re
+import sys
 from datetime import datetime
 from multiprocessing import Pool
 
-from ESGConfigParser import interpolate, MissingPatternKey
+from ESGConfigParser import interpolate, MissingPatternKey, BadInterpolation, InterpolationDepthError
 from lockfile import LockFile
 
 from constants import *
-from context import ProcessingContext, ProcessManager
+from context import ProcessingContext
 from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext
 from handler import File, Dataset
 
@@ -47,7 +48,7 @@ def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_ver
         if mapfile_drs:
             try:
                 outdir = os.path.join(outdir, interpolate(mapfile_drs, attributes))
-            except:
+            except (BadInterpolation, InterpolationDepthError):
                 raise MissingPatternKey(attributes.keys(), mapfile_drs)
         else:
             outdir = os.path.realpath(outdir)
@@ -137,62 +138,63 @@ def process(source):
     :rtype: *str*
 
     """
-    # Declare context from initializer to avoid IDE warnings
-    global cctx
+    # Get process content from process global env
+    assert 'pctx' in globals().keys()
+    pctx = globals()['pctx']
     # Block to avoid program stop if a thread fails
     try:
-        if cctx.source_type == 'file':
+        if pctx.source_type == 'file':
             # Instantiate source handle as file
             sh = File(source)
         else:
             # Instantiate source handler as dataset
             sh = Dataset(source)
         # Matching between directory_format and file full path
-        sh.load_attributes(pattern=cctx.pattern)
+        sh.load_attributes(pattern=pctx.pattern)
         # Deduce dataset_id
-        dataset_id = cctx.dataset_name
-        if not cctx.dataset_name:
-            sh.check_facets(facets=cctx.facets,
-                            config=cctx.cfg)
-            dataset_id = sh.get_dataset_id(cctx.cfg.get('dataset_id', raw=True))
+        dataset_id = pctx.dataset_name
+        if not pctx.dataset_name:
+            sh.check_facets(facets=pctx.facets,
+                            config=pctx.cfg)
+            dataset_id = sh.get_dataset_id(pctx.cfg.get('dataset_id', raw=True))
         # Ensure that the first facet is ALWAYS the same as the called project section (case insensitive)
-        assert dataset_id.lower().startswith(cctx.project.lower()), 'Inconsistent dataset identifier. ' \
+        assert dataset_id.lower().startswith(pctx.project.lower()), 'Inconsistent dataset identifier. ' \
                                                                     'Must start with "{}/" ' \
-                                                                    '(case-insensitive)'.format(cctx.project)
+                                                                    '(case-insensitive)'.format(pctx.project)
         # Deduce dataset_version
-        dataset_version = sh.get_dataset_version(cctx.no_version)
+        dataset_version = sh.get_dataset_version(pctx.no_version)
         # Build mapfile name depending on the --mapfile flag and appropriate tokens
-        outfile = get_output_mapfile(outdir=cctx.outdir,
+        outfile = get_output_mapfile(outdir=pctx.outdir,
                                      attributes=sh.attributes,
-                                     mapfile_name=cctx.mapfile_name,
+                                     mapfile_name=pctx.mapfile_name,
                                      dataset_id=dataset_id,
                                      dataset_version=dataset_version,
-                                     mapfile_drs=cctx.mapfile_drs,
-                                     basename=cctx.basename)
+                                     mapfile_drs=pctx.mapfile_drs,
+                                     basename=pctx.basename)
         # Dry-run: don't write mapfile to only show their paths
-        if cctx.action == 'make':
+        if pctx.action == 'make':
             # Generate the corresponding mapfile entry/line
             optional_attrs = dict()
             optional_attrs['mod_time'] = sh.mtime
-            if not cctx.no_checksum:
-                if cctx.checksums_from:
-                    if source in cctx.checksums_from.keys():
-                        if re.match(get_checksum_pattern(cctx.checksum_type), cctx.checksums_from[source]):
-                            optional_attrs['checksum'] = cctx.checksums_from[source]
+            if not pctx.no_checksum:
+                if pctx.checksums_from:
+                    if source in pctx.checksums_from.keys():
+                        if re.match(get_checksum_pattern(pctx.checksum_type), pctx.checksums_from[source]):
+                            optional_attrs['checksum'] = pctx.checksums_from[source]
                         else:
                             logging.warning('Invalid {} checksum pattern: {} -- '
-                                            'Recomputing checksum.'.format(cctx.checksum_type,
-                                                                           cctx.checksums_from[source]))
-                            optional_attrs['checksum'] = sh.checksum(cctx.checksum_type)
+                                            'Recomputing checksum.'.format(pctx.checksum_type,
+                                                                           pctx.checksums_from[source]))
+                            optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
                     else:
                         logging.warning('Entry not found in checksum file: {} -- '
                                         'Recomputing checksum.'.format(source))
-                        optional_attrs['checksum'] = sh.checksum(cctx.checksum_type)
+                        optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
                 else:
-                    optional_attrs['checksum'] = sh.checksum(cctx.checksum_type)
-                optional_attrs['checksum_type'] = cctx.checksum_type.upper()
-            optional_attrs['dataset_tech_notes'] = cctx.notes_url
-            optional_attrs['dataset_tech_notes_title'] = cctx.notes_title
+                    optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
+                optional_attrs['checksum_type'] = pctx.checksum_type.upper()
+            optional_attrs['dataset_tech_notes'] = pctx.notes_url
+            optional_attrs['dataset_tech_notes_title'] = pctx.notes_title
             line = mapfile_entry(dataset_id=dataset_id,
                                  dataset_version=dataset_version,
                                  ffp=source,
@@ -207,8 +209,17 @@ def process(source):
         logging.error('{} skipped\n{}: {}'.format(source, e.__class__.__name__, e.message))
         return None
     finally:
-        if cctx.pbar:
-            cctx.pbar.update()
+        pctx.progress.value += 1
+        percentage = int(pctx.progress.value * 100 / pctx.nbsources)
+        msg = '\rMapfile(s) generation: {}% | {}/{} {}'.format(percentage,
+                                                               pctx.progress.value,
+                                                               pctx.nbsources,
+                                                               SOURCE_TYPE[pctx.source_type])
+        pctx.lock.acquire()
+        logging.info(msg)
+        sys.stdout.write(msg)
+        sys.stdout.flush()
+        pctx.lock.release()
 
 
 def initializer(keys, values):
@@ -220,8 +231,8 @@ def initializer(keys, values):
 
     """
     assert len(keys) == len(values)
-    global cctx
-    cctx = ProcessContext({key: values[i] for i, key in enumerate(keys)})
+    global pctx
+    pctx = ProcessContext({key: values[i] for i, key in enumerate(keys)})
 
 
 def run(args):
@@ -236,34 +247,26 @@ def run(args):
     :param ArgumentParser args: Command-line arguments parser
 
     """
+    # TODO: Review print strategy
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
         logging.info('==> Scan started')
-        # Init process manager
-        manager = ProcessManager()
-        if ctx.use_pool:
-            manager.start()
         # Init process context
         cctx = {name: getattr(ctx, name) for name in PROCESS_VARS}
-        cctx['pbar'] = manager.pbar()
-        cctx['cfg'] = manager.cfg()
-        cctx['facets'] = manager.list(ctx.facets)
+        # Init progress bar
         if ctx.use_pool:
             # Init processes pool
             pool = Pool(processes=ctx.processes, initializer=initializer, initargs=(cctx.keys(),
                                                                                     cctx.values()))
             processes = pool.imap(process, ctx.sources)
-            # Close pool of workers
-            pool.close()
-            pool.join()
         else:
             initializer(cctx.keys(), cctx.values())
             processes = itertools.imap(process, ctx.sources)
         # Process supplied sources
         results = [x for x in processes]
-        # Close progress bar
-        if ctx.pbar:
-            cctx['pbar'].close()
+        if 'pool' in locals().keys():
+            locals()['pool'].close()
+            locals()['pool'].join()
         # Get number of files scanned (including skipped files)
         ctx.scan_files = len(results)
         # Get number of scan errors
@@ -282,3 +285,14 @@ def run(args):
                 elif ctx.action == 'make':
                     # A final mapfile is silently overwritten if already exists
                     os.rename(mapfile, remove(WORKING_EXTENSION, mapfile))
+    # Evaluate errors and exit with appropriate return code
+    if not ctx.scan_files and not ctx.scan_errors:
+        # Results list is empty = no files scanned/found
+        sys.exit(1)
+    if ctx.scan_files and ctx.scan_errors:
+        if ctx.scan_errors == ctx.scan_files:
+            # All files have been skipped or failed during the scan
+            sys.exit(3)
+        else:
+            # Some files have been skipped or failed during the scan
+            sys.exit(2)

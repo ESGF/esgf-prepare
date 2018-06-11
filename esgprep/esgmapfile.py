@@ -11,8 +11,7 @@ import argparse
 import os
 import sys
 from argparse import FileType
-from importlib import import_module
-
+from esgprep.mapfile.main import run
 from utils.constants import *
 from utils.misc import init_logging
 from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser, \
@@ -59,9 +58,9 @@ def get_args():
         help=HELP)
     parent.add_argument(
         '-i',
-        metavar='/esg/config/esgcet',
+        metavar='$ESGINI',
         action=DirectoryChecker,
-        default='/esg/config/esgcet',
+        default=os.environ['ESGINI'] if 'ESGINI' in os.environ.keys() else '/esg/config/esgcet',
         help=INI_HELP)
     parent.add_argument(
         '--log',
@@ -227,7 +226,7 @@ def get_args():
     return main.parse_args()
 
 
-def run():
+def main():
     """
     Run main program
 
@@ -242,9 +241,8 @@ def run():
     else:
         setattr(args, 'pbar', True if not args.log and not args.debug else False)
     # Run program
-    main = import_module('.main', package='esgprep.mapfile')
-    main.run(args)
+    run(args)
 
 
 if __name__ == "__main__":
-    run()
+    main()
