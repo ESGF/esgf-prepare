@@ -6,15 +6,14 @@
     :synopsis: Toolbox to prepare ESGF data for publication.
 
 """
-
 import os
 import sys
 from argparse import FileType
-from importlib import import_module
 
+from esgprep.checkvocab.main import run
 from utils.constants import *
-from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, regex_validator, _ArgumentParser
+from utils.parser import MultilineFormatter, DirectoryChecker, regex_validator, _ArgumentParser, keyval_converter, \
+    processes_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -76,12 +75,29 @@ def get_args():
         nargs='?',
         default=sys.stdin,
         help=DATASET_LIST_HELP)
+    group.add_argument(
+        '--dataset-id',
+        metavar='DATASET_ID',
+        type=str,
+        help=DATASET_ID_HELP)
+    group.add_argument(
+        '--incoming',
+        metavar='PATH',
+        action=DirectoryChecker,
+        nargs='+',
+        help=DIRECTORY_HELP['checkvocab'])
     main.add_argument(
         '--project',
         metavar='PROJECT_ID',
         type=str,
         required=True,
         help=PROJECT_HELP['checkvocab'])
+    main.add_argument(
+        '--set-key',
+        metavar='FACET_KEY=ATTRIBUTE',
+        type=keyval_converter,
+        action='append',
+        help=SET_KEY_HELP)
     main.add_argument(
         '--ignore-dir',
         metavar="PYTHON_REGEX",
@@ -100,24 +116,27 @@ def get_args():
         type=regex_validator,
         action='append',
         help=EXCLUDE_FILE_HELP)
-    return main.parse_args()
+    parent.add_argument(
+        '--max-processes',
+        metavar='4',
+        type=processes_validator,
+        default=4,
+        help=MAX_PROCESSES_HELP)
+    return main.prog, main.parse_args()
 
 
-def run():
+def main():
     """
     Run main program
 
     """
     # Get command-line arguments
-    args = get_args()
-    # Initialize logger depending on log and debug mode
-    init_logging(log=args.log, debug=args.debug)
-    # Print progress bar if no log and no debug mode
-    setattr(args, 'pbar', True if not args.log and not args.debug else False)
+    prog, args = get_args()
+    setattr(args, 'prog', prog)
     # Run program
-    main = import_module('.main', package='esgprep.checkvocab')
-    main.run(args)
+    run(args)
 
 
 if __name__ == "__main__":
-    run()
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    main()

@@ -7,15 +7,15 @@
 
 """
 
-import logging
 import re
-import sys
+from multiprocessing import Value, Lock, cpu_count
+from multiprocessing.managers import SyncManager
 
 from ESGConfigParser import SectionParser
-from tqdm import tqdm
 
 from constants import *
-from esgprep.utils.collectors import PathCollector, DatasetCollector
+from esgprep.utils.collectors import PathCollector, DatasetCollector, Collector
+from esgprep.utils.misc import COLORS, Print
 
 
 class ProcessingContext(object):
@@ -29,11 +29,17 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
-        self.pbar = args.pbar
         self.project = args.project
         self.config_dir = args.i
         self.directory = args.directory
         self.dataset_list = args.dataset_list
+        self.dataset_id = args.dataset_id
+        self.incoming = args.incoming
+        self.processes = args.max_processes if args.max_processes <= cpu_count() else cpu_count()
+        self.use_pool = (self.processes != 1)
+        self.set_keys = {}
+        if args.set_key:
+            self.set_keys = dict(args.set_key)
         self.dir_filter = args.ignore_dir
         self.file_filter = []
         if args.include_file:
@@ -47,7 +53,18 @@ class ProcessingContext(object):
         else:
             self.file_filter.append(('^\..*$', False))
         self.scan_errors = 0
+        self.scan_data = 0
         self.any_undeclared = False
+        # Init process manager
+        if self.use_pool:
+            manager = SyncManager()
+            manager.start()
+            self.progress = manager.Value('i', 0)
+            self.source_values = manager.dict({})
+        else:
+            self.progress = Value('i', 0)
+            self.source_values = dict()
+        self.lock = Lock()
 
     def __enter__(self):
         # Init configuration parser
@@ -55,52 +72,60 @@ class ProcessingContext(object):
         # Init data collector
         if self.directory:
             # The source is a list of directories
-            # Instantiate file collector to walk through the tree
             self.source_type = 'files'
-            if self.pbar:
-                self.sources = PathCollector(sources=self.directory)
-            else:
-                self.sources = PathCollector(sources=self.directory,
-                                             spinner=False)
+            self.sources = PathCollector(sources=self.directory)
             # Init file filter
             for regex, inclusive in self.file_filter:
                 self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
             # Init dir filter
             self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
             self.pattern = self.cfg.translate('directory_format', add_ending_filename=True)
-        else:
+        elif self.dataset_list:
             # The source is a list of files (i.e., several dataset lists)
-            # Instantiate dataset collector to parse the files
             self.source_type = 'datasets'
-            if self.pbar:
-                self.sources = DatasetCollector(source=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
-                                                versioned=False)
-            else:
-                self.sources = DatasetCollector(source=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
-                                                spinner=False,
-                                                versioned=False)
+            self.sources = DatasetCollector(source=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
+                                            versioned=False)
             self.pattern = self.cfg.translate('dataset_id')
-        # Get the facet keys from pattern
-        self.facets = set(re.compile(self.pattern).groupindex.keys()).difference(set(IGNORED_KEYS))
-        # Init progress bar
-        nfiles = len(self.sources)
-        if self.pbar and nfiles:
-            self.sources = tqdm(self.sources,
-                                desc='Harvesting facets values from data',
-                                total=nfiles,
-                                bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} ' + self.source_type,
-                                ncols=100,
-                                file=sys.stdout)
+        elif self.dataset_id:
+            # The source is a dataset ID (potentially from stdin)
+            self.source_type = 'dataset'
+            self.sources = DatasetCollector(sources=[self.dataset_id])
+            # Translate dataset_id format
+            self.pattern = self.cfg.translate('dataset_id')
+        else:
+            # The source is a dataset ID (potentially from stdin)
+            self.source_type = 'files'
+            self.sources = Collector(sources=self.directory)
+            # Init file filter
+            for regex, inclusive in self.file_filter:
+                self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
+            # Init dir filter
+            self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
+            # Translate dataset_id format
+            self.pattern = self.cfg.translate('filename_format')
+        # Get number of sources
+        self.nbsources = len(self.sources)
+        # Get the facet keys from patterns
+        self.facets = re.compile(self.cfg.translate('directory_format', add_ending_filename=True)).groupindex.keys()
+        self.facets.append(re.compile(self.cfg.translate('dataset_id').groupindex.keys()))
+        self.facets = set(self.facets).difference(set(IGNORED_KEYS))
         return self
 
     def __exit__(self, *exc):
-        # Default is sys.exit(0)
-        if self.scan_errors > 0:
-            print('{}: {} (see {})'.format('Scan errors',
-                                           self.scan_errors,
-                                           logging.getLogger().handlers[0].baseFilename))
-            sys.exit(1)
-        if self.any_undeclared:
-            print('Please update "esg.{}.ini" following: {}'.format(self.project,
-                                                                    logging.getLogger().handlers[0].baseFilename))
-            sys.exit(2)
+        # Decline outputs depending on the scan results
+        if self.nbsources == self.scan_data:
+            # All files have been successfully scanned without errors
+            msg = COLORS.OKGREEN
+        elif self.nbsources == self.scan_errors:
+            # All files have been skipped with errors
+            msg = COLORS.FAIL
+        else:
+            # Some files have been scanned with at least one error
+            msg = COLORS.WARNING
+        msg += '\n\nNumber of {} scanned: {}'.format(SOURCE_TYPE[self.source_type], self.scan_data)
+        msg += '\nNumber of errors: {}'.format(self.scan_errors)
+        msg += COLORS.ENDC
+        # Print summary
+        Print.summary(msg)
+        # Print log path if exists
+        Print.log(COLORS.HEADER + '\nSee log: {}\n'.format(Print.LOGFILE) + COLORS.ENDC)

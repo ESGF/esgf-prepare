@@ -8,14 +8,14 @@
 """
 
 import getpass
-import logging
 import re
 from collections import OrderedDict
 from os import remove
 from tempfile import NamedTemporaryFile
 
 from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions, NoConfigOption
-from fuzzywuzzy import fuzz, process
+from fuzzywuzzy.fuzz import partial_ratio
+from fuzzywuzzy.process import extractOne
 from hurry.filesize import size
 from netCDF4 import Dataset
 from treelib import Tree
@@ -24,7 +24,7 @@ from treelib.tree import DuplicatedNodeIdError
 from constants import *
 from custom_exceptions import *
 from esgprep.utils.custom_exceptions import *
-from esgprep.utils.misc import checksum
+from esgprep.utils.misc import checksum, Print
 
 
 class File(object):
@@ -126,11 +126,11 @@ class File(object):
                         raise NoNetCDFAttribute(set_keys[facet], self.ffp)
                 else:
                     # Find closest NetCDF attributes in terms of partial string comparison
-                    key, score = process.extractOne(facet, self.attributes.keys(), scorer=fuzz.partial_ratio)
+                    key, score = extractOne(facet, self.attributes.keys(), scorer=partial_ratio)
                     if score >= 80:
                         # Rename attribute key
                         self.attributes[facet] = self.attributes.pop(key)
-                        logging.warning('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
+                        Print.warning('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
                         config.check_options({facet: self.attributes[facet]})
                     else:
                         raise NoConfigOptions(facet)
@@ -245,7 +245,7 @@ class DRSPath(object):
         """
         # Test if dataset path already exists
         dset_path = self.path(f_part=False, version=False, root=True)
-        if os.path.isdir(dset_path):
+        if os.path.isdir(dset_path) and os.listdir(dset_path):
             # Get and sort all existing dataset versions
             versions = sorted([v for v in os.listdir(dset_path) if re.compile(r'v[\d]+').search(v)])
             # Upgrade version should not already exist

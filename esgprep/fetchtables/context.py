@@ -10,7 +10,6 @@
 import logging
 import os
 import re
-import sys
 
 from requests.auth import HTTPBasicAuth
 
@@ -61,6 +60,7 @@ class ProcessingContext(object):
             # Default exclude hidden files
             self.file_filter.add(regex='^\..*$', inclusive=False)
         self.error = False
+        self.progress = 0
 
     def __enter__(self):
         # Init GitHub authentication
@@ -70,9 +70,7 @@ class ProcessingContext(object):
         return self
 
     def __exit__(self, *exc):
-        # Default is sys.exit(0)
-        if self.error:
-            sys.exit(1)
+        pass
 
     def authenticate(self):
         """

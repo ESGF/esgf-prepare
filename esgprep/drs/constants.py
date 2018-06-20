@@ -47,7 +47,12 @@ PROCESS_VARS = ['root',
                 'checksum_type',
                 'mode',
                 'upgrade_from_latest',
-                'ignore_from_latest']
+                'ignore_from_latest',
+                'cfg',
+                'facets',
+                'lock',
+                'progress',
+                'nbsources']
 
 # Tree context file
 TREE_FILE = '/tmp/DRSTree_{}.pkl'.format(environ['USER'])

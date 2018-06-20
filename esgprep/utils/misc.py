@@ -8,10 +8,13 @@
 """
 
 import hashlib
-import logging
 import os
 import pickle
 import re
+import sys
+from ctypes import c_char_p
+from multiprocessing import Value
+
 import requests
 
 from custom_exceptions import *
@@ -32,140 +35,6 @@ class ProcessContext(object):
         for key, value in args.items():
             setattr(self, key, value)
 
-
-class LogFilter(object):
-    """
-    Log filter with upper log level to use with the Python
-    `logging <https://docs.python.org/2/library/logging.html>`_ module.
-
-    """
-
-    def __init__(self, level):
-        self.level = level
-
-    def filter(self, log_record):
-        """
-        Set the upper log level.
-
-        """
-        return log_record.levelno <= self.level
-
-
-def init_logging(log, debug=False, level='INFO'):
-    """
-    if --debug --> INFO mode linéaire ERROR/EXCEPTION dans log error
-    if --log --> INFO mode log ERROR/EXCEPTION dans log error
-
-    add_logging_level('PROGRESS', 1)
-
-    logging.
-
-    Par défaut sans --debug ni --log :
-    Mapfile Generation  - logging.PROGRESS -  StreamHandler - LogFilter(PROGRESS)
-    Mapfile generated
-    See log error
-
-    Avec --debug:    --> logging.debug <= > logging.error / Stream Handler
-    Scan started
-    mapfile <---- file
-    etc.
-    Scan end
-    See log error
-
-    Avec --log:
-    Mapfile Generation
-    Mapfile generated
-    See log <--- mode lineaire
-    See log error
-
-    Avec --debug et --log
-    Mapfile Generation
-    Mapfile generated
-    See log <--- mode lineraire
-    See log error
-
-    Initiates the logging configuration (output, date/message formatting).
-    If a directory is submitted the logfile name is unique and formatted as follows:
-    ``name-YYYYMMDD-HHMMSS-JOBID.log``If ``None`` the standard output is used.
-
-    :param str log: The logfile directory.
-    :param boolean debug: Debug mode.
-    :param str level: The log level.
-
-    """
-    logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
-    logname = 'esgprep-{}-{}'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
-    formatter = logging.Formatter(fmt='%(levelname)-10s %(asctime)s %(message)s')
-    if log:
-        if not os.path.isdir(log):
-            os.makedirs(log)
-        logfile = os.path.join(log, logname)
-    else:
-        logfile = os.path.join(os.getcwd(), logname)
-#    logging.getLogger().setLevel(logging.DEBUG)
-
-    # Create stream handler for progress bar
-    add_logging_level('PROGRESS', 1)
-    # Print progress bar in all cases except if debug mode without log.
-    if not (debug and not log):
-        progress_handler = logging.StreamHandler()
-        progress_handler.setLevel(logging.PROGRESS)
-        progress_handler.setFormatter(formatter)
-        logging.getLogger().addHandler(progress_handler)
-
-    # Create file handler for debug mode
-
-    stream_handler = logging.FileHandler(filename='{}.log'.format(logfile), delay=True)
-
-
-
-    error_handler = logging.FileHandler(filename='{}.err'.format(logfile), delay=True)
-    error_handler.setLevel(logging.ERROR)
-    error_handler.setFormatter(formatter)
-    logging.getLogger().addHandler(error_handler)
-    if log:
-        stream_handler = logging.FileHandler(filename='{}.log'.format(logfile), delay=True)
-    else:
-        if debug:
-            stream_handler = logging.StreamHandler()
-        else:
-            stream_handler = logging.NullHandler()
-    stream_handler.setLevel(logging.__dict__[level])
-    stream_handler.addFilter(LogFilter(logging.WARNING))
-    stream_handler.setFormatter(formatter)
-    logging.getLogger().addHandler(stream_handler)
-
-
-def add_logging_level(levelName, levelNum, methodName=None):
-    """
-    Comprehensively adds a new logging level to the ``logging`` module and the
-    currently configured logging class.
-
-    :param str levelName: Attribute of the logging module
-    :param int levelNum: Attribute value of the new logging level
-    :param str methodName: Level method name ``levelName.lower()`` by default
-
-    :raise: Error if the level name is already an attribute of the logging module
-    :raise: Error if the method name is already present
-
-    """
-    if not methodName:
-        methodName = levelName.lower()
-    if hasattr(logging, levelName):
-       raise AttributeError('{} already defined in logging module'.format(levelName))
-    if hasattr(logging, methodName):
-       raise AttributeError('{} already defined in logging module'.format(methodName))
-    if hasattr(logging.getLoggerClass(), methodName):
-       raise AttributeError('{} already defined in logger class'.format(methodName))
-    def logForLevel(self, message, *args, **kwargs):
-        if self.isEnabledFor(levelNum):
-            self._log(levelNum, message, args, **kwargs)
-    def logToRoot(message, *args, **kwargs):
-        logging.log(levelNum, message, *args, **kwargs)
-    logging.addLevelName(levelNum, levelName)
-    setattr(logging, levelName, levelNum)
-    setattr(logging.getLoggerClass(), methodName, logForLevel)
-    setattr(logging, methodName, logToRoot)
 
 def remove(pattern, string):
     """
@@ -388,8 +257,9 @@ def do_fetching(f, remote_checksum, keep, overwrite):
             if githash(f) == remote_checksum:
                 return False
             else:
-                logging.warning('Local "{}" does not match version on GitHub. '
-                                'The file is either outdated or was modified.'.format((os.path.basename(f))))
+                msg = COLORS.BOLD + 'Local "{}" does not match version on GitHub -- '.format((os.path.basename(f)))
+                msg += 'The file is either outdated or was modified.' + COLORS.ENDC
+                Print.warning(msg)
                 if keep:
                     return False
                 else:
@@ -410,3 +280,158 @@ def githash(outfile):
     s.update("blob %u\0" % len(data))
     s.update(data)
     return unicode(s.hexdigest())
+
+
+class COLORS:
+    """
+    Background colors for print statements
+
+    """
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[1;32m'
+    WARNING = '\033[1;93m'
+    FAIL = '\033[1;31m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+class Print(object):
+    """
+    Class to manage and dispatch print statement depending on log and debug mode.
+
+    """
+    LOG = None
+    DEBUG = False
+    CMD = None
+    BUFFER = Value(c_char_p, '')
+    LOGFILE = None
+    ERRFILE = None
+
+    @staticmethod
+    def init(log, debug, cmd):
+        Print.LOG = log
+        Print.DEBUG = debug
+        Print.CMD = cmd
+        logname = '{}-{}'.format(Print.CMD, datetime.now().strftime("%Y%m%d-%H%M%S"))
+        if Print.LOG:
+            logdir = Print.LOG
+            if not os.path.isdir(Print.LOG):
+                os.makedirs(Print.LOG)
+        else:
+            logdir = os.getcwd()
+        Print.LOGFILE = os.path.join(logdir, logname + '.log')
+        Print.ERRFILE = os.path.join(logdir, logname + '.err')
+
+    @staticmethod
+    def print_to_stdout(msg):
+        sys.stdout.write(msg)
+        sys.stdout.flush()
+
+    @staticmethod
+    def print_to_logfile(msg):
+        with open(Print.LOGFILE, 'a+') as f:
+            for color in COLORS.__dict__.values():
+                msg = msg.replace(color, '')
+            f.write(msg)
+
+    @staticmethod
+    def print_to_errfile(msg):
+        with open(Print.ERRFILE, 'a+') as f:
+            for color in COLORS.__dict__.values():
+                msg = msg.replace(color, '')
+            f.write(msg)
+
+    @staticmethod
+    def progress(msg):
+        if Print.LOG:
+            Print.print_to_stdout(msg)
+        elif not Print.DEBUG:
+            Print.print_to_stdout(msg)
+
+    @staticmethod
+    def command(msg):
+        if Print.LOG:
+            Print.print_to_logfile(msg)
+        elif Print.DEBUG:
+            Print.print_to_stdout(msg)
+
+    @staticmethod
+    def log(msg):
+        if Print.LOG:
+            Print.print_to_stdout(msg)
+
+    @staticmethod
+    def summary(msg):
+        if Print.LOG:
+            Print.print_to_stdout(msg)
+            Print.print_to_logfile(msg)
+        else:
+            Print.print_to_stdout(msg)
+
+    @staticmethod
+    def info(msg):
+        if Print.LOG:
+            Print.print_to_logfile(msg)
+        elif Print.DEBUG:
+            Print.print_to_stdout(msg)
+
+    @staticmethod
+    def debug(msg):
+        if Print.DEBUG:
+            if Print.LOG:
+                Print.print_to_logfile(msg)
+            else:
+                Print.print_to_stdout(msg)
+
+    @staticmethod
+    def warning(msg):
+        msg = COLORS.WARNING + '\n:: WARNING :: ' + COLORS.ENDC + '{}'.format(msg)
+        if Print.LOG:
+            Print.print_to_logfile(msg)
+        else:
+            Print.print_to_stdout(msg)
+
+    @staticmethod
+    def error(msg, buffer=False):
+        if Print.LOG:
+            Print.print_to_logfile(msg)
+        elif Print.DEBUG:
+            Print.print_to_stdout(msg)
+        elif buffer:
+            Print.BUFFER.value += msg
+        else:
+            Print.print_to_stdout(msg)
+
+    @staticmethod
+    def success(msg, buffer=False):
+        if Print.LOG:
+            Print.print_to_logfile(msg)
+        elif Print.DEBUG:
+            Print.print_to_stdout(msg)
+        elif buffer:
+            Print.BUFFER.value += msg
+        else:
+            Print.print_to_stdout(msg)
+
+    @staticmethod
+    def exception(msg, buffer=False):
+        msg = COLORS.FAIL + '\n:: SKIPPED :: ' + COLORS.ENDC + '{}'.format(msg)
+        if Print.LOG:
+            Print.print_to_logfile(msg)
+        elif Print.DEBUG:
+            Print.print_to_stdout(msg)
+        elif buffer:
+            Print.BUFFER.value += msg
+        else:
+            Print.print_to_stdout(msg)
+
+    @staticmethod
+    def flush():
+        if Print.BUFFER.value:
+            Print.BUFFER.value = '\n' + Print.BUFFER.value
+            if Print.LOG:
+                Print.print_to_logfile(Print.BUFFER.value)
+            else:
+                Print.print_to_stdout(Print.BUFFER.value)

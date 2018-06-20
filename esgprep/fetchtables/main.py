@@ -10,14 +10,14 @@
 import logging
 import os
 import sys
+import traceback
 
 import requests
-from tqdm import tqdm
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.custom_exceptions import GitHubException, GitHubReferenceNotFound
-from esgprep.utils.misc import gh_request_content, backup, write_content, do_fetching
+from esgprep.utils.custom_exceptions import GitHubReferenceNotFound
+from esgprep.utils.misc import gh_request_content, backup, write_content, do_fetching, Print, COLORS
 
 
 def make_outdir(tables_dir, repository, reference=None):
@@ -40,17 +40,15 @@ def make_outdir(tables_dir, repository, reference=None):
             logging.warning('{} created'.format(outdir))
         except OSError as e:
             # If default tables directory does not exists and without write access
-            print 'WARNING :: Cannot use "{}" because of OSError ({}: {}) -- ' \
-                  'Use "{}" instead.'.format(tables_dir,
-                                             e.errno,
-                                             e.strerror,
-                                             os.getcwd())
+            msg = COLORS.BOLD + 'Cannot use "{}" (OSError {}: {}) -- '.format(tables_dir, e.errno, e.strerror)
+            msg += 'Use "{}" instead.'.format(os.getcwd()) + COLORS.ENDC
+            Print.warning(msg)
             outdir = os.path.join(os.getcwd(), repository)
             if reference:
                 outdir = os.path.join(outdir, reference)
             if not os.path.isdir(outdir):
                 os.makedirs(outdir)
-                logging.warning('{} created'.format(outdir))
+                Print.warning('"{}" created'.format(outdir))
     return outdir
 
 
@@ -66,10 +64,14 @@ def run(args):
     :param ArgumentParser args: Parsed command-line arguments
 
     """
+    # Init print management
+    Print.init(log=args.log, debug=args.debug, cmd=args.prog)
     # Instantiate processing context manager
     with ProcessingContext(args) as ctx:
-        try:
-            for project in ctx.targets:
+        # Print command-line
+        Print.command(COLORS.OKBLUE + 'Command: ' + COLORS.ENDC + ' '.join(sys.argv))
+        for project in ctx.targets:
+            try:
                 # Set repository name
                 repo = REPO_PATTERN.format(project)
                 # Set refs url
@@ -92,40 +94,58 @@ def run(args):
                 files = [f['name'] for f in r.json() if ctx.file_filter(f['name'])]
                 # Init progress bar
                 nfiles = len(files)
-                if ctx.pbar and nfiles:
-                    files = tqdm(files,
-                                 desc='Fetching {} tables'.format(project),
-                                 total=nfiles,
-                                 bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
-                                 ncols=100,
-                                 file=sys.stdout)
-                elif not nfiles:
-                    logging.info('No files found on remote repository')
-                # Get the files
+                if not nfiles:
+                    Print.warning('No files found on remote repository: {}'.format(url))
+                # Counter
+                progress = 0
                 for f in files:
-                    # Set output file full path
-                    outfile = os.path.join(outdir, f)
-                    # Set full file url
-                    url = ctx.url.format(repo)
-                    url += '/{}'.format(f)
-                    # Particular case of CMIP6_CV.json file
-                    # which has to be fetched from master in any case
-                    if f == 'CMIP6_CV.json':
-                        url += GITHUB_API_PARAMETER.format('ref', 'master')
-                    else:
-                        url += GITHUB_API_PARAMETER.format('ref', ctx.ref)
-                    # Get GitHub file content
-                    r = gh_request_content(url=url, auth=ctx.auth)
-                    sha = r.json()['sha']
-                    content = requests.get(r.json()['download_url'], auth=ctx.auth).text
-                    # Fetching True/False depending on flags and file checksum
-                    if do_fetching(outfile, sha, ctx.keep, ctx.overwrite):
-                        # Backup old file if exists
-                        backup(outfile, mode=ctx.backup_mode)
-                        # Write new file
-                        write_content(outfile, content)
-                        logging.info('{} :: FETCHED (in {})'.format(url.ljust(LEN_URL), outfile))
-                    else:
-                        logging.info('{} :: SKIPPED'.format(url.ljust(LEN_URL)))
-        except GitHubException:
-            ctx.error = True
+                    try:
+                        # Set output file full path
+                        outfile = os.path.join(outdir, f)
+                        # Set full file url
+                        url = ctx.url.format(repo)
+                        url += '/{}'.format(f)
+                        # Particular case of CMIP6_CV.json file
+                        # which has to be fetched from master in any case
+                        if f == 'CMIP6_CV.json':
+                            url += GITHUB_API_PARAMETER.format('ref', 'master')
+                        else:
+                            url += GITHUB_API_PARAMETER.format('ref', ctx.ref)
+                        # Get GitHub file content
+                        r = gh_request_content(url=url, auth=ctx.auth)
+                        sha = r.json()['sha']
+                        content = requests.get(r.json()['download_url'], auth=ctx.auth).text
+                        # Fetching True/False depending on flags and file checksum
+                        if do_fetching(outfile, sha, ctx.keep, ctx.overwrite):
+                            # Backup old file if exists
+                            backup(outfile, mode=ctx.backup_mode)
+                            # Write new file
+                            write_content(outfile, content)
+                            Print.info(':: FETCHED :: {} --> {}'.format(url.ljust(LEN_URL), outfile))
+                        else:
+                            Print.info(':: SKIPPED :: {}'.format(url.ljust(LEN_URL)))
+                    except KeyboardInterrupt:
+                        raise
+                    except Exception:
+                        exc = traceback.format_exc().splitlines()
+                        msg = COLORS.HEADER + project + COLORS.ENDC + '\n'
+                        msg += '\n'.join(exc)
+                        Print.exception(msg, buffer=True)
+                        ctx.error = True
+                    finally:
+                        progress += 1
+                        percentage = int(progress.value * 100 / ctx.nfiles)
+                        msg = COLORS.OKBLUE + '\rFetching {} tables: '.format(project) + COLORS.ENDC
+                        msg += '{}% | {}/{} files'.format(percentage, progress, ctx.nfiles)
+                        Print.progress(msg)
+            except Exception:
+                exc = traceback.format_exc().splitlines()
+                msg = COLORS.HEADER + project + COLORS.ENDC + '\n'
+                msg += '\n'.join(exc)
+                Print.exception(msg, buffer=True)
+                ctx.error = True
+    # Flush buffer
+    Print.flush()
+    # Evaluate errors and exit with appropriated return code
+    if ctx.error:
+        sys.exit(1)

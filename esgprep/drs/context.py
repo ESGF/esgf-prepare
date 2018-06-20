@@ -7,31 +7,20 @@
 
 """
 
-import logging
 import re
 import sys
+from multiprocessing import cpu_count, Lock, Value
 from multiprocessing.managers import SyncManager
 from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
-from tqdm import tqdm
 
 from constants import *
 from custom_exceptions import *
 from esgprep.utils.collectors import Collector
 from esgprep.utils.custom_exceptions import *
-from esgprep.utils.misc import load
+from esgprep.utils.misc import load, Print, COLORS
 from handler import DRSTree, DRSPath
-
-SyncManager.register('pbar', tqdm, exposed='update')
-SyncManager.register('cfg', SectionParser, exposed=('get', 'check_options', 'get_option_from_map'))
-SyncManager.register('tree', DRSTree, exposed=('create_leaf',
-                                               'get_display_lengths',
-                                               'check_uniqueness',
-                                               'list',
-                                               'todo',
-                                               'tree'
-                                               'upgrade'))
 
 
 class ProcessManager(SyncManager):
@@ -49,7 +38,6 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
-        self.pbar = args.pbar
         self.config_dir = args.i
         self.directory = args.directory
         self.root = os.path.normpath(args.root)
@@ -72,7 +60,7 @@ class ProcessingContext(object):
         self.set_keys = {}
         if args.set_key:
             self.set_keys = dict(args.set_key)
-        self.processes = args.max_processes
+        self.processes = args.max_processes if args.max_processes <= cpu_count() else cpu_count()
         self.use_pool = (self.processes != 1)
         self.project = args.project
         self.action = args.action
@@ -86,19 +74,40 @@ class ProcessingContext(object):
             self.mode = 'move'
         self.version = args.version
         DRSPath.TREE_VERSION = 'v{}'.format(args.version)
+        # Declare counters for summary
+        self.scan_errors = 0
+        self.scan_files = 0
         self.scan = True
-        self.scan_errors = None
-        self.scan_files = None
-        self.scan_err_log = logging.getLogger().handlers[0].baseFilename
         if self.commands_file and self.action != 'todo':
-            print 'WARNING :: "{}" action ignores "--commands-file" argument.'.format(self.action)
+            msg = COLORS.BOLD + '"todo" action ignores "--commands-file" argument' + COLORS.ENDC
+            Print.warning(msg)
             self.commands_file = None
         if self.overwrite_commands_file and not self.commands_file:
-            print 'WARNING :: "--overwrite-commands-file" ignored'
+            msg = COLORS.BOLD + '"--overwrite-commands-file" ignored' + COLORS.ENDC
+            Print.warning(msg)
         self.no_checksum = args.no_checksum
         if self.no_checksum:
-            print 'WARNING :: Checksumming disabled, DRS breach could occur -- ' \
-                  'It is highly recommend to activate checksumming processes.'
+            msg = COLORS.BOLD + 'Checksumming disabled, DRS breach could occur -- '
+            msg += 'It is highly recommend to activate checksumming processes.' + COLORS.ENDC
+            Print.warning(msg)
+        # Init process manager
+        if self.use_pool:
+            SyncManager.register('tree', DRSTree, exposed=('create_leaf',
+                                                           'get_display_lengths',
+                                                           'check_uniqueness',
+                                                           'list',
+                                                           'todo',
+                                                           'tree'
+                                                           'upgrade'))
+            manager = SyncManager()
+            manager.start()
+            self.tree = manager.tree()
+            self.progress = manager.Value('i', 0)
+        else:
+            self.tree = DRSTree()
+            self.progress = Value('i', 0)
+        self.lock = Lock()
+        self.nbsources = None
 
     def __enter__(self):
         # Get checksum client
@@ -141,63 +150,36 @@ class ProcessingContext(object):
             if self.check_args(old_args):
                 self.scan = False
         # Init data collector
-        if self.pbar:
-            self.sources = Collector(sources=self.directory)
-        else:
-            self.sources = Collector(sources=self.directory, spinner=False)
+        self.sources = Collector(sources=self.directory)
         # Init file filter
         # Only supports netCDF files
         self.sources.FileFilter.add(regex='^.*\.nc$')
         # And exclude hidden files
         self.sources.FileFilter.add(regex='^\..*$', inclusive=False)
-        # Init progress bar
-        if self.scan:
-            nfiles = len(self.sources)
-            if self.pbar and nfiles:
-                self.pbar = tqdm(desc='Scanning incoming files',
-                                 total=nfiles,
-                                 bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
-                                 ncols=100,
-                                 file=sys.stdout)
-        else:
-            msg = 'WARNING :: Skipping incoming files scan (use "--rescan" to force it) -- ' \
-                  'Using cached DRS tree from {}'.format(TREE_FILE)
-            if self.pbar:
-                print(msg)
-            logging.warning(msg)
+        # Get number of sources
+        self.nbsources = len(self.sources)
         return self
 
     def __exit__(self, *exc):
         # Decline outputs depending on the scan results
-        # Raise errors when one or several files have been skipped or failed
-        # Default is sys.exit(0)
-        if self.scan_files and not self.scan_errors:
-            # All files have been successfully scanned
-            logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
-        if not self.scan_files and not self.scan_errors:
-            # Results list is empty = no files scanned/found
-            if self.pbar:
-                print('No files found')
-            logging.warning('==> No files found')
-            sys.exit(1)
-        if self.scan_files and self.scan_errors:
-            if self.scan:
-                msg = 'Scan errors: {} (see {})'
-            else:
-                msg = 'Orginal scan errors: {} (previously written to {})'
-            # Print number of scan errors in any case
-            if self.pbar:
-                print(msg.format(self.scan_errors, self.scan_err_log))
-            logging.warning('{} file(s) have been skipped'
-                            ' (see {})'.format(self.scan_errors, self.scan_err_log))
-            if self.scan_errors == self.scan_files:
-                # All files have been skipped or failed during the scan
-                logging.warning('==> All files have been ignored or have failed leading to no DRS tree.')
-                sys.exit(3)
-            else:
-                # Some files have been skipped or failed during the scan
-                logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
-                sys.exit(2)
+        if self.nbsources == self.scan_files:
+            # All files have been successfully scanned without errors
+            msg = COLORS.OKGREEN
+        elif self.nbsources == self.scan_errors:
+            # All files have been skipped with errors
+            msg = COLORS.FAIL
+        else:
+            # Some files have been scanned with at least one error
+            msg = COLORS.WARNING
+        msg += '\n\nNumber of file(s) scanned: {}'.format(self.scan_files)
+        msg += '\nNumber of errors: {}'
+        if self.scan:
+            msg += ' (from orginal scan previously written to {})'.format(Print.ERRFILE)
+        msg += COLORS.ENDC
+        # Print summary
+        Print.summary(msg)
+        # Print log path if exists
+        Print.log(COLORS.HEADER + '\nSee log: {}\n'.format(Print.LOGFILE) + COLORS.ENDC)
 
     def check_existing_commands_file(self):
         """
@@ -210,8 +192,11 @@ class ProcessingContext(object):
             if self.overwrite_commands_file:
                 os.remove(self.commands_file)
             else:
-                print "WARNING :: File '{}' already exists and '--overwrite-commands-file'" \
-                      "option not used.".format(self.commands_file)
+                msg = COLORS.FAIL
+                msg += '\nCommand file "{}" already exists --'.format(self.commands_file)
+                msg += 'Please use "--overwrite-commands-file" option.'
+                msg += COLORS.ENDC
+                Print.error(msg)
                 sys.exit(1)
 
     def get_checksum_type(self):
@@ -242,9 +227,12 @@ class ProcessingContext(object):
         """
         for k in CONTROLLED_ARGS:
             if self.__getattribute__(k) != old_args[k]:
-                logging.warning('"{}" argument has changed: "{}" instead of "{}". '
-                                'File rescan needed.'.format(k,
-                                                             self.__getattribute__(k),
-                                                             old_args[k]))
+                msg = COLORS.BOLD
+                msg += '"{}" argument has changed: "{}" instead of "{}" -- '.format(k,
+                                                                                    self.__getattribute__(k),
+                                                                                    old_args[k])
+                msg += 'Rescan files...'
+                msg += COLORS.ENDC
+                Print.warning(msg)
                 return False
         return True

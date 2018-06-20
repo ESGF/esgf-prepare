@@ -9,11 +9,11 @@
 
 import argparse
 import os
+import sys
 from argparse import FileType
-from importlib import import_module
 
+from esgprep.drs.main import run
 from utils.constants import *
-from utils.misc import init_logging
 from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, _ArgumentParser, keyval_converter, \
     processes_validator
 
@@ -211,24 +211,21 @@ def get_args():
     upgrade._optionals.title = OPTIONAL
     upgrade._positionals.title = POSITIONAL
     main.set_default_subparser('list')
-    return main.parse_args()
+    return main.prog, main.parse_args()
 
 
-def run():
+def main():
     """
     Run main program
 
     """
     # Get command-line arguments
-    args = get_args()
-    # Initialize logger depending on log and debug mode
-    init_logging(log=args.log, debug=args.debug)
-    # Print progress bar if no log and no debug mode
-    setattr(args, 'pbar', True if not args.log and not args.debug else False)
+    prog, args = get_args()
+    setattr(args, 'prog', prog)
     # Run program
-    main = import_module('.main', package='esgprep.drs')
-    main.run(args)
+    run(args)
 
 
 if __name__ == "__main__":
-    run()
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    main()

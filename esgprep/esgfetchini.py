@@ -6,12 +6,11 @@
     :synopsis: Toolbox to prepare ESGF data for publication.
 
 """
-
 import os
-from importlib import import_module
+import sys
 
+from esgprep.fetchini.main import run
 from utils.constants import *
-from utils.misc import init_logging
 from utils.parser import MultilineFormatter, _ArgumentParser
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
@@ -102,24 +101,21 @@ def get_args():
         action='store_true',
         default=False,
         help=DEVEL_HELP)
-    return main.parse_args()
+    return main.prog, main.parse_args()
 
 
-def run():
+def main():
     """
     Run main program
 
     """
     # Get command-line arguments
-    args = get_args()
-    # Initialize logger depending on log and debug mode
-    init_logging(log=args.log, debug=args.debug)
-    # Print progress bar if no log and no debug mode
-    setattr(args, 'pbar', True if not args.log and not args.debug else False)
+    prog, args = get_args()
+    setattr(args, 'prog', prog)
     # Run program
-    main = import_module('.main', package='esgprep.fetchini')
-    main.run(args)
+    run(args)
 
 
 if __name__ == "__main__":
-    run()
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    main()

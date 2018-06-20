@@ -28,6 +28,7 @@ PROCESS_VARS = ['project',
                 'notes_title',
                 'cfg',
                 'facets',
+                'progress',
                 'nbsources',
                 'lock']
 

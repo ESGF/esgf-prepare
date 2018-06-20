@@ -12,6 +12,7 @@ import re
 import sys
 from uuid import uuid4 as uuid
 
+from esgprep.utils.custom_exceptions import NoFileFound
 from esgprep.utils.misc import match, remove
 
 
@@ -58,7 +59,9 @@ class Collector(object):
     def __iter__(self):
         for source in self.sources:
             for root, _, filenames in os.walk(source, followlinks=True):
-                if self.PathFilter(root):
+                # Apply path filters only on recursion
+                # Source path can include hidden directories
+                if self.PathFilter(root.split(source)[1]):
                     for filename in sorted(filenames):
                         ffp = os.path.join(root, filename)
                         if os.path.isfile(ffp) and self.FileFilter(filename):
@@ -73,13 +76,16 @@ class Collector(object):
 
         """
         progress = Collecting(self.spinner)
-        s = 0
-        for _ in self.__iter__():
-            progress.next()
-            s += 1
-        if self.spinner:
-            sys.stdout.write('\r\033[K')
-            sys.stdout.flush()
+        try:
+            s = 0
+            for _ in self.__iter__():
+                progress.next()
+                s += 1
+            if self.spinner:
+                sys.stdout.write('\r\033[K')
+                sys.stdout.flush()
+        except StopIteration:
+            raise NoFileFound(self.sources)
         return s
 
 
@@ -104,7 +110,7 @@ class PathCollector(Collector):
         """
         for source in self.sources:
             for root, _, filenames in os.walk(source, followlinks=True):
-                if self.PathFilter(root):
+                if self.PathFilter(root.split(source)[1]):
                     for filename in sorted(filenames):
                         ffp = os.path.join(root, filename)
                         if os.path.isfile(ffp) and self.FileFilter(filename):
@@ -153,7 +159,7 @@ class VersionedPathCollector(PathCollector):
                         latest_version = sorted(path_versions)[-1]
                         # Pick up the latest version among encountered versions
                         self.PathFilter.add(name='version_filter', regex='/{}'.format(latest_version))
-                    if self.PathFilter(root):
+                    if self.PathFilter(root.split(source)[1]):
                         # Dereference latest symlink (only) in the end
                         if path_version == 'latest':
                             # Keep parentheses in pattern to get "latest" part of the split list

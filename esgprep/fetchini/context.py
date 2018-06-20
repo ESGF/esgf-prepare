@@ -10,13 +10,11 @@
 import logging
 import os
 import re
-import sys
 
 from requests.auth import HTTPBasicAuth
-from tqdm import tqdm
 
 from constants import *
-from esgprep.utils.misc import gh_request_content
+from esgprep.utils.misc import gh_request_content, Print, COLORS
 
 
 class ProcessingContext(object):
@@ -50,23 +48,14 @@ class ProcessingContext(object):
         self.make_ini_dir()
         # Init the project list to retrieve
         self.targets = self.target_projects()
-        # Init progress bar
-        nfiles = len(self.targets)
-        if self.pbar and nfiles:
-            self.targets = tqdm(self.targets,
-                                desc='Fetching project(s) config',
-                                total=nfiles,
-                                bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
-                                ncols=100,
-                                file=sys.stdout)
-        elif not nfiles:
-            logging.info('No files found on remote repository')
+        # Get number of files
+        self.nfiles = len(self.targets)
+        if not self.nfiles:
+            Print.warning(COLORS.BOLD + 'No files found on remote repository' + COLORS.ENDC)
         return self
 
     def __exit__(self, *exc):
-        # Default is sys.exit(0)
-        if self.error:
-            sys.exit(1)
+        pass
 
     def authenticate(self):
         """

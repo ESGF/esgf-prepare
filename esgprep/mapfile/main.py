@@ -8,10 +8,10 @@
 """
 
 import itertools
-import logging
 import os
 import re
 import sys
+import traceback
 from datetime import datetime
 from multiprocessing import Pool
 
@@ -20,7 +20,7 @@ from lockfile import LockFile
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext
+from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext, COLORS, Print
 from handler import File, Dataset
 
 
@@ -182,13 +182,21 @@ def process(source):
                         if re.match(get_checksum_pattern(pctx.checksum_type), pctx.checksums_from[source]):
                             optional_attrs['checksum'] = pctx.checksums_from[source]
                         else:
-                            logging.warning('Invalid {} checksum pattern: {} -- '
-                                            'Recomputing checksum.'.format(pctx.checksum_type,
-                                                                           pctx.checksums_from[source]))
+                            msg = COLORS.BOLD
+                            msg += 'Invalid {} checksum pattern: {} -- '.format(pctx.checksum_type,
+                                                                                pctx.checksums_from[source])
+                            msg += 'Recomputing checksum...'
+                            msg += COLORS.ENDC
+                            with pctx.lock:
+                                Print.warning(msg)
                             optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
                     else:
-                        logging.warning('Entry not found in checksum file: {} -- '
-                                        'Recomputing checksum.'.format(source))
+                        msg = COLORS.BOLD
+                        msg += 'Entry not found in checksum file: {} -- '.format(source)
+                        msg += 'Recomputing checksum...'
+                        msg += COLORS.ENDC
+                        with pctx.lock:
+                            Print.warning(msg)
                         optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
                 else:
                     optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
@@ -201,25 +209,30 @@ def process(source):
                                  size=sh.size,
                                  optional_attrs=optional_attrs)
             write(outfile, line)
-            logging.info('{} <-- {}'.format(os.path.splitext(os.path.basename(outfile))[0], source))
+            msg = COLORS.OKGREEN + '\n{}'.format(os.path.splitext(os.path.basename(outfile))[0]) + COLORS.ENDC
+            msg += '<-- ' + COLORS.HEADER + source + COLORS.ENDC
+            with pctx.lock:
+                Print.info(msg)
         # Return mapfile name
         return outfile
     # Catch any exception into error log instead of stop the run
-    except Exception as e:
-        logging.error('{} skipped\n{}: {}'.format(source, e.__class__.__name__, e.message))
+    except KeyboardInterrupt:
+        raise
+    except Exception:
+        exc = traceback.format_exc().splitlines()
+        msg = COLORS.HEADER + source + COLORS.ENDC + '\n'
+        msg += '\n'.join(exc)
+        with pctx.lock:
+            Print.exception(msg, buffer=True)
         return None
     finally:
-        pctx.progress.value += 1
-        percentage = int(pctx.progress.value * 100 / pctx.nbsources)
-        msg = '\rMapfile(s) generation: {}% | {}/{} {}'.format(percentage,
-                                                               pctx.progress.value,
-                                                               pctx.nbsources,
-                                                               SOURCE_TYPE[pctx.source_type])
-        pctx.lock.acquire()
-        logging.info(msg)
-        sys.stdout.write(msg)
-        sys.stdout.flush()
-        pctx.lock.release()
+        with pctx.lock:
+            pctx.progress.value += 1
+            percentage = int(pctx.progress.value * 100 / pctx.nbsources)
+            msg = COLORS.OKBLUE + '\rMapfile(s) generation: ' + COLORS.ENDC
+            msg += '{}% | {}/{} {}'.format(percentage, pctx.progress.value,
+                                           pctx.nbsources, SOURCE_TYPE[pctx.source_type])
+            Print.progress(msg)
 
 
 def initializer(keys, values):
@@ -247,28 +260,32 @@ def run(args):
     :param ArgumentParser args: Command-line arguments parser
 
     """
-    # TODO: Review print strategy
+    # Init print management
+    Print.init(log=args.log, debug=args.debug, cmd=args.prog)
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
-        logging.info('==> Scan started')
+        # Print command-line
+        Print.command(COLORS.OKBLUE + 'Command: ' + COLORS.ENDC + ' '.join(sys.argv))
         # Init process context
         cctx = {name: getattr(ctx, name) for name in PROCESS_VARS}
         # Init progress bar
         if ctx.use_pool:
             # Init processes pool
-            pool = Pool(processes=ctx.processes, initializer=initializer, initargs=(cctx.keys(),
-                                                                                    cctx.values()))
+            pool = Pool(processes=ctx.processes, initializer=initializer, initargs=(cctx.keys(), cctx.values()))
             processes = pool.imap(process, ctx.sources)
         else:
             initializer(cctx.keys(), cctx.values())
             processes = itertools.imap(process, ctx.sources)
         # Process supplied sources
         results = [x for x in processes]
+        # Close pool of workers if exists
         if 'pool' in locals().keys():
             locals()['pool'].close()
             locals()['pool'].join()
-        # Get number of files scanned (including skipped files)
-        ctx.scan_files = len(results)
+        # Flush buffer
+        Print.flush()
+        # Get number of files scanned (excluding errors/skipped files)
+        ctx.scan_files = len(filter(None, results))
         # Get number of scan errors
         ctx.scan_errors = results.count(None)
         # Get number of generated mapfiles
@@ -279,20 +296,18 @@ def run(args):
                 # Remove mapfile working extension
                 if ctx.action == 'show':
                     # Print mapfiles to be generated
-                    if ctx.pbar or ctx.quiet:
-                        print(remove(WORKING_EXTENSION, mapfile))
-                    logging.info(remove(WORKING_EXTENSION, mapfile))
+                    if ctx.quiet:
+                        Print.info('\n' + remove(WORKING_EXTENSION, mapfile))
                 elif ctx.action == 'make':
                     # A final mapfile is silently overwritten if already exists
                     os.rename(mapfile, remove(WORKING_EXTENSION, mapfile))
-    # Evaluate errors and exit with appropriate return code
-    if not ctx.scan_files and not ctx.scan_errors:
-        # Results list is empty = no files scanned/found
+    # Evaluate errors and exit with appropriated return code
+    if ctx.nbsources == ctx.scan_files:
+        # All files have been successfully scanned without errors
+        sys.exit(0)
+    elif ctx.nbsources == ctx.scan_errors:
+        # All files have been skipped with errors
+        sys.exit(-1)
+    else:
+        # Some files have been scanned with at least one error
         sys.exit(1)
-    if ctx.scan_files and ctx.scan_errors:
-        if ctx.scan_errors == ctx.scan_files:
-            # All files have been skipped or failed during the scan
-            sys.exit(3)
-        else:
-            # Some files have been skipped or failed during the scan
-            sys.exit(2)

@@ -7,15 +7,15 @@
 
 """
 
-import logging
 import os
+import sys
+import traceback
 
 import requests
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.custom_exceptions import GitHubException
-from esgprep.utils.misc import gh_request_content, backup, write_content, do_fetching
+from esgprep.utils.misc import gh_request_content, backup, write_content, do_fetching, Print, COLORS
 
 
 def run(args):
@@ -30,10 +30,16 @@ def run(args):
     :param ArgumentParser args: Parsed command-line arguments
 
     """
+    # Init print management
+    Print.init(log=args.log, debug=args.debug, cmd=args.prog)
     # Instantiate processing context manager
     with ProcessingContext(args) as ctx:
-        try:
-            for project in ctx.targets:
+        # Print command-line
+        Print.command(COLORS.OKBLUE + 'Command: ' + COLORS.ENDC + ' '.join(sys.argv))
+        # Counter
+        progress = 0
+        for project in ctx.targets:
+            try:
                 # Set full url
                 url = ctx.url.format(INI_FILE.format(project))
                 # Set output file full path
@@ -48,8 +54,25 @@ def run(args):
                     backup(outfile, mode=ctx.backup_mode)
                     # Write new file
                     write_content(outfile, content)
-                    logging.info('{} :: FETCHED (in {})'.format(url.ljust(LEN_URL), outfile))
+                    Print.info('\n:: FETCHED :: {} --> {}'.format(url.ljust(LEN_URL), outfile))
                 else:
-                    logging.info('{} :: SKIPPED'.format(url.ljust(LEN_URL)))
-        except GitHubException:
-            ctx.error = True
+                    Print.info('\n:: SKIPPED :: {}'.format(url.ljust(LEN_URL)))
+            except KeyboardInterrupt:
+                raise
+            except Exception:
+                exc = traceback.format_exc().splitlines()
+                msg = COLORS.HEADER + project + COLORS.ENDC + '\n'
+                msg += '\n'.join(exc)
+                Print.exception(msg, buffer=True)
+                ctx.error = True
+            finally:
+                progress += 1
+                percentage = int(progress.value * 100 / ctx.nfiles)
+                msg = COLORS.OKBLUE + '\rFetching project(s) config: ' + COLORS.ENDC
+                msg += '{}% | {}/{} files'.format(percentage, progress, ctx.nfiles)
+                Print.progress(msg)
+    # Flush buffer
+    Print.flush()
+    # Evaluate errors and exit with appropriated return code
+    if ctx.error:
+        sys.exit(1)

@@ -11,9 +11,9 @@ import argparse
 import os
 import sys
 from argparse import FileType
+
 from esgprep.mapfile.main import run
 from utils.constants import *
-from utils.misc import init_logging
 from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser, \
     processes_validator
 
@@ -223,7 +223,7 @@ def get_args():
         default=False,
         help=BASENAME_HELP)
     main.set_default_subparser('make')
-    return main.parse_args()
+    return main.prog, main.parse_args()
 
 
 def main():
@@ -232,17 +232,12 @@ def main():
 
     """
     # Get command-line arguments
-    args = get_args()
-    # Initialize logger depending on log and debug mode
-    init_logging(log=args.log, debug=args.debug)
-    # Print progress bar if no log, no debug and no silent mode
-    if hasattr(args, 'quiet'):
-        setattr(args, 'pbar', True if not args.log and not args.debug and not args.quiet else False)
-    else:
-        setattr(args, 'pbar', True if not args.log and not args.debug else False)
+    prog, args = get_args()
+    setattr(args, 'prog', prog)
     # Run program
     run(args)
 
 
 if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     main()

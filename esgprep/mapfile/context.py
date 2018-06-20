@@ -8,10 +8,9 @@
 """
 
 import fnmatch
-import logging
 import os
+from multiprocessing import Lock, Value, cpu_count
 from multiprocessing.managers import SyncManager
-from multiprocessing import Lock, Value
 
 from ESGConfigParser import SectionParser
 from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
@@ -19,6 +18,7 @@ from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
 from constants import *
 from esgprep.utils.collectors import VersionedPathCollector, DatasetCollector
 from esgprep.utils.custom_exceptions import *
+from esgprep.utils.misc import Print, COLORS
 
 
 class ProcessingContext(object):
@@ -39,14 +39,13 @@ class ProcessingContext(object):
         self.notes_title = None
         self.notes_url = None
         self.checksums_from = None
-        self.pbar = args.pbar
         self.config_dir = args.i
         self.project = args.project
         self.action = args.action
         self.mapfile_name = args.mapfile
         self.outdir = args.outdir
         self.no_version = args.no_version
-        self.processes = args.max_processes
+        self.processes = args.max_processes if args.max_processes <= cpu_count() else cpu_count()
         self.use_pool = (self.processes != 1)
         self.dataset_name = args.dataset_name
         self.dir_filter = args.ignore_dir
@@ -89,12 +88,12 @@ class ProcessingContext(object):
                 self.checksums_from = self.load_checksums(args.checksums_from)
             else:
                 self.checksums_from = args.checksums_from
-        self.scan_errors = None
-        self.scan_files = None
-        self.scan_err_log = logging.getLogger().handlers[0].baseFilename
-        self.nb_map = None
+        # Declare counters for summary
+        self.scan_errors = 0
+        self.scan_files = 0
+        self.nb_map = 0
+        # Init process manager
         if self.use_pool:
-            # Use process manager
             manager = SyncManager()
             manager.start()
             self.progress = manager.Value('i', 0)
@@ -106,27 +105,23 @@ class ProcessingContext(object):
     def __enter__(self):
         # Get checksum client
         self.checksum_type = self.get_checksum_type()
-        # Init configuration parser
-        self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
-        self.facets = self.cfg.get_facets('dataset_id')
         # Get mapfile DRS is set in configuration file
+        # Has to be read before "project:id" section to raise proper exception infos
         try:
             _cfg = SectionParser(section='config:{}'.format(self.project), directory=self.config_dir)
             self.mapfile_drs = _cfg.get('mapfile_drs')
         except (NoConfigOption, NoConfigSection):
             self.mapfile_drs = None
+        # Init configuration parser
+        self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
+        self.facets = self.cfg.get_facets('dataset_id')
         # Init data collector
         if self.directory:
             # The source is a list of directories
             # Instantiate file collector to walk through the tree
             self.source_type = 'file'
-            if self.pbar:
-                self.sources = VersionedPathCollector(sources=self.directory,
-                                                      dir_format=self.cfg.translate('directory_format'))
-            else:
-                self.sources = VersionedPathCollector(sources=self.directory,
-                                                      spinner=False,
-                                                      dir_format=self.cfg.translate('directory_format'))
+            self.sources = VersionedPathCollector(sources=self.directory,
+                                                  dir_format=self.cfg.translate('directory_format'))
             # Translate directory format pattern
             self.pattern = self.cfg.translate('directory_format', add_ending_filename=True)
             # Init file filter
@@ -147,15 +142,13 @@ class ProcessingContext(object):
         elif self.dataset_list:
             # The source is a list of dataset from a TXT file
             self.source_type = 'dataset'
-            self.sources = DatasetCollector(sources=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
-                                            spinner=False)
+            self.sources = DatasetCollector(sources=[x.strip() for x in self.dataset_list.readlines() if x.strip()])
             # Translate dataset_id format
             self.pattern = self.cfg.translate('dataset_id', add_ending_version=True, sep='.')
         else:
             # The source is a dataset ID (potentially from stdin)
             self.source_type = 'dataset'
-            self.sources = DatasetCollector(sources=[self.dataset_id],
-                                            spinner=False)
+            self.sources = DatasetCollector(sources=[self.dataset_id])
             # Translate dataset_id format
             self.pattern = self.cfg.translate('dataset_id', add_ending_version=True, sep='.')
         # Get number of sources
@@ -164,37 +157,26 @@ class ProcessingContext(object):
 
     def __exit__(self, exc_type, exc_val, traceback):
         # Decline outputs depending on the scan results
-        # Raise errors when one or several files have been skipped or failed
-        if self.scan_files and not self.scan_errors:
-            # All files have been successfully scanned
-            if self.action == 'show':
-                # Print mapfiles to be generated
-                if self.pbar:
-                    print('{}: {}'.format('Mapfile(s) to be generated', self.nb_map))
-                logging.info('{} mapfile(s) to be generated'.format(self.nb_map))
-            elif self.action == 'make':
-                # Print number of generated mapfiles
-                if self.pbar:
-                    print('{}: {} (see {})'.format('Mapfile(s) generated', self.nb_map, self.outdir))
-                logging.info('{} mapfile(s) generated'.format(self.nb_map))
-            logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
-        if not self.scan_files and not self.scan_errors:
-            # Results list is empty = no files scanned/found
-            if self.pbar:
-                print('No files found')
-            logging.warning('==> No files found')
-        if self.scan_files and self.scan_errors:
-            # Print number of scan errors in any case
-            if self.pbar:
-                print('{}: {} (see {})'.format('Scan errors', self.scan_errors, self.scan_err_log))
-            logging.warning('{} file(s) have been skipped'
-                            ' (see {})'.format(self.scan_errors, self.scan_err_log))
-            if self.scan_errors == self.scan_files:
-                # All files have been skipped or failed during the scan
-                logging.warning('==> All files have been ignored or have failed leading to no mapfile.')
-            else:
-                # Some files have been skipped or failed during the scan
-                logging.info('==> Scan completed ({} file(s) scanned)'.format(self.scan_files))
+        if self.nbsources == self.scan_files:
+            # All files have been successfully scanned without errors
+            msg = COLORS.OKGREEN
+        elif self.nbsources == self.scan_errors:
+            # All files have been skipped with errors
+            msg = COLORS.FAIL
+        else:
+            # Some files have been scanned with at least one error
+            msg = COLORS.WARNING
+        msg += '\n\nNumber of file(s) scanned: {}'.format(self.scan_files)
+        msg += '\nNumber of errors: {}'.format(self.scan_errors)
+        if self.action == 'show':
+            msg += '\nMapfile(s) to be generated: {}\n'.format(self.nb_map)
+        elif self.action == 'make':
+            msg += '\nMapfile(s) generated: {} (see {})\n'.format(self.nb_map, self.outdir)
+        msg += COLORS.ENDC
+        # Print summary
+        Print.summary(msg)
+        # Print log path if exists
+        Print.log(COLORS.HEADER + '\nSee log: {}\n'.format(Print.LOGFILE) + COLORS.ENDC)
 
     def get_checksum_type(self):
         """
@@ -208,7 +190,7 @@ class ProcessingContext(object):
         if self.no_checksum:
             return None
         _cfg = SectionParser(section='DEFAULT', directory=self.config_dir)
-        if _cfg.has_option('checksum', section='DEFAULT'):
+        if _cfg.has_option('checksum'):
             checksum_type = _cfg.get_options_from_table('checksum')[0][1].lower()
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             checksum_type = 'sha256'
@@ -225,7 +207,6 @@ class ProcessingContext(object):
         for root, _, filenames in os.walk(self.outdir):
             for filename in fnmatch.filter(filenames, '*{}'.format(WORKING_EXTENSION)):
                 os.remove(os.path.join(root, filename))
-        logging.info('{} cleaned'.format(self.outdir))
 
     @staticmethod
     def load_checksums(checksum_file):
