@@ -278,9 +278,21 @@ BRANCH_HELP = \
 
     """
 
+BRANCH_REGEX_HELP = \
+    """
+    Fetch from all GitHub branches matching specified regex.|n
+
+    """
+
 TAG_HELP = \
     """
     Fetch from a GitHub tag.
+
+    """
+
+TAG_REGEX_HELP = \
+    """
+    Fetch from all GitHub tags matching specified regex.|n
 
     """
 

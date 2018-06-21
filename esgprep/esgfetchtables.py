@@ -114,11 +114,21 @@ def get_args():
         type=str,
         help=TAG_HELP)
     ref.add_argument(
-        '--branch',
-        metavar='master',
+        '--tag-regex',
+        metavar='REGEX',
         type=str,
+        help=TAG_REGEX_HELP)
+    ref.add_argument(
+        '--branch',
+        metavar='BRANCH',
         default='master',
+        type=str,
         help=BRANCH_HELP)
+    ref.add_argument(
+        '--branch-regex',
+        metavar='REGEX',
+        type=str,
+        help=BRANCH_REGEX_HELP)
     main.add_argument(
         '--include-file',
         metavar='PYTHON_REGEX',
