@@ -16,9 +16,10 @@ from tqdm import tqdm
 
 from constants import *
 from esgprep.utils.collectors import PathCollector, DatasetCollector
+from esgprep.utils.ctx_base import BaseContext
 
 
-class ProcessingContext(object):
+class ProcessingContext(BaseContext):
     """
     Encapsulates the processing context/information for main process.
 
