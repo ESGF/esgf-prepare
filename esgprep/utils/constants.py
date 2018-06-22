@@ -261,7 +261,10 @@ GITHUB_USER_HELP = \
 GITHUB_PASSWORD_HELP = \
     """
     GitHub password.|n
-    Default is the GH_PASSWORD environment variable if exists.
+    Default is the GH_PASSWORD environment variable if exists.|n
+    If the username is set, but the password is not provided|n
+    as a command line option nor as an environment variable,|n
+    then it is prompted for interactively.
     
     """
 
@@ -278,9 +281,21 @@ BRANCH_HELP = \
 
     """
 
+BRANCH_REGEX_HELP = \
+    """
+    Fetch from all GitHub branches matching specified regex.|n
+
+    """
+
 TAG_HELP = \
     """
     Fetch from a GitHub tag.
+
+    """
+
+TAG_REGEX_HELP = \
+    """
+    Fetch from all GitHub tags matching specified regex.|n
 
     """
 

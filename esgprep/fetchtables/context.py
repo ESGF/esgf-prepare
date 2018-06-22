@@ -9,17 +9,14 @@
 
 import logging
 import os
-import re
 import sys
-
-from requests.auth import HTTPBasicAuth
 
 from constants import *
 from esgprep.utils.collectors import FilterCollection
-from esgprep.utils.misc import gh_request_content
+from esgprep.utils.ctx_base import BaseContext
 
 
-class ProcessingContext(object):
+class ProcessingContext(BaseContext):
     """
     Encapsulates the processing context/information for main process.
 
@@ -41,12 +38,21 @@ class ProcessingContext(object):
         self.no_ref_folder = args.no_ref_folder
         self.url = GITHUB_CONTENT_API
         self.ref_url = GITHUB_REFS_API
-        if args.branch:
-            self.ref = args.branch
-            self.ref_url += '/heads'
         if args.tag:
             self.ref = args.tag
             self.ref_url += '/tags'
+        elif args.branch_regex:
+            self.regex = args.branch_regex
+            self.ref_url += '/heads'
+        elif args.tag_regex:
+            self.regex = args.tag_regex
+            self.ref_url += '/tags'
+        else:
+            # args.branch has a default value of 'master'
+            # if not set with --branch
+            self.ref = args.branch
+            self.ref_url += '/heads'
+
         self.file_filter = FilterCollection()
         if args.include_file:
             for regex in args.include_file:
@@ -60,46 +66,22 @@ class ProcessingContext(object):
         else:
             # Default exclude hidden files
             self.file_filter.add(regex='^\..*$', inclusive=False)
-        self.error = False
+        self.error = None
+
 
     def __enter__(self):
         # Init GitHub authentication
         self.auth = self.authenticate()
         # Init the project list to retrieve
-        self.targets = self.target_projects()
+        self.targets = self.target_projects(
+            pattern = '(.+?)-cmor-tables',
+            url_format = GITHUB_REPOS_API
+            )
         return self
 
     def __exit__(self, *exc):
         # Default is sys.exit(0)
-        if self.error:
+        if self.error:         
+            logging.warning(self.error)
             sys.exit(1)
 
-    def authenticate(self):
-        """
-        Builds GitHub HTTP authenticator
-
-        :returns: The HTTP authenticator
-        :rtype: *requests.auth.HTTPBasicAuth*
-
-        """
-        return HTTPBasicAuth(self.gh_user, self.gh_password) if self.gh_user and self.gh_password else None
-
-    def target_projects(self):
-        """
-        Gets the available projects ids from GitHub esg.*.ini files.
-        Make the intersection with the desired projects to fetch.
-
-        :returns: The target projects
-        :rtype: *list*
-
-        """
-        pattern = '(.+?)-cmor-tables'
-        r = gh_request_content(GITHUB_REPOS_API, auth=self.auth)
-        repos = [repo['name'] for repo in r.json()]
-        p_avail = set([re.search(pattern, x).group(1) for x in repos if re.search(pattern, x)])
-        if self.projects:
-            p = set(self.projects)
-            p_avail = p_avail.intersection(p)
-            if p.difference(p_avail):
-                logging.warning("Unavailable project(s): {}".format(', '.join(p.difference(p_avail))))
-        return list(p_avail)
