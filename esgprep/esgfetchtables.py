@@ -43,9 +43,9 @@ def get_args():
         help=VERSION_HELP)
     main.add_argument(
         '--tables-dir',
-        metavar='/usr/local/',
+        metavar='$CMOR_TABLES',
         type=str,
-        default='/usr/local/',
+        default=os.environ['CMOR_TABLES'] if 'CMOR_TABLES' in os.environ.keys() else '/usr/local/',
         help=TABLES_DIR_HELP)
     main.add_argument(
         '--log',
@@ -64,7 +64,7 @@ def get_args():
         metavar='PROJECT_ID',
         type=str,
         nargs='+',
-        help=PROJECT_HELP['fetchini'])
+        help=PROJECT_HELP['fetchtables'])
     group = main.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '-k',

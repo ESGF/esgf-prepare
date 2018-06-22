@@ -12,6 +12,3 @@ GITHUB_FILE_API = 'https://api.github.com/repos/ESGF/config/contents/publisher-c
 
 # INI file pattern
 INI_FILE = 'esg.{}.ini'
-
-# URL max length
-LEN_URL = 100

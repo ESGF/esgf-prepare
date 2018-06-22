@@ -8,11 +8,11 @@
 """
 
 import re
+from ctypes import c_char_p
 from multiprocessing import Value, Lock, cpu_count
 from multiprocessing.managers import SyncManager
 
 from ESGConfigParser import SectionParser
-
 from constants import *
 from esgprep.utils.collectors import PathCollector, DatasetCollector, Collector
 from esgprep.utils.misc import COLORS, Print
@@ -32,6 +32,7 @@ class ProcessingContext(object):
         self.project = args.project
         self.config_dir = args.i
         self.directory = args.directory
+        # stdin is always opened by argparse so never None
         self.dataset_list = args.dataset_list
         self.dataset_id = args.dataset_id
         self.incoming = args.incoming
@@ -61,6 +62,7 @@ class ProcessingContext(object):
             manager.start()
             self.progress = manager.Value('i', 0)
             self.source_values = manager.dict({})
+            Print.BUFFER = manager.Value(c_char_p, '')
         else:
             self.progress = Value('i', 0)
             self.source_values = dict()
@@ -72,7 +74,7 @@ class ProcessingContext(object):
         # Init data collector
         if self.directory:
             # The source is a list of directories
-            self.source_type = 'files'
+            self.source_type = 'file'
             self.sources = PathCollector(sources=self.directory)
             # Init file filter
             for regex, inclusive in self.file_filter:
@@ -80,22 +82,10 @@ class ProcessingContext(object):
             # Init dir filter
             self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
             self.pattern = self.cfg.translate('directory_format', add_ending_filename=True)
-        elif self.dataset_list:
-            # The source is a list of files (i.e., several dataset lists)
-            self.source_type = 'datasets'
-            self.sources = DatasetCollector(source=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
-                                            versioned=False)
-            self.pattern = self.cfg.translate('dataset_id')
-        elif self.dataset_id:
+        elif self.incoming:
             # The source is a dataset ID (potentially from stdin)
-            self.source_type = 'dataset'
-            self.sources = DatasetCollector(sources=[self.dataset_id])
-            # Translate dataset_id format
-            self.pattern = self.cfg.translate('dataset_id')
-        else:
-            # The source is a dataset ID (potentially from stdin)
-            self.source_type = 'files'
-            self.sources = Collector(sources=self.directory)
+            self.source_type = 'file'
+            self.sources = Collector(sources=self.incoming)
             # Init file filter
             for regex, inclusive in self.file_filter:
                 self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
@@ -103,15 +93,29 @@ class ProcessingContext(object):
             self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
             # Translate dataset_id format
             self.pattern = self.cfg.translate('filename_format')
+        elif self.dataset_id:
+            # The source is a dataset ID (potentially from stdin)
+            self.source_type = 'dataset'
+            self.sources = DatasetCollector(sources=[self.dataset_id], versioned=False)
+            # Translate dataset_id format
+            self.pattern = self.cfg.translate('dataset_id')
+        else:
+            # The source is a list of files (i.e., several dataset lists)
+            # Has to be tested at the end because args.dataset_list never None, see __init__ comment.
+            self.source_type = 'dataset'
+            self.sources = DatasetCollector(sources=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
+                                            versioned=False)
+            self.pattern = self.cfg.translate('dataset_id')
         # Get number of sources
         self.nbsources = len(self.sources)
         # Get the facet keys from patterns
+        self.facets = list()
         self.facets = re.compile(self.cfg.translate('directory_format', add_ending_filename=True)).groupindex.keys()
-        self.facets.append(re.compile(self.cfg.translate('dataset_id').groupindex.keys()))
+        self.facets.extend(re.compile(self.cfg.translate('dataset_id')).groupindex.keys())
         self.facets = set(self.facets).difference(set(IGNORED_KEYS))
         return self
 
-    def __exit__(self, *exc):
+    def __exit__(self, exc_type, exc_val, traceback):
         # Decline outputs depending on the scan results
         if self.nbsources == self.scan_data:
             # All files have been successfully scanned without errors
@@ -122,10 +126,10 @@ class ProcessingContext(object):
         else:
             # Some files have been scanned with at least one error
             msg = COLORS.WARNING
-        msg += '\n\nNumber of {} scanned: {}'.format(SOURCE_TYPE[self.source_type], self.scan_data)
-        msg += '\nNumber of errors: {}'.format(self.scan_errors)
+        msg += 'Number of {} scanned: {}\n'.format(SOURCE_TYPE[self.source_type], self.scan_data)
+        msg += 'Number of errors: {}'.format(self.scan_errors)
         msg += COLORS.ENDC
         # Print summary
         Print.summary(msg)
         # Print log path if exists
-        Print.log(COLORS.HEADER + '\nSee log: {}\n'.format(Print.LOGFILE) + COLORS.ENDC)
+        Print.log(Print.LOGFILE)

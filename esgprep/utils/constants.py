@@ -15,6 +15,15 @@ VERSION = '2.9.0'
 # Date
 VERSION_DATE = datetime(year=2018, month=5, day=18).strftime("%Y-%d-%m")
 
+# Shell colors map
+SHELL_COLORS = {'red': 1,
+                'green': 2,
+                'yellow': 3,
+                'blue': 4,
+                'magenta': 5,
+                'cyan': 6,
+                'gray': 7}
+
 # Help
 TITLE = \
     """
@@ -165,8 +174,9 @@ INI_HELP = \
     """
     Initialization/configuration directory containing|n
     "esg.ini" and "esg.<project>.ini" files.|n
-    If not specified, the usual datanode directory|n
-    is used.
+    Default is the ESGINI environment variable.|n
+    If not exists, the usual datanode directory|n
+    is used (i.e., /esg/config/esgcet/).
     
     """
 
@@ -192,6 +202,13 @@ PROJECT_HELP = {
         One or more lower-cased project name(s).|n
         If not, all "esg.*.ini" are fetched.
         
+        """,
+
+    'fetchtables':
+        """
+        One or more lower-cased project name(s).|n
+        If not, all "*-cmor-tables" contents are fetched.
+    
         """,
 
     'checkvocab':
@@ -295,7 +312,8 @@ DIRECTORY_HELP = {
 
 DATASET_LIST_HELP = \
     """
-    File containing list of dataset IDs.
+    File containing list of dataset IDs.|n
+    If not, the standard input is used.
     
     """
 
@@ -547,7 +565,7 @@ MAX_PROCESSES_HELP = \
     """
     Number of maximal processes to simultaneously treat|n
     several files (useful if checksum calculation is|n
-    enabled). Set to one seems sequential processing.
+    enabled). Set to one seems sequential processing.|n
     Set to "-1" seems all available resources as returned|n
     by "multiprocessing.cpu_count()"
     
@@ -631,8 +649,9 @@ TABLES_DIR_HELP = \
     """
     Top CMOR tables output directory containing |n
     "<PROJECT>-cmor-tables" folder(s).|n
-    If not specified, the usual datanode directory|n
-    is used.
+    Default is the CMOR_TABLES environment variable.|n
+    If not exists, the usual datanode directory|n
+    is used (i.e., /usr/local/).
     
     """
 
@@ -709,8 +728,8 @@ NO_CLEANUP_HELP = \
 
 DATASET_ID_HELP = \
     """
-    The dataset identifier coma-separated with or without|n
-    the ending version. If not, the standard input is used.
+    The dataset identifier dot-separated with or without|n
+    the ending version.
     
     """
 

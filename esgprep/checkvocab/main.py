@@ -15,14 +15,13 @@ from multiprocessing import Pool
 
 from ESGConfigParser import split_map_header
 from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions
-from fuzzywuzzy.fuzz import partial_ratio
-from fuzzywuzzy.process import extractOne
-from netCDF4 import Dataset
-
 from constants import *
 from context import ProcessingContext
 from esgprep.utils.custom_exceptions import InvalidNetCDFFile, NoNetCDFAttribute
-from esgprep.utils.misc import Print, COLORS, ProcessContext
+from esgprep.utils.misc import Print, COLORS, ProcessContext, TAGS
+from fuzzywuzzy.fuzz import partial_ratio
+from fuzzywuzzy.process import extractOne
+from netCDF4 import Dataset
 
 
 def process(source):
@@ -67,31 +66,45 @@ def process(source):
                     attributes[facet] = attributes.pop(pctx.set_keys[facet])
                 except KeyError:
                     raise NoNetCDFAttribute(pctx.set_keys[facet], source)
+            elif facet in attributes.keys():
+                # Facet exists in attribute keys
+                pass
             else:
                 # Find closest NetCDF attributes in terms of partial string comparison
                 key, score = extractOne(facet, attributes.keys(), scorer=partial_ratio)
                 if score >= 80:
                     # Rename attribute key
                     attributes[facet] = attributes.pop(key)
-                    Print.warning('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
+                    Print.debug('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
                 else:
                     raise NoNetCDFAttribute(pctx.set_keys[facet], source)
-            source_values[facet].add(attributes[facet])
-        pctx.scan_data += 1
+            with pctx.lock:
+                s = pctx.source_values[0]
+                s[facet].add(attributes[facet])
+                pctx.source_values[0] = s
+        msg = COLORS.OKGREEN + TAGS.SUCCESS + COLORS.ENDC
+        msg += 'Deserialize {}'.format(COLORS.HEADER + source + COLORS.ENDC)
+        with pctx.lock:
+            Print.info(msg)
+        return 1
     except KeyboardInterrupt:
         raise
     except Exception:
         exc = traceback.format_exc().splitlines()
-        msg = COLORS.HEADER + source + COLORS.ENDC + '\n'
+        msg = COLORS.FAIL + TAGS.SKIP + COLORS.ENDC
+        msg += COLORS.HEADER + source + COLORS.ENDC + '\n'
         msg += '\n'.join(exc)
-        Print.exception(msg, buffer=True)
-        pctx.scan_errors += 1
+        with pctx.lock:
+            Print.exception(msg, buffer=True)
+        return 0
     finally:
-        progress += 1
-        percentage = int(progress * 100 / pctx.nbsources)
-        msg = COLORS.OKBLUE + '\rHarvesting facets values from data: ' + COLORS.ENDC
-        msg += '{}% | {}/{} {}'.format(percentage, progress, pctx.nbsources, SOURCE_TYPE[pctx.source_type])
-        Print.progress(msg)
+        with pctx.lock:
+            pctx.progress.value += 1
+            percentage = int(pctx.progress.value * 100 / pctx.nbsources)
+            msg = COLORS.OKBLUE + '\rHarvesting facets values from data: ' + COLORS.ENDC
+            msg += '{}% | {}/{} {}'.format(percentage, pctx.progress.value, pctx.nbsources,
+                                           SOURCE_TYPE[pctx.source_type])
+            Print.progress(msg)
 
 
 def initializer(keys, values):
@@ -128,7 +141,7 @@ def run(args):
         Print.command(COLORS.OKBLUE + 'Command: ' + COLORS.ENDC + ' '.join(sys.argv))
         # Init process context
         cctx = {name: getattr(ctx, name) for name in PROCESS_VARS}
-        cctx['source_values'].update((facet, set()) for facet in ctx.facets)
+        cctx['source_values'][0] = dict((facet, set()) for facet in ctx.facets)
         if ctx.use_pool:
             # Init processes pool
             pool = Pool(processes=ctx.processes, initializer=initializer, initargs=(cctx.keys(), cctx.values()))
@@ -142,8 +155,13 @@ def run(args):
         if 'pool' in locals().keys():
             locals()['pool'].close()
             locals()['pool'].join()
+        Print.progress('\n')
+        # Flush buffer
+        Print.flush()
+        ctx.scan_data = sum(results)
+        ctx.scan_errors = results.count(0)
         # Get source values
-        source_values = cctx['source_values']
+        source_values = cctx['source_values'][0]
         # Get facets values declared in configuration file
         config_values = {}
         progress = 0
@@ -163,11 +181,17 @@ def run(args):
                 finally:
                     if facet not in config_values.keys():
                         raise NoConfigOptions(facet)
+                msg = COLORS.OKGREEN + TAGS.SUCCESS + COLORS.ENDC
+                msg += 'Get values from {} for {}'.format(COLORS.HEADER + ctx.cfg.file + COLORS.ENDC,
+                                                          COLORS.HEADER + facet + COLORS.ENDC)
+                Print.info(msg)
             except KeyboardInterrupt:
                 raise
             except Exception:
                 exc = traceback.format_exc().splitlines()
-                msg = COLORS.HEADER + facet + COLORS.ENDC + '\n'
+                msg = COLORS.FAIL + TAGS.FAIL + COLORS.ENDC
+                msg += 'Get values from {} for {}\n'.format(COLORS.HEADER + ctx.cfg.file + COLORS.ENDC,
+                                                            COLORS.HEADER + facet + COLORS.ENDC)
                 msg += '\n'.join(exc)
                 Print.exception(msg, buffer=True)
                 ctx.scan_errors += 1
@@ -177,6 +201,7 @@ def run(args):
                 msg = COLORS.OKBLUE + '\rCollecting facet values from INI file(s): ' + COLORS.ENDC
                 msg += '{}% | {}/{} facet(s)'.format(percentage, progress, nfacets)
                 Print.progress(msg)
+        Print.progress('\n')
         # Flush buffer
         Print.flush()
         # Compare values from sources against values from configuration file
@@ -187,24 +212,40 @@ def run(args):
             if isinstance(config_values[facet], type(re.compile(""))):
                 config_values[facet] = set([v for v in source_values[facet] if config_values[facet].search(v)])
             if not source_values[facet]:
-                Print.success('{} :: {}'.format(facet.ljust(FACET_WIDTH), STATUS[2].rjust(STATUS_WIDTH)))
+                line = '{} :: '.format(facet.ljust(FACET_WIDTH))
+                line += COLORS.WARNING + STATUS[2].rjust(STATUS_WIDTH) + COLORS.ENDC
+                Print.success(line)
             elif not config_values[facet]:
-                Print.success('{} :: {}'.format(facet.ljust(FACET_WIDTH), STATUS[3].rjust(STATUS_WIDTH)))
+                line = '{} :: '.format(facet.ljust(FACET_WIDTH))
+                line += COLORS.WARNING + STATUS[3].rjust(STATUS_WIDTH) + COLORS.ENDC
+                Print.success(line)
             else:
                 undeclared_values = source_values[facet].difference(config_values[facet])
                 updated_values = source_values[facet].union(config_values[facet])
                 if undeclared_values:
-                    Print.success('{} :: {}'.format(facet.ljust(FACET_WIDTH), STATUS[1].rjust(STATUS_WIDTH)))
+                    line = '{} :: '.format(facet.ljust(FACET_WIDTH))
+                    line += COLORS.FAIL + STATUS[1].rjust(STATUS_WIDTH) + COLORS.ENDC
+                    Print.success(line)
                     _values = ', '.join(sorted(undeclared_values))
-                    Print.error('{} :: UNDECLARED VALUES :: {}'.format(facet, _values))
+                    msg = COLORS.FAIL + ':: UNDECLARED VALUES :: ' + COLORS.ENDC
+                    msg += COLORS.HEADER + facet + COLORS.ENDC
+                    msg += COLORS.BOLD + ' :: {}'.format(_values) + COLORS.ENDC
+                    Print.error(msg, buffer=True)
                     _values = ', '.join(sorted(updated_values))
-                    Print.error('{} :: UPDATED VALUES    :: {}'.format(facet, _values))
+                    msg = COLORS.OKGREEN + ':: UPDATED VALUES    :: ' + COLORS.ENDC
+                    msg += COLORS.HEADER + facet + COLORS.ENDC
+                    msg += ' :: {}'.format(_values)
+                    Print.error(msg, buffer=True)
                     ctx.any_undeclared = True
                 else:
-                    Print.success('{} :: {}'.format(facet.ljust(FACET_WIDTH), STATUS[0].rjust(STATUS_WIDTH)))
+                    line = '{} :: '.format(facet.ljust(FACET_WIDTH))
+                    line += COLORS.OKGREEN + STATUS[0].rjust(STATUS_WIDTH) + COLORS.ENDC
+                    Print.success(line)
         Print.success(''.center(WIDTH, '='))
-        # Evaluate errors and exit with appropriated return code
-        if ctx.scan_errors > 0:
-            sys.exit(1)
-        if ctx.any_undeclared:
-            sys.exit(2)
+        # Flush buffer
+        Print.flush()
+    # Evaluate errors and exit with appropriated return code
+    if ctx.scan_errors > 0:
+        sys.exit(1)
+    if ctx.any_undeclared:
+        sys.exit(2)

@@ -20,7 +20,7 @@ from lockfile import LockFile
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext, COLORS, Print
+from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext, COLORS, TAGS, Print
 from handler import File, Dataset
 
 
@@ -209,7 +209,8 @@ def process(source):
                                  size=sh.size,
                                  optional_attrs=optional_attrs)
             write(outfile, line)
-            msg = COLORS.OKGREEN + '\n{}'.format(os.path.splitext(os.path.basename(outfile))[0]) + COLORS.ENDC
+            msg = COLORS.OKGREEN + TAGS.SUCCESS + COLORS.ENDC
+            msg += '{}'.format(os.path.splitext(os.path.basename(outfile))[0])
             msg += '<-- ' + COLORS.HEADER + source + COLORS.ENDC
             with pctx.lock:
                 Print.info(msg)
@@ -220,7 +221,8 @@ def process(source):
         raise
     except Exception:
         exc = traceback.format_exc().splitlines()
-        msg = COLORS.HEADER + source + COLORS.ENDC + '\n'
+        msg = COLORS.FAIL + TAGS.SKIP + COLORS.ENDC
+        msg += COLORS.HEADER + source + COLORS.ENDC + '\n'
         msg += '\n'.join(exc)
         with pctx.lock:
             Print.exception(msg, buffer=True)
@@ -265,7 +267,7 @@ def run(args):
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
         # Print command-line
-        Print.command(COLORS.OKBLUE + 'Command: ' + COLORS.ENDC + ' '.join(sys.argv))
+        Print.command(' '.join(sys.argv))
         # Init process context
         cctx = {name: getattr(ctx, name) for name in PROCESS_VARS}
         # Init progress bar
@@ -297,7 +299,7 @@ def run(args):
                 if ctx.action == 'show':
                     # Print mapfiles to be generated
                     if ctx.quiet:
-                        Print.info('\n' + remove(WORKING_EXTENSION, mapfile))
+                        Print.success(remove(WORKING_EXTENSION, mapfile))
                 elif ctx.action == 'make':
                     # A final mapfile is silently overwritten if already exists
                     os.rename(mapfile, remove(WORKING_EXTENSION, mapfile))

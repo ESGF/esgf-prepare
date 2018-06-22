@@ -7,15 +7,12 @@
 
 """
 
-import os
-import sys
 import traceback
-
-import requests
 
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.misc import gh_request_content, backup, write_content, do_fetching, Print, COLORS
+from esgprep.utils.github import *
+from esgprep.utils.custom_print import *
 
 
 def run(args):
@@ -35,7 +32,7 @@ def run(args):
     # Instantiate processing context manager
     with ProcessingContext(args) as ctx:
         # Print command-line
-        Print.command(COLORS.OKBLUE + 'Command: ' + COLORS.ENDC + ' '.join(sys.argv))
+        Print.command(' '.join(sys.argv))
         # Counter
         progress = 0
         for project in ctx.targets:
@@ -54,21 +51,22 @@ def run(args):
                     backup(outfile, mode=ctx.backup_mode)
                     # Write new file
                     write_content(outfile, content)
-                    Print.info('\n:: FETCHED :: {} --> {}'.format(url.ljust(LEN_URL), outfile))
+                    Print.info(TAGS.FETCH + '{} --> {}'.format(url, outfile))
                 else:
-                    Print.info('\n:: SKIPPED :: {}'.format(url.ljust(LEN_URL)))
+                    Print.info(TAGS.SKIP + url)
             except KeyboardInterrupt:
                 raise
             except Exception:
                 exc = traceback.format_exc().splitlines()
-                msg = COLORS.HEADER + project + COLORS.ENDC + '\n'
+                msg = TAGS.FAIL
+                msg += 'Fetching {} config file'.format(COLORS.HEADER(project)) + '\n'
                 msg += '\n'.join(exc)
                 Print.exception(msg, buffer=True)
                 ctx.error = True
             finally:
                 progress += 1
-                percentage = int(progress.value * 100 / ctx.nfiles)
-                msg = COLORS.OKBLUE + '\rFetching project(s) config: ' + COLORS.ENDC
+                percentage = int(progress * 100 / ctx.nfiles)
+                msg = COLORS.OKBLUE('\rFetching project(s) config: ')
                 msg += '{}% | {}/{} files'.format(percentage, progress, ctx.nfiles)
                 Print.progress(msg)
     # Flush buffer

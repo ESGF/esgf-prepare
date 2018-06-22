@@ -166,17 +166,17 @@ class ProcessingContext(object):
         else:
             # Some files have been scanned with at least one error
             msg = COLORS.WARNING
-        msg += '\n\nNumber of file(s) scanned: {}'.format(self.scan_files)
-        msg += '\nNumber of errors: {}'.format(self.scan_errors)
+        msg += 'Number of file(s) scanned: {}\n'.format(self.scan_files)
+        msg += 'Number of errors: {}\n'.format(self.scan_errors)
         if self.action == 'show':
-            msg += '\nMapfile(s) to be generated: {}\n'.format(self.nb_map)
+            msg += 'Mapfile(s) to be generated: {}\n'.format(self.nb_map)
         elif self.action == 'make':
-            msg += '\nMapfile(s) generated: {} (see {})\n'.format(self.nb_map, self.outdir)
+            msg += 'Mapfile(s) generated: {} (see {})\n'.format(self.nb_map, self.outdir)
         msg += COLORS.ENDC
         # Print summary
         Print.summary(msg)
         # Print log path if exists
-        Print.log(COLORS.HEADER + '\nSee log: {}\n'.format(Print.LOGFILE) + COLORS.ENDC)
+        Print.log(Print.LOGFILE)
 
     def get_checksum_type(self):
         """

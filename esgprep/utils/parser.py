@@ -219,7 +219,6 @@ class DirectoryType(object):
         # the special argument "-" means sys.std{in,out}
         if string == '-':
             return sys.stdin
-
         # all other arguments are used as file names
         msg = 'No such directory: {}'.format(string)
         try:

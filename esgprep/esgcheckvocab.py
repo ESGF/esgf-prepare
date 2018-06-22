@@ -69,23 +69,23 @@ def get_args():
         nargs='+',
         help=DIRECTORY_HELP['checkvocab'])
     group.add_argument(
-        '--dataset-list',
-        metavar='TXT_FILE',
-        type=FileType('r'),
-        nargs='?',
-        default=sys.stdin,
-        help=DATASET_LIST_HELP)
+        '--incoming',
+        metavar='PATH',
+        action=DirectoryChecker,
+        nargs='+',
+        help=DIRECTORY_HELP['checkvocab'])
     group.add_argument(
         '--dataset-id',
         metavar='DATASET_ID',
         type=str,
         help=DATASET_ID_HELP)
     group.add_argument(
-        '--incoming',
-        metavar='PATH',
-        action=DirectoryChecker,
-        nargs='+',
-        help=DIRECTORY_HELP['checkvocab'])
+        '--dataset-list',
+        metavar='TXT_FILE',
+        type=FileType('r'),
+        nargs='?',
+        const=sys.stdin,
+        help=DATASET_LIST_HELP)
     main.add_argument(
         '--project',
         metavar='PROJECT_ID',
@@ -116,7 +116,7 @@ def get_args():
         type=regex_validator,
         action='append',
         help=EXCLUDE_FILE_HELP)
-    parent.add_argument(
+    main.add_argument(
         '--max-processes',
         metavar='4',
         type=processes_validator,

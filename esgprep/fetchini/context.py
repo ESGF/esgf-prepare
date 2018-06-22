@@ -7,14 +7,10 @@
 
 """
 
-import logging
-import os
-import re
-
-from requests.auth import HTTPBasicAuth
-
 from constants import *
-from esgprep.utils.misc import gh_request_content, Print, COLORS
+from esgprep.utils.github import *
+from esgprep.utils.custom_print import *
+from requests.auth import HTTPBasicAuth
 
 
 class ProcessingContext(object):
@@ -28,7 +24,6 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
-        self.pbar = args.pbar
         self.projects = args.project
         self.keep = args.k
         self.overwrite = args.o
@@ -51,11 +46,12 @@ class ProcessingContext(object):
         # Get number of files
         self.nfiles = len(self.targets)
         if not self.nfiles:
-            Print.warning(COLORS.BOLD + 'No files found on remote repository' + COLORS.ENDC)
+            Print.warning('No files found on remote repository')
         return self
 
-    def __exit__(self, *exc):
-        pass
+    def __exit__(self, exc_type, exc_val, traceback):
+        # Print log path if exists
+        Print.log()
 
     def authenticate(self):
         """
@@ -80,13 +76,13 @@ class ProcessingContext(object):
         if not os.path.isdir(self.config_dir):
             try:
                 os.makedirs(self.config_dir)
-                logging.warning('{} created'.format(self.config_dir))
+                Print.warning('{} created'.format(self.config_dir))
             except OSError:
                 # If default directory does not exists
                 self.config_dir = os.path.join(os.getcwd(), 'ini')
                 if not os.path.isdir(self.config_dir):
                     os.makedirs(self.config_dir)
-                    logging.warning('{} created'.format(self.config_dir))
+                    Print.warning('{} created'.format(self.config_dir))
 
     def target_projects(self):
         """
@@ -100,10 +96,14 @@ class ProcessingContext(object):
         pattern = 'esg\.(.+?)\.ini'
         r = gh_request_content(self.url.format(''), auth=self.auth)
         files = [content['name'] for content in r.json()]
-        p_avail = set([re.search(pattern, x).group(1) for x in files if re.search(pattern, x)])
+        p_found = set([re.search(pattern, x).group(1) for x in files if re.search(pattern, x)])
         if self.projects:
             p = set(self.projects)
-            p_avail = p_avail.intersection(p)
+            p_avail = p_found.intersection(p)
             if p.difference(p_avail):
-                logging.warning("Unavailable project(s): {}".format(', '.join(p.difference(p_avail))))
+                msg = 'No such project(s): {} -- '.format(', '.join(p.difference(p_avail)))
+                msg += 'Available remote projects are: {}'.format(', '.join(list(p_found)))
+                Print.warning(msg)
+        else:
+            p_avail = p_found
         return list(p_avail)

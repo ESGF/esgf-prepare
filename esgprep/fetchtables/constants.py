@@ -15,6 +15,3 @@ GITHUB_API_PARAMETER = '?{}={}'
 
 # Repository pattern
 REPO_PATTERN = '{}-cmor-tables'
-
-# URL max length
-LEN_URL = 100

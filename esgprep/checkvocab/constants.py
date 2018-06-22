@@ -8,12 +8,13 @@
 """
 
 # Facets ignored during checking
-IGNORED_KEYS = ['root', 'project', 'filename', 'period_start', 'period_end']
+IGNORED_KEYS = ['root', 'project', 'filename', 'period_start', 'period_end', 'version']
 
 # List of variable required by each process
 PROCESS_VARS = ['directory',
                 'dataset_id',
                 'dataset_list',
+                'incoming',
                 'source_values',
                 'pattern',
                 'set_keys',

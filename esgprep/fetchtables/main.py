@@ -7,17 +7,16 @@
 
 """
 
-import logging
 import os
 import sys
 import traceback
 
 import requests
-
 from constants import *
 from context import ProcessingContext
 from esgprep.utils.custom_exceptions import GitHubReferenceNotFound
-from esgprep.utils.misc import gh_request_content, backup, write_content, do_fetching, Print, COLORS
+from esgprep.utils.github import *
+from esgprep.utils.custom_print import *
 
 
 def make_outdir(tables_dir, repository, reference=None):
@@ -37,18 +36,18 @@ def make_outdir(tables_dir, repository, reference=None):
     if not os.path.isdir(outdir):
         try:
             os.makedirs(outdir)
-            logging.warning('{} created'.format(outdir))
+            Print.warning('{} created'.format(outdir))
         except OSError as e:
             # If default tables directory does not exists and without write access
-            msg = COLORS.BOLD + 'Cannot use "{}" (OSError {}: {}) -- '.format(tables_dir, e.errno, e.strerror)
-            msg += 'Use "{}" instead.'.format(os.getcwd()) + COLORS.ENDC
+            msg = 'Cannot use "{}" (OSError {}: {}) -- '.format(tables_dir, e.errno, e.strerror)
+            msg += 'Use "{}" instead.'.format(os.getcwd())
             Print.warning(msg)
             outdir = os.path.join(os.getcwd(), repository)
             if reference:
                 outdir = os.path.join(outdir, reference)
             if not os.path.isdir(outdir):
                 os.makedirs(outdir)
-                Print.warning('"{}" created'.format(outdir))
+                Print.warning('{} created'.format(outdir))
     return outdir
 
 
@@ -69,7 +68,7 @@ def run(args):
     # Instantiate processing context manager
     with ProcessingContext(args) as ctx:
         # Print command-line
-        Print.command(COLORS.OKBLUE + 'Command: ' + COLORS.ENDC + ' '.join(sys.argv))
+        Print.command(' '.join(sys.argv))
         for project in ctx.targets:
             try:
                 # Set repository name
@@ -121,26 +120,33 @@ def run(args):
                             backup(outfile, mode=ctx.backup_mode)
                             # Write new file
                             write_content(outfile, content)
-                            Print.info(':: FETCHED :: {} --> {}'.format(url.ljust(LEN_URL), outfile))
+                            msg = TAGS.FETCH
+                            msg += '{} --> {}'.format(url, outfile)
+                            Print.info(msg)
                         else:
-                            Print.info(':: SKIPPED :: {}'.format(url.ljust(LEN_URL)))
+                            msg = TAGS.SKIP
+                            msg += '{}'.format(url)
+                            Print.info(msg)
                     except KeyboardInterrupt:
                         raise
                     except Exception:
                         exc = traceback.format_exc().splitlines()
-                        msg = COLORS.HEADER + project + COLORS.ENDC + '\n'
+                        msg = TAGS.FAIL
+                        msg += 'Fetching {}'.format(COLORS.HEADER(url)) + '\n'
                         msg += '\n'.join(exc)
                         Print.exception(msg, buffer=True)
                         ctx.error = True
                     finally:
                         progress += 1
-                        percentage = int(progress.value * 100 / ctx.nfiles)
-                        msg = COLORS.OKBLUE + '\rFetching {} tables: '.format(project) + COLORS.ENDC
-                        msg += '{}% | {}/{} files'.format(percentage, progress, ctx.nfiles)
+                        percentage = int(progress * 100 / nfiles)
+                        msg = COLORS.OKBLUE('\rFetching {} tables: '.format(project))
+                        msg += '{}% | {}/{} files'.format(percentage, progress, nfiles)
                         Print.progress(msg)
+                Print.progress('\n')
             except Exception:
                 exc = traceback.format_exc().splitlines()
-                msg = COLORS.HEADER + project + COLORS.ENDC + '\n'
+                msg = TAGS.FAIL
+                msg += 'Fetching {} tables'.format(COLORS.HEADER(project)) + '\n'
                 msg += '\n'.join(exc)
                 Print.exception(msg, buffer=True)
                 ctx.error = True

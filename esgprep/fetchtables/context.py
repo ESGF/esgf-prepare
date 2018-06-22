@@ -7,15 +7,13 @@
 
 """
 
-import logging
 import os
 import re
 
-from requests.auth import HTTPBasicAuth
-
 from constants import *
 from esgprep.utils.collectors import FilterCollection
-from esgprep.utils.misc import gh_request_content
+from esgprep.utils.misc import gh_request_content, Print, COLORS
+from requests.auth import HTTPBasicAuth
 
 
 class ProcessingContext(object):
@@ -29,7 +27,6 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
-        self.pbar = args.pbar
         self.projects = args.project
         self.keep = args.k
         self.overwrite = args.o
@@ -69,8 +66,9 @@ class ProcessingContext(object):
         self.targets = self.target_projects()
         return self
 
-    def __exit__(self, *exc):
-        pass
+    def __exit__(self, exc_type, exc_val, traceback):
+        # Print log path if exists
+        Print.log(Print.LOGFILE)
 
     def authenticate(self):
         """
@@ -94,10 +92,14 @@ class ProcessingContext(object):
         pattern = '(.+?)-cmor-tables'
         r = gh_request_content(GITHUB_REPOS_API, auth=self.auth)
         repos = [repo['name'] for repo in r.json()]
-        p_avail = set([re.search(pattern, x).group(1) for x in repos if re.search(pattern, x)])
+        p_found = set([re.search(pattern, x).group(1) for x in repos if re.search(pattern, x)])
         if self.projects:
             p = set(self.projects)
-            p_avail = p_avail.intersection(p)
+            p_avail = p_found.intersection(p)
             if p.difference(p_avail):
-                logging.warning("Unavailable project(s): {}".format(', '.join(p.difference(p_avail))))
+                msg = COLORS.BOLD + 'No such project(s): {} -- '.format(', '.join(p.difference(p_avail)))
+                msg += 'Available remote projects are: {}'.format(', '.join(list(p_found))) + COLORS.ENDC
+                Print.warning(msg)
+        else:
+            p_avail = p_found
         return list(p_avail)
