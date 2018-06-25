@@ -10,10 +10,10 @@
 from datetime import datetime
 
 # Program version
-VERSION = '2.9.0'
+VERSION = '2.8.2'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=5, day=18).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=6, day=6).strftime("%Y-%d-%m")
 
 # Shell colors map
 SHELL_COLORS = {'red': 1,
@@ -264,7 +264,10 @@ GITHUB_USER_HELP = \
 GITHUB_PASSWORD_HELP = \
     """
     GitHub password.|n
-    Default is the GH_PASSWORD environment variable if exists.
+    Default is the GH_PASSWORD environment variable if exists.|n
+    If the username is set, but the password is not provided|n
+    as a command line option nor as an environment variable,|n
+    then it is prompted for interactively.
     
     """
 
@@ -281,9 +284,21 @@ BRANCH_HELP = \
 
     """
 
+BRANCH_REGEX_HELP = \
+    """
+    Fetch from all GitHub branches matching specified regex.|n
+
+    """
+
 TAG_HELP = \
     """
     Fetch from a GitHub tag.
+
+    """
+
+TAG_REGEX_HELP = \
+    """
+    Fetch from all GitHub tags matching specified regex.|n
 
     """
 

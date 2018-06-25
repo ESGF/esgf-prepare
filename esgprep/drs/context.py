@@ -21,13 +21,18 @@ from esgprep.utils.collectors import Collector
 from esgprep.utils.custom_exceptions import *
 from esgprep.utils.misc import load, Print, COLORS
 from handler import DRSTree, DRSPath
+from esgprep.utils.context import BaseContext
 
 
+<<<<<<< HEAD
 class ProcessManager(SyncManager):
     pass
 
 
 class ProcessingContext(object):
+=======
+class ProcessingContext(BaseContext):
+>>>>>>> devel
     """
     Encapsulates the processing context/information for main process.
 

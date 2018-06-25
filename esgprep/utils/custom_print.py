@@ -23,37 +23,49 @@ class COLOR:
     """
     PALETTE = {color: i + 30 for (color, i) in SHELL_COLORS.items()}
     PALETTE.update({'light ' + color: i + 90 for (color, i) in SHELL_COLORS.items()})
-    RESTORE = '\033[{}m'
+    RESTORE = '\033[0m'
 
     def __init__(self, color=None):
         if color in COLOR.PALETTE.keys():
-            color = COLOR.PALETTE[color]
+            self.color = COLOR.PALETTE[color]
         else:
-            color = 0
-        assert isinstance(color, int)
-        self.color = '\033[{}m'.format(str(n))
+            self.color = 0
+        assert isinstance(self.color, int)
+        self.colorstr = '\033[{}m'.format(str(self.color))
 
     def bold(self, msg=None):
-        self.color.replace('[', '[1;')
+        if self.color == 0:
+            self.colorstr = self.colorstr.replace('[0', '[1')
+        else:
+            self.colorstr = self.colorstr.replace('[', '[1;')
         return self.__call__(msg)
 
     def italic(self, msg=None):
-        self.color.replace('[', '[3;')
+        if self.color == 0:
+            self.colorstr = self.colorstr.replace('[0', '[3')
+        else:
+            self.colorstr = self.colorstr.replace('[', '[3;')
         return self.__call__(msg)
 
     def underline(self, msg=None):
-        self.color.replace('[', '[4;')
+        if self.color == 0:
+            self.colorstr = self.colorstr.replace('[0', '[4')
+        else:
+            self.colorstr = self.colorstr.replace('[', '[4;')
         return self.__call__(msg)
 
     def blink(self, msg=None):
-        self.color.replace('[', '[5;')
+        if self.color == 0:
+            self.colorstr = self.colorstr.replace('[0', '[5')
+        else:
+            self.colorstr = self.colorstr.replace('[', '[5;')
         return self.__call__(msg)
 
     def __call__(self, msg):
         if msg:
-            return self.color + msg + COLOR.RESTORE
+            return self.colorstr + msg + COLOR.RESTORE
         else:
-            return self.color
+            return self.colorstr
 
 
 class COLORS:

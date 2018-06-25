@@ -18,10 +18,14 @@ from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
 from constants import *
 from esgprep.utils.collectors import VersionedPathCollector, DatasetCollector
 from esgprep.utils.custom_exceptions import *
+<<<<<<< HEAD
 from esgprep.utils.misc import Print, COLORS
+=======
+from esgprep.utils.context import BaseContext
+>>>>>>> devel
 
 
-class ProcessingContext(object):
+class ProcessingContext(BaseContext):
     """
     Encapsulates the processing context/information for main process.
 
@@ -39,6 +43,10 @@ class ProcessingContext(object):
         self.notes_title = None
         self.notes_url = None
         self.checksums_from = None
+<<<<<<< HEAD
+=======
+        self.pbar = args.pbar
+>>>>>>> devel
         self.config_dir = args.i
         self.project = args.project
         self.action = args.action

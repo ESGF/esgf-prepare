@@ -14,11 +14,16 @@ from multiprocessing.managers import SyncManager
 
 from ESGConfigParser import SectionParser
 from constants import *
+<<<<<<< HEAD
 from esgprep.utils.collectors import PathCollector, DatasetCollector, Collector
 from esgprep.utils.misc import COLORS, Print
+=======
+from esgprep.utils.collectors import PathCollector, DatasetCollector
+from esgprep.utils.context import BaseContext
+>>>>>>> devel
 
 
-class ProcessingContext(object):
+class ProcessingContext(BaseContext):
     """
     Encapsulates the processing context/information for main process.
 

@@ -10,13 +10,17 @@
 import os
 import re
 
+from esgprep.utils.github import gh_request_content
+from esgprep.utils.custom_print import *
+from requests.auth import HTTPBasicAuth
+import sys
+
 from constants import *
 from esgprep.utils.collectors import FilterCollection
-from esgprep.utils.misc import gh_request_content, Print, COLORS
-from requests.auth import HTTPBasicAuth
+from esgprep.utils.context import GitHubBaseContext
 
 
-class ProcessingContext(object):
+class ProcessingContext(GitHubBaseContext):
     """
     Encapsulates the processing context/information for main process.
 
@@ -27,22 +31,25 @@ class ProcessingContext(object):
     """
 
     def __init__(self, args):
-        self.projects = args.project
-        self.keep = args.k
-        self.overwrite = args.o
-        self.backup_mode = args.b
-        self.gh_user = args.gh_user
-        self.gh_password = args.gh_password
+        super(self.__class__, self).__init__(args)
         self.tables_dir = os.path.realpath(os.path.normpath(args.tables_dir))
         self.no_ref_folder = args.no_ref_folder
         self.url = GITHUB_CONTENT_API
         self.ref_url = GITHUB_REFS_API
-        if args.branch:
-            self.ref = args.branch
-            self.ref_url += '/heads'
         if args.tag:
             self.ref = args.tag
             self.ref_url += '/tags'
+        elif args.branch_regex:
+            self.regex = args.branch_regex
+            self.ref_url += '/heads'
+        elif args.tag_regex:
+            self.regex = args.tag_regex
+            self.ref_url += '/tags'
+        else:
+            # args.branch has a default value of 'master'
+            # if not set with --branch
+            self.ref = args.branch
+            self.ref_url += '/heads'
         self.file_filter = FilterCollection()
         if args.include_file:
             for regex in args.include_file:
@@ -60,46 +67,9 @@ class ProcessingContext(object):
         self.progress = 0
 
     def __enter__(self):
-        # Init GitHub authentication
-        self.auth = self.authenticate()
+        super(self.__class__, self).__enter__()
         # Init the project list to retrieve
-        self.targets = self.target_projects()
+        self.targets = self.target_projects(pattern = '(.+?)-cmor-tables', url_format = GITHUB_REPOS_API)
+        # Get number of projects
+        self.ntargets = len(self.targets)
         return self
-
-    def __exit__(self, exc_type, exc_val, traceback):
-        # Print log path if exists
-        Print.log(Print.LOGFILE)
-
-    def authenticate(self):
-        """
-        Builds GitHub HTTP authenticator
-
-        :returns: The HTTP authenticator
-        :rtype: *requests.auth.HTTPBasicAuth*
-
-        """
-        return HTTPBasicAuth(self.gh_user, self.gh_password) if self.gh_user and self.gh_password else None
-
-    def target_projects(self):
-        """
-        Gets the available projects ids from GitHub esg.*.ini files.
-        Make the intersection with the desired projects to fetch.
-
-        :returns: The target projects
-        :rtype: *list*
-
-        """
-        pattern = '(.+?)-cmor-tables'
-        r = gh_request_content(GITHUB_REPOS_API, auth=self.auth)
-        repos = [repo['name'] for repo in r.json()]
-        p_found = set([re.search(pattern, x).group(1) for x in repos if re.search(pattern, x)])
-        if self.projects:
-            p = set(self.projects)
-            p_avail = p_found.intersection(p)
-            if p.difference(p_avail):
-                msg = COLORS.BOLD + 'No such project(s): {} -- '.format(', '.join(p.difference(p_avail)))
-                msg += 'Available remote projects are: {}'.format(', '.join(list(p_found))) + COLORS.ENDC
-                Print.warning(msg)
-        else:
-            p_avail = p_found
-        return list(p_avail)

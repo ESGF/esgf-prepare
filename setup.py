@@ -19,7 +19,12 @@ setup(name='esgprep',
                         'fuzzywuzzy==0.16.0',
                         'netCDF4==1.4.0',
                         'hurry.filesize==0.9',
+<<<<<<< HEAD
                         'treelib==1.5.1'],
+=======
+                        'treelib==1.5.1',
+                        'tqdm==4.23.4'],
+>>>>>>> devel
       platforms=['Unix'],
       zip_safe=False,
       entry_points={'console_scripts': ['esgmapfile=esgprep.esgmapfile:main',

@@ -13,7 +13,7 @@ import pickle
 import re
 
 from custom_exceptions import *
-
+from custom_print import *
 
 class ProcessContext(object):
     """
@@ -144,3 +144,35 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
         raise
     except Exception:
         raise ChecksumFail(ffp, checksum_type)
+
+
+def make_outdir(root, folder='ini', reference=None):
+    """
+    Build the output directory as follows:
+
+    :param str root: The root directory
+    :param str folder: The folder to fetch in
+    :param str reference: An optional sub-folder
+
+    """
+
+    outdir = os.path.join(root, folder)
+    if reference:
+        outdir = os.path.join(outdir, reference)
+    # If directory does not already exist
+    if not os.path.isdir(outdir):
+        try:
+            os.makedirs(outdir)
+            Print.warning('{} created'.format(outdir))
+        except OSError as e:
+            # If default tables directory does not exists and without write access
+            msg = 'Cannot use "{}" (OSError {}: {}) -- '.format(root, e.errno, e.strerror)
+            msg += 'Use "{}" instead.'.format(os.getcwd())
+            Print.warning(msg)
+            outdir = os.path.join(os.getcwd(), folder)
+            if reference:
+                outdir = os.path.join(outdir, reference)
+            if not os.path.isdir(outdir):
+                os.makedirs(outdir)
+                Print.warning('{} created'.format(outdir))
+    return outdir
