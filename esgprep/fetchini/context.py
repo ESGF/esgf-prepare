@@ -24,7 +24,7 @@ class ProcessingContext(GitHubBaseContext):
     """
 
     def __init__(self, args):
-        super(self.__class__, self).__init__(args)
+        super(ProcessingContext, self).__init__(args)
         self.config_dir = os.path.realpath(os.path.normpath(args.i))
         self.ref = 'devel' if args.devel else 'master'
         self.url = GITHUB_CONTENT_API
@@ -32,7 +32,7 @@ class ProcessingContext(GitHubBaseContext):
         self.files = None
 
     def __enter__(self):
-        super(self.__class__, self).__enter__()
+        super(ProcessingContext, self).__enter__()
         Print.debug('Fetch from "{}" GitHub reference'.format(self.ref))
         # Get files infos from repository content
         r = gh_request_content(url=self.url, auth=self.auth)

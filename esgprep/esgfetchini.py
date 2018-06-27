@@ -60,7 +60,7 @@ def get_args():
         default=False,
         help=VERBOSE_HELP)
     main.add_argument(
-        '--project',
+        '-p', '--project',
         metavar='NAME',
         type=str,
         nargs='+',
@@ -112,6 +112,8 @@ def main():
     # Get command-line arguments
     prog, args = get_args()
     setattr(args, 'prog', prog)
+    if not hasattr(args, 'quiet'):
+        setattr(args, 'quiet', None)
     # Run program
     run(args)
 

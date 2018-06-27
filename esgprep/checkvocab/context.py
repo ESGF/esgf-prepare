@@ -24,7 +24,7 @@ class ProcessingContext(MultiprocessingContext):
     """
 
     def __init__(self, args):
-        super(self.__class__, self).__init__(args)
+        super(ProcessingContext, self).__init__(args)
         # True if undeclared facets
         self.any_undeclared = False
         # Add sources values to process manager
@@ -34,7 +34,7 @@ class ProcessingContext(MultiprocessingContext):
             self.source_values = dict()
 
     def __enter__(self):
-        super(self.__class__, self).__enter__()
+        super(ProcessingContext, self).__enter__()
         # Get the DRS facet keys from pattern
         self.facets = list()
         self.facets = re.compile(self.cfg.translate('directory_format', add_ending_filename=True)).groupindex.keys()

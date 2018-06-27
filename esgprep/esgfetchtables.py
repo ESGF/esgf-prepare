@@ -48,7 +48,7 @@ def get_args():
         default=os.environ['CMOR_TABLES'] if 'CMOR_TABLES' in os.environ.keys() else '/usr/local/',
         help=TABLES_DIR_HELP)
     main.add_argument(
-        '--log',
+        '-l', '--log',
         metavar='CWD',
         type=str,
         const='{}/logs'.format(os.getcwd()),
@@ -60,7 +60,7 @@ def get_args():
         default=False,
         help=VERBOSE_HELP)
     main.add_argument(
-        '--project',
+        '-p', '--project',
         metavar='PROJECT_ID',
         type=str,
         nargs='+',
@@ -136,6 +136,8 @@ def main():
     # Get command-line arguments
     prog, args = get_args()
     setattr(args, 'prog', prog)
+    if not hasattr(args, 'quiet'):
+        setattr(args, 'quiet', None)
     # Run program
     run(args)
 

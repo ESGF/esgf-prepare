@@ -16,8 +16,8 @@ from constants import *
 from custom_exceptions import *
 from esgprep.utils.collectors import Collector
 from esgprep.utils.context import MultiprocessingContext
-from esgprep.utils.custom_exceptions import *
-from esgprep.utils.misc import load, Print, COLORS
+from esgprep.utils.misc import load
+from esgprep.utils.custom_print import *
 from handler import DRSTree, DRSPath
 
 
@@ -32,7 +32,7 @@ class ProcessingContext(MultiprocessingContext):
     """
 
     def __init__(self, args):
-        super(self.__class__, self).__init__(args)
+        super(ProcessingContext, self).__init__(args)
         # DRS root tree
         self.root = os.path.normpath(args.root)
         # Scan behavior
@@ -48,7 +48,7 @@ class ProcessingContext(MultiprocessingContext):
         try:
             self.ignore_from_incoming = args.ignore_from_incoming.read().splitlines()
         except (TypeError, IOError, AttributeError):
-            self.ignore_from_latest = list()
+            self.ignore_from_incoming = list()
         # DRS migration mode
         if args.copy:
             self.mode = 'copy'
@@ -75,19 +75,12 @@ class ProcessingContext(MultiprocessingContext):
             Print.warning(msg)
         # Init process manager
         if self.use_pool:
-            self.manager.register('tree', DRSTree, exposed=('create_leaf',
-                                                            'get_display_lengths',
-                                                            'check_uniqueness',
-                                                            'list',
-                                                            'todo',
-                                                            'tree'
-                                                            'upgrade'))
             self.tree = self.manager.tree()
         else:
             self.tree = DRSTree()
 
     def __enter__(self):
-        super(self.__class__, self).__enter__()
+        super(ProcessingContext, self).__enter__()
         # Get the DRS facet keys from pattern
         self.facets = self.cfg.get_facets('directory_format')
         # Check if --commands-file argument specifies existing file

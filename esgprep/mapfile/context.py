@@ -8,12 +8,11 @@
 """
 
 import fnmatch
-import os
 
 from constants import *
 from esgprep.utils.collectors import VersionedPathCollector, DatasetCollector
 from esgprep.utils.context import MultiprocessingContext
-from esgprep.utils.misc import Print, COLORS
+from esgprep.utils.custom_print import *
 
 
 class ProcessingContext(MultiprocessingContext):
@@ -27,7 +26,7 @@ class ProcessingContext(MultiprocessingContext):
     """
 
     def __init__(self, args):
-        super(self.__class__, self).__init__(args)
+        super(ProcessingContext, self).__init__(args)
         # Specified version
         self.version = None
         if args.version:
@@ -70,7 +69,7 @@ class ProcessingContext(MultiprocessingContext):
         self.nbmap = 0
 
     def __enter__(self):
-        super(self.__class__, self).__enter__()
+        super(ProcessingContext, self).__enter__()
         # Get the DRS facet keys from pattern
         self.facets = self.cfg.get_facets('dataset_id')
         # Init data collector
@@ -117,7 +116,7 @@ class ProcessingContext(MultiprocessingContext):
         if self.action == 'show':
             msg = 'Mapfile(s) to be generated: {}'.format(self.nbmap)
         else:
-            msg = 'Mapfile(s) generated: {} (see {})'.format(self.nbmap, self.outdir)
+            msg = 'Mapfile(s) generated: {} (in {})'.format(self.nbmap, self.outdir)
         if self.nbsources == self.scan_data:
             # All files have been successfully scanned without errors
             msg = COLORS.SUCCESS(msg)
@@ -129,7 +128,7 @@ class ProcessingContext(MultiprocessingContext):
             msg = COLORS.WARNING(msg)
         # Print summary
         Print.summary(msg)
-        super(self.__class__, self).__exit__(exc_type, exc_val, traceback)
+        super(ProcessingContext, self).__exit__(exc_type, exc_val, traceback)
 
     def clean(self):
         """

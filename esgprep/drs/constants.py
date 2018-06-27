@@ -36,7 +36,8 @@ CONTROLLED_ARGS = ['directory',
                    'version',
                    'root',
                    'upgrade_from_latest',
-                   'ignore_from_latest']
+                   'ignore_from_latest',
+                   'ignore_from_incoming']
 
 # List of variable required by each process
 PROCESS_VARS = ['root',
@@ -48,9 +49,11 @@ PROCESS_VARS = ['root',
                 'mode',
                 'upgrade_from_latest',
                 'ignore_from_latest',
+                'ignore_from_incoming',
                 'cfg',
                 'facets',
                 'lock',
+                'tree',
                 'progress',
                 'nbsources']
 

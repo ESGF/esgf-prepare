@@ -126,7 +126,7 @@ def run(args):
     """
     # Instantiate processing context manager
     with ProcessingContext(args) as ctx:
-        for project in ctx.projects:
+        for project in ctx.project:
             try:
                 # Set repository name
                 repo = REPO_PATTERN.format(project)

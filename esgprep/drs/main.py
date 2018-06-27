@@ -158,7 +158,7 @@ def process(source):
         else:
             pctx.tree.paths[fph.path(f_part=False)] = [incoming]
         msg = TAGS.SUCCESS + '{}'.format(fph.path(f_part=False))
-        msg += '<-- ' + COLORS.HEADER(fh.filename)
+        msg += ' <-- ' + COLORS.HEADER(fh.filename)
         with pctx.lock:
             Print.info(msg)
         return True

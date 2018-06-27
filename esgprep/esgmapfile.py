@@ -63,7 +63,7 @@ def get_args():
         default=os.environ['ESGINI'] if 'ESGINI' in os.environ.keys() else '/esg/config/esgcet',
         help=INI_HELP)
     parent.add_argument(
-        '--log',
+        '-l', '--log',
         metavar='CWD',
         type=str,
         const='{}/logs'.format(os.getcwd()),
@@ -75,7 +75,7 @@ def get_args():
         default=False,
         help=VERBOSE_HELP)
     parent.add_argument(
-        '--project',
+        '-p', '--project',
         metavar='PROJECT_ID',
         type=str,
         required=True,
@@ -234,6 +234,8 @@ def main():
     # Get command-line arguments
     prog, args = get_args()
     setattr(args, 'prog', prog)
+    if not hasattr(args, 'quiet'):
+        setattr(args, 'quiet', None)
     # Run program
     run(args)
 

@@ -499,42 +499,46 @@ NO_CHECKSUM_HELP = {
 
 COMMANDS_FILE_HELP = \
     """
-    Writes Unix command-line statements only in the submitted file.|n
-    Default is the standard output (requires "todo" action).
+    Writes Unix command-line statements only in the submitted|n
+    file. Default is the standard output (requires "todo"|n
+    action).
 
     """
 
 OVERWRITE_COMMANDS_FILE_HELP = \
     """
-    Allow overwriting of existing file specified by "--commands-file".
+    Allow overwriting of existing file specified by|n
+    "--commands-file".
 
     """
 
 UPGRADE_FROM_LATEST_HELP = \
     """
-    The upgraded version of the dataset is based primarily on the|n
-    previous (latest) version. Default is to consider the incoming|n
-    files as the complete content of the new version of the dataset.|n
+    The upgraded version of the dataset is based primarily|n
+    on the previous (latest) version. Default is to consider|n
+    the incoming files as the complete content of the new|n
+    version of the dataset.|n
     See the full documentation to get details on both methods.
     
     """
 
 IGNORE_FROM_LATEST_HELP = \
     """
-    A list of filename to ignore for version upgrade from the latest|n
-    dataset version. Default is to consider the incoming files as|n
-    the complete content of the new version of the dataset.|n
-    It overwrites default behavior by enabling "--upgrade-from-latest".|n 
+    A list of filename to ignore for version upgrade from the|n
+    latest dataset version. Default is to consider the incoming|n
+    files as the complete content of the new version of|n
+    the dataset. It overwrites default behavior by enabling|n
+    "--upgrade-from-latest".|n 
     See the full documentation to get details on both methods.
 
     """
 
 IGNORE_FROM_INCOMING_HELP = \
     """
-    A list of filename to ignore for version upgrade from the incoming|n
-    files. Default is to consider the incoming files as|n
-    the complete content of the new version of the dataset.|n
-    It allows to filter incoming files to consider.
+    A list of filename to ignore for version upgrade from|n
+    the incoming files. Default is to consider the incoming|n
+    files as the complete content of the new version of|n
+    the dataset. It allows to filter incoming files to consider.
 
     """
 

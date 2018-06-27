@@ -203,7 +203,7 @@ def process(source):
             write(outfile, line)
             msg = TAGS.SUCCESS
             msg += '{}'.format(os.path.splitext(os.path.basename(outfile))[0])
-            msg += '<-- ' + COLORS.HEADER(source)
+            msg += ' <-- ' + COLORS.HEADER(source)
             with pctx.lock:
                 Print.info(msg)
         # Return mapfile name
@@ -253,12 +253,8 @@ def run(args):
     :param ArgumentParser args: Command-line arguments parser
 
     """
-    # Init print management
-    Print.init(log=args.log, debug=args.debug, cmd=args.prog)
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
-        # Print command-line
-        Print.command(' '.join(sys.argv))
         # Init process context
         cctx = {name: getattr(ctx, name) for name in PROCESS_VARS}
         # Init progress bar
@@ -275,22 +271,22 @@ def run(args):
         if 'pool' in locals().keys():
             locals()['pool'].close()
             locals()['pool'].join()
+        Print.progress('\n')
         # Flush buffer
         Print.flush()
         # Get number of files scanned (excluding errors/skipped files)
-        ctx.scan_files = len(filter(None, results))
+        ctx.scan_data = len(filter(None, results))
         # Get number of scan errors
         ctx.scan_errors = results.count(None)
         # Get number of generated mapfiles
-        ctx.nb_map = len(filter(None, set(results)))
+        ctx.nbmap = len(filter(None, set(results)))
         # Evaluates the scan results to finalize mapfiles writing
         if evaluate(results):
             for mapfile in filter(None, set(results)):
                 # Remove mapfile working extension
                 if ctx.action == 'show':
                     # Print mapfiles to be generated
-                    if ctx.quiet:
-                        Print.success(remove(WORKING_EXTENSION, mapfile))
+                    Print.result(remove(WORKING_EXTENSION, mapfile))
                 elif ctx.action == 'make':
                     # A final mapfile is silently overwritten if already exists
                     os.rename(mapfile, remove(WORKING_EXTENSION, mapfile))

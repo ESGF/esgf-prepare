@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+    :platform: Unix
+    :synopsis: Useful functions to use with this package.
+
+"""
+
 import getpass
 from multiprocessing import cpu_count, Lock
 from multiprocessing.managers import SyncManager
@@ -7,6 +16,15 @@ from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
 from esgprep.utils.custom_print import *
 from requests.auth import HTTPBasicAuth
 
+from esgprep.drs.handler import DRSTree
+
+SyncManager.register('tree', DRSTree, exposed=('create_leaf',
+                                                'get_display_lengths',
+                                                'check_uniqueness',
+                                                'list',
+                                                'todo',
+                                                'tree'
+                                                'upgrade'))
 
 class BaseContext(object):
     """
@@ -16,7 +34,7 @@ class BaseContext(object):
 
     def __init__(self, args):
         # Init print management
-        Print.init(log=args.log, debug=args.debug, cmd=args.prog)
+        Print.init(log=args.log, debug=args.debug, cmd=args.prog, quiet=args.quiet)
         # Print command-line
         Print.command()
         # Get project
@@ -24,6 +42,7 @@ class BaseContext(object):
 
     def __enter__(self):
         pass
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Print log path if exists
@@ -37,7 +56,7 @@ class GitHubBaseContext(BaseContext):
     """
 
     def __init__(self, args):
-        super(self.__class__, self).__init__(args)
+        super(GitHubBaseContext, self).__init__(args)
         # Fetching behavior
         self.keep = args.k
         self.overwrite = args.o
@@ -50,13 +69,14 @@ class GitHubBaseContext(BaseContext):
         self.error = False
 
     def __enter__(self):
-        super(self.__class__, self).__enter__()
+        super(GitHubBaseContext, self).__enter__()
         # If the username is set but not the password, prompt for it interactively
         if self.gh_user and not self.gh_password and sys.stdout.isatty():
             msg = COLOR().bold('Github password for user {}: '.format(self.gh_user))
             self.gh_password = getpass.getpass(msg)
         # GitHub authentication
         self.auth = self.authenticate()
+        return self
 
     def authenticate(self):
         """
@@ -76,7 +96,7 @@ class MultiprocessingContext(BaseContext):
     """
 
     def __init__(self, args):
-        super(self.__class__, self).__init__(args)
+        super(MultiprocessingContext, self).__init__(args)
         # Configuration directory (i.e., INI files folder)
         self.config_dir = args.i
         # Command line action
@@ -133,18 +153,19 @@ class MultiprocessingContext(BaseContext):
             self.set_keys = dict(args.set_key)
 
     def __enter__(self):
-        super(self.__class__, self).__enter__()
+        super(MultiprocessingContext, self).__enter__()
         # Get checksum client
         self.checksum_type = self.get_checksum_type()
         # Get mapfile DRS
         self.mapfile_drs = self.get_mapfile_drs()
         # Configuration parser to be loaded in the end
         self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Decline outputs depending on the scan results
         msg = 'Number of file(s) scanned: {}\n'.format(self.scan_data)
-        msg += 'Number of errors: {}'.format(self.scan_errors)
+        msg += 'Number of error(s): {}'.format(self.scan_errors)
         if self.nbsources == self.scan_data:
             # All files have been successfully scanned without errors
             msg = COLORS.SUCCESS(msg)
@@ -156,7 +177,7 @@ class MultiprocessingContext(BaseContext):
             msg = COLORS.WARNING(msg)
         # Print summary
         Print.summary(msg)
-        super(self.__class__, self).__exit__(exc_type, exc_val, exc_tb)
+        super(MultiprocessingContext, self).__exit__(exc_type, exc_val, exc_tb)
 
     def get_checksum_type(self):
         """

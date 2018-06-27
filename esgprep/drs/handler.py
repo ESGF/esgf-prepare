@@ -128,7 +128,7 @@ class File(object):
                     if score >= 80:
                         # Rename attribute key
                         self.attributes[facet] = self.attributes.pop(key)
-                        Print.warning('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
+                        Print.debug('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
                         config.check_options({facet: self.attributes[facet]})
                     else:
                         raise NoConfigOptions(facet)
