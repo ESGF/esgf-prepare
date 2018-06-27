@@ -8,23 +8,21 @@
 """
 
 import getpass
-import re
 from collections import OrderedDict
 from os import remove
 from tempfile import NamedTemporaryFile
 
 from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions, NoConfigOption
+from constants import *
+from custom_exceptions import *
+from esgprep.utils.custom_print import *
+from esgprep.utils.misc import checksum
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
 from hurry.filesize import size
 from netCDF4 import Dataset
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
-
-from constants import *
-from custom_exceptions import *
-from esgprep.utils.custom_exceptions import *
-from esgprep.utils.misc import checksum, Print
 
 
 class File(object):
@@ -368,7 +366,7 @@ class DRSTree(Tree):
 
     """
 
-    def __init__(self, root, version, mode, outfile=None):
+    def __init__(self, root=None, version=None, mode=None, outfile=None):
         # Retrieve original class init
         Tree.__init__(self)
         # Dataset and files record

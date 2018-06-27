@@ -8,14 +8,14 @@
 """
 
 import itertools
-import sys
 import traceback
 from multiprocessing import Pool
 
 from constants import *
 from context import ProcessingContext
 from custom_exceptions import *
-from esgprep.utils.misc import load, store, evaluate, checksum, ProcessContext, Print, COLORS
+from esgprep.utils.custom_print import *
+from esgprep.utils.misc import load, store, evaluate, checksum, ProcessContext
 from handler import File, DRSPath
 
 
@@ -157,8 +157,8 @@ def process(source):
             pctx.tree.paths[fph.path(f_part=False)].append(incoming)
         else:
             pctx.tree.paths[fph.path(f_part=False)] = [incoming]
-        msg = COLORS.OKGREEN + '\n{}'.format(fph.path(f_part=False)) + COLORS.ENDC
-        msg += '<-- ' + COLORS.HEADER + fh.filename + COLORS.ENDC
+        msg = TAGS.SUCCESS + '{}'.format(fph.path(f_part=False))
+        msg += '<-- ' + COLORS.HEADER(fh.filename)
         with pctx.lock:
             Print.info(msg)
         return True
@@ -166,7 +166,7 @@ def process(source):
         raise
     except Exception:
         exc = traceback.format_exc().splitlines()
-        msg = COLORS.HEADER + source + COLORS.ENDC + '\n'
+        msg = TAGS.SKIP + COLORS.HEADER(source) + '\n'
         msg += '\n'.join(exc)
         with pctx.lock:
             Print.exception(msg, buffer=True)
@@ -175,7 +175,7 @@ def process(source):
         with pctx.lock:
             pctx.progress.value += 1
             percentage = int(pctx.progress.value * 100 / pctx.nbsources)
-            msg = COLORS.OKBLUE + '\rScanning incoming file(s): ' + COLORS.ENDC
+            msg = COLORS.OKBLUE('\rScanning incoming file(s): ')
             msg += '{}% | {}/{} file(s)'.format(percentage, pctx.progress.value, pctx.nbsources)
             Print.progress(msg)
 
@@ -207,22 +207,17 @@ def run(args):
 
     """
     # TODO: Revise multiprocessing output if treelib not thread safe.
-    # Init print management
-    Print.init(log=args.log, debug=args.debug, cmd=args.prog)
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
-        # Print command-line
-        Print.command(COLORS.OKBLUE + 'Command: ' + COLORS.ENDC + ' '.join(sys.argv))
         # Init process context
         cctx = {name: getattr(ctx, name) for name in PROCESS_VARS}
         if not ctx.scan:
-            msg = COLORS.BOLD + 'Skip incoming files scan (use "--rescan" to force it) -- '
-            msg += 'Using cached DRS tree from {}'.format(TREE_FILE) + COLORS.ENDC
+            msg = 'Skip incoming files scan (use "--rescan" to force it) -- '
+            msg += 'Using cached DRS tree from {}'.format(TREE_FILE)
             Print.warning(msg)
             reader = load(TREE_FILE)
             _ = reader.next()
             cctx['tree'] = reader.next()
-            ctx.scan_err_log = reader.next()
             results = reader.next()
             # Rollback --commands_file value to command-line argument in any case
             cctx['tree'].commands_file = ctx.commands_file
@@ -240,16 +235,16 @@ def run(args):
             if 'pool' in locals().keys():
                 locals()['pool'].close()
                 locals()['pool'].join()
+            Print.progress('\n')
         # Flush buffer
         Print.flush()
         # Get number of files scanned (excluding errors/skipped files)
-        ctx.scan_files = len(filter(None, results))
+        ctx.scan_data = len(filter(None, results))
         # Get number of scan errors
         ctx.scan_errors = results.count(None)
         # Backup tree context for later usage with other command lines
         store(TREE_FILE, data=[{key: ctx.__getattribute__(key) for key in CONTROLLED_ARGS},
                                cctx['tree'],
-                               ctx.scan_err_log,
                                results])
         Print.warning('DRS tree recorded for next usage onto {}.'.format(TREE_FILE))
         # Evaluates the scan results to trigger the DRS tree action
@@ -261,14 +256,5 @@ def run(args):
             cctx['tree'].get_display_lengths()
             getattr(cctx['tree'], ctx.action)()
     # Evaluate errors and exit with appropriated return code
-    if not ctx.scan_files and not ctx.scan_errors:
-        # Results list is empty = no files scanned/found
-        sys.exit(2)
-    if ctx.scan_files and ctx.scan_errors:
-        # Print number of scan errors in any case
-        if ctx.scan_errors == ctx.scan_files:
-            # All files have been skipped or failed during the scan
-            sys.exit(-1)
-        else:
-            # Some files have been skipped or failed during the scan
-            sys.exit(1)
+    if ctx.scan_errors > 0:
+        sys.exit(ctx.scan_errors)

@@ -7,17 +7,11 @@
 
 """
 
-import os
-import re
-
-from esgprep.utils.github import gh_request_content
-from esgprep.utils.custom_print import *
-from requests.auth import HTTPBasicAuth
-import sys
-
 from constants import *
 from esgprep.utils.collectors import FilterCollection
 from esgprep.utils.context import GitHubBaseContext
+from esgprep.utils.custom_print import *
+from esgprep.utils.github import gh_request_content
 
 
 class ProcessingContext(GitHubBaseContext):
@@ -33,23 +27,17 @@ class ProcessingContext(GitHubBaseContext):
     def __init__(self, args):
         super(self.__class__, self).__init__(args)
         self.tables_dir = os.path.realpath(os.path.normpath(args.tables_dir))
-        self.no_ref_folder = args.no_ref_folder
+        self.no_subfolder = args.no_subfolder
         self.url = GITHUB_CONTENT_API
         self.ref_url = GITHUB_REFS_API
         if args.tag:
             self.ref = args.tag
             self.ref_url += '/tags'
-        elif args.branch_regex:
-            self.regex = args.branch_regex
-            self.ref_url += '/heads'
-        elif args.tag_regex:
-            self.regex = args.tag_regex
-            self.ref_url += '/tags'
         else:
-            # args.branch has a default value of 'master'
-            # if not set with --branch
+            # if not set with --branch default is "master"
             self.ref = args.branch
             self.ref_url += '/heads'
+        self.ref = re.compile('^{}$'.format(self.ref))
         self.file_filter = FilterCollection()
         if args.include_file:
             for regex in args.include_file:
@@ -63,13 +51,22 @@ class ProcessingContext(GitHubBaseContext):
         else:
             # Default exclude hidden files
             self.file_filter.add(regex='^\..*$', inclusive=False)
-        self.error = False
-        self.progress = 0
 
     def __enter__(self):
         super(self.__class__, self).__enter__()
-        # Init the project list to retrieve
-        self.targets = self.target_projects(pattern = '(.+?)-cmor-tables', url_format = GITHUB_REPOS_API)
-        # Get number of projects
-        self.ntargets = len(self.targets)
+        # Get the project list to retrieve
+        r = gh_request_content(GITHUB_REPOS_API, auth=self.auth)
+        repos = [repo['name'] for repo in r.json() if re.search(REPO_NAME_PATTERN, repo['name'])]
+        # Get the list of project to fetch
+        p_found = set([re.search(REPO_NAME_PATTERN, repo).group(1) for repo in repos])
+        if self.projects:
+            p = set(self.projects)
+            p_avail = p_found.intersection(p)
+            if p.difference(p_avail):
+                msg = 'No such project(s): {} -- '.format(', '.join(p.difference(p_avail)))
+                msg += 'Available remote projects are: {}'.format(', '.join(list(p_found)))
+                Print.warning(msg)
+            self.projects = p_avail
+        else:
+            self.projects = p_found
         return self

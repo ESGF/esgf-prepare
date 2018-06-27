@@ -9,32 +9,33 @@
 
 import traceback
 
-from constants import *
 from context import ProcessingContext
 from esgprep.utils.github import *
-from esgprep.utils.custom_print import *
-from esgprep.utils.misc import make_outdir
 
 
-def fetch(url, outfile, auth, keep, overwrite, backup_mode):
-    # Get GitHub file content
-    r = gh_request_content(url=url, auth=auth)
-    sha = r.json()['sha']
-    download_url = r.json()['download_url']
-    # Set output file full path
-    outfile = os.path.join(outdir, INI_FILE.format(project))
+def make_outdir(root):
+    """
+    Build the output directory as follows:
 
-    # Fetching True/False depending on flags and file checksum
-    if do_fetching(outfile, sha, keep, overwrite):
-        # Backup old file if exists
-        backup(outfile, mode=backup_mode)
-        # Get content
-        content = requests.get(download_url, auth=auth).text
-        # Write new file
-        write_content(outfile, content)
-        Print.info(TAGS.FETCH + '{} --> {}'.format(url, outfile))
-    else:
-        Print.info(TAGS.SKIP + url)
+    :param str root: The root directory
+
+    """
+    outdir = root
+    # If directory does not already exist
+    if not os.path.isdir(outdir):
+        try:
+            os.makedirs(outdir)
+            Print.warning('{} created'.format(outdir))
+        except OSError as e:
+            # If default tables directory does not exists and without write access
+            msg = 'Cannot use "{}" (OSError {}: {}) -- '.format(outdir, e.errno, e.strerror)
+            msg += 'Use "{}" instead.'.format(os.getcwd())
+            Print.warning(msg)
+            outdir = os.path.join(os.getcwd(), 'ini')
+            if not os.path.isdir(outdir):
+                os.makedirs(outdir)
+                Print.warning('{} created'.format(outdir))
+    return outdir
 
 
 def run(args):
@@ -49,28 +50,33 @@ def run(args):
     :param ArgumentParser args: Parsed command-line arguments
 
     """
-    # Init print management
-    Print.init(log=args.log, debug=args.debug, cmd=args.prog)
     # Instantiate processing context manager
     with ProcessingContext(args) as ctx:
-        # Print command-line
-        Print.command(' '.join(sys.argv))
         # Make output directory
         outdir = make_outdir(root=ctx.config_dir)
         # Counter
         progress = 0
-        for project in ctx.targets:
+        for f, info in ctx.files.items():
             try:
-                # Set full url
-                url = ctx.url.format(INI_FILE.format(project))
+                # Set output file full path
+                outfile = os.path.join(outdir, f)
+                # Get checksum
+                download_url = info['download_url']
+                sha = info['sha']
                 # Get GitHub file
-                fetch(url, outdir, ctx.auth, ctx.keep, ctx.overwrite, ctx.backup_mode)
+                fetch(url=download_url,
+                      outfile=outfile,
+                      auth=ctx.auth,
+                      sha=sha,
+                      keep=ctx.keep,
+                      overwrite=ctx.overwrite,
+                      backup_mode=ctx.backup_mode)
             except KeyboardInterrupt:
                 raise
             except Exception:
+                download_url = info['download_url']
                 exc = traceback.format_exc().splitlines()
-                msg = TAGS.FAIL
-                msg += COLORS.HEADER('Fetching {} config file'.format(project)) + '\n'
+                msg = TAGS.FAIL + COLORS.HEADER(download_url) + '\n'
                 msg += '\n'.join(exc)
                 Print.exception(msg, buffer=True)
                 ctx.error = True

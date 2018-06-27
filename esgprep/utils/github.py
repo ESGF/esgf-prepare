@@ -8,25 +8,23 @@
 """
 
 import hashlib
-import os
-import re
 
 import requests
-from custom_exceptions import *
+from esgprep.utils.custom_print import *
 
 
-def get_checksum_pattern(checksum_type):
-    """
-    Build the checksum pattern depending on the checksum type.
-
-    :param str checksum_type: The checksum type
-    :return: The checksum pattern
-    :rtype: *re.Object*
-
-    """
-    hash_algo = getattr(hashlib, checksum_type)()
-    checksum_length = len(hash_algo.hexdigest())
-    return re.compile('^[0-9a-f]{{{}}}$'.format(checksum_length))
+def fetch(url, outfile, auth, sha, keep, overwrite, backup_mode):
+    # Fetching True/False depending on flags and file checksum
+    if do_fetching(outfile, sha, keep, overwrite):
+        # Backup old file if exists
+        backup(outfile, mode=backup_mode)
+        # Get content
+        content = requests.get(url, auth=auth).text
+        # Write new file
+        write_content(outfile, content)
+        Print.info(TAGS.FETCH + '{} --> {}'.format(url, outfile))
+    else:
+        Print.info(TAGS.SKIP + url)
 
 
 def gh_request_content(url, auth=None):
@@ -72,8 +70,7 @@ def backup(f, mode=None):
         if mode == 'one_version':
             dst = '{}.bkp'.format(f)
             os.rename(f, dst)
-            msg = COLORS.BOLD + 'Old "{}" saved under "{}"'.format(f, dst) + COLORS.ENDC
-            Print.debug(msg)
+            Print.debug('Old "{}" saved under "{}"'.format(f, dst))
         elif mode == 'keep_versions':
             bkpdir = os.path.join(os.path.dirname(f), 'bkp')
             dst = os.path.join(bkpdir, '{}.{}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'),
@@ -85,8 +82,7 @@ def backup(f, mode=None):
             finally:
                 # Overwritten silently if destination file already exists
                 os.rename(f, dst)
-                msg = COLORS.BOLD + 'Old "{}" saved under "{}"'.format(f, dst) + COLORS.ENDC
-                Print.debug(msg)
+                Print.debug('Old "{}" saved under "{}"'.format(f, dst))
         else:
             # No backup = default
             pass
@@ -125,8 +121,8 @@ def do_fetching(f, remote_checksum, keep, overwrite):
             if githash(f) == remote_checksum:
                 return False
             else:
-                msg = COLORS.BOLD + 'Local "{}" does not match version on GitHub -- '.format((os.path.basename(f)))
-                msg += 'The file is either outdated or was modified.' + COLORS.ENDC
+                msg = 'Local "{}" does not match version on GitHub -- '.format((os.path.basename(f)))
+                msg += 'The file is either outdated or was modified.'
                 Print.debug(msg)
                 if keep:
                     return False

@@ -10,10 +10,10 @@
 from datetime import datetime
 
 # Program version
-VERSION = '2.8.2'
+VERSION = '2.9.0'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=6, day=6).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=6, day=26).strftime("%Y-%d-%m")
 
 # Shell colors map
 SHELL_COLORS = {'red': 1,
@@ -23,6 +23,9 @@ SHELL_COLORS = {'red': 1,
                 'magenta': 5,
                 'cyan': 6,
                 'gray': 7}
+
+# GitHub API parameter for references
+GITHUB_API_PARAMETER = '?{}={}'
 
 # Help
 TITLE = \
@@ -279,26 +282,16 @@ DEVEL_HELP = \
 
 BRANCH_HELP = \
     """
-    Fetch from a GitHub branch.|n
+    Fetch from all GitHub tags matching specified regex|n
+    or string.|n
     Default is to fetch from master branch.
-
-    """
-
-BRANCH_REGEX_HELP = \
-    """
-    Fetch from all GitHub branches matching specified regex.|n
 
     """
 
 TAG_HELP = \
     """
-    Fetch from a GitHub tag.
-
-    """
-
-TAG_REGEX_HELP = \
-    """
-    Fetch from all GitHub tags matching specified regex.|n
+    Fetch from all GitHub tags matching specified regex|n
+    or string.
 
     """
 
@@ -670,7 +663,7 @@ TABLES_DIR_HELP = \
     
     """
 
-NO_REF_FOLDER_HELP = \
+NO_SUBFOLDER_HELP = \
     """
     Disable table sub-folder depending on the GitHub|n
     Reference (i.e., a tag or branch). Default is to |n

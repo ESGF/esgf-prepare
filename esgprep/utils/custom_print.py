@@ -8,9 +8,11 @@
 """
 
 import os
+import re
 import sys
 from ctypes import c_char_p
 from multiprocessing import Value
+
 from constants import SHELL_COLORS
 from custom_exceptions import *
 
@@ -73,6 +75,7 @@ class COLORS:
     String colors for print statements
 
     """
+
     def __init__(self):
         pass
 
@@ -139,7 +142,6 @@ class Print(object):
     CMD = None
     BUFFER = Value(c_char_p, '')
     LOGFILE = None
-    ERRFILE = None
     CARRIAGE_RETURNED = True
 
     @staticmethod
@@ -155,7 +157,6 @@ class Print(object):
         else:
             logdir = os.getcwd()
         Print.LOGFILE = os.path.join(logdir, logname + '.log')
-        Print.ERRFILE = os.path.join(logdir, logname + '.err')
 
     @staticmethod
     def check_carriage_return(msg):
@@ -174,8 +175,7 @@ class Print(object):
     def print_to_logfile(msg):
         Print.check_carriage_return(msg)
         with open(Print.LOGFILE, 'a+') as f:
-            for color in COLORS.__dict__.values():
-                msg = msg.replace(color, '')
+            msg = re.sub('\\033\[([\d];)?[\d]*m', '', msg)
             f.write(msg)
 
     @staticmethod
@@ -188,7 +188,9 @@ class Print(object):
             Print.print_to_stdout(msg)
 
     @staticmethod
-    def command(msg):
+    def command(msg=None):
+        if not msg:
+            msg = ' '.join(sys.argv)
         msg = TAGS.COMMAND + COLOR('magenta')(msg) + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
@@ -199,10 +201,9 @@ class Print(object):
 
     @staticmethod
     def log(msg=None):
-        if msg:
-            msg = TAGS.LOG + COLOR('magenta')(msg) + '\n'
-        else:
-            msg = TAGS.LOG + Print.LOGFILE + '\n'
+        if not msg:
+            msg = Print.LOGFILE
+        msg = TAGS.LOG + COLOR('magenta')(msg) + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
         if Print.LOG:
@@ -231,7 +232,7 @@ class Print(object):
 
     @staticmethod
     def debug(msg):
-        msg = TAGS.DEBUG + msg + '\n'
+        msg = TAGS.DEBUG + COLOR().italic(msg) + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
         if Print.DEBUG:
@@ -267,6 +268,20 @@ class Print(object):
     @staticmethod
     def success(msg, buffer=False):
         msg = TAGS.SUCCESS + msg + '\n'
+        if not Print.CARRIAGE_RETURNED:
+            msg = '\n' + msg
+        if Print.LOG:
+            Print.print_to_logfile(msg)
+        elif buffer:
+            Print.BUFFER.value += msg
+        elif Print.DEBUG:
+            Print.print_to_stdout(msg)
+        else:
+            Print.print_to_stdout(msg)
+
+    @staticmethod
+    def result(msg, buffer=False):
+        msg = msg + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
         if Print.LOG:

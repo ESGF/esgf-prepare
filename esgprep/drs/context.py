@@ -9,30 +9,19 @@
 
 import re
 import sys
-from multiprocessing import cpu_count, Lock, Value
-from multiprocessing.managers import SyncManager
 from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
-
 from constants import *
 from custom_exceptions import *
 from esgprep.utils.collectors import Collector
+from esgprep.utils.context import MultiprocessingContext
 from esgprep.utils.custom_exceptions import *
 from esgprep.utils.misc import load, Print, COLORS
 from handler import DRSTree, DRSPath
-from esgprep.utils.context import BaseContext
 
 
-<<<<<<< HEAD
-class ProcessManager(SyncManager):
-    pass
-
-
-class ProcessingContext(object):
-=======
-class ProcessingContext(BaseContext):
->>>>>>> devel
+class ProcessingContext(MultiprocessingContext):
     """
     Encapsulates the processing context/information for main process.
 
@@ -43,9 +32,10 @@ class ProcessingContext(BaseContext):
     """
 
     def __init__(self, args):
-        self.config_dir = args.i
-        self.directory = args.directory
+        super(self.__class__, self).__init__(args)
+        # DRS root tree
         self.root = os.path.normpath(args.root)
+        # Scan behavior
         self.rescan = args.rescan
         self.commands_file = args.commands_file
         self.overwrite_commands_file = args.overwrite_commands_file
@@ -59,16 +49,7 @@ class ProcessingContext(BaseContext):
             self.ignore_from_incoming = args.ignore_from_incoming.read().splitlines()
         except (TypeError, IOError, AttributeError):
             self.ignore_from_latest = list()
-        self.set_values = {}
-        if args.set_value:
-            self.set_values = dict(args.set_value)
-        self.set_keys = {}
-        if args.set_key:
-            self.set_keys = dict(args.set_key)
-        self.processes = args.max_processes if args.max_processes <= cpu_count() else cpu_count()
-        self.use_pool = (self.processes != 1)
-        self.project = args.project
-        self.action = args.action
+        # DRS migration mode
         if args.copy:
             self.mode = 'copy'
         elif args.link:
@@ -77,52 +58,40 @@ class ProcessingContext(BaseContext):
             self.mode = 'symlink'
         else:
             self.mode = 'move'
+        # Specified version
         self.version = args.version
         DRSPath.TREE_VERSION = 'v{}'.format(args.version)
         # Declare counters for summary
-        self.scan_errors = 0
-        self.scan_files = 0
         self.scan = True
         if self.commands_file and self.action != 'todo':
-            msg = COLORS.BOLD + '"todo" action ignores "--commands-file" argument' + COLORS.ENDC
-            Print.warning(msg)
+            Print.warning('"todo" action ignores "--commands-file" argument')
             self.commands_file = None
         if self.overwrite_commands_file and not self.commands_file:
-            msg = COLORS.BOLD + '"--overwrite-commands-file" ignored' + COLORS.ENDC
-            Print.warning(msg)
+            Print.warning('"--overwrite-commands-file" ignored')
         self.no_checksum = args.no_checksum
         if self.no_checksum:
-            msg = COLORS.BOLD + 'Checksumming disabled, DRS breach could occur -- '
-            msg += 'It is highly recommend to activate checksumming processes.' + COLORS.ENDC
+            msg = 'Checksumming disabled, DRS breach could occur -- '
+            msg += 'It is highly recommend to activate checksumming processes.'
             Print.warning(msg)
         # Init process manager
         if self.use_pool:
-            SyncManager.register('tree', DRSTree, exposed=('create_leaf',
-                                                           'get_display_lengths',
-                                                           'check_uniqueness',
-                                                           'list',
-                                                           'todo',
-                                                           'tree'
-                                                           'upgrade'))
-            manager = SyncManager()
-            manager.start()
-            self.tree = manager.tree()
-            self.progress = manager.Value('i', 0)
+            self.manager.register('tree', DRSTree, exposed=('create_leaf',
+                                                            'get_display_lengths',
+                                                            'check_uniqueness',
+                                                            'list',
+                                                            'todo',
+                                                            'tree'
+                                                            'upgrade'))
+            self.tree = self.manager.tree()
         else:
             self.tree = DRSTree()
-            self.progress = Value('i', 0)
-        self.lock = Lock()
-        self.nbsources = None
 
     def __enter__(self):
-        # Get checksum client
-        self.checksum_type = self.get_checksum_type()
-        # Init configuration parser
-        self.cfg = SectionParser(section='project:{}'.format(self.project), directory=self.config_dir)
+        super(self.__class__, self).__enter__()
+        # Get the DRS facet keys from pattern
+        self.facets = self.cfg.get_facets('directory_format')
         # Check if --commands-file argument specifies existing file
         self.check_existing_commands_file()
-        # Get DRS facets
-        self.facets = self.cfg.get_facets('directory_format')
         # Raise error when %(version)s is not part of the final directory format
         if 'version' not in self.facets:
             raise NoVersionPattern(self.cfg.get('directory_format'), self.facets)
@@ -130,13 +99,11 @@ class ProcessingContext(BaseContext):
         idx = 0
         for pattern_element in self.cfg.get('directory_format').strip().split("/"):
             try:
-                # If pattern is %(...)s
-                # Get its index in the list of facets
+                # If pattern is %(...)s, get its index in the list of facets
                 key = re.match(re.compile(r'%\(([\w]+)\)s'), pattern_element).groups()[0]
                 idx = self.facets.index(key)
             except AttributeError:
-                # If pattern is not %(...)s
-                # Generate a uuid()
+                # If pattern is not %(...)s, generate a uuid()
                 key = str(uuid())
                 # Insert hard-coded string in self.facets to be part of DRS path
                 self.facets.insert(idx + 1, key)
@@ -165,27 +132,6 @@ class ProcessingContext(BaseContext):
         self.nbsources = len(self.sources)
         return self
 
-    def __exit__(self, *exc):
-        # Decline outputs depending on the scan results
-        if self.nbsources == self.scan_files:
-            # All files have been successfully scanned without errors
-            msg = COLORS.OKGREEN
-        elif self.nbsources == self.scan_errors:
-            # All files have been skipped with errors
-            msg = COLORS.FAIL
-        else:
-            # Some files have been scanned with at least one error
-            msg = COLORS.WARNING
-        msg += '\n\nNumber of file(s) scanned: {}'.format(self.scan_files)
-        msg += '\nNumber of errors: {}'
-        if self.scan:
-            msg += ' (from orginal scan previously written to {})'.format(Print.ERRFILE)
-        msg += COLORS.ENDC
-        # Print summary
-        Print.summary(msg)
-        # Print log path if exists
-        Print.log(COLORS.HEADER + '\nSee log: {}\n'.format(Print.LOGFILE) + COLORS.ENDC)
-
     def check_existing_commands_file(self):
         """
         Check for existing commands file,
@@ -197,11 +143,9 @@ class ProcessingContext(BaseContext):
             if self.overwrite_commands_file:
                 os.remove(self.commands_file)
             else:
-                msg = COLORS.FAIL
-                msg += '\nCommand file "{}" already exists --'.format(self.commands_file)
+                msg = 'Command file "{}" already exists --'.format(self.commands_file)
                 msg += 'Please use "--overwrite-commands-file" option.'
-                msg += COLORS.ENDC
-                Print.error(msg)
+                Print.error(COLORS.FAIL(msg))
                 sys.exit(1)
 
     def get_checksum_type(self):
@@ -232,12 +176,10 @@ class ProcessingContext(BaseContext):
         """
         for k in CONTROLLED_ARGS:
             if self.__getattribute__(k) != old_args[k]:
-                msg = COLORS.BOLD
-                msg += '"{}" argument has changed: "{}" instead of "{}" -- '.format(k,
-                                                                                    self.__getattribute__(k),
-                                                                                    old_args[k])
-                msg += 'Rescan files...'
-                msg += COLORS.ENDC
+                msg = '"{}" argument has changed: "{}" instead of "{}" -- '.format(k,
+                                                                                   self.__getattribute__(k),
+                                                                                   old_args[k])
+                msg += 'Rescanning files.'
                 Print.warning(msg)
                 return False
         return True

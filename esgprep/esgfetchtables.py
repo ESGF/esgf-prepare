@@ -85,10 +85,10 @@ def get_args():
         const='one_version',
         help=BACKUP_HELP)
     main.add_argument(
-        '--no-ref-folder',
+        '--no-subfolder',
         action='store_true',
         default=False,
-        help=NO_REF_FOLDER_HELP)
+        help=NO_SUBFOLDER_HELP)
     main.add_argument(
         '--gh-user',
         metavar='USERNAME',
@@ -104,25 +104,15 @@ def get_args():
     ref = main.add_mutually_exclusive_group(required=False)
     ref.add_argument(
         '--tag',
-        metavar='TAG',
-        type=str,
+        metavar='TAG or REGEX',
+        type=regex_validator,
         help=TAG_HELP)
     ref.add_argument(
-        '--tag-regex',
-        metavar='REGEX',
-        type=str,
-        help=TAG_REGEX_HELP)
-    ref.add_argument(
         '--branch',
-        metavar='BRANCH',
+        metavar='BRANCH or REGEX',
         default='master',
-        type=str,
+        type=regex_validator,
         help=BRANCH_HELP)
-    ref.add_argument(
-        '--branch-regex',
-        metavar='REGEX',
-        type=str,
-        help=BRANCH_REGEX_HELP)
     main.add_argument(
         '--include-file',
         metavar='PYTHON_REGEX',

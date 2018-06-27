@@ -8,20 +8,16 @@
 """
 
 import itertools
-import os
-import re
-import sys
 import traceback
-from datetime import datetime
 from multiprocessing import Pool
 
 from ESGConfigParser import interpolate, MissingPatternKey, BadInterpolation, InterpolationDepthError
-from lockfile import LockFile
-
 from constants import *
 from context import ProcessingContext
-from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext, COLORS, TAGS, Print
+from esgprep.utils.custom_print import *
+from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext
 from handler import File, Dataset
+from lockfile import LockFile
 
 
 def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_version, mapfile_drs=None, basename=False):
@@ -182,19 +178,15 @@ def process(source):
                         if re.match(get_checksum_pattern(pctx.checksum_type), pctx.checksums_from[source]):
                             optional_attrs['checksum'] = pctx.checksums_from[source]
                         else:
-                            msg = COLORS.BOLD
-                            msg += 'Invalid {} checksum pattern: {} -- '.format(pctx.checksum_type,
-                                                                                pctx.checksums_from[source])
-                            msg += 'Recomputing checksum...'
-                            msg += COLORS.ENDC
+                            msg = 'Invalid {} checksum pattern: {} -- '.format(pctx.checksum_type,
+                                                                               pctx.checksums_from[source])
+                            msg += 'Recomputing checksum.'
                             with pctx.lock:
                                 Print.warning(msg)
                             optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
                     else:
-                        msg = COLORS.BOLD
-                        msg += 'Entry not found in checksum file: {} -- '.format(source)
-                        msg += 'Recomputing checksum...'
-                        msg += COLORS.ENDC
+                        msg = 'Entry not found in checksum file: {} -- '.format(source)
+                        msg += 'Recomputing checksum.'
                         with pctx.lock:
                             Print.warning(msg)
                         optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
@@ -209,9 +201,9 @@ def process(source):
                                  size=sh.size,
                                  optional_attrs=optional_attrs)
             write(outfile, line)
-            msg = COLORS.OKGREEN + TAGS.SUCCESS + COLORS.ENDC
+            msg = TAGS.SUCCESS
             msg += '{}'.format(os.path.splitext(os.path.basename(outfile))[0])
-            msg += '<-- ' + COLORS.HEADER + source + COLORS.ENDC
+            msg += '<-- ' + COLORS.HEADER(source)
             with pctx.lock:
                 Print.info(msg)
         # Return mapfile name
@@ -221,8 +213,7 @@ def process(source):
         raise
     except Exception:
         exc = traceback.format_exc().splitlines()
-        msg = COLORS.FAIL + TAGS.SKIP + COLORS.ENDC
-        msg += COLORS.HEADER + source + COLORS.ENDC + '\n'
+        msg = TAGS.SKIP + COLORS.HEADER(source) + '\n'
         msg += '\n'.join(exc)
         with pctx.lock:
             Print.exception(msg, buffer=True)
@@ -231,7 +222,7 @@ def process(source):
         with pctx.lock:
             pctx.progress.value += 1
             percentage = int(pctx.progress.value * 100 / pctx.nbsources)
-            msg = COLORS.OKBLUE + '\rMapfile(s) generation: ' + COLORS.ENDC
+            msg = COLORS.OKBLUE('\rMapfile(s) generation: ')
             msg += '{}% | {}/{} {}'.format(percentage, pctx.progress.value,
                                            pctx.nbsources, SOURCE_TYPE[pctx.source_type])
             Print.progress(msg)
@@ -304,12 +295,5 @@ def run(args):
                     # A final mapfile is silently overwritten if already exists
                     os.rename(mapfile, remove(WORKING_EXTENSION, mapfile))
     # Evaluate errors and exit with appropriated return code
-    if ctx.nbsources == ctx.scan_files:
-        # All files have been successfully scanned without errors
-        sys.exit(0)
-    elif ctx.nbsources == ctx.scan_errors:
-        # All files have been skipped with errors
-        sys.exit(-1)
-    else:
-        # Some files have been scanned with at least one error
-        sys.exit(1)
+    if ctx.scan_errors > 0:
+        sys.exit(ctx.scan_errors)

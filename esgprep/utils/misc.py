@@ -8,12 +8,10 @@
 """
 
 import hashlib
-import os
 import pickle
-import re
 
-from custom_exceptions import *
 from custom_print import *
+
 
 class ProcessContext(object):
     """
@@ -146,33 +144,15 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
         raise ChecksumFail(ffp, checksum_type)
 
 
-def make_outdir(root, folder='ini', reference=None):
+def get_checksum_pattern(checksum_type):
     """
-    Build the output directory as follows:
+    Build the checksum pattern depending on the checksum type.
 
-    :param str root: The root directory
-    :param str folder: The folder to fetch in
-    :param str reference: An optional sub-folder
+    :param str checksum_type: The checksum type
+    :return: The checksum pattern
+    :rtype: *re.Object*
 
     """
-
-    outdir = os.path.join(root, folder)
-    if reference:
-        outdir = os.path.join(outdir, reference)
-    # If directory does not already exist
-    if not os.path.isdir(outdir):
-        try:
-            os.makedirs(outdir)
-            Print.warning('{} created'.format(outdir))
-        except OSError as e:
-            # If default tables directory does not exists and without write access
-            msg = 'Cannot use "{}" (OSError {}: {}) -- '.format(root, e.errno, e.strerror)
-            msg += 'Use "{}" instead.'.format(os.getcwd())
-            Print.warning(msg)
-            outdir = os.path.join(os.getcwd(), folder)
-            if reference:
-                outdir = os.path.join(outdir, reference)
-            if not os.path.isdir(outdir):
-                os.makedirs(outdir)
-                Print.warning('{} created'.format(outdir))
-    return outdir
+    hash_algo = getattr(hashlib, checksum_type)()
+    checksum_length = len(hash_algo.hexdigest())
+    return re.compile('^[0-9a-f]{{{}}}$'.format(checksum_length))
