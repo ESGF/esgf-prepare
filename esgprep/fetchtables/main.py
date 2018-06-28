@@ -133,12 +133,17 @@ def run(args):
                 # Get the list of available refs for that repository
                 r = gh_request_content(url=ctx.ref_url.format(repo), auth=ctx.auth)
                 refs = [os.path.basename(ref['url']) for ref in r.json()]
-                # Remove undesired refs
-                fetch_refs = filter(ctx.ref.match, refs)
-                if not fetch_refs:
-                    raise GitHubReferenceNotFound(ctx.ref.pattern, refs)
+                # Get refs to fetch
+                if hasattr(ctx, 'ref'):
+                    if ctx.ref not in refs:
+                        raise GitHubReferenceNotFound(ctx.ref, refs)
+                    fetch_refs = [ctx.ref]
+                else:
+                    fetch_refs = filter(re.compile(ctx.ref_regex).match, refs)
+                    if not fetch_refs:
+                        raise GitHubReferenceNotFound(ctx.ref_regex.pattern, refs)
                 Print.debug('GitHub Available reference(s): {}'.format(', '.join(sorted(refs))))
-                Print.debug('Selected GitHub reference(s): {}'.format(', '.join(sorted(fetch_refs))))
+                Print.info('Selected GitHub reference(s): {}'.format(', '.join(sorted(fetch_refs))))
                 # Get special case for CMIP6_CV.json file
                 special_cases = get_special_case(f='CMIP6_CV.json', url=ctx.url, repo=repo, ref='master', auth=ctx.auth)
                 # Fetch each ref

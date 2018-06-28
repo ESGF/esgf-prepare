@@ -26,17 +26,26 @@ class ProcessingContext(GitHubBaseContext):
 
     def __init__(self, args):
         super(ProcessingContext, self).__init__(args)
+        # Fetching context
         self.tables_dir = os.path.realpath(os.path.normpath(args.tables_dir))
         self.no_subfolder = args.no_subfolder
         self.url = GITHUB_CONTENT_API
         self.ref_url = GITHUB_REFS_API
+        # Fetching behavior
         if args.tag:
             self.ref = args.tag
             self.ref_url += '/tags'
+        elif args.tag_regex:
+            self.ref_regex = args.tag_regex
+            self.ref_url += '/tags'
+        elif args.branch_regex:
+            self.ref_regex = args.branch_regex
+            self.ref_url += '/heads'
         else:
             # if not set with --branch default is "master"
             self.ref = args.branch
             self.ref_url += '/heads'
+        # Fetching filters
         self.file_filter = FilterCollection()
         if args.include_file:
             for regex in args.include_file:

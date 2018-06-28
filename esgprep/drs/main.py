@@ -16,7 +16,7 @@ from context import ProcessingContext
 from custom_exceptions import *
 from esgprep.utils.custom_print import *
 from esgprep.utils.misc import load, store, evaluate, checksum, ProcessContext
-from handler import File, DRSPath
+from handler import File, DRSPath, DRSTree
 
 
 def process(source):
@@ -45,7 +45,10 @@ def process(source):
         fh = File(source)
         # Ignore files from incoming
         if fh.filename in pctx.ignore_from_incoming:
-            return False
+            msg = TAGS.SKIP + COLORS.HEADER(source)
+            with pctx.lock:
+                Print.info(msg, buffer=True)
+            return None
         # Loads attributes from filename, netCDF attributes, command-line
         fh.load_attributes(root=pctx.root,
                            pattern=pctx.pattern,
@@ -57,111 +60,13 @@ def process(source):
         # Get parts of DRS path
         parts = fh.get_drs_parts(pctx.facets)
         # Instantiate file DRS path handler
-        fph = DRSPath(parts)
+        fh.drs = DRSPath(parts)
         # Ensure that the called project section is ALWAYS part of the DRS path elements (case insensitive)
-        if not fph.path().lower().startswith(pctx.project.lower()):
-            raise InconsistentDRSPath(pctx.project, fph.path())
-        # If a latest version already exists make some checks FIRST to stop files to not process
-        if fph.v_latest:
-            # Latest version should be older than upgrade version
-            if int(DRSPath.TREE_VERSION[1:]) <= int(fph.v_latest[1:]):
-                raise OlderUpgrade(DRSPath.TREE_VERSION, fph.v_latest)
-            # Walk through the latest dataset version to check its uniqueness with file checksums
-            if not pctx.no_checksum:
-                dset_nid = fph.path(f_part=False, latest=True, root=True)
-                if dset_nid not in pctx.tree.hash.keys():
-                    pctx.tree.hash[dset_nid] = dict()
-                    pctx.tree.hash[dset_nid]['latest'] = dict()
-                    for root, _, filenames in os.walk(fph.path(f_part=False, latest=True, root=True)):
-                        for filename in filenames:
-                            pctx.tree.hash[dset_nid]['latest'][filename] = checksum(os.path.join(root, filename),
-                                                                                    pctx.checksum_type)
-            # Pickup the latest file version
-            latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
-            # Check latest file if exists
-            if os.path.exists(latest_file):
-                latest_checksum = checksum(latest_file, pctx.checksum_type)
-                current_checksum = checksum(fh.ffp, pctx.checksum_type)
-                # Check if processed file is a duplicate in comparison with latest version
-                if latest_checksum == current_checksum:
-                    fh.is_duplicate = True
-        # Start the tree generation
-        if not fh.is_duplicate:
-            # Add the processed file to the "vYYYYMMDD" node
-            src = ['..'] * len(fph.items(d_part=False))
-            src.extend(fph.items(d_part=False, file_folder=True))
-            src.append(fh.filename)
-            pctx.tree.create_leaf(nodes=fph.items(root=True),
-                                  leaf=fh.filename,
-                                  label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
-                                  src=os.path.join(*src),
-                                  mode='symlink',
-                                  origin=fh.ffp)
-            # Add the "latest" node for symlink
-            pctx.tree.create_leaf(nodes=fph.items(f_part=False, version=False, root=True),
-                                  leaf='latest',
-                                  label='{}{}{}'.format('latest', LINK_SEPARATOR, fph.v_upgrade),
-                                  src=fph.v_upgrade,
-                                  mode='symlink')
-            # Add the processed file to the "files" node
-            pctx.tree.create_leaf(nodes=fph.items(file_folder=True, root=True),
-                                  leaf=fh.filename,
-                                  label=fh.filename,
-                                  src=fh.ffp,
-                                  mode=pctx.mode)
-            if pctx.upgrade_from_latest:
-                # Walk through the latest dataset version and create a symlink for each file with a different
-                # filename than the processed one
-                for root, _, filenames in os.walk(fph.path(f_part=False, latest=True, root=True)):
-                    for filename in filenames:
-                        # Add latest files as tree leaves with version to upgrade instead of latest version
-                        # i.e., copy latest dataset leaves to Tree
-                        # Except if file has be ignored from latest version (i.e., with known issue)
-                        if filename != fh.filename and filename not in pctx.ignore_from_latest:
-                            src = os.path.join(root, filename)
-                            pctx.tree.create_leaf(nodes=fph.items(root=True),
-                                                  leaf=filename,
-                                                  label='{}{}{}'.format(filename, LINK_SEPARATOR, os.readlink(src)),
-                                                  src=os.readlink(src),
-                                                  mode='symlink',
-                                                  origin=os.path.realpath(src))
-        else:
-            # Pickup the latest file version
-            latest_file = os.path.join(fph.path(latest=True, root=True), fh.filename)
-            if pctx.upgrade_from_latest:
-                # If upgrade from latest is activated, raise the error, no duplicated files allowed
-                # Because incoming must only contain modifed/corrected files
-                raise DuplicatedFile(latest_file, fh.ffp)
-            else:
-                # If default behavior, the incoming contains all data for a new version
-                # In the case of a duplicated file, just pass to the expected symlink creation
-                # and records duplicated file for further removal only if migration mode is the
-                # default (i.e., moving files). In the case of --copy or --link, keep duplicates
-                # in place into the incoming directory
-                src = os.readlink(latest_file)
-                pctx.tree.create_leaf(nodes=fph.items(root=True),
-                                      leaf=fh.filename,
-                                      label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, src),
-                                      src=src,
-                                      mode='symlink',
-                                      origin=fh.ffp)
-                if pctx.mode == 'move':
-                    pctx.tree.duplicates.append(fh.ffp)
-        # Record entry for list()
-        incoming = {'src': fh.ffp,
-                    'dst': fph.path(root=True),
-                    'filename': fh.filename,
-                    'latest': fph.v_latest or 'Initial',
-                    'size': fh.size}
-        if fph.path(f_part=False) in pctx.tree.paths.keys():
-            pctx.tree.paths[fph.path(f_part=False)].append(incoming)
-        else:
-            pctx.tree.paths[fph.path(f_part=False)] = [incoming]
-        msg = TAGS.SUCCESS + '{}'.format(fph.path(f_part=False))
-        msg += ' <-- ' + COLORS.HEADER(fh.filename)
-        with pctx.lock:
-            Print.info(msg)
-        return True
+        if not fh.drs.path().lower().startswith(pctx.project.lower()):
+            raise InconsistentDRSPath(pctx.project, fh.drs.path())
+        msg = TAGS.SUCCESS + 'Processing {}'.format(COLORS.HEADER(fh.ffp))
+        Print.info(msg)
+        return fh
     except KeyboardInterrupt:
         raise
     except Exception:
@@ -180,6 +85,132 @@ def process(source):
             Print.progress(msg)
 
 
+def tree_builder(fh):
+    """
+    Builds the DRS tree accord to a source
+
+    :param esgprep.drs.handler.DRSPath fph: A file DRSPath object
+
+    """
+    # Get process content from process global env
+    assert 'pctx' in globals().keys()
+    pctx = globals()['pctx']
+    try:
+        # If a latest version already exists make some checks FIRST to stop file process
+        if fh.drs.v_latest:
+            # Latest version should be older than upgrade version
+            if int(DRSPath.TREE_VERSION[1:]) <= int(fh.drs.v_latest[1:]):
+                raise OlderUpgrade(DRSPath.TREE_VERSION, fh.drs.v_latest)
+            # Walk through the latest dataset version to check its uniqueness with file checksums
+            if not pctx.no_checksum:
+                dset_nid = fh.drs.path(f_part=False, latest=True, root=True)
+                if dset_nid not in tree.hash.keys():
+                    tree.hash[dset_nid] = dict()
+                    tree.hash[dset_nid]['latest'] = dict()
+                    for root, _, filenames in os.walk(fh.drs.path(f_part=False, latest=True, root=True)):
+                        for filename in filenames:
+                            tree.hash[dset_nid]['latest'][filename] = checksum(os.path.join(root, filename),
+                                                                               pctx.checksum_type)
+            # Pickup the latest file version
+            latest_file = os.path.join(fh.drs.path(latest=True, root=True), fh.filename)
+            # Check latest file if exists
+            if os.path.exists(latest_file):
+                latest_checksum = checksum(latest_file, pctx.checksum_type)
+                current_checksum = checksum(fh.ffp, pctx.checksum_type)
+                # Check if processed file is a duplicate in comparison with latest version
+                if latest_checksum == current_checksum:
+                    fh.is_duplicate = True
+        # Start the tree generation
+        if not fh.is_duplicate:
+            # Add the processed file to the "vYYYYMMDD" node
+            src = ['..'] * len(fh.drs.items(d_part=False))
+            src.extend(fh.drs.items(d_part=False, file_folder=True))
+            src.append(fh.filename)
+            tree.create_leaf(nodes=fh.drs.items(root=True),
+                             leaf=fh.filename,
+                             label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
+                             src=os.path.join(*src),
+                             mode='symlink',
+                             origin=fh.ffp)
+            # Add the "latest" node for symlink
+            tree.create_leaf(nodes=fh.drs.items(f_part=False, version=False, root=True),
+                             leaf='latest',
+                             label='{}{}{}'.format('latest', LINK_SEPARATOR, fh.drs.v_upgrade),
+                             src=fh.drs.v_upgrade,
+                             mode='symlink')
+            # Add the processed file to the "files" node
+            tree.create_leaf(nodes=fh.drs.items(file_folder=True, root=True),
+                             leaf=fh.filename,
+                             label=fh.filename,
+                             src=fh.ffp,
+                             mode=pctx.mode)
+            if pctx.upgrade_from_latest:
+                # Walk through the latest dataset version and create a symlink for each file with a different
+                # filename than the processed one
+                for root, _, filenames in os.walk(fh.drs.path(f_part=False, latest=True, root=True)):
+                    for filename in filenames:
+                        # Add latest files as tree leaves with version to upgrade instead of latest version
+                        # i.e., copy latest dataset leaves to Tree
+                        # Except if file has be ignored from latest version (i.e., with known issue)
+                        if filename != fh.filename and filename not in pctx.ignore_from_latest:
+                            src = os.path.join(root, filename)
+                            tree.create_leaf(nodes=fh.drs.items(root=True),
+                                             leaf=filename,
+                                             label='{}{}{}'.format(filename, LINK_SEPARATOR, os.readlink(src)),
+                                             src=os.readlink(src),
+                                             mode='symlink',
+                                             origin=os.path.realpath(src))
+        else:
+            # Pickup the latest file version
+            latest_file = os.path.join(fh.drs.path(latest=True, root=True), fh.filename)
+            if pctx.upgrade_from_latest:
+                # If upgrade from latest is activated, raise the error, no duplicated files allowed
+                # Because incoming must only contain modifed/corrected files
+                raise DuplicatedFile(latest_file, fh.ffp)
+            else:
+                # If default behavior, the incoming contains all data for a new version
+                # In the case of a duplicated file, just pass to the expected symlink creation
+                # and records duplicated file for further removal only if migration mode is the
+                # default (i.e., moving files). In the case of --copy or --link, keep duplicates
+                # in place into the incoming directory
+                src = os.readlink(latest_file)
+                tree.create_leaf(nodes=fh.drs.items(root=True),
+                                 leaf=fh.filename,
+                                 label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, src),
+                                 src=src,
+                                 mode='symlink',
+                                 origin=fh.ffp)
+                if pctx.mode == 'move':
+                    tree.duplicates.append(fh.ffp)
+        # Record entry for list()
+        record = {'src': fh.ffp,
+                    'dst': fh.drs.path(root=True),
+                    'filename': fh.filename,
+                    'latest': fh.drs.v_latest or 'Initial',
+                    'size': fh.size}
+        if fh.drs.path(f_part=False) in tree.paths.keys():
+            tree.paths[fh.drs.path(f_part=False)].append(record)
+        else:
+            tree.paths[fh.drs.path(f_part=False)] = [record]
+        msg = TAGS.SUCCESS + 'DRS Path = {}'.format(COLORS.HEADER(fh.drs.path(f_part=False)))
+        msg += ' <-- ' + fh.filename
+        Print.info(msg)
+    except KeyboardInterrupt:
+        raise
+    except Exception:
+        exc = traceback.format_exc().splitlines()
+        msg = TAGS.FAIL + COLORS.HEADER(fh.drs.path) + '\n'
+        msg += '\n'.join(exc)
+        Print.exception(msg)
+        raise
+    finally:
+        pctx.progress.value += 1
+        percentage = int(pctx.progress.value * 100 / pctx.nbsources)
+        msg = COLORS.OKBLUE('\rBuilding DRS tree: ')
+        msg += '{}% | {}/{} file(s)'.format(percentage, pctx.progress.value, pctx.nbsources)
+        Print.progress(msg)
+
+
 def initializer(keys, values):
     """
     Initialize process context by setting particular variables as global variables.
@@ -191,6 +222,37 @@ def initializer(keys, values):
     assert len(keys) == len(values)
     global pctx
     pctx = ProcessContext({key: values[i] for i, key in enumerate(keys)})
+
+
+def do_scanning(rescan, action, args):
+    """
+    Returns True if file scanning is necessary regarding command-line arguments
+
+    :param boolean rescan: True to force file (re-)scanning
+    :param str action: The esgdrs action -- "list" will force (re-)scanning
+    :param argparse.Namespace args: Input command-line arguments
+    :returns: True if file scanning is necessary
+    :rtype: *boolean*
+    """
+    if rescan:
+        return True
+    elif action == 'list':
+        return True
+    elif os.path.isfile(TREE_FILE):
+        reader = load(TREE_FILE)
+        old_args = reader.next()
+        # Ensure that processing context is similar to previous step
+        for k in CONTROLLED_ARGS:
+            if getattr(args, k) != old_args[k]:
+                msg = '"{}" argument has changed: "{}" instead of "{}" -- '.format(k,
+                                                                                   getattr(args, k),
+                                                                                   old_args[k])
+                msg += 'Rescanning files.'
+                Print.warning(msg)
+                return True
+        return False
+    else:
+        return True
 
 
 def run(args):
@@ -206,22 +268,16 @@ def run(args):
     :param ArgumentParser args: The command-line arguments parser
 
     """
-    # TODO: Revise multiprocessing output if treelib not thread safe.
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
+        # Init global variable
+        global tree
+        # Init DRS tree
+        tree = DRSTree(ctx.root, ctx.version, ctx.mode, ctx.commands_file)
         # Init process context
         cctx = {name: getattr(ctx, name) for name in PROCESS_VARS}
-        if not ctx.scan:
-            msg = 'Skip incoming files scan (use "--rescan" to force it) -- '
-            msg += 'Using cached DRS tree from {}'.format(TREE_FILE)
-            Print.warning(msg)
-            reader = load(TREE_FILE)
-            _ = reader.next()
-            cctx['tree'] = reader.next()
-            results = reader.next()
-            # Rollback --commands_file value to command-line argument in any case
-            cctx['tree'].commands_file = ctx.commands_file
-        else:
+        # Disable file scan if a previous DRS tree have generated using same context and no "list" action
+        if do_scanning(ctx.rescan, ctx.action, args):
             if ctx.use_pool:
                 # Init processes pool
                 pool = Pool(processes=ctx.processes, initializer=initializer, initargs=(cctx.keys(), cctx.values()))
@@ -230,31 +286,46 @@ def run(args):
                 initializer(cctx.keys(), cctx.values())
                 processes = itertools.imap(process, ctx.sources)
             # Process supplied sources
-            results = [x for x in processes]
+            handlers = [x for x in processes]
             # Close pool of workers if exists
             if 'pool' in locals().keys():
                 locals()['pool'].close()
                 locals()['pool'].join()
             Print.progress('\n')
+            # Build DRS tree
+            cctx['progress'].value = 0
+            initializer(cctx.keys(), cctx.values())
+            results = [x for x in itertools.imap(tree_builder, handlers)]
+            Print.progress('\n')
+        else:
+            reader = load(TREE_FILE)
+            msg = 'Skip incoming files scan (use "--rescan" to force it) -- '
+            msg += 'Using cached DRS tree from {}'.format(TREE_FILE)
+            Print.warning(msg)
+            results = reader.next()
+            tree = reader.next()
+            handlers = reader.next()
         # Flush buffer
         Print.flush()
-        # Get number of files scanned (excluding errors/skipped files)
-        ctx.scan_data = len(filter(None, results))
+        # Rollback --commands-file value to command-line argument in any case
+        tree.commands_file = ctx.commands_file
+        # Get number of files scanned (including errors/skipped files)
+        ctx.scan_data = len(handlers)
         # Get number of scan errors
-        ctx.scan_errors = results.count(None)
+        ctx.scan_errors = handlers.count(None)
         # Backup tree context for later usage with other command lines
         store(TREE_FILE, data=[{key: ctx.__getattribute__(key) for key in CONTROLLED_ARGS},
-                               cctx['tree'],
-                               results])
-        Print.warning('DRS tree recorded for next usage onto {}.'.format(TREE_FILE))
+                               tree,
+                               handlers])
+        Print.info(TAGS.INFO + 'DRS tree recorded for next usage onto {}.'.format(COLORS.HEADER(TREE_FILE)))
         # Evaluates the scan results to trigger the DRS tree action
-        if evaluate(results):
+        if evaluate(handlers):
             # Check upgrade uniqueness
             if not ctx.no_checksum:
-                cctx['tree'].check_uniqueness(ctx.checksum_type)
+                tree.check_uniqueness(ctx.checksum_type)
             # Apply tree action
-            cctx['tree'].get_display_lengths()
-            getattr(cctx['tree'], ctx.action)()
+            tree.get_display_lengths()
+            getattr(tree, ctx.action)()
     # Evaluate errors and exit with appropriated return code
     if ctx.scan_errors > 0:
         sys.exit(ctx.scan_errors)

@@ -149,7 +149,7 @@ def regex_validator(string):
 
     """
     try:
-        return re.compile('^{}$'.format(string))
+        return re.compile(string)
     except re.error:
         msg = 'Bad regex syntax: {}'.format(string)
         raise ArgumentTypeError(msg)

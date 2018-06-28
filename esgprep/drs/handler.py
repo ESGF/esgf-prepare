@@ -42,6 +42,8 @@ class File(object):
         self.size = os.stat(self.ffp).st_size
         # Is duplicated (default is False if no latest version exists)
         self.is_duplicate = False
+        # DRS path
+        self.drs = None
 
     def get(self, key):
         """

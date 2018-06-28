@@ -282,16 +282,26 @@ DEVEL_HELP = \
 
 BRANCH_HELP = \
     """
-    Fetch from all GitHub tags matching specified regex|n
-    or string.|n
+    Fetch from a GitHub branch.|n
     Default is to fetch from master branch.
+
+    """
+
+BRANCH_REGEX_HELP = \
+    """
+    Fetch from all GitHub branches matching specified regex.|n
 
     """
 
 TAG_HELP = \
     """
-    Fetch from all GitHub tags matching specified regex|n
-    or string.
+    Fetch from a GitHub tag.
+
+    """
+
+TAG_REGEX_HELP = \
+    """
+    Fetch from all GitHub tags matching specified regex.|n
 
     """
 

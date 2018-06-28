@@ -104,15 +104,25 @@ def get_args():
     ref = main.add_mutually_exclusive_group(required=False)
     ref.add_argument(
         '--tag',
-        metavar='TAG or REGEX',
-        type=regex_validator,
+        metavar='TAG',
+        type=str,
         help=TAG_HELP)
     ref.add_argument(
+        '--tag-regex',
+        metavar='REGEX',
+        type=str,
+        help=TAG_REGEX_HELP)
+    ref.add_argument(
         '--branch',
-        metavar='BRANCH or REGEX',
+        metavar='BRANCH',
         default='master',
-        type=regex_validator,
+        type=str,
         help=BRANCH_HELP)
+    ref.add_argument(
+        '--branch-regex',
+        metavar='REGEX',
+        type=str,
+        help=BRANCH_REGEX_HELP)
     main.add_argument(
         '--include-file',
         metavar='PYTHON_REGEX',
