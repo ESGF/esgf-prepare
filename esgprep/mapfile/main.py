@@ -14,6 +14,7 @@ from multiprocessing import Pool
 from ESGConfigParser import interpolate, MissingPatternKey, BadInterpolation, InterpolationDepthError
 from constants import *
 from context import ProcessingContext
+from custom_exceptions import *
 from esgprep.utils.custom_print import *
 from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext
 from handler import File, Dataset
@@ -154,9 +155,8 @@ def process(source):
                             config=pctx.cfg)
             dataset_id = sh.get_dataset_id(pctx.cfg.get('dataset_id', raw=True))
         # Ensure that the first facet is ALWAYS the same as the called project section (case insensitive)
-        assert dataset_id.lower().startswith(pctx.project.lower()), 'Inconsistent dataset identifier. ' \
-                                                                    'Must start with "{}/" ' \
-                                                                    '(case-insensitive)'.format(pctx.project)
+        if not dataset_id.lower().startswith(pctx.project.lower()):
+            raise InconsistentDatasetID(pctx.project, dataset_id.lower())
         # Deduce dataset_version
         dataset_version = sh.get_dataset_version(pctx.no_version)
         # Build mapfile name depending on the --mapfile flag and appropriate tokens

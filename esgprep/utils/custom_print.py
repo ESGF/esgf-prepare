@@ -10,9 +10,9 @@
 import os
 import re
 import sys
-
 from ctypes import c_char_p
 from multiprocessing import Value
+
 from constants import SHELL_COLORS
 from custom_exceptions import *
 

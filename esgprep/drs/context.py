@@ -7,8 +7,6 @@
 
 """
 
-import re
-import sys
 from uuid import uuid4 as uuid
 
 from ESGConfigParser import SectionParser
@@ -16,8 +14,8 @@ from constants import *
 from custom_exceptions import *
 from esgprep.utils.collectors import Collector
 from esgprep.utils.context import MultiprocessingContext
-from esgprep.utils.misc import load
 from esgprep.utils.custom_print import *
+from esgprep.utils.misc import load
 from handler import DRSTree, DRSPath
 
 

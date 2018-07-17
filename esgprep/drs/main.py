@@ -47,7 +47,7 @@ def process(source):
         if fh.filename in pctx.ignore_from_incoming:
             msg = TAGS.SKIP + COLORS.HEADER(source)
             with pctx.lock:
-                Print.info(msg, buffer=True)
+                Print.exception(msg, buffer=True)
             return None
         # Loads attributes from filename, netCDF attributes, command-line
         fh.load_attributes(root=pctx.root,
@@ -89,7 +89,7 @@ def tree_builder(fh):
     """
     Builds the DRS tree accord to a source
 
-    :param esgprep.drs.handler.DRSPath fph: A file DRSPath object
+    :param esgprep.drs.handler.File fh: The file handler object
 
     """
     # Get process content from process global env
@@ -184,10 +184,10 @@ def tree_builder(fh):
                     tree.duplicates.append(fh.ffp)
         # Record entry for list()
         record = {'src': fh.ffp,
-                    'dst': fh.drs.path(root=True),
-                    'filename': fh.filename,
-                    'latest': fh.drs.v_latest or 'Initial',
-                    'size': fh.size}
+                  'dst': fh.drs.path(root=True),
+                  'filename': fh.filename,
+                  'latest': fh.drs.v_latest or 'Initial',
+                  'size': fh.size}
         if fh.drs.path(f_part=False) in tree.paths.keys():
             tree.paths[fh.drs.path(f_part=False)].append(record)
         else:

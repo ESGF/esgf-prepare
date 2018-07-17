@@ -13,18 +13,18 @@ from multiprocessing.managers import SyncManager
 
 from ESGConfigParser import SectionParser
 from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
+from esgprep.drs.handler import DRSTree
 from esgprep.utils.custom_print import *
 from requests.auth import HTTPBasicAuth
 
-from esgprep.drs.handler import DRSTree
-
 SyncManager.register('tree', DRSTree, exposed=('create_leaf',
-                                                'get_display_lengths',
-                                                'check_uniqueness',
-                                                'list',
-                                                'todo',
-                                                'tree'
-                                                'upgrade'))
+                                               'get_display_lengths',
+                                               'check_uniqueness',
+                                               'list',
+                                               'todo',
+                                               'tree'
+                                               'upgrade'))
+
 
 class BaseContext(object):
     """
