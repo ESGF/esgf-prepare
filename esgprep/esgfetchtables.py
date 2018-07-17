@@ -11,7 +11,7 @@ import sys
 
 from esgprep.fetchtables.main import run
 from utils.constants import *
-from utils.parser import MultilineFormatter, _ArgumentParser, regex_validator
+from utils.parser import MultilineFormatter, CustomArgumentParser, regex_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -24,7 +24,7 @@ def get_args():
     :rtype: *argparse.Namespace*
 
     """
-    main = _ArgumentParser(
+    main = CustomArgumentParser(
         prog='esgfetchtables',
         description=PROGRAM_DESC['fetchtables'],
         formatter_class=MultilineFormatter,

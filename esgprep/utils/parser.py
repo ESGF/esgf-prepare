@@ -173,7 +173,7 @@ def processes_validator(value):
         return pnum
 
 
-class _ArgumentParser(ArgumentParser):
+class CustomArgumentParser(ArgumentParser):
     def error(self, message):
         """
         Overwrite the original method to change exist status.

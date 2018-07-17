@@ -14,7 +14,7 @@ from argparse import FileType
 
 from esgprep.drs.main import run
 from utils.constants import *
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, _ArgumentParser, keyval_converter, \
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, CustomArgumentParser, keyval_converter, \
     processes_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
@@ -28,7 +28,7 @@ def get_args():
     :rtype: *argparse.Namespace*
 
     """
-    main = _ArgumentParser(
+    main = CustomArgumentParser(
         prog='esgdrs',
         description=PROGRAM_DESC['drs'],
         formatter_class=MultilineFormatter,

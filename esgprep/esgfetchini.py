@@ -11,7 +11,7 @@ import sys
 
 from esgprep.fetchini.main import run
 from utils.constants import *
-from utils.parser import MultilineFormatter, _ArgumentParser
+from utils.parser import MultilineFormatter, CustomArgumentParser
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -24,7 +24,7 @@ def get_args():
     :rtype: *argparse.Namespace*
 
     """
-    main = _ArgumentParser(
+    main = CustomArgumentParser(
         prog='esgfetchini',
         description=PROGRAM_DESC['fetchini'],
         formatter_class=MultilineFormatter,

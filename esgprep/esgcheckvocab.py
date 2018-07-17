@@ -12,7 +12,7 @@ from argparse import FileType
 
 from esgprep.checkvocab.main import run
 from utils.constants import *
-from utils.parser import MultilineFormatter, DirectoryChecker, regex_validator, _ArgumentParser, keyval_converter, \
+from utils.parser import MultilineFormatter, DirectoryChecker, regex_validator, CustomArgumentParser, keyval_converter, \
     processes_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
@@ -26,7 +26,7 @@ def get_args():
     :rtype: *argparse.Namespace*
 
     """
-    main = _ArgumentParser(
+    main = CustomArgumentParser(
         prog='esgcheckvocab',
         description=PROGRAM_DESC['checkvocab'],
         formatter_class=MultilineFormatter,

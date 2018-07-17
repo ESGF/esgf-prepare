@@ -14,7 +14,7 @@ from argparse import FileType
 
 from esgprep.mapfile.main import run
 from utils.constants import *
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, _ArgumentParser, \
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, CustomArgumentParser, \
     processes_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
@@ -28,7 +28,7 @@ def get_args():
     :rtype: *argparse.Namespace*
 
     """
-    main = _ArgumentParser(
+    main = CustomArgumentParser(
         prog='esgmapfile',
         description=PROGRAM_DESC['mapfile'],
         formatter_class=MultilineFormatter,

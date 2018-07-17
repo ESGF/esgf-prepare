@@ -15,7 +15,6 @@ from custom_exceptions import *
 from esgprep.utils.collectors import Collector
 from esgprep.utils.context import MultiprocessingContext
 from esgprep.utils.custom_print import *
-from esgprep.utils.misc import load
 from handler import DRSTree, DRSPath
 
 
@@ -69,6 +68,7 @@ class ProcessingContext(MultiprocessingContext):
         self.no_checksum = args.no_checksum
         if self.no_checksum:
             msg = 'Checksumming disabled, DRS breach could occur -- '
+            msg += 'Incoming files are all supposed to be different from latest version if exists --'
             msg += 'It is highly recommend to activate checksumming processes.'
             Print.warning(msg)
         # Init process manager
