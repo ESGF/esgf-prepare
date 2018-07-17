@@ -114,7 +114,10 @@ def tree_builder(fh):
             # Pickup the latest file version
             latest_file = os.path.join(fh.drs.path(latest=True, root=True), fh.filename)
             # Check latest file if exists
-            if os.path.exists(latest_file):
+            if os.path.exists(latest_file) and not pctx.no_checksum:
+                # If checksumming disabled duplicated files cannot be detected
+                # In this case, incoming files are assumed to be different in any cases
+                # Duplicated files should not exist.
                 latest_checksum = checksum(latest_file, pctx.checksum_type)
                 current_checksum = checksum(fh.ffp, pctx.checksum_type)
                 # Check if processed file is a duplicate in comparison with latest version
@@ -195,14 +198,15 @@ def tree_builder(fh):
         msg = TAGS.SUCCESS + 'DRS Path = {}'.format(COLORS.HEADER(fh.drs.path(f_part=False)))
         msg += ' <-- ' + fh.filename
         Print.info(msg)
+        return True
     except KeyboardInterrupt:
         raise
     except Exception:
         exc = traceback.format_exc().splitlines()
-        msg = TAGS.FAIL + COLORS.HEADER(fh.drs.path) + '\n'
+        msg = TAGS.FAIL + 'Build {}'.format(COLORS.HEADER(fh.drs.path())) + '\n'
         msg += '\n'.join(exc)
-        Print.exception(msg)
-        raise
+        Print.exception(msg, buffer=True)
+        return None
     finally:
         pctx.progress.value += 1
         percentage = int(pctx.progress.value * 100 / pctx.nbsources)
@@ -300,21 +304,23 @@ def run(args):
             msg = 'Skip incoming files scan (use "--rescan" to force it) -- '
             msg += 'Using cached DRS tree from {}'.format(TREE_FILE)
             Print.warning(msg)
-            results = reader.next()
+            _ = reader.next()
             tree = reader.next()
             handlers = reader.next()
+            results = reader.next()
         # Flush buffer
         Print.flush()
         # Rollback --commands-file value to command-line argument in any case
         tree.commands_file = ctx.commands_file
         # Get number of files scanned (including errors/skipped files)
-        ctx.scan_data = len(handlers)
+        ctx.scan_data = len(results)
         # Get number of scan errors
-        ctx.scan_errors = handlers.count(None)
+        ctx.scan_errors = results.count(None)
         # Backup tree context for later usage with other command lines
         store(TREE_FILE, data=[{key: ctx.__getattribute__(key) for key in CONTROLLED_ARGS},
                                tree,
-                               handlers])
+                               handlers,
+                               results])
         Print.info(TAGS.INFO + 'DRS tree recorded for next usage onto {}.'.format(COLORS.HEADER(TREE_FILE)))
         # Evaluates the scan results to trigger the DRS tree action
         if evaluate(handlers):

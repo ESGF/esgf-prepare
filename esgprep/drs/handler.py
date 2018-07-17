@@ -393,8 +393,9 @@ class DRSTree(Tree):
         Gets the string lengths for comfort display.
 
         """
-        self.d_lengths = []
-        self.d_lengths = [max([len(i) for i in self.paths.keys()]), 20, 20, 16, 16]
+        self.d_lengths = [50, 20, 20, 16, 16]
+        if self.paths:
+            self.d_lengths[0] = max([len(i) for i in self.paths.keys()])
         self.d_lengths.append(sum(self.d_lengths) + 2)
 
     def create_leaf(self, nodes, leaf, label, src, mode, origin=None):

@@ -105,13 +105,6 @@ class ProcessingContext(MultiprocessingContext):
         self.pattern = self.cfg.translate('filename_format')
         # Init DRS tree
         self.tree = DRSTree(self.root, self.version, self.mode, self.commands_file)
-        # Disable file scan if a previous DRS tree have generated using same context and no "list" action
-        if not self.rescan and self.action != 'list' and os.path.isfile(TREE_FILE):
-            reader = load(TREE_FILE)
-            old_args = reader.next()
-            # Ensure that processing context is similar to previous step
-            if self.check_args(old_args):
-                self.scan = False
         # Init data collector
         self.sources = Collector(sources=self.directory)
         # Init file filter
@@ -156,21 +149,3 @@ class ProcessingContext(MultiprocessingContext):
         if checksum_type not in checksum_types:
             raise InvalidChecksumType(checksum_type)
         return checksum_type
-
-    def check_args(self, old_args):
-        """
-        Checks command-line argument to avoid discrepancies between ``esgdrs`` steps.
-
-        :param *dict* old_args: The recorded arguments
-        :raises Error: If one argument differs
-
-        """
-        for k in CONTROLLED_ARGS:
-            if self.__getattribute__(k) != old_args[k]:
-                msg = '"{}" argument has changed: "{}" instead of "{}" -- '.format(k,
-                                                                                   self.__getattribute__(k),
-                                                                                   old_args[k])
-                msg += 'Rescanning files.'
-                Print.warning(msg)
-                return False
-        return True

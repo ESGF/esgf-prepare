@@ -166,7 +166,7 @@ class MultiprocessingContext(BaseContext):
         # Decline outputs depending on the scan results
         msg = 'Number of file(s) scanned: {}\n'.format(self.scan_data)
         msg += 'Number of error(s): {}'.format(self.scan_errors)
-        if self.nbsources == self.scan_data:
+        if not self.scan_errors:
             # All files have been successfully scanned without errors
             msg = COLORS.SUCCESS(msg)
         elif self.nbsources == self.scan_errors:
