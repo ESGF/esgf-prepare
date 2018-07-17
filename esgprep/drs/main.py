@@ -224,28 +224,26 @@ def initializer(keys, values):
     pctx = ProcessContext({key: values[i] for i, key in enumerate(keys)})
 
 
-def do_scanning(rescan, action, args):
+def do_scanning(ctx):
     """
     Returns True if file scanning is necessary regarding command-line arguments
 
-    :param boolean rescan: True to force file (re-)scanning
-    :param str action: The esgdrs action -- "list" will force (re-)scanning
-    :param argparse.Namespace args: Input command-line arguments
+    :param esgprep.drs.context.ProcessingContext ctx: New processing context to evaluate
     :returns: True if file scanning is necessary
     :rtype: *boolean*
     """
-    if rescan:
+    if ctx.rescan:
         return True
-    elif action == 'list':
+    elif ctx.action == 'list':
         return True
     elif os.path.isfile(TREE_FILE):
         reader = load(TREE_FILE)
         old_args = reader.next()
         # Ensure that processing context is similar to previous step
         for k in CONTROLLED_ARGS:
-            if getattr(args, k) != old_args[k]:
+            if getattr(ctx, k) != old_args[k]:
                 msg = '"{}" argument has changed: "{}" instead of "{}" -- '.format(k,
-                                                                                   getattr(args, k),
+                                                                                   getattr(ctx, k),
                                                                                    old_args[k])
                 msg += 'Rescanning files.'
                 Print.warning(msg)
@@ -277,7 +275,7 @@ def run(args):
         # Init process context
         cctx = {name: getattr(ctx, name) for name in PROCESS_VARS}
         # Disable file scan if a previous DRS tree have generated using same context and no "list" action
-        if do_scanning(ctx.rescan, ctx.action, args):
+        if do_scanning(ctx):
             if ctx.use_pool:
                 # Init processes pool
                 pool = Pool(processes=ctx.processes, initializer=initializer, initargs=(cctx.keys(), cctx.values()))
