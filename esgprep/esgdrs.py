@@ -9,12 +9,13 @@
 
 import argparse
 import os
+import sys
 from argparse import FileType
-from importlib import import_module
 
+from esgprep.drs.main import run
 from utils.constants import *
-from utils.misc import init_logging
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, _ArgumentParser, keyval_converter
+from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, CustomArgumentParser, keyval_converter, \
+    processes_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -27,7 +28,7 @@ def get_args():
     :rtype: *argparse.Namespace*
 
     """
-    main = _ArgumentParser(
+    main = CustomArgumentParser(
         prog='esgdrs',
         description=PROGRAM_DESC['drs'],
         formatter_class=MultilineFormatter,
@@ -39,11 +40,6 @@ def get_args():
         '-h', '--help',
         action='help',
         help=HELP)
-    main.add_argument(
-        '--test',
-        action='store_true',
-        default=False,
-        help=TEST_HELP['program'])
     main.add_argument(
         '-v', '--version',
         action='version',
@@ -62,12 +58,12 @@ def get_args():
         help=HELP)
     parent.add_argument(
         '-i',
-        metavar='/esg/config/esgcet',
+        metavar='$ESGINI',
         action=DirectoryChecker,
-        default='/esg/config/esgcet',
+        default=os.environ['ESGINI'] if 'ESGINI' in os.environ.keys() else '/esg/config/esgcet',
         help=INI_HELP)
     parent.add_argument(
-        '--log',
+        '-l', '--log',
         metavar='CWD',
         type=str,
         const='{}/logs'.format(os.getcwd()),
@@ -79,17 +75,12 @@ def get_args():
         default=False,
         help=VERBOSE_HELP)
     parent.add_argument(
-        '--test',
-        action='store_true',
-        default=False,
-        help=TEST_HELP['parent'])
-    parent.add_argument(
         'directory',
         action=DirectoryChecker,
         nargs='+',
         help=DIRECTORY_HELP['drs'])
     parent.add_argument(
-        '--project',
+        '-p', '--project',
         metavar='PROJECT_ID',
         type=str,
         required=True,
@@ -143,6 +134,11 @@ def get_args():
         metavar='TXT_FILE',
         type=FileType('r'),
         help=IGNORE_FROM_LATEST_HELP)
+    parent.add_argument(
+        '--ignore-from-incoming',
+        metavar='TXT_FILE',
+        type=FileType('r'),
+        help=IGNORE_FROM_INCOMING_HELP)
     group = parent.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--copy',
@@ -165,11 +161,11 @@ def get_args():
         default=False,
         help=NO_CHECKSUM_HELP['drs'])
     parent.add_argument(
-        '--max-threads',
+        '--max-processes',
         metavar='4',
-        type=int,
+        type=processes_validator,
         default=4,
-        help=MAX_THREADS_HELP)
+        help=MAX_PROCESSES_HELP)
     # Subparser for "esgdrs list"
     list = subparsers.add_parser(
         'list',
@@ -215,30 +211,23 @@ def get_args():
     upgrade._optionals.title = OPTIONAL
     upgrade._positionals.title = POSITIONAL
     main.set_default_subparser('list')
-    return main.parse_args()
+    return main.prog, main.parse_args()
 
 
-def run():
+def main():
     """
     Run main program
 
     """
     # Get command-line arguments
-    args = get_args()
-    # Initialize logger depending on log and debug mode
-    init_logging(log=args.log, debug=args.debug)
-    # Print progress bar if no log and no debug mode
-    setattr(args, 'pbar', True if not args.log and not args.debug else False)
+    prog, args = get_args()
+    setattr(args, 'prog', prog)
+    if not hasattr(args, 'quiet'):
+        setattr(args, 'quiet', None)
     # Run program
-    if args.test:
-        print('"esgdrs" test suite not available. Coming soon!')
-        exit()
-        #  test = import_module('.test', package='esgprep.mapfile')
-        #  test.run()
-    else:
-        main = import_module('.main', package='esgprep.drs')
-        main.run(args)
+    run(args)
 
 
 if __name__ == "__main__":
-    run()
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    main()

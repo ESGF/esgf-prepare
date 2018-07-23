@@ -89,6 +89,19 @@ class ChecksumFail(Exception):
         super(self.__class__, self).__init__(self.msg)
 
 
+class NoFileFound(Exception):
+    """
+    Raised when frequency no file found.
+
+    """
+
+    def __init__(self, paths):
+        self.msg = "No file found"
+        for path in paths:
+            self.msg += "\n<directory: {}>".format(path)
+        super(self.__class__, self).__init__(self.msg)
+
+
 ###################################
 # Exceptions for GitHub connexion #
 ###################################
@@ -130,7 +143,9 @@ class GitHubAPIRateLimit(GitHubException):
         reset_delta = datetime.fromtimestamp(reset_time) - datetime.now()
         hours, remainder = divmod(reset_delta.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
-        self.msg = "GitHub API rate limit exceeded ; submit GitHub user/password to release the rate limit."
+        self.msg = "GitHub API rate limit exceeded ; "
+        self.msg += "submit GitHub user/password or "
+        self.msg += "export GH_USER and GH_PASSWORD variables to release the rate limit."
         self.msg += "\n<time to reset: {} hour(s) {} minute(s) {} second(s)>".format(hours, minutes, seconds)
         super(self.__class__, self).__init__(self.msg)
 
@@ -166,5 +181,5 @@ class GitHubReferenceNotFound(GitHubException):
     def __init__(self, ref, refs):
         self.msg = "GitHub reference (tag or branch) not found"
         self.msg += "\n<ref: {}>".format(ref)
-        self.msg += "\n<available refs: {}".format(refs)
+        self.msg += "\n<available refs: {}>".format(', '.join(refs))
         super(self.__class__, self).__init__(self.msg)

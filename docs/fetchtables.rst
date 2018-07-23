@@ -35,11 +35,21 @@ Fetch tables from particular branch or tag
 
 .. warning:: ``--branch`` and ``--tag`` cannot be used simultaneously. Default is ``--branch master``.
 
+Fetch tables using branch or tag regular expression
+***************************************************
+
+This can be useful to fetch several branches or tags at a time.
+
+.. code-block:: bash
+
+    $> esgfetchtables --branch-regex REGEX
+    $> esgfetchtables --tag-regex REGEX
+
 Change output directory
 ***********************
 
-If not path submitted, the table will be download in ``/usr/local`` by default. If it doesn't exist or is inaccessible for writing, your
-current working directory will be used instead. To change the tables output directory:
+If not path submitted, the table will be download in ``/usr/local`` by default. If it doesn't exist or is inaccessible
+for writing, your current working directory will be used instead. To change the tables output directory:
 
 .. code-block:: bash
 
@@ -48,14 +58,14 @@ current working directory will be used instead. To change the tables output dire
 .. note:: If the submitted directory doesn't exist it will be created.
 
 ``esgfetchtables`` downloads tables into the appropriate ``<project>-cmor-tables`` folder by adding a sub-folder
-corresponding to the desired branch or tag. Thus, the final output directory has the following format:
+corresponding to the desired branch(s) or tag(s). Thus, the final output directory has the following format:
 ``<table_dir>/<project>-cmor-tables/<branch>/tag>``.
 
 The branch or tag sub-folder can be disable to follow ``<table_dir>/<project>-cmor-tables/`` format only:
 
 .. code-block::
 
-    $> esgfetchtables --no-ref-folder
+    $> esgfetchtables --no-subfolder
 
 
 Keep existing file(s)
@@ -96,10 +106,13 @@ To release the Github API rate limit, submit your GitHub username and password.
 
     $> esgfetchini --gh-user MY_GH_USER --gh-password MY_GH_PASSWORD
 
+Instead of submitting your login and password on the command-line, you can also simply export the following variables
+``$GH_USER`` and ``$GH_PASSWORD`` in your UNIX environment.
+
 Exit status
 ***********
 
  * Status = 0
     All the tables have been successfully fetched.
  * Status = 1
-    One or several errors occurred. See the error logfile.
+    One or several errors occurred.

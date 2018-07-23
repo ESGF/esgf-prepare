@@ -8,10 +8,7 @@
 """
 
 # GitHub configuration
-GITHUB_FILE_API = 'https://api.github.com/repos/ESGF/config/contents/publisher-configs/ini/{}'
+GITHUB_CONTENT_API = 'https://api.github.com/repos/ESGF/config/contents/publisher-configs/ini'
 
 # INI file pattern
-INI_FILE = 'esg.{}.ini'
-
-# URL max length
-LEN_URL = 100
+INI_PATTERN = 'esg\.(.+?)\.ini'

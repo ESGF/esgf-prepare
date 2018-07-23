@@ -10,10 +10,22 @@
 from datetime import datetime
 
 # Program version
-VERSION = '2.8.3'
+VERSION = '2.9.0'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=6, day=25).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=7, day=23).strftime("%Y-%d-%m")
+
+# Shell colors map
+SHELL_COLORS = {'red': 1,
+                'green': 2,
+                'yellow': 3,
+                'blue': 4,
+                'magenta': 5,
+                'cyan': 6,
+                'gray': 7}
+
+# GitHub API parameter for references
+GITHUB_API_PARAMETER = '?{}={}'
 
 # Help
 TITLE = \
@@ -155,20 +167,6 @@ HELP = \
     
     """
 
-TEST_HELP = {
-    'program':
-        """
-        Run the full test suite.
-        
-        """,
-
-    'parent':
-        """
-        Run the test suite.
-        
-        """
-}
-
 VERSION_HELP = \
     """
     Program version.
@@ -179,8 +177,9 @@ INI_HELP = \
     """
     Initialization/configuration directory containing|n
     "esg.ini" and "esg.<project>.ini" files.|n
-    If not specified, the usual datanode directory|n
-    is used.
+    Default is the ESGINI environment variable.|n
+    If not exists, the usual datanode directory|n
+    is used (i.e., /esg/config/esgcet/).
     
     """
 
@@ -206,6 +205,13 @@ PROJECT_HELP = {
         One or more lower-cased project name(s).|n
         If not, all "esg.*.ini" are fetched.
         
+        """,
+
+    'fetchtables':
+        """
+        One or more lower-cased project name(s).|n
+        If not, all "*-cmor-tables" contents are fetched.
+    
         """,
 
     'checkvocab':
@@ -324,7 +330,8 @@ DIRECTORY_HELP = {
 
 DATASET_LIST_HELP = \
     """
-    File containing list of dataset IDs.
+    File containing list of dataset IDs.|n
+    If not, the standard input is used.
     
     """
 
@@ -502,33 +509,46 @@ NO_CHECKSUM_HELP = {
 
 COMMANDS_FILE_HELP = \
     """
-    Writes Unix command-line statements only in the submitted file.|n
-    Default is the standard output (requires "todo" action).
+    Writes Unix command-line statements only in the submitted|n
+    file. Default is the standard output (requires "todo"|n
+    action).
 
     """
 
 OVERWRITE_COMMANDS_FILE_HELP = \
     """
-    Allow overwriting of existing file specified by "--commands-file".
+    Allow overwriting of existing file specified by|n
+    "--commands-file".
 
     """
 
 UPGRADE_FROM_LATEST_HELP = \
     """
-    The upgraded version of the dataset is based primarily on the|n
-    previous (latest) version. Default is to consider the incoming|n
-    files as the complete content of the new version of the dataset.|n
+    The upgraded version of the dataset is based primarily|n
+    on the previous (latest) version. Default is to consider|n
+    the incoming files as the complete content of the new|n
+    version of the dataset.|n
     See the full documentation to get details on both methods.
     
     """
 
 IGNORE_FROM_LATEST_HELP = \
     """
-    A list of files to ignore for version upgrade from the latest|n
-    dataset version. Default is to consider the incoming files as|n
-    the complete content of the new version of the dataset.|n
-    It overwrites default behavior by enabling "--upgrade-from-latest".|n 
+    A list of filename to ignore for version upgrade from the|n
+    latest dataset version. Default is to consider the incoming|n
+    files as the complete content of the new version of|n
+    the dataset. It overwrites default behavior by enabling|n
+    "--upgrade-from-latest".|n 
     See the full documentation to get details on both methods.
+
+    """
+
+IGNORE_FROM_INCOMING_HELP = \
+    """
+    A list of filename to ignore for version upgrade from|n
+    the incoming files. Default is to consider the incoming|n
+    files as the complete content of the new version of|n
+    the dataset. It allows to filter incoming files to consider.
 
     """
 
@@ -563,11 +583,13 @@ SYMLINK_HELP = \
     
     """
 
-MAX_THREADS_HELP = \
+MAX_PROCESSES_HELP = \
     """
-    Number of maximal threads to simultaneously process|n
+    Number of maximal processes to simultaneously treat|n
     several files (useful if checksum calculation is|n
-    enabled). Set to one seems sequential processing.
+    enabled). Set to one seems sequential processing.|n
+    Set to "-1" seems all available resources as returned|n
+    by "multiprocessing.cpu_count()"
     
     """
 
@@ -649,12 +671,13 @@ TABLES_DIR_HELP = \
     """
     Top CMOR tables output directory containing |n
     "<PROJECT>-cmor-tables" folder(s).|n
-    If not specified, the usual datanode directory|n
-    is used.
+    Default is the CMOR_TABLES environment variable.|n
+    If not exists, the usual datanode directory|n
+    is used (i.e., /usr/local/).
     
     """
 
-NO_REF_FOLDER_HELP = \
+NO_SUBFOLDER_HELP = \
     """
     Disable table sub-folder depending on the GitHub|n
     Reference (i.e., a tag or branch). Default is to |n
@@ -727,8 +750,8 @@ NO_CLEANUP_HELP = \
 
 DATASET_ID_HELP = \
     """
-    The dataset identifier coma-separated with or without|n
-    the ending version. If not, the standard input is used.
+    The dataset identifier dot-separated with or without|n
+    the ending version.
     
     """
 

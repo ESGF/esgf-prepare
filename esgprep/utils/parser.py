@@ -155,7 +155,25 @@ def regex_validator(string):
         raise ArgumentTypeError(msg)
 
 
-class _ArgumentParser(ArgumentParser):
+def processes_validator(value):
+    """
+    Validates the max processes number.
+
+    :param str value: The max processes number submitted
+    :return:
+    """
+    pnum = int(value)
+    if pnum < 1 and pnum != -1:
+        msg = 'Invalid processes number. Should be a positive integer or "-1".'
+        raise ArgumentTypeError(msg)
+    if pnum == -1:
+        # Max processes = None corresponds to cpu.count() in Pool creation
+        return None
+    else:
+        return pnum
+
+
+class CustomArgumentParser(ArgumentParser):
     def error(self, message):
         """
         Overwrite the original method to change exist status.
@@ -172,7 +190,7 @@ class _ArgumentParser(ArgumentParser):
         subparser_found = False
         for arg in sys.argv[1:]:
             # Breaks if global option without sub-parser
-            if arg in ['-h', '--help', '-v', '--version', '--test']:
+            if arg in ['-h', '--help', '-v', '--version']:
                 break
         else:
             for x in self._subparsers._actions:
@@ -201,7 +219,6 @@ class DirectoryType(object):
         # the special argument "-" means sys.std{in,out}
         if string == '-':
             return sys.stdin
-
         # all other arguments are used as file names
         msg = 'No such directory: {}'.format(string)
         try:

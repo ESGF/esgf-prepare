@@ -26,16 +26,6 @@ Check the version
 
 .. note:: The program version will be the same for all the esgprep tools.
 
-Run the test suite
-******************
-
-.. warning::
-    Not available for the time being.
-
-.. code-block:: bash
-
-    $> COMMAND --test
-
 Debug mode
 **********
 
@@ -54,8 +44,8 @@ Specify the project
 *******************
 
 The ``--project`` argument is used to parse the corresponding configuration INI file. It is **always required**
-(except for ``esgfetchini`` subcommand). This argument is case-sensitive and has to correspond to a section name of
-the configuration file(s).
+(except for ``esgfetchini`` and ``esgfetchtables`` subcommands). This argument is case-sensitive and has to
+correspond to a section name of the configuration file(s).
 
 .. code-block:: bash
 
@@ -64,9 +54,9 @@ the configuration file(s).
 Submit a configuration directory
 ********************************
 
-By default, the configuration files are fetched or read from ``/esg/config/esgcet`` that is the usual configuration
-directory on ESGF nodes. If you're preparing your data outside of an ESGF node, you can submit another directory to
-fetch and read the configuration files.
+By default, the configuration files are fetched or read from the ``$ESGINI`` environment variable. If not exists,
+``/esg/config/esgcet`` that is the usual configuration directory on ESGF nodes is used. If you're preparing your data
+outside of an ESGF node, you can submit another directory to fetch and read the configuration files.
 
 .. code-block:: bash
 
@@ -87,8 +77,8 @@ It can be changed by adding a optional logfile directory to the flag.
 
 .. code-block:: bash
 
-    $> COMMAND [SUBCOMMAND] --log
-    $> COMMAND [SUBCOMMAND] --log /PATH/TO/LOGDIR/
+    $> COMMAND [SUBCOMMAND] -l
+    $> COMMAND [SUBCOMMAND] -l /PATH/TO/LOGDIR/
 
 Use filters
 ***********
@@ -118,16 +108,17 @@ Keep in mind that ``--ignore-dir`` and ``--exclude-file`` specifie a directory p
 .. warning:: ``esgfetchini`` does not allow those features and ``esgdrs`` only works with unhidden
     NetCDF files. ``esgfetchtables`` only supports ``--include-file`` and ``--exclude-file`` flags.
 
-Use multithreading
-******************
+Use multiprocessing
+*******************
 
-``esgprep`` uses a multithreading interface. This is useful to process a large amount of data, especially in the case
-of ``drs`` and ``mapfile`` subcommands with file checksum computation. Set the number of maximal threads to
-simultaneously process several files (4 threads is the default and one seems sequential processing).
+``esgprep`` uses a multiprocessing. This is useful to process a large amount of data, especially in the case
+of ``drs`` and ``mapfile`` subcommands with file checksum computation. Set the number of maximal processes to
+simultaneously treat several files. One process seems sequential processing. Set it to -1 to use all available
+CPU processes (as returned by ``multiprocessing.cpu_count()``). Default is set to 4 processes.
 
 .. code-block:: bash
 
-    $> COMMAND [SUBCOMMAND] --max-threads 4
+    $> COMMAND [SUBCOMMAND] --max-processes 4
 
 Exit status
 ***********

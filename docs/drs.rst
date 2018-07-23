@@ -41,6 +41,14 @@ The resulting table lists each dataset with:
 
     $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/
 
+`esgdrs`` doesn't have filter arguments as ``esgmapfile``. It only support non-hidden netCDF files. Nevertheless,
+to ignore some files your can submit a list of files to ignore during data discovery:
+
+.. code-block:: bash
+
+    $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/ --ignore-from-incoming /PATH/TO/LIST/OF/FILES/TO/IGNORE
+
+
 Set a facet value
 *****************
 
@@ -191,15 +199,24 @@ upgrade (i.e., files to be deleted between versions).
 .. note:: We highly recommend to use the ``tree``  action to see what the upgraded tree looks like before applying
     the upgrade.
 
+Rescanning data
+***************
+
+By default the ``list`` action scans data and record the rebuilt DRS tree into a temporary Pickle file. This file is
+then read to skip data scan when other actions (i.e., ``tree``, ``todo`` or ``upgrad``) are invoked, except if key
+options have been changed from the previous ``list`` call. In such a case the scan is redone automatically.
+To force the rescan in any case:
+
+.. code-block:: bash
+
+    $> esgdrs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --rescan
+
+
 Exit status
 ***********
 
  * Status = 0
     All the files have been successfully scanned and the DRS tree properly generated.
- * Status = 1
-    No files found. No DRS tree can be built.
- * Status = 2
+ * Status > 0
     Some scan errors occurred. Some files have been skipped or failed during the scan potentially leading to an
-    incomplete DRS tree. See the error logfile.
- * Status = 3
-    All the files have been skipped or failed during the scan leading to no DRS tree. See the error logfile.
+    incomplete DRS tree.

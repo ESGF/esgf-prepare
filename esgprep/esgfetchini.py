@@ -6,13 +6,12 @@
     :synopsis: Toolbox to prepare ESGF data for publication.
 
 """
-
 import os
-from importlib import import_module
+import sys
 
+from esgprep.fetchini.main import run
 from utils.constants import *
-from utils.misc import init_logging
-from utils.parser import MultilineFormatter, _ArgumentParser
+from utils.parser import MultilineFormatter, CustomArgumentParser
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -25,7 +24,7 @@ def get_args():
     :rtype: *argparse.Namespace*
 
     """
-    main = _ArgumentParser(
+    main = CustomArgumentParser(
         prog='esgfetchini',
         description=PROGRAM_DESC['fetchini'],
         formatter_class=MultilineFormatter,
@@ -38,23 +37,18 @@ def get_args():
         action='help',
         help=HELP)
     main.add_argument(
-        '--test',
-        action='store_true',
-        default=False,
-        help=TEST_HELP['program'])
-    main.add_argument(
         '-v', '--version',
         action='version',
         version='%(prog)s ({})'.format(__version__),
         help=VERSION_HELP)
     main.add_argument(
         '-i',
-        metavar='/esg/config/esgcet',
+        metavar='$ESGINI',
         type=str,
-        default='/esg/config/esgcet',
+        default=os.environ['ESGINI'] if 'ESGINI' in os.environ.keys() else '/esg/config/esgcet',
         help=INI_HELP)
     main.add_argument(
-        '--log',
+        '-l', '--log',
         metavar='CWD',
         type=str,
         const='{}/logs'.format(os.getcwd()),
@@ -66,8 +60,8 @@ def get_args():
         default=False,
         help=VERBOSE_HELP)
     main.add_argument(
-        '--project',
-        metavar='PROJECT_ID',
+        '-p', '--project',
+        metavar='NAME',
         type=str,
         nargs='+',
         help=PROJECT_HELP['fetchini'])
@@ -107,30 +101,23 @@ def get_args():
         action='store_true',
         default=False,
         help=DEVEL_HELP)
-    return main.parse_args()
+    return main.prog, main.parse_args()
 
 
-def run():
+def main():
     """
     Run main program
 
     """
     # Get command-line arguments
-    args = get_args()
-    # Initialize logger depending on log and debug mode
-    init_logging(log=args.log, debug=args.debug)
-    # Print progress bar if no log and no debug mode
-    setattr(args, 'pbar', True if not args.log and not args.debug else False)
+    prog, args = get_args()
+    setattr(args, 'prog', prog)
+    if not hasattr(args, 'quiet'):
+        setattr(args, 'quiet', None)
     # Run program
-    if args.test:
-        print('"esgfetchini" test suite not available. Coming soon!')
-        exit()
-        #  test = import_module('.test', package='esgprep.mapfile')
-        #  test.run()
-    else:
-        main = import_module('.main', package='esgprep.fetchini')
-        main.run(args)
+    run(args)
 
 
 if __name__ == "__main__":
-    run()
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    main()
