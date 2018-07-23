@@ -62,6 +62,6 @@ PROCESS_VARS = ['root',
 TREE_FILE = '/tmp/DRSTree_{}.pkl'.format(environ['USER'])
 
 # PID prefixes
-PID_PREFIXES = {'cmip6': '21.14100',
-                'cordex': '21.14102',
-                'obs4mips': '21.14103'}
+PID_PREFIXES = {'cmip6': 'hdl:21.14100',
+                'cordex': 'hdl:21.14102',
+                'obs4mips': 'hdl:21.14103'}

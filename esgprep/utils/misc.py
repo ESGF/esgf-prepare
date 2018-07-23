@@ -193,7 +193,7 @@ def get_tracking_id(ffp, project):
     :param str project: The project name
     :returns: THe tracking_id string
     """
-    with ncopen(ffp, 'rb') as f:
+    with ncopen(ffp) as f:
         if 'tracking_id' in f.ncattrs():
             id = f.getncattr('tracking_id')
             try:

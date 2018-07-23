@@ -124,11 +124,12 @@ def tree_builder(fh):
                     # Check if processed file is a duplicate in comparison with latest version
                     if latest_checksum == current_checksum:
                         fh.is_duplicate = True
-                # If files are different check that PID/tracking_id is different from latest version
-                latest_tracking_id = get_tracking_id(latest_file, pctx.project)
-                current_tracking_id = get_tracking_id(fh.ffp, pctx.project)
-                if latest_tracking_id == current_tracking_id:
-                    raise UnchangedTrackingID(latest_file, latest_tracking_id, fh.ffp, current_tracking_id)
+                if not fh.is_duplicate:
+                    # If files are different check that PID/tracking_id is different from latest version
+                    latest_tracking_id = get_tracking_id(latest_file, pctx.project)
+                    current_tracking_id = get_tracking_id(fh.ffp, pctx.project)
+                    if latest_tracking_id == current_tracking_id:
+                        raise UnchangedTrackingID(latest_file, latest_tracking_id, fh.ffp, current_tracking_id)
 
         # Start the tree generation
         if not fh.is_duplicate:
@@ -154,7 +155,7 @@ def tree_builder(fh):
                              label=fh.filename,
                              src=fh.ffp,
                              mode=pctx.mode)
-            if pctx.upgrade_from_latest:
+            if fh.drs.v_latest and pctx.upgrade_from_latest:
                 # Walk through the latest dataset version and create a symlink for each file with a different
                 # filename than the processed one
                 for root, _, filenames in os.walk(fh.drs.path(f_part=False, latest=True, root=True)):
@@ -332,7 +333,7 @@ def run(args):
                                results])
         Print.info(TAGS.INFO + 'DRS tree recorded for next usage onto {}.'.format(COLORS.HEADER(TREE_FILE)))
         # Evaluates the scan results to trigger the DRS tree action
-        if evaluate(handlers):
+        if evaluate(results):
             # Check upgrade uniqueness
             if not ctx.no_checksum:
                 tree.check_uniqueness(ctx.checksum_type)

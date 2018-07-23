@@ -55,7 +55,7 @@ class UnchangedTrackingID(Exception):
     """
 
     def __init__(self, latest, latest_id, upgrade, upgrade_id):
-        self.msg = "Latest file version has the same tracking ID/PID. -- Tracking ID has to be uniq."
+        self.msg = "Latest file version has the same tracking ID/PID, which has to be unique."
         self.msg += "\n<latest  file: '{} - {}'>".format(latest_id, latest)
         self.msg += "\n<upgrade file: '{} - {}'>".format(upgrade_id, upgrade)
         super(self.__class__, self).__init__(self.msg)
