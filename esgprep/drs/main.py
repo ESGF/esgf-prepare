@@ -15,7 +15,7 @@ from constants import *
 from context import ProcessingContext
 from custom_exceptions import *
 from esgprep.utils.custom_print import *
-from esgprep.utils.misc import load, store, evaluate, checksum, ProcessContext
+from esgprep.utils.misc import load, store, evaluate, checksum, ProcessContext, get_tracking_id
 from handler import File, DRSPath, DRSTree
 
 
@@ -114,15 +114,22 @@ def tree_builder(fh):
             # Pickup the latest file version
             latest_file = os.path.join(fh.drs.path(latest=True, root=True), fh.filename)
             # Check latest file if exists
-            if os.path.exists(latest_file) and not pctx.no_checksum:
-                # If checksumming disabled duplicated files cannot be detected
-                # In this case, incoming files are assumed to be different in any cases
-                # Duplicated files should not exist.
-                latest_checksum = checksum(latest_file, pctx.checksum_type)
-                current_checksum = checksum(fh.ffp, pctx.checksum_type)
-                # Check if processed file is a duplicate in comparison with latest version
-                if latest_checksum == current_checksum:
-                    fh.is_duplicate = True
+            if os.path.exists(latest_file):
+                if not pctx.no_checksum:
+                    # If checksumming disabled duplicated files cannot be detected
+                    # In this case, incoming files are assumed to be different in any cases
+                    # Duplicated files should not exist.
+                    latest_checksum = checksum(latest_file, pctx.checksum_type)
+                    current_checksum = checksum(fh.ffp, pctx.checksum_type)
+                    # Check if processed file is a duplicate in comparison with latest version
+                    if latest_checksum == current_checksum:
+                        fh.is_duplicate = True
+                # If files are different check that PID/tracking_id is different from latest version
+                latest_tracking_id = get_tracking_id(latest_file, pctx.project)
+                current_tracking_id = get_tracking_id(fh.ffp, pctx.project)
+                if latest_tracking_id == current_tracking_id:
+                    raise UnchangedTrackingID(latest_file, latest_tracking_id, fh.ffp, current_tracking_id)
+
         # Start the tree generation
         if not fh.is_duplicate:
             # Add the processed file to the "vYYYYMMDD" node
@@ -155,7 +162,9 @@ def tree_builder(fh):
                         # Add latest files as tree leaves with version to upgrade instead of latest version
                         # i.e., copy latest dataset leaves to Tree
                         # Except if file has be ignored from latest version (i.e., with known issue)
-                        if filename != fh.filename and filename not in pctx.ignore_from_latest:
+                        # Except if file leaf has already been created to avoid overwriting new version
+                        if filename != fh.filename and filename not in pctx.ignore_from_latest and \
+                                filename not in [leaf.tag for leaf in tree.leaves()]:
                             src = os.path.join(root, filename)
                             tree.create_leaf(nodes=fh.drs.items(root=True),
                                              leaf=filename,

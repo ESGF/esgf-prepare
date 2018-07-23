@@ -9,9 +9,10 @@
 
 import hashlib
 import pickle
-
+from netCDF4 import Dataset
 from custom_print import *
-
+from uuid import UUID
+from esgprep.drs.constants import PID_PREFIXES
 
 class ProcessContext(object):
     """
@@ -27,6 +28,32 @@ class ProcessContext(object):
         assert isinstance(args, dict)
         for key, value in args.items():
             setattr(self, key, value)
+
+
+class ncopen(object):
+    """
+    Properly opens a netCDF file
+
+    :param str path: The netCDF file full path
+    :returns: The netCDF dataset object
+    :rtype: *netCDF4.Dataset*
+
+    """
+
+    def __init__(self, path, mode='r'):
+        self.path = path
+        self.mode = mode
+        self.nc = None
+
+    def __enter__(self):
+        try:
+            self.nc = Dataset(self.path, self.mode)
+        except IOError:
+            raise InvalidNetCDFFile(self.path)
+        return self.nc
+
+    def __exit__(self, *exc):
+        self.nc.close()
 
 
 def remove(pattern, string):
@@ -156,3 +183,42 @@ def get_checksum_pattern(checksum_type):
     hash_algo = getattr(hashlib, checksum_type)()
     checksum_length = len(hash_algo.hexdigest())
     return re.compile('^[0-9a-f]{{{}}}$'.format(checksum_length))
+
+
+def get_tracking_id(ffp, project):
+    """
+    Get and validate tracking_id/PID string from netCDF global attributes of file
+
+    :param str ffp: The file full path
+    :param str project: The project name
+    :returns: THe tracking_id string
+    """
+    with ncopen(ffp, 'rb') as f:
+        if 'tracking_id' in f.ncattrs():
+            id = f.getncattr('tracking_id')
+            try:
+                prefix, uid = id.split('/')
+            except ValueError:
+                prefix = None; uid = id
+            assert prefix == PID_PREFIXES[project]
+            assert is_uuid(uid)
+            return id
+        else:
+            return None
+
+
+def is_uuid(uuid_string, version=4):
+    """
+    Returns True is validated string is a UUID.
+
+    :param str uuid_string: The string to validate
+    :param int version: The UUID version to use, default is 4
+    :returns: True if uuid_string is a valid uuid
+    :rtype: *boolean*
+
+    """
+    try:
+        uid = UUID(uuid_string, version=version)
+        return uid.hex == uuid_string.replace('-', '')
+    except ValueError:
+        return False

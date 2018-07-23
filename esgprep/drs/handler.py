@@ -16,11 +16,10 @@ from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOption
 from constants import *
 from custom_exceptions import *
 from esgprep.utils.custom_print import *
-from esgprep.utils.misc import checksum
+from esgprep.utils.misc import checksum, ncopen
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
 from hurry.filesize import size
-from netCDF4 import Dataset
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
 
@@ -78,13 +77,9 @@ class File(object):
 
         """
         # Get attributes from NetCDF global attributes
-        try:
-            nc = Dataset(self.ffp)
+        with ncopen(self.ffp) as nc:
             for attr in nc.ncattrs():
                 self.attributes[attr] = nc.getncattr(attr)
-            nc.close()
-        except IOError:
-            raise InvalidNetCDFFile(self.ffp)
         # Get attributes from filename, overwriting existing ones
         match = re.search(pattern, self.filename)
         if not match:
@@ -296,7 +291,7 @@ class DRSLeaf(object):
             except OSError:
                 pass
         # Unlink symbolic link if already exists
-        if self.mode == 'symlink' and os.path.exists(self.dst):
+        if self.mode == 'symlink' and os.path.lexists(self.dst):
             line = '{} {}'.format('rm -f', self.dst)
             print_cmd(line, commands_file, todo_only)
             if not todo_only:

@@ -16,10 +16,9 @@ from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOption
 from constants import *
 from context import ProcessingContext
 from esgprep.utils.custom_print import *
-from esgprep.utils.misc import ProcessContext
+from esgprep.utils.misc import ProcessContext, ncopen
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
-from netCDF4 import Dataset
 
 
 def process(source):
@@ -44,13 +43,9 @@ def process(source):
         else:
             # Get attributes from NetCDF global attributes
             attributes = dict()
-            try:
-                nc = Dataset(source)
+            with ncopen(source) as nc:
                 for attr in nc.ncattrs():
                     attributes[attr] = nc.getncattr(attr)
-                nc.close()
-            except IOError:
-                raise InvalidNetCDFFile(source)
             # Get attributes from filename, overwriting existing ones
             match = re.search(pctx.pattern, source)
             if not match:
