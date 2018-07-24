@@ -71,11 +71,6 @@ class ProcessingContext(MultiprocessingContext):
             msg += 'Incoming files are all supposed to be different from latest version if exists --'
             msg += 'It is highly recommend to activate checksumming processes.'
             Print.warning(msg)
-        # Init process manager
-        if self.use_pool:
-            self.tree = self.manager.tree()
-        else:
-            self.tree = DRSTree()
 
     def __enter__(self):
         super(ProcessingContext, self).__enter__()
