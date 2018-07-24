@@ -67,7 +67,6 @@ The branch or tag sub-folder can be disable to follow ``<table_dir>/<project>-cm
 
     $> esgfetchtables --no-subfolder
 
-
 Keep existing file(s)
 *********************
 
