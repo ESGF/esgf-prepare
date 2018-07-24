@@ -6,6 +6,7 @@ Generic usage
 
 All the following arguments can be safely combined and add to each of the esgprep **COMMAND**:
  - ``esgfetchini``
+ - ``esgfetchtables``
  - ``esgdrs``
  - ``esgcheckvocab``
  - ``esgmapfile``
