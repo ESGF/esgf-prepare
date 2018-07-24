@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.fetchini.misc &mdash; esgprep 2.9.0 documentation</title>
+  <title>esgprep.mapfile.custom_exceptions &mdash; esgprep 2.9.0 documentation</title>
   
 
   
@@ -148,7 +148,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>esgprep.fetchini.misc</li>
+      <li>esgprep.mapfile.custom_exceptions</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -165,47 +165,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for esgprep.fetchini.misc</h1><div class="highlight"><pre>
+  <h1>Source code for esgprep.mapfile.custom_exceptions</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :platform: Unix</span>
-<span class="sd">    :synopsis: Useful functions to use with this module.</span>
+<span class="sd">    :synopsis: Custom exceptions used in this module.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="kn">from</span> <span class="nn">custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
-
-
-<div class="viewcode-block" id="gh_request_content"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.misc.gh_request_content">[docs]</a><span class="k">def</span> <span class="nf">gh_request_content</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="InconsistentDatasetID"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.custom_exceptions.InconsistentDatasetID">[docs]</a><span class="k">class</span> <span class="nc">InconsistentDatasetID</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Gets the GitHub content of a file or a directory.</span>
-
-<span class="sd">    :param str url: The GitHub url to request</span>
-<span class="sd">    :param *requests.auth.HTTPBasicAuth* auth: The authenticator object</span>
-<span class="sd">    :returns: The GitHub request content</span>
-<span class="sd">    :rtype: *requests.models.Response*</span>
-<span class="sd">    :raises Error: If user not authorized to read GitHub repository</span>
-<span class="sd">    :raises Error: If user exceed the GitHub API rate limit</span>
-<span class="sd">    :raises Error: If the queried content does not exist</span>
-<span class="sd">    :raises Error: If the GitHub request fails for other reasons</span>
+<span class="sd">    Raised when dataset ID doesn&#39;t start with the project ID.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">GitHubException</span><span class="o">.</span><span class="n">URI</span> <span class="o">=</span> <span class="n">url</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">r</span>
-    <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">GitHubUnauthorized</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">GitHubAPIRateLimit</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">GitHubFileNotFound</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">GitHubConnectionError</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">dset_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The dataset ID must start with the project name (case-insensitive).&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;project: &#39;</span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;dataset ID: &#39;</span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dset_id</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

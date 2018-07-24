@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Check CV against configuration INI files &mdash; esgprep 2.8.1 documentation</title>
+  <title>Check CV against configuration INI files &mdash; esgprep 2.9.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.8.1 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.9.0 documentation" href="index.html"/>
         <link rel="next" title="Generate mapfile for ESGF publication" href="mapfiles.html"/>
         <link rel="prev" title="Manage local data through the DRS" href="drs.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                2.8
+                2.9
               </div>
             
           
@@ -95,8 +95,10 @@
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetchtables.html">Fetch CMOR tables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Check CV against configuration INI files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#check-from-incoming-files">Check from incoming files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#check-from-the-directory-structure">Check from the directory structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#check-from-a-dataset-list">Check from a dataset list</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
@@ -172,16 +174,23 @@
             
   <div class="section" id="check-cv-against-configuration-ini-files">
 <span id="check-vocab"></span><h1>Check CV against configuration INI files<a class="headerlink" href="#check-cv-against-configuration-ini-files" title="Permalink to this headline">¶</a></h1>
-<p>In the case that your data already follows the appropriate directory structure, you may want to check that all
-values of each facet are correctly declared in the <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> sections. The <code class="docutils literal"><span class="pre">check-vocab</span></code> command
-allows you to easily check the configuration file attributes by scanning your data tree, and the facet values
-will be derived from the directory pattern.</p>
+<p>Before migrate your data in the appropriate directory structure, or generating the corresponding mapfiles,
+you may want to check that all values of each facet are correctly declared in the <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> sections.
+The <code class="docutils literal"><span class="pre">check-vocab</span></code> command allows you to easily check the configuration file attributes by scanning your data,
+and the facet values will be derived from the directory pattern or the file attributes.</p>
 <p>Alternatively, you may supply a list of dataset IDs in a text file. In this case, the <code class="docutils literal"><span class="pre">check-vocab</span></code> command will
 perform a similar operation without scanning the file system, and the facet values will be derived from the
 dataset ID pattern.</p>
+<div class="section" id="check-from-incoming-files">
+<h2>Check from incoming files<a class="headerlink" href="#check-from-incoming-files" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgcheckvocab  --project PROJECT_ID --incoming /PATH/TO/SCAN/
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last"><code class="docutils literal"><span class="pre">esgcheckvocab</span></code> is useless if you rebuilt your DRS tree using <code class="docutils literal"><span class="pre">esgdrs</span></code> with official configuration INI files.</p>
+<p class="last">This doesn’t require to have the appropriate directory structure. Facets values will be directly deduces from
+netCDF file attributes.</p>
+</div>
 </div>
 <div class="section" id="check-from-the-directory-structure">
 <h2>Check from the directory structure<a class="headerlink" href="#check-from-the-directory-structure" title="Permalink to this headline">¶</a></h2>
@@ -200,6 +209,10 @@ dataset ID pattern.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgcheckvocab --project PROJECT_ID --dataset-list &lt; /PATH/TO/TXT_FILE
 </pre></div>
 </div>
+<p>You can also check only one particular dataset ID:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgcheckvocab --project PROJECT_ID --dataset-id DATASET_ID
+</pre></div>
+</div>
 </div>
 <div class="section" id="exit-status">
 <h2>Exit status<a class="headerlink" href="#exit-status" title="Permalink to this headline">¶</a></h2>
@@ -211,13 +224,13 @@ dataset ID pattern.</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Status = 1</dt>
-<dd>Some scan errors occurred. Some files have been skipped or failed during the scan. See the error logfile.</dd>
+<dt>Status &gt; 0</dt>
+<dd>Some scan errors occurred and files have been skipped.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Status = 2</dt>
-<dd>There were undeclared values in the configuration INI files. See the error logfile.</dd>
+<dt>Status = -2</dt>
+<dd>There were undeclared values in the configuration INI files.</dd>
 </dl>
 </li>
 </ul>
@@ -269,7 +282,7 @@ dataset ID pattern.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.8.1',
+            VERSION:'2.9.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

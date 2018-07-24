@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Manage local data through the DRS &mdash; esgprep 2.8.1 documentation</title>
+  <title>Manage local data through the DRS &mdash; esgprep 2.9.0 documentation</title>
   
 
   
@@ -35,9 +35,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.8.1 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.9.0 documentation" href="index.html"/>
         <link rel="next" title="Check CV against configuration INI files" href="checkvocab.html"/>
-        <link rel="prev" title="Fetch ESGF configuration INI files" href="fetchini.html"/> 
+        <link rel="prev" title="Fetch CMOR tables" href="fetchtables.html"/> 
 
   
   <script src="static/js/modernizr.min.js"></script>
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                2.8
+                2.9
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetchtables.html">Fetch CMOR tables</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Manage local data through the DRS</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#list-the-datasets-related-to-the-incoming-files">List the datasets related to the incoming files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#set-a-facet-value">Set a facet value</a></li>
@@ -106,6 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#change-the-migration-mode">Change the migration mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade">Run the DRS upgrade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade-from-the-latest-version">Run the DRS upgrade from the latest version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rescanning-data">Rescanning data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
@@ -226,6 +228,11 @@ applied version only depends on the <code class="docutils literal"><span class="
 </dd>
 </dl>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgdrs list --project PROJECT_ID /PATH/TO/SCAN/
+</pre></div>
+</div>
+<p><cite>esgdrs`</cite> doesn’t have filter arguments as <code class="docutils literal"><span class="pre">esgmapfile</span></code>. It only support non-hidden netCDF files. Nevertheless,
+to ignore some files your can submit a list of files to ignore during data discovery:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgdrs list --project PROJECT_ID /PATH/TO/SCAN/ --ignore-from-incoming /PATH/TO/LIST/OF/FILES/TO/IGNORE
 </pre></div>
 </div>
 </div>
@@ -370,6 +377,16 @@ upgrade (i.e., files to be deleted between versions).</p>
 the upgrade.</p>
 </div>
 </div>
+<div class="section" id="rescanning-data">
+<h2>Rescanning data<a class="headerlink" href="#rescanning-data" title="Permalink to this headline">¶</a></h2>
+<p>By default the <code class="docutils literal"><span class="pre">list</span></code> action scans data and record the rebuilt DRS tree into a temporary Pickle file. This file is
+then read to skip data scan when other actions (i.e., <code class="docutils literal"><span class="pre">tree</span></code>, <code class="docutils literal"><span class="pre">todo</span></code> or <code class="docutils literal"><span class="pre">upgrad</span></code>) are invoked, except if key
+options have been changed from the previous <code class="docutils literal"><span class="pre">list</span></code> call. In such a case the scan is redone automatically.
+To force the rescan in any case:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgdrs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --rescan
+</pre></div>
+</div>
+</div>
 <div class="section" id="exit-status">
 <h2>Exit status<a class="headerlink" href="#exit-status" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -380,19 +397,9 @@ the upgrade.</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Status = 1</dt>
-<dd>No files found. No DRS tree can be built.</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Status = 2</dt>
+<dt>Status &gt; 0</dt>
 <dd>Some scan errors occurred. Some files have been skipped or failed during the scan potentially leading to an
-incomplete DRS tree. See the error logfile.</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Status = 3</dt>
-<dd>All the files have been skipped or failed during the scan leading to no DRS tree. See the error logfile.</dd>
+incomplete DRS tree.</dd>
 </dl>
 </li>
 </ul>
@@ -413,7 +420,7 @@ incomplete DRS tree. See the error logfile.</dd>
         <a href="checkvocab.html" class="btn btn-neutral float-right" title="Check CV against configuration INI files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="fetchini.html" class="btn btn-neutral" title="Fetch ESGF configuration INI files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="fetchtables.html" class="btn btn-neutral" title="Fetch CMOR tables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -444,7 +451,7 @@ incomplete DRS tree. See the error logfile.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.8.1',
+            VERSION:'2.9.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.context &mdash; esgprep 2.8.1 documentation</title>
+  <title>esgprep.drs.context &mdash; esgprep 2.9.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.8.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.9.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                2.8
+                2.9
               </div>
             
           
@@ -94,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../fetchini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fetchtables.html">Fetch CMOR tables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../checkvocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
@@ -174,24 +175,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="k">import</span> <span class="n">Pool</span> <span class="k">as</span> <span class="n">ThreadPool</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid4</span> <span class="k">as</span> <span class="n">uuid</span>
 
 <span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">SectionParser</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
-
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.collectors</span> <span class="k">import</span> <span class="n">Collector</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.custom_exceptions</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">load</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.context</span> <span class="k">import</span> <span class="n">MultiprocessingContext</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.custom_print</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">handler</span> <span class="k">import</span> <span class="n">DRSTree</span><span class="p">,</span> <span class="n">DRSPath</span>
 
 
-<div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.context.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.context.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="n">MultiprocessingContext</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Encapsulates the processing context/information for main process.</span>
 
@@ -202,29 +197,24 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pbar</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">i</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ProcessingContext</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="c1"># DRS root tree</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="c1"># Scan behavior</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rescan</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">rescan</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">commands_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">overwrite_commands_file</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">overwrite_commands_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">upgrade_from_latest</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">upgrade_from_latest</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_latest</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">ignore_from_latest</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_latest</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">ignore_from_latest</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">upgrade_from_latest</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_latest</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">set_value</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">set_value</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_keys</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">set_key</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_keys</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">set_key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">max_threads</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_pool</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">action</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_incoming</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">ignore_from_incoming</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_incoming</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="c1"># DRS migration mode</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">copy</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;copy&#39;</span>
         <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">link</span><span class="p">:</span>
@@ -233,27 +223,29 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;symlink&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;move&#39;</span>
+        <span class="c1"># Specified version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">version</span>
         <span class="n">DRSPath</span><span class="o">.</span><span class="n">TREE_VERSION</span> <span class="o">=</span> <span class="s1">&#39;v</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+        <span class="c1"># Declare counters for summary</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scan</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scan_errors</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scan_err_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">baseFilename</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">!=</span> <span class="s1">&#39;todo&#39;</span><span class="p">:</span>
-            <span class="nb">print</span> <span class="s1">&#39;&quot;</span><span class="si">{}</span><span class="s1">&quot; action ignores &quot;--commands-file&quot; argument.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;&quot;todo&quot; action ignores &quot;--commands-file&quot; argument&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">overwrite_commands_file</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span><span class="p">:</span>
-            <span class="nb">print</span> <span class="s1">&#39;--overwrite-commands-file ignored&#39;</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;&quot;--overwrite-commands-file&quot; ignored&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">no_checksum</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Checksumming disabled, DRS breach could occur -- &#39;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;Incoming files are all supposed to be different from latest version if exists --&#39;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;It is highly recommend to activate checksumming processes.&#39;</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Get checksum client</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_checksum_type</span><span class="p">()</span>
-        <span class="c1"># Init configuration parser</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SectionParser</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;project:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">),</span> <span class="n">directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ProcessingContext</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+        <span class="c1"># Get the DRS facet keys from pattern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_facets</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">)</span>
         <span class="c1"># Check if --commands-file argument specifies existing file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_existing_commands_file</span><span class="p">()</span>
-        <span class="c1"># Get DRS facets</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">facets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_facets</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">)</span>
         <span class="c1"># Raise error when %(version)s is not part of the final directory format</span>
         <span class="k">if</span> <span class="s1">&#39;version&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NoVersionPattern</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span>
@@ -261,13 +253,11 @@
         <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">pattern_element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># If pattern is %(...)s</span>
-                <span class="c1"># Get its index in the list of facets</span>
+                <span class="c1"># If pattern is %(...)s, get its index in the list of facets</span>
                 <span class="n">key</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\(([\w]+)\)s&#39;</span><span class="p">),</span> <span class="n">pattern_element</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="c1"># If pattern is not %(...)s</span>
-                <span class="c1"># Generate a uuid()</span>
+                <span class="c1"># If pattern is not %(...)s, generate a uuid()</span>
                 <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="p">())</span>
                 <span class="c1"># Insert hard-coded string in self.facets to be part of DRS path</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facets</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
@@ -278,78 +268,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;filename_format&#39;</span><span class="p">)</span>
         <span class="c1"># Init DRS tree</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">DRSTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span><span class="p">)</span>
-        <span class="c1"># Disable file scan if a previous DRS tree have generated using same context and no &quot;list&quot; action</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rescan</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">!=</span> <span class="s1">&#39;list&#39;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">):</span>
-            <span class="n">reader</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">)</span>
-            <span class="n">old_args</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
-            <span class="c1"># Ensure that processing context is similar to previous step</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_args</span><span class="p">(</span><span class="n">old_args</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">scan</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># Init data collector</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">Collector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">Collector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">spinner</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">Collector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
         <span class="c1"># Init file filter</span>
         <span class="c1"># Only supports netCDF files</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">FileFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="s1">&#39;^.*\.nc$&#39;</span><span class="p">)</span>
         <span class="c1"># And exclude hidden files</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">FileFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="s1">&#39;^\..*$&#39;</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="c1"># Init progress bar</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan</span><span class="p">:</span>
-            <span class="n">nfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span> <span class="ow">and</span> <span class="n">nfiles</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Scanning incoming files&#39;</span><span class="p">,</span>
-                                 <span class="n">total</span><span class="o">=</span><span class="n">nfiles</span><span class="p">,</span>
-                                 <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}</span><span class="s1">: </span><span class="si">{percentage:3.0f}</span><span class="s1">% | </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> files&#39;</span><span class="p">,</span>
-                                 <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                                 <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Skipping incoming files scan (use &quot;--rescan&quot; to force it) -- &#39;</span> \
-                  <span class="s1">&#39;Using cached DRS tree from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="c1"># Init threads pool</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_pool</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">))</span>
+        <span class="c1"># Get number of sources</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nbsources</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
-
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">):</span>
-        <span class="c1"># Close threads pool</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_pool</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-        <span class="c1"># Decline outputs depending on the scan results</span>
-        <span class="c1"># Raise errors when one or several files have been skipped or failed</span>
-        <span class="c1"># Default is sys.exit(0)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_errors</span><span class="p">:</span>
-            <span class="c1"># All files have been successfully scanned</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_errors</span><span class="p">:</span>
-            <span class="c1"># Results list is empty = no files scanned/found</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No files found&#39;</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; No files found&#39;</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_errors</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Scan errors: </span><span class="si">{}</span><span class="s1"> (see </span><span class="si">{}</span><span class="s1">)&#39;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Orginal scan errors: </span><span class="si">{}</span><span class="s1"> (previously written to </span><span class="si">{}</span><span class="s1">)&#39;</span>
-            <span class="c1"># Print number of scan errors in any case</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_errors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_err_log</span><span class="p">))</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> file(s) have been skipped&#39;</span>
-                            <span class="s1">&#39; (see </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_errors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_err_log</span><span class="p">))</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_errors</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span><span class="p">:</span>
-                <span class="c1"># All files have been skipped or failed during the scan</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;==&gt; All files have been ignored or have failed leading to no DRS tree.&#39;</span><span class="p">)</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Some files have been skipped or failed during the scan</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;==&gt; Scan completed (</span><span class="si">{}</span><span class="s1"> file(s) scanned)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_files</span><span class="p">))</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ProcessingContext.check_existing_commands_file"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.context.ProcessingContext.check_existing_commands_file">[docs]</a>    <span class="k">def</span> <span class="nf">check_existing_commands_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -362,8 +290,9 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">overwrite_commands_file</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span> <span class="s2">&quot;File &#39;</span><span class="si">{}</span><span class="s2">&#39; already exists and &#39;--overwrite-commands-file&#39;&quot;</span> \
-                      <span class="s2">&quot;option not used.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Command file &quot;</span><span class="si">{}</span><span class="s1">&quot; already exists --&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands_file</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;Please use &quot;--overwrite-commands-file&quot; option.&#39;</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">COLORS</span><span class="o">.</span><span class="n">FAIL</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProcessingContext.get_checksum_type"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.context.ProcessingContext.get_checksum_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_checksum_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -382,24 +311,7 @@
             <span class="n">checksum_type</span> <span class="o">=</span> <span class="s1">&#39;sha256&#39;</span>
         <span class="k">if</span> <span class="n">checksum_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">checksum_types</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidChecksumType</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">checksum_type</span></div>
-
-<div class="viewcode-block" id="ProcessingContext.check_args"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.context.ProcessingContext.check_args">[docs]</a>    <span class="k">def</span> <span class="nf">check_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks command-line argument to avoid discrepancies between ``esgdrs`` steps.</span>
-
-<span class="sd">        :param *dict* old_args: The recorded arguments</span>
-<span class="sd">        :raises Error: If one argument differs</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">CONTROLLED_ARGS</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">!=</span> <span class="n">old_args</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{}</span><span class="s1">&quot; argument has changed: &quot;</span><span class="si">{}</span><span class="s1">&quot; instead of &quot;</span><span class="si">{}</span><span class="s1">&quot;. &#39;</span>
-                                <span class="s1">&#39;File rescan needed.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span>
-                                                             <span class="bp">self</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
-                                                             <span class="n">old_args</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
-                <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span></div></div>
+        <span class="k">return</span> <span class="n">checksum_type</span></div></div>
 </pre></div>
 
            </div>
@@ -436,7 +348,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.8.1',
+            VERSION:'2.9.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

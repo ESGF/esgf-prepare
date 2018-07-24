@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.8.1 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.9.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.8.1 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.9.0 documentation" href="index.html"/>
         <link rel="prev" title="Change Log" href="log.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                2.8
+                2.9
               </div>
             
           
@@ -94,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetchtables.html">Fetch CMOR tables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="checkvocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
@@ -102,10 +103,11 @@
 <li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Code documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-esgprep.esgfetchini">esgfetchini</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-esgprep.esgfetchtables">esgfetchtables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-esgprep.esgdrs">esgdrs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-esgprep.esgcheckvocab">esgcheckvocab</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-esgprep.esgmapfile">esgmapfile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-esgprep.utils.constants">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-esgprep.utils.collectors">utils</a></li>
 </ul>
 </li>
 </ul>
@@ -202,8 +204,8 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="esgprep.esgfetchini.run">
-<code class="descclassname">esgprep.esgfetchini.</code><code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/esgfetchini.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.esgfetchini.run" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.esgfetchini.main">
+<code class="descclassname">esgprep.esgfetchini.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/esgfetchini.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.esgfetchini.main" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run main program</p>
 </dd></dl>
 
@@ -217,6 +219,34 @@
 </tr>
 </tbody>
 </table>
+<span class="target" id="module-esgprep.fetchini.context"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Processing context used in this module.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="esgprep.fetchini.context.ProcessingContext">
+<em class="property">class </em><code class="descclassname">esgprep.fetchini.context.</code><code class="descname">ProcessingContext</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/context.html#ProcessingContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.context.ProcessingContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encapsulates the processing context/information for main process.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – The command-line arguments parser</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The processing context</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>ProcessingContext</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <span class="target" id="module-esgprep.fetchini.main"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -228,84 +258,14 @@
 </tbody>
 </table>
 <dl class="function">
-<dt id="esgprep.fetchini.main.backup">
-<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">backup</code><span class="sig-paren">(</span><em>f</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#backup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.backup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Backup a local file following different modes:</p>
-<blockquote>
-<div><ul class="simple">
-<li>“one_version” renames the existing file in its source directory adding a “.bkp” extension to the filename.</li>
-<li>“keep_versions” moves the existing file in a child directory called “bkp” and add a timestamp to the filename.</li>
-</ul>
-</div></blockquote>
+<dt id="esgprep.fetchini.main.make_outdir">
+<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">make_outdir</code><span class="sig-paren">(</span><em>root</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#make_outdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.make_outdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build the output directory as follows:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>f</strong> (<em>str</em>) – The file to backup</li>
-<li><strong>mode</strong> (<em>str</em>) – The backup mode to follow</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.fetchini.main.write_content">
-<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">write_content</code><span class="sig-paren">(</span><em>outfile</em>, <em>content</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#write_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.write_content" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write GitHub content into a file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outfile</strong> (<em>str</em>) – The output file</li>
-<li><strong>content</strong> (<em>str</em>) – The file content to write</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.fetchini.main.do_fetching">
-<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">do_fetching</code><span class="sig-paren">(</span><em>f</em>, <em>remote_checksum</em>, <em>keep</em>, <em>overwrite</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#do_fetching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.do_fetching" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True or False depending on decision schema</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>f</strong> (<em>str</em>) – The file to test</li>
-<li><strong>remote_checksum</strong> (<em>str</em>) – The remote file checksum</li>
-<li><strong>overwrite</strong> (<em>boolean</em>) – True if overwrite existing files</li>
-<li><strong>keep</strong> (<em>boolean</em>) – True if keep existing files</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True depending on the conditions</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>boolean</em></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.fetchini.main.githash">
-<code class="descclassname">esgprep.fetchini.main.</code><code class="descname">githash</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/main.html#githash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.main.githash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes Git checksum (as called by “git hash-object”) of a file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> – </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The SHA1 sum</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>root</strong> (<em>str</em>) – The root directory</td>
 </tr>
 </tbody>
 </table>
@@ -333,7 +293,52 @@
 </table>
 </dd></dl>
 
-<span class="target" id="module-esgprep.fetchini.context"></span><table class="docutils field-list" frame="void" rules="none">
+</div>
+<div class="section" id="module-esgprep.esgfetchtables">
+<span id="esgfetchtables"></span><h2>esgfetchtables<a class="headerlink" href="#module-esgprep.esgfetchtables" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Toolbox to prepare ESGF data for publication.</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="esgprep.esgfetchtables.get_args">
+<code class="descclassname">esgprep.esgfetchtables.</code><code class="descname">get_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/esgfetchtables.html#get_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.esgfetchtables.get_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns parsed command-line arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The argument parser</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>argparse.Namespace</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.esgfetchtables.main">
+<code class="descclassname">esgprep.esgfetchtables.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/esgfetchtables.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.esgfetchtables.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run main program</p>
+</dd></dl>
+
+<span class="target" id="module-esgprep.fetchtables.constants"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Constants used in this module.</td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-esgprep.fetchtables.context"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -344,8 +349,8 @@
 </tbody>
 </table>
 <dl class="class">
-<dt id="esgprep.fetchini.context.ProcessingContext">
-<em class="property">class </em><code class="descclassname">esgprep.fetchini.context.</code><code class="descname">ProcessingContext</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/context.html#ProcessingContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.context.ProcessingContext" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.fetchtables.context.ProcessingContext">
+<em class="property">class </em><code class="descclassname">esgprep.fetchtables.context.</code><code class="descname">ProcessingContext</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchtables/context.html#ProcessingContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchtables.context.ProcessingContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encapsulates the processing context/information for main process.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -359,133 +364,69 @@
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="esgprep.fetchini.context.ProcessingContext.authenticate">
-<code class="descname">authenticate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/context.html#ProcessingContext.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.context.ProcessingContext.authenticate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds GitHub HTTP authenticator</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The HTTP authenticator</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>requests.auth.HTTPBasicAuth</em></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
-<dl class="method">
-<dt id="esgprep.fetchini.context.ProcessingContext.make_ini_dir">
-<code class="descname">make_ini_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/context.html#ProcessingContext.make_ini_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.context.ProcessingContext.make_ini_dir" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Build the output directory as follows:</dt>
-<dd><ul class="first last simple">
-<li>If ESGF node and args.i = /esg/config/esgcet -&gt; exists</li>
-<li>If not ESGF node and args.i = /esg/config/esgcet -&gt; doesn’t exist -&gt; use $PWD/ini instead</li>
-<li>If ESGF node and args.i = other -&gt; if not exists make it</li>
-<li>If not ESGF node and args.i = other -&gt; if not exists make it</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="esgprep.fetchini.context.ProcessingContext.target_projects">
-<code class="descname">target_projects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/context.html#ProcessingContext.target_projects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.context.ProcessingContext.target_projects" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the available projects ids from GitHub esg.*.ini files.
-Make the intersection with the desired projects to fetch.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The target projects</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>list</em></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<span class="target" id="module-esgprep.fetchini.custom_exceptions"></span><table class="docutils field-list" frame="void" rules="none">
+<span class="target" id="module-esgprep.fetchtables.main"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
 </tr>
-<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Custom exceptions used in this module.</td>
-</tr>
-</tbody>
-</table>
-<dl class="exception">
-<dt id="esgprep.fetchini.custom_exceptions.GitHubException">
-<em class="property">exception </em><code class="descclassname">esgprep.fetchini.custom_exceptions.</code><code class="descname">GitHubException</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/custom_exceptions.html#GitHubException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.custom_exceptions.GitHubException" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic exception for GitHub errors.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.fetchini.custom_exceptions.GitHubUnauthorized">
-<em class="property">exception </em><code class="descclassname">esgprep.fetchini.custom_exceptions.</code><code class="descname">GitHubUnauthorized</code><a class="reference internal" href="modules/esgprep/fetchini/custom_exceptions.html#GitHubUnauthorized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.custom_exceptions.GitHubUnauthorized" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when no read access on GitHub repo.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.fetchini.custom_exceptions.GitHubAPIRateLimit">
-<em class="property">exception </em><code class="descclassname">esgprep.fetchini.custom_exceptions.</code><code class="descname">GitHubAPIRateLimit</code><a class="reference internal" href="modules/esgprep/fetchini/custom_exceptions.html#GitHubAPIRateLimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.custom_exceptions.GitHubAPIRateLimit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when GitHub API rate limit exceeded.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.fetchini.custom_exceptions.GitHubFileNotFound">
-<em class="property">exception </em><code class="descclassname">esgprep.fetchini.custom_exceptions.</code><code class="descname">GitHubFileNotFound</code><a class="reference internal" href="modules/esgprep/fetchini/custom_exceptions.html#GitHubFileNotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.custom_exceptions.GitHubFileNotFound" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when no file found on GitHub repo.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.fetchini.custom_exceptions.GitHubConnectionError">
-<em class="property">exception </em><code class="descclassname">esgprep.fetchini.custom_exceptions.</code><code class="descname">GitHubConnectionError</code><a class="reference internal" href="modules/esgprep/fetchini/custom_exceptions.html#GitHubConnectionError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.custom_exceptions.GitHubConnectionError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when the GitHub request fails.</p>
-</dd></dl>
-
-<span class="target" id="module-esgprep.fetchini.misc"></span><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
-</tr>
-<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Useful functions to use with this module.</td>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Fetches ESGF configuration files from GitHub repository.</td>
 </tr>
 </tbody>
 </table>
 <dl class="function">
-<dt id="esgprep.fetchini.misc.gh_request_content">
-<code class="descclassname">esgprep.fetchini.misc.</code><code class="descname">gh_request_content</code><span class="sig-paren">(</span><em>url</em>, <em>auth=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchini/misc.html#gh_request_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchini.misc.gh_request_content" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the GitHub content of a file or a directory.</p>
+<dt id="esgprep.fetchtables.main.make_outdir">
+<code class="descclassname">esgprep.fetchtables.main.</code><code class="descname">make_outdir</code><span class="sig-paren">(</span><em>tables_dir</em>, <em>repository</em>, <em>reference=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchtables/main.html#make_outdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchtables.main.make_outdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build the output directory.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>url</strong> (<em>str</em>) – The GitHub url to request</li>
-<li><strong>auth</strong> (<em>requests.auth.HTTPBasicAuth</em>) – The authenticator object</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tables_dir</strong> (<em>str</em>) – The CMOR tables directory submitted</li>
+<li><strong>repository</strong> (<em>str</em>) – The GitHub repository name</li>
+<li><strong>reference</strong> (<em>str</em>) – The GitHub reference name (tag or branch)</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The GitHub request content</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>requests.models.Response</em></p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Error</strong> – If user not authorized to read GitHub repository</li>
-<li><strong>Error</strong> – If user exceed the GitHub API rate limit</li>
-<li><strong>Error</strong> – If the queried content does not exist</li>
-<li><strong>Error</strong> – If the GitHub request fails for other reasons</li>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.fetchtables.main.get_special_case">
+<code class="descclassname">esgprep.fetchtables.main.</code><code class="descname">get_special_case</code><span class="sig-paren">(</span><em>f</em>, <em>url</em>, <em>repo</em>, <em>ref</em>, <em>auth</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchtables/main.html#get_special_case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchtables.main.get_special_case" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dictionary of (filename -&gt; file_info) pairs to be used for 
+named files in place of the file info from the general API call
+done for the directory.  file_info should contain at least
+the elements ‘sha’ and ‘download_url’</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.fetchtables.main.fetch_gh_ref">
+<code class="descclassname">esgprep.fetchtables.main.</code><code class="descname">fetch_gh_ref</code><span class="sig-paren">(</span><em>url</em>, <em>outdir</em>, <em>auth</em>, <em>keep</em>, <em>overwrite</em>, <em>backup_mode</em>, <em>filter</em>, <em>special_cases=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchtables/main.html#fetch_gh_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchtables.main.fetch_gh_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch all files for a single reference (e.g. tag or branch) of a GitHub repository</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.fetchtables.main.run">
+<code class="descclassname">esgprep.fetchtables.main.</code><code class="descname">run</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/fetchtables/main.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.fetchtables.main.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main process that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Decide to fetch or not depending on file presence/absence and command-line arguments,</li>
+<li>Gets the GitHub file content from full API URL,</li>
+<li>Backups old file if desired,</li>
+<li>Writes response into table file.</li>
 </ul>
-</td>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Parsed command-line arguments</td>
 </tr>
 </tbody>
 </table>
@@ -521,8 +462,8 @@ Make the intersection with the desired projects to fetch.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="esgprep.esgdrs.run">
-<code class="descclassname">esgprep.esgdrs.</code><code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/esgdrs.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.esgdrs.run" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.esgdrs.main">
+<code class="descclassname">esgprep.esgdrs.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/esgdrs.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.esgdrs.main" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run main program</p>
 </dd></dl>
 
@@ -536,65 +477,74 @@ Make the intersection with the desired projects to fetch.</p>
 </tr>
 </tbody>
 </table>
-<span class="target" id="module-esgprep.drs.main"></span><table class="docutils field-list" frame="void" rules="none">
+<span class="target" id="module-esgprep.drs.custom_exceptions"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
 </tr>
-<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Manages the filesystem tree according to the project the Data Reference Syntax and versioning.</td>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Custom exceptions used in this module.</td>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="esgprep.drs.main.process">
-<code class="descclassname">esgprep.drs.main.</code><code class="descname">process</code><span class="sig-paren">(</span><em>collector_input</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/main.html#process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.main.process" title="Permalink to this definition">¶</a></dt>
-<dd><p>File process that:</p>
-<blockquote>
-<div><ul class="simple">
-<li>Handles files,</li>
-<li>Deduces facet key, values pairs from file attributes</li>
-<li>Checks facet values against CV,</li>
-<li>Applies the versioning</li>
-<li>Populates the DRS tree crating the appropriate leaves,</li>
-<li>Stores dataset statistics.</li>
-</ul>
-</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>collector_input</strong> (<em>tuple</em>) – A tuple with the file path and the processing context</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True on success</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>boolean</em></td>
-</tr>
-</tbody>
-</table>
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.DuplicatedDataset">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">DuplicatedDataset</code><span class="sig-paren">(</span><em>path</em>, <em>version</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#DuplicatedDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.DuplicatedDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if a dataset already exists with submitted version.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="esgprep.drs.main.run">
-<code class="descclassname">esgprep.drs.main.</code><code class="descname">run</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/main.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.main.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main process that:</p>
-<blockquote>
-<div><ul class="simple">
-<li>Instantiates processing context,</li>
-<li>Loads previous program instance,</li>
-<li>Parallelizes file processing with threads pools,</li>
-<li>Apply command-line action to the whole DRS tree,</li>
-<li>Evaluate exit status.</li>
-</ul>
-</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – The command-line arguments parser</td>
-</tr>
-</tbody>
-</table>
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.OlderUpgrade">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">OlderUpgrade</code><span class="sig-paren">(</span><em>version</em>, <em>latest</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#OlderUpgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.OlderUpgrade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if a dataset already exists with submitted version.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.DuplicatedFile">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">DuplicatedFile</code><span class="sig-paren">(</span><em>latest</em>, <em>upgrade</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#DuplicatedFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.DuplicatedFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if a NetCDF file already exists into submitted dataset version.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.UnchangedTrackingID">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">UnchangedTrackingID</code><span class="sig-paren">(</span><em>latest</em>, <em>latest_id</em>, <em>upgrade</em>, <em>upgrade_id</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#UnchangedTrackingID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.UnchangedTrackingID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if a NetCDF file already has the tracking ID of submitted file to upgrade.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.NoVersionPattern">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">NoVersionPattern</code><span class="sig-paren">(</span><em>regex</em>, <em>patterns</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#NoVersionPattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.NoVersionPattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if no version facet found in the destination format.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.ReadAccessDenied">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">ReadAccessDenied</code><span class="sig-paren">(</span><em>user</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#ReadAccessDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.ReadAccessDenied" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when user has no read access.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.WriteAccessDenied">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">WriteAccessDenied</code><span class="sig-paren">(</span><em>user</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#WriteAccessDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.WriteAccessDenied" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when user has not write access.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.CrossMigrationDenied">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">CrossMigrationDenied</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em>, <em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#CrossMigrationDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.CrossMigrationDenied" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when migration fails for cross-device link.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.MigrationDenied">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">MigrationDenied</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em>, <em>mode</em>, <em>reason</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#MigrationDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.MigrationDenied" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when migration fails in another case.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.drs.custom_exceptions.InconsistentDRSPath">
+<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">InconsistentDRSPath</code><span class="sig-paren">(</span><em>project</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#InconsistentDRSPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.InconsistentDRSPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when DRS path doesn’t start with the project ID.</p>
 </dd></dl>
 
 <span class="target" id="module-esgprep.drs.context"></span><table class="docutils field-list" frame="void" rules="none">
@@ -643,22 +593,6 @@ Be careful to Exception constants by reading two different sections.</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The checksum type</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="esgprep.drs.context.ProcessingContext.check_args">
-<code class="descname">check_args</code><span class="sig-paren">(</span><em>old_args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/context.html#ProcessingContext.check_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.context.ProcessingContext.check_args" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks command-line argument to avoid discrepancies between <code class="docutils literal"><span class="pre">esgdrs</span></code> steps.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>old_args</strong> (<em>dict</em>) – The recorded arguments</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If one argument differs</td>
 </tr>
 </tbody>
 </table>
@@ -928,7 +862,7 @@ Only hardlinks could fail depending on the filesystem partition.</p>
 
 <dl class="class">
 <dt id="esgprep.drs.handler.DRSTree">
-<em class="property">class </em><code class="descclassname">esgprep.drs.handler.</code><code class="descname">DRSTree</code><span class="sig-paren">(</span><em>root</em>, <em>version</em>, <em>mode</em>, <em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.drs.handler.</code><code class="descname">DRSTree</code><span class="sig-paren">(</span><em>root=None</em>, <em>version=None</em>, <em>mode=None</em>, <em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handler providing methods to deal with DRS tree.</p>
 <dl class="method">
 <dt id="esgprep.drs.handler.DRSTree.get_display_lengths">
@@ -1026,62 +960,111 @@ from the latest version if exists.</p>
 </table>
 </dd></dl>
 
-<span class="target" id="module-esgprep.drs.custom_exceptions"></span><table class="docutils field-list" frame="void" rules="none">
+<span class="target" id="module-esgprep.drs.main"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
 </tr>
-<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Custom exceptions used in this module.</td>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Manages the filesystem tree according to the project the Data Reference Syntax and versioning.</td>
 </tr>
 </tbody>
 </table>
-<dl class="exception">
-<dt id="esgprep.drs.custom_exceptions.DuplicatedDataset">
-<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">DuplicatedDataset</code><span class="sig-paren">(</span><em>path</em>, <em>version</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#DuplicatedDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.DuplicatedDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised if a dataset already exists with submitted version.</p>
+<dl class="function">
+<dt id="esgprep.drs.main.process">
+<code class="descclassname">esgprep.drs.main.</code><code class="descname">process</code><span class="sig-paren">(</span><em>collector_input</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/main.html#process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.main.process" title="Permalink to this definition">¶</a></dt>
+<dd><p>File process that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Handles files,</li>
+<li>Deduces facet key, values pairs from file attributes</li>
+<li>Checks facet values against CV,</li>
+<li>Applies the versioning</li>
+<li>Populates the DRS tree crating the appropriate leaves,</li>
+<li>Stores dataset statistics.</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<em>str</em>) – The file full path to process</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="exception">
-<dt id="esgprep.drs.custom_exceptions.OlderUpgrade">
-<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">OlderUpgrade</code><span class="sig-paren">(</span><em>version</em>, <em>latest</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#OlderUpgrade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.OlderUpgrade" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised if a dataset already exists with submitted version.</p>
+<dl class="function">
+<dt id="esgprep.drs.main.tree_builder">
+<code class="descclassname">esgprep.drs.main.</code><code class="descname">tree_builder</code><span class="sig-paren">(</span><em>fh</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/main.html#tree_builder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.main.tree_builder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the DRS tree accord to a source</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fh</strong> (<a class="reference internal" href="#esgprep.drs.handler.File" title="esgprep.drs.handler.File"><em>esgprep.drs.handler.File</em></a>) – The file handler object</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="exception">
-<dt id="esgprep.drs.custom_exceptions.DuplicatedFile">
-<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">DuplicatedFile</code><span class="sig-paren">(</span><em>latest</em>, <em>upgrade</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#DuplicatedFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.DuplicatedFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised if a NetCDF file already exists into submitted dataset version.</p>
+<dl class="function">
+<dt id="esgprep.drs.main.initializer">
+<code class="descclassname">esgprep.drs.main.</code><code class="descname">initializer</code><span class="sig-paren">(</span><em>keys</em>, <em>values</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/main.html#initializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.main.initializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize process context by setting particular variables as global variables.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>keys</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – Argument name</li>
+<li><strong>values</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – Argument value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="exception">
-<dt id="esgprep.drs.custom_exceptions.NoVersionPattern">
-<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">NoVersionPattern</code><span class="sig-paren">(</span><em>regex</em>, <em>patterns</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#NoVersionPattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.NoVersionPattern" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised if no version facet found in the destination format.</p>
+<dl class="function">
+<dt id="esgprep.drs.main.do_scanning">
+<code class="descclassname">esgprep.drs.main.</code><code class="descname">do_scanning</code><span class="sig-paren">(</span><em>ctx</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/main.html#do_scanning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.main.do_scanning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if file scanning is necessary regarding command-line arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="#esgprep.drs.context.ProcessingContext" title="esgprep.drs.context.ProcessingContext"><em>esgprep.drs.context.ProcessingContext</em></a>) – New processing context to evaluate</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if file scanning is necessary</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>boolean</em></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="exception">
-<dt id="esgprep.drs.custom_exceptions.ReadAccessDenied">
-<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">ReadAccessDenied</code><span class="sig-paren">(</span><em>user</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#ReadAccessDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.ReadAccessDenied" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when user has no read access.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.drs.custom_exceptions.WriteAccessDenied">
-<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">WriteAccessDenied</code><span class="sig-paren">(</span><em>user</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#WriteAccessDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.WriteAccessDenied" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when user has not write access.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.drs.custom_exceptions.CrossMigrationDenied">
-<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">CrossMigrationDenied</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em>, <em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#CrossMigrationDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.CrossMigrationDenied" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when migration fails for cross-device link.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.drs.custom_exceptions.MigrationDenied">
-<em class="property">exception </em><code class="descclassname">esgprep.drs.custom_exceptions.</code><code class="descname">MigrationDenied</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em>, <em>mode</em>, <em>reason</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/custom_exceptions.html#MigrationDenied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.custom_exceptions.MigrationDenied" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when migration fails in another case.</p>
+<dl class="function">
+<dt id="esgprep.drs.main.run">
+<code class="descclassname">esgprep.drs.main.</code><code class="descname">run</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/main.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.main.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main process that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Instantiates processing context,</li>
+<li>Loads previous program instance,</li>
+<li>Parallelizes file processing with threads pools,</li>
+<li>Apply command-line action to the whole DRS tree,</li>
+<li>Evaluate exit status.</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – The command-line arguments parser</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -1114,8 +1097,8 @@ from the latest version if exists.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="esgprep.esgcheckvocab.run">
-<code class="descclassname">esgprep.esgcheckvocab.</code><code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/esgcheckvocab.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.esgcheckvocab.run" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.esgcheckvocab.main">
+<code class="descclassname">esgprep.esgcheckvocab.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/esgcheckvocab.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.esgcheckvocab.main" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run main program</p>
 </dd></dl>
 
@@ -1129,39 +1112,6 @@ from the latest version if exists.</p>
 </tr>
 </tbody>
 </table>
-<span class="target" id="module-esgprep.checkvocab.main"></span><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
-</tr>
-<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Checks DRS vocabulary against configuration files.</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
-<dt id="esgprep.checkvocab.main.run">
-<code class="descclassname">esgprep.checkvocab.main.</code><code class="descname">run</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/checkvocab/main.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.checkvocab.main.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main process that:</p>
-<blockquote>
-<div><ul class="simple">
-<li>Instantiates processing context</li>
-<li>Parses the configuration files options and values,</li>
-<li>Deduces facets and values from directories or dataset lists,</li>
-<li>Compares the values of each facet between both,</li>
-<li>Print or log the checking.</li>
-</ul>
-</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – The command-line arguments parser</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <span class="target" id="module-esgprep.checkvocab.context"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1200,6 +1150,76 @@ from the latest version if exists.</p>
 </tr>
 </tbody>
 </table>
+<span class="target" id="module-esgprep.checkvocab.main"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Checks DRS vocabulary against configuration files.</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="esgprep.checkvocab.main.process">
+<code class="descclassname">esgprep.checkvocab.main.</code><code class="descname">process</code><span class="sig-paren">(</span><em>collector_input</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/checkvocab/main.html#process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.checkvocab.main.process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data process that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Retrieve facet key, values pairs from file or directory attributes</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<em>str</em>) – The file full path to process or the dataset ID</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.checkvocab.main.initializer">
+<code class="descclassname">esgprep.checkvocab.main.</code><code class="descname">initializer</code><span class="sig-paren">(</span><em>keys</em>, <em>values</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/checkvocab/main.html#initializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.checkvocab.main.initializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize process context by setting particular variables as global variables.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>keys</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – Argument name</li>
+<li><strong>values</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – Argument value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.checkvocab.main.run">
+<code class="descclassname">esgprep.checkvocab.main.</code><code class="descname">run</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/checkvocab/main.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.checkvocab.main.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main process that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Instantiates processing context</li>
+<li>Parses the configuration files options and values,</li>
+<li>Deduces facets and values from directories or dataset lists,</li>
+<li>Compares the values of each facet between both,</li>
+<li>Print or log the checking.</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – The command-line arguments parser</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="module-esgprep.esgmapfile">
 <span id="esgmapfile"></span><h2>esgmapfile<a class="headerlink" href="#module-esgprep.esgmapfile" title="Permalink to this headline">¶</a></h2>
@@ -1230,8 +1250,8 @@ from the latest version if exists.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="esgprep.esgmapfile.run">
-<code class="descclassname">esgprep.esgmapfile.</code><code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/esgmapfile.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.esgmapfile.run" title="Permalink to this definition">¶</a></dt>
+<dt id="esgprep.esgmapfile.main">
+<code class="descclassname">esgprep.esgmapfile.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/esgmapfile.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.esgmapfile.main" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run main program</p>
 </dd></dl>
 
@@ -1245,153 +1265,6 @@ from the latest version if exists.</p>
 </tr>
 </tbody>
 </table>
-<span class="target" id="module-esgprep.mapfile.main"></span><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
-</tr>
-<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Generates ESGF mapfiles upon a local ESGF node or not.</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
-<dt id="esgprep.mapfile.main.get_output_mapfile">
-<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">get_output_mapfile</code><span class="sig-paren">(</span><em>outdir</em>, <em>attributes</em>, <em>mapfile_name</em>, <em>dataset_id</em>, <em>dataset_version</em>, <em>mapfile_drs=None</em>, <em>basename=False</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#get_output_mapfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.get_output_mapfile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds the mapfile full path depending on:</p>
-<blockquote>
-<div><ul class="simple">
-<li>the –mapfile name using tokens,</li>
-<li>an optional mapfile tree declared in configuration file with <code class="docutils literal"><span class="pre">mapfile_drs</span></code>,</li>
-<li>the –outdir output directory.</li>
-</ul>
-</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outdir</strong> (<em>str</em>) – The output directory (default is current working directory)</li>
-<li><strong>attributes</strong> (<em>dict</em>) – The facets values deduces from file full path</li>
-<li><strong>mapfile_name</strong> (<em>str</em>) – An optional mapfile name from the command-line</li>
-<li><strong>dataset_id</strong> (<em>str</em>) – The dataset id</li>
-<li><strong>dataset_version</strong> (<em>str</em>) – The dataset version</li>
-<li><strong>mapfile_drs</strong> (<em>str</em>) – The optional mapfile tree</li>
-<li><strong>basename</strong> (<em>boolean</em>) – True to only get mapfile name without root directory</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The mapfile full path</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>str</em></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.mapfile.main.mapfile_entry">
-<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">mapfile_entry</code><span class="sig-paren">(</span><em>dataset_id</em>, <em>dataset_version</em>, <em>ffp</em>, <em>size</em>, <em>optional_attrs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#mapfile_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.mapfile_entry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds the mapfile entry corresponding to a processed file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dataset_id</strong> (<em>str</em>) – The dataset id</li>
-<li><strong>dataset_version</strong> (<em>str</em>) – The dataset version</li>
-<li><strong>ffp</strong> (<em>str</em>) – The file full path</li>
-<li><strong>size</strong> (<em>str</em>) – The file size</li>
-<li><strong>optional_attrs</strong> (<em>dict</em>) – Optional attributes to append to mapfile lines</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The mapfile line/entry</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>str</em></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.mapfile.main.write">
-<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">write</code><span class="sig-paren">(</span><em>outfile</em>, <em>entry</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Inserts a mapfile entry.
-It generates a lockfile to avoid that several threads write on the same file at the same time.
-A LockFile is acquired and released after writing. Acquiring LockFile is timeouted if it’s locked by other thread.
-Each process adds one line to the appropriate mapfile</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outfile</strong> (<em>str</em>) – The output mapfile full path</li>
-<li><strong>entry</strong> (<em>str</em>) – The mapfile entry to write</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.mapfile.main.process">
-<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">process</code><span class="sig-paren">(</span><em>collector_input</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.process" title="Permalink to this definition">¶</a></dt>
-<dd><p>File process that:</p>
-<blockquote>
-<div><ul class="simple">
-<li>Handles file,</li>
-<li>Harvests directory attributes,</li>
-<li>Check DRS attributes against CV,</li>
-<li>Builds dataset ID,</li>
-<li>Retrieves file size,</li>
-<li>Does checksums,</li>
-<li>Deduces mapfile name,</li>
-<li>Writes the corresponding mapfile entry.</li>
-</ul>
-</div></blockquote>
-<p>Any error leads to skip the file. It does not stop the process.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>collector_input</strong> (<em>tuple</em>) – A tuple with the file path and the processing context</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The output mapfile full path</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.mapfile.main.run">
-<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">run</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main process that:</p>
-<blockquote>
-<div><ul class="simple">
-<li>Instantiates processing context,</li>
-<li>Parallelizes file processing with threads pools,</li>
-<li>Copies mapfile(s) to the output directory,</li>
-<li>Evaluate exit status.</li>
-</ul>
-</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Command-line arguments parser</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <span class="target" id="module-esgprep.mapfile.context"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1419,29 +1292,47 @@ Each process adds one line to the appropriate mapfile</p>
 </tbody>
 </table>
 <dl class="method">
-<dt id="esgprep.mapfile.context.ProcessingContext.get_checksum_type">
-<code class="descname">get_checksum_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/context.html#ProcessingContext.get_checksum_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.context.ProcessingContext.get_checksum_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the checksum type to use.
-Be careful to Exception constants by reading two different sections.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The checksum type</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="esgprep.mapfile.context.ProcessingContext.clean">
 <code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/context.html#ProcessingContext.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.context.ProcessingContext.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean directory from incomplete mapfiles.
 Incomplete mapfiles from a previous run are silently removed.</p>
 </dd></dl>
 
+<dl class="staticmethod">
+<dt id="esgprep.mapfile.context.ProcessingContext.load_checksums">
+<em class="property">static </em><code class="descname">load_checksums</code><span class="sig-paren">(</span><em>checksum_file</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/context.html#ProcessingContext.load_checksums"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.context.ProcessingContext.load_checksums" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert checksums file input as dictionary where (key: value) pairs respectively
+are the file path and its checksum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>checksum_file</strong> (<em>FileObject</em>) – The submitted checksum file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The loaded checksums</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>dict</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-esgprep.mapfile.custom_exceptions"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Custom exceptions used in this module.</td>
+</tr>
+</tbody>
+</table>
+<dl class="exception">
+<dt id="esgprep.mapfile.custom_exceptions.InconsistentDatasetID">
+<em class="property">exception </em><code class="descclassname">esgprep.mapfile.custom_exceptions.</code><code class="descname">InconsistentDatasetID</code><span class="sig-paren">(</span><em>project</em>, <em>dset_id</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/custom_exceptions.html#InconsistentDatasetID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.custom_exceptions.InconsistentDatasetID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when dataset ID doesn’t start with the project ID.</p>
 </dd></dl>
 
 <span class="target" id="module-esgprep.mapfile.handler"></span><table class="docutils field-list" frame="void" rules="none">
@@ -1592,30 +1483,175 @@ it follows the symlink to complete the DRS attributes.</p>
 
 </dd></dl>
 
-<span class="target" id="module-esgprep.mapfile.custom_exceptions"></span><table class="docutils field-list" frame="void" rules="none">
+<span class="target" id="module-esgprep.mapfile.main"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
 </tr>
-<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Custom exceptions used in this module.</td>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Generates ESGF mapfiles upon a local ESGF node or not.</td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="module-esgprep.utils.constants">
-<span id="utils"></span><h2>utils<a class="headerlink" href="#module-esgprep.utils.constants" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="esgprep.mapfile.main.get_output_mapfile">
+<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">get_output_mapfile</code><span class="sig-paren">(</span><em>outdir</em>, <em>attributes</em>, <em>mapfile_name</em>, <em>dataset_id</em>, <em>dataset_version</em>, <em>mapfile_drs=None</em>, <em>basename=False</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#get_output_mapfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.get_output_mapfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the mapfile full path depending on:</p>
+<blockquote>
+<div><ul class="simple">
+<li>the –mapfile name using tokens,</li>
+<li>an optional mapfile tree declared in configuration file with <code class="docutils literal"><span class="pre">mapfile_drs</span></code>,</li>
+<li>the –outdir output directory.</li>
+</ul>
+</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>outdir</strong> (<em>str</em>) – The output directory (default is current working directory)</li>
+<li><strong>attributes</strong> (<em>dict</em>) – The facets values deduces from file full path</li>
+<li><strong>mapfile_name</strong> (<em>str</em>) – An optional mapfile name from the command-line</li>
+<li><strong>dataset_id</strong> (<em>str</em>) – The dataset id</li>
+<li><strong>dataset_version</strong> (<em>str</em>) – The dataset version</li>
+<li><strong>mapfile_drs</strong> (<em>str</em>) – The optional mapfile tree</li>
+<li><strong>basename</strong> (<em>boolean</em>) – True to only get mapfile name without root directory</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Constants used in this package.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The mapfile full path</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>str</em></p>
+</td>
 </tr>
 </tbody>
 </table>
-<span class="target" id="module-esgprep.utils.collectors"></span><table class="docutils field-list" frame="void" rules="none">
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.mapfile.main.mapfile_entry">
+<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">mapfile_entry</code><span class="sig-paren">(</span><em>dataset_id</em>, <em>dataset_version</em>, <em>ffp</em>, <em>size</em>, <em>optional_attrs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#mapfile_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.mapfile_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the mapfile entry corresponding to a processed file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dataset_id</strong> (<em>str</em>) – The dataset id</li>
+<li><strong>dataset_version</strong> (<em>str</em>) – The dataset version</li>
+<li><strong>ffp</strong> (<em>str</em>) – The file full path</li>
+<li><strong>size</strong> (<em>str</em>) – The file size</li>
+<li><strong>optional_attrs</strong> (<em>dict</em>) – Optional attributes to append to mapfile lines</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The mapfile line/entry</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>str</em></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.mapfile.main.write">
+<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">write</code><span class="sig-paren">(</span><em>outfile</em>, <em>entry</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a mapfile entry.
+It generates a lockfile to avoid that several threads write on the same file at the same time.
+A LockFile is acquired and released after writing. Acquiring LockFile is timeouted if it’s locked by other thread.
+Each process adds one line to the appropriate mapfile</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>outfile</strong> (<em>str</em>) – The output mapfile full path</li>
+<li><strong>entry</strong> (<em>str</em>) – The mapfile entry to write</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.mapfile.main.process">
+<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">process</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.process" title="Permalink to this definition">¶</a></dt>
+<dd><p>File process that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Handles file,</li>
+<li>Harvests directory attributes,</li>
+<li>Check DRS attributes against CV,</li>
+<li>Builds dataset ID,</li>
+<li>Retrieves file size,</li>
+<li>Does checksums,</li>
+<li>Deduces mapfile name,</li>
+<li>Writes the corresponding mapfile entry.</li>
+</ul>
+</div></blockquote>
+<p>Any error leads to skip the file. It does not stop the process.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<em>str</em>) – The source to process could be a path or a dataset ID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The output mapfile full path</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.mapfile.main.initializer">
+<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">initializer</code><span class="sig-paren">(</span><em>keys</em>, <em>values</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#initializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.initializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize process context by setting particular variables as global variables.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>keys</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – Argument name list</li>
+<li><strong>values</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – Argument value list</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.mapfile.main.run">
+<code class="descclassname">esgprep.mapfile.main.</code><code class="descname">run</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/main.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.main.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main process that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Instantiates processing context,</li>
+<li>Parallelizes file processing with threads pools,</li>
+<li>Copies mapfile(s) to the output directory,</li>
+<li>Evaluate exit status.</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>ArgumentParser</em>) – Command-line arguments parser</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-esgprep.utils.collectors">
+<span id="utils"></span><h2>utils<a class="headerlink" href="#module-esgprep.utils.collectors" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -1639,44 +1675,20 @@ it follows the symlink to complete the DRS attributes.</p>
 
 <dl class="class">
 <dt id="esgprep.utils.collectors.Collector">
-<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Collector</code><span class="sig-paren">(</span><em>sources</em>, <em>spinner=True</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">Collector</code><span class="sig-paren">(</span><em>sources</em>, <em>spinner=True</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base collector class to yield regular NetCDF files.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sources</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – The list of sources to parse</li>
-<li><strong>data</strong> (<em>object</em>) – Any object to attach to each collected data</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sources</strong> (<a class="reference internal" href="#esgprep.drs.handler.DRSTree.list" title="esgprep.drs.handler.DRSTree.list"><em>list</em></a>) – The list of sources to parse</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The data collector</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The data collector</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>iter</em></p>
-</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>iter</em></td>
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="esgprep.utils.collectors.Collector.attach">
-<code class="descname">attach</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#Collector.attach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.Collector.attach" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attach any object to the each collector item.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>item</strong> (<em>str</em>) – The collector item</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The collector item with the “data” object</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>tuple</em></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
@@ -1736,6 +1748,320 @@ indicating to match (i.e., include) or non-match (i.e., exclude) the correspondi
 
 </dd></dl>
 
+<span class="target" id="module-esgprep.utils.constants"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Constants used in this package.</td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-esgprep.utils.context"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Useful functions to use with this package.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="esgprep.utils.context.BaseContext">
+<em class="property">class </em><code class="descclassname">esgprep.utils.context.</code><code class="descname">BaseContext</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/context.html#BaseContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.context.BaseContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for processing context manager.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="esgprep.utils.context.GitHubBaseContext">
+<em class="property">class </em><code class="descclassname">esgprep.utils.context.</code><code class="descname">GitHubBaseContext</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/context.html#GitHubBaseContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.context.GitHubBaseContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base manager class for esgfetch* modules.</p>
+<dl class="method">
+<dt id="esgprep.utils.context.GitHubBaseContext.authenticate">
+<code class="descname">authenticate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/context.html#GitHubBaseContext.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.context.GitHubBaseContext.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds GitHub HTTP authenticator</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The HTTP authenticator</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>requests.auth.HTTPBasicAuth</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="esgprep.utils.context.MultiprocessingContext">
+<em class="property">class </em><code class="descclassname">esgprep.utils.context.</code><code class="descname">MultiprocessingContext</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/context.html#MultiprocessingContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.context.MultiprocessingContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base manager class for esgmapfile, esgdrs and esgcheckvocab modules.</p>
+<dl class="method">
+<dt id="esgprep.utils.context.MultiprocessingContext.get_checksum_type">
+<code class="descname">get_checksum_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/context.html#MultiprocessingContext.get_checksum_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.context.MultiprocessingContext.get_checksum_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the checksum type to use.
+Be careful to Exception constants by reading two different sections.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The checksum type</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-esgprep.utils.custom_exceptions"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Custom exceptions used in this package.</td>
+</tr>
+</tbody>
+</table>
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.InvalidNetCDFFile">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">InvalidNetCDFFile</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#InvalidNetCDFFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.InvalidNetCDFFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when invalid or corrupted NetCDF file.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.NoNetCDFAttribute">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">NoNetCDFAttribute</code><span class="sig-paren">(</span><em>attribute</em>, <em>path</em>, <em>variable=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#NoNetCDFAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.NoNetCDFAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a NetCDF attribute is missing.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.KeyNotFound">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">KeyNotFound</code><span class="sig-paren">(</span><em>key</em>, <em>keys=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#KeyNotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.KeyNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a class key is not found.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.InvalidChecksumType">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">InvalidChecksumType</code><span class="sig-paren">(</span><em>client</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#InvalidChecksumType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.InvalidChecksumType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when checksum type in unknown.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.ChecksumFail">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">ChecksumFail</code><span class="sig-paren">(</span><em>path</em>, <em>checksum_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#ChecksumFail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.ChecksumFail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a checksum fails.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.NoFileFound">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">NoFileFound</code><span class="sig-paren">(</span><em>paths</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#NoFileFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.NoFileFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when frequency no file found.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.GitHubException">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">GitHubException</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#GitHubException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.GitHubException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic exception for GitHub errors.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.GitHubUnauthorized">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">GitHubUnauthorized</code><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#GitHubUnauthorized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.GitHubUnauthorized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when no read access on GitHub repo.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.GitHubAPIRateLimit">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">GitHubAPIRateLimit</code><span class="sig-paren">(</span><em>reset_time</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#GitHubAPIRateLimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.GitHubAPIRateLimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when GitHub API rate limit exceeded.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.GitHubFileNotFound">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">GitHubFileNotFound</code><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#GitHubFileNotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.GitHubFileNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when no file found on GitHub repo.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.GitHubConnectionError">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">GitHubConnectionError</code><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#GitHubConnectionError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.GitHubConnectionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when the GitHub request fails.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esgprep.utils.custom_exceptions.GitHubReferenceNotFound">
+<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">GitHubReferenceNotFound</code><span class="sig-paren">(</span><em>ref</em>, <em>refs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#GitHubReferenceNotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.GitHubReferenceNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when invalid GitHub reference requested.</p>
+</dd></dl>
+
+<span class="target" id="module-esgprep.utils.custom_print"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Useful functions to use with this package.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="esgprep.utils.custom_print.COLOR">
+<em class="property">class </em><code class="descclassname">esgprep.utils.custom_print.</code><code class="descname">COLOR</code><span class="sig-paren">(</span><em>color=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_print.html#COLOR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_print.COLOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define color object for print statements
+Default is no color (i.e., restore original color)</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="esgprep.utils.custom_print.COLORS">
+<em class="property">class </em><code class="descclassname">esgprep.utils.custom_print.</code><code class="descname">COLORS</code><a class="reference internal" href="modules/esgprep/utils/custom_print.html#COLORS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_print.COLORS" title="Permalink to this definition">¶</a></dt>
+<dd><p>String colors for print statements</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="esgprep.utils.custom_print.TAGS">
+<em class="property">class </em><code class="descclassname">esgprep.utils.custom_print.</code><code class="descname">TAGS</code><a class="reference internal" href="modules/esgprep/utils/custom_print.html#TAGS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_print.TAGS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tags strings for print statements</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="esgprep.utils.custom_print.Print">
+<em class="property">class </em><code class="descclassname">esgprep.utils.custom_print.</code><code class="descname">Print</code><a class="reference internal" href="modules/esgprep/utils/custom_print.html#Print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_print.Print" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to manage and dispatch print statement depending on log and debug mode.</p>
+</dd></dl>
+
+<span class="target" id="module-esgprep.utils.github"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Useful functions to use with this package.</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="esgprep.utils.github.gh_request_content">
+<code class="descclassname">esgprep.utils.github.</code><code class="descname">gh_request_content</code><span class="sig-paren">(</span><em>url</em>, <em>auth=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/github.html#gh_request_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.github.gh_request_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the GitHub content of a file or a directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>url</strong> (<em>str</em>) – The GitHub url to request</li>
+<li><strong>auth</strong> (<em>requests.auth.HTTPBasicAuth</em>) – The authenticator object</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The GitHub request content</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>requests.models.Response</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Error</strong> – If user not authorized to read GitHub repository</li>
+<li><strong>Error</strong> – If user exceed the GitHub API rate limit</li>
+<li><strong>Error</strong> – If the queried content does not exist</li>
+<li><strong>Error</strong> – If the GitHub request fails for other reasons</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.utils.github.backup">
+<code class="descclassname">esgprep.utils.github.</code><code class="descname">backup</code><span class="sig-paren">(</span><em>f</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/github.html#backup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.github.backup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Backup a local file following different modes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>“one_version” renames the existing file in its source directory adding a “.bkp” extension to the filename.</li>
+<li>“keep_versions” moves the existing file in a child directory called “bkp” and add a timestamp to the filename.</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>f</strong> (<em>str</em>) – The file to backup</li>
+<li><strong>mode</strong> (<em>str</em>) – The backup mode to follow</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.utils.github.write_content">
+<code class="descclassname">esgprep.utils.github.</code><code class="descname">write_content</code><span class="sig-paren">(</span><em>outfile</em>, <em>content</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/github.html#write_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.github.write_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write GitHub content into a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>outfile</strong> (<em>str</em>) – The output file</li>
+<li><strong>content</strong> (<em>str</em>) – The file content to write</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.utils.github.do_fetching">
+<code class="descclassname">esgprep.utils.github.</code><code class="descname">do_fetching</code><span class="sig-paren">(</span><em>f</em>, <em>remote_checksum</em>, <em>keep</em>, <em>overwrite</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/github.html#do_fetching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.github.do_fetching" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True or False depending on decision schema</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>f</strong> (<em>str</em>) – The file to test</li>
+<li><strong>remote_checksum</strong> (<em>str</em>) – The remote file checksum</li>
+<li><strong>overwrite</strong> (<em>boolean</em>) – True if overwrite existing files</li>
+<li><strong>keep</strong> (<em>boolean</em>) – True if keep existing files</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True depending on the conditions</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>boolean</em></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.utils.github.githash">
+<code class="descclassname">esgprep.utils.github.</code><code class="descname">githash</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/github.html#githash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.github.githash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes Git checksum (as called by “git hash-object”) of a file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The SHA1 sum</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <span class="target" id="module-esgprep.utils.misc"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1747,35 +2073,36 @@ indicating to match (i.e., include) or non-match (i.e., exclude) the correspondi
 </tbody>
 </table>
 <dl class="class">
-<dt id="esgprep.utils.misc.LogFilter">
-<em class="property">class </em><code class="descclassname">esgprep.utils.misc.</code><code class="descname">LogFilter</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#LogFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.LogFilter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log filter with upper log level to use with the Python
-<a class="reference external" href="https://docs.python.org/2/library/logging.html">logging</a> module.</p>
-<dl class="method">
-<dt id="esgprep.utils.misc.LogFilter.filter">
-<code class="descname">filter</code><span class="sig-paren">(</span><em>log_record</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#LogFilter.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.LogFilter.filter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the upper log level.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="esgprep.utils.misc.init_logging">
-<code class="descclassname">esgprep.utils.misc.</code><code class="descname">init_logging</code><span class="sig-paren">(</span><em>log</em>, <em>debug=False</em>, <em>level='INFO'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#init_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.init_logging" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initiates the logging configuration (output, date/message formatting).
-If a directory is submitted the logfile name is unique and formatted as follows:
-<code class="docutils literal"><span class="pre">name-YYYYMMDD-HHMMSS-JOBID.log``If</span> <span class="pre">``None</span></code> the standard output is used.</p>
+<dt id="esgprep.utils.misc.ProcessContext">
+<em class="property">class </em><code class="descclassname">esgprep.utils.misc.</code><code class="descname">ProcessContext</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#ProcessContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.ProcessContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encapsulates the processing context/information for child process.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>log</strong> (<em>str</em>) – The logfile directory.</li>
-<li><strong>debug</strong> (<em>boolean</em>) – Debug mode.</li>
-<li><strong>quiet</strong> (<em>boolean</em>) – Silent mode.</li>
-<li><strong>level</strong> (<em>str</em>) – The log level.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>dict</em>) – Dictionary of argument to pass to child process</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The processing context</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>ProcessContext</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="esgprep.utils.misc.ncopen">
+<em class="property">class </em><code class="descclassname">esgprep.utils.misc.</code><code class="descname">ncopen</code><span class="sig-paren">(</span><em>path</em>, <em>mode='r'</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#ncopen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.ncopen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Properly opens a netCDF file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) – The netCDF file full path</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The netCDF dataset object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>netCDF4.Dataset</em></td>
 </tr>
 </tbody>
 </table>
@@ -1915,6 +2242,69 @@ Default is to match inclusive regex.</p>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="esgprep.utils.misc.get_checksum_pattern">
+<code class="descclassname">esgprep.utils.misc.</code><code class="descname">get_checksum_pattern</code><span class="sig-paren">(</span><em>checksum_type</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#get_checksum_pattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.get_checksum_pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build the checksum pattern depending on the checksum type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>checksum_type</strong> (<em>str</em>) – The checksum type</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The checksum pattern</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>re.Object</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.utils.misc.get_tracking_id">
+<code class="descclassname">esgprep.utils.misc.</code><code class="descname">get_tracking_id</code><span class="sig-paren">(</span><em>ffp</em>, <em>project</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#get_tracking_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.get_tracking_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get and validate tracking_id/PID string from netCDF global attributes of file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ffp</strong> (<em>str</em>) – The file full path</li>
+<li><strong>project</strong> (<em>str</em>) – The project name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">THe tracking_id string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.utils.misc.is_uuid">
+<code class="descclassname">esgprep.utils.misc.</code><code class="descname">is_uuid</code><span class="sig-paren">(</span><em>uuid_string</em>, <em>version=4</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#is_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.is_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True is validated string is a UUID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>uuid_string</strong> (<em>str</em>) – The string to validate</li>
+<li><strong>version</strong> (<em>int</em>) – The UUID version to use, default is 4</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if uuid_string is a valid uuid</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><em>boolean</em></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <span class="target" id="module-esgprep.utils.parser"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2024,51 +2414,20 @@ Default is to match inclusive regex.</p>
 </table>
 </dd></dl>
 
-<dl class="class">
-<dt id="esgprep.utils.parser.DirectoryType">
-<em class="property">class </em><code class="descclassname">esgprep.utils.parser.</code><code class="descname">DirectoryType</code><a class="reference internal" href="modules/esgprep/utils/parser.html#DirectoryType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.DirectoryType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instances of DirType are typically passed as type= arguments to the
-ArgumentParser add_argument() method.</p>
-</dd></dl>
-
-<span class="target" id="module-esgprep.utils.custom_exceptions"></span><table class="docutils field-list" frame="void" rules="none">
+<dl class="function">
+<dt id="esgprep.utils.parser.processes_validator">
+<code class="descclassname">esgprep.utils.parser.</code><code class="descname">processes_validator</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#processes_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.processes_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validates the max processes number.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">platform:</th><td class="field-body">Unix</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>str</em>) – The max processes number submitted</td>
 </tr>
-<tr class="field-even field"><th class="field-name">synopsis:</th><td class="field-body">Custom exceptions used in this package.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
 </tbody>
 </table>
-<dl class="exception">
-<dt id="esgprep.utils.custom_exceptions.InvalidNetCDFFile">
-<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">InvalidNetCDFFile</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#InvalidNetCDFFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.InvalidNetCDFFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when invalid or corrupted NetCDF file.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.utils.custom_exceptions.NoNetCDFAttribute">
-<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">NoNetCDFAttribute</code><span class="sig-paren">(</span><em>attribute</em>, <em>path</em>, <em>variable=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#NoNetCDFAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.NoNetCDFAttribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when a NetCDF attribute is missing.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.utils.custom_exceptions.KeyNotFound">
-<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">KeyNotFound</code><span class="sig-paren">(</span><em>key</em>, <em>keys=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#KeyNotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.KeyNotFound" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when a class key is not found.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.utils.custom_exceptions.InvalidChecksumType">
-<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">InvalidChecksumType</code><span class="sig-paren">(</span><em>client</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#InvalidChecksumType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.InvalidChecksumType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when checksum type in unknown.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="esgprep.utils.custom_exceptions.ChecksumFail">
-<em class="property">exception </em><code class="descclassname">esgprep.utils.custom_exceptions.</code><code class="descname">ChecksumFail</code><span class="sig-paren">(</span><em>path</em>, <em>checksum_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/custom_exceptions.html#ChecksumFail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_exceptions.ChecksumFail" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when a checksum fails.</p>
 </dd></dl>
 
 <p><em>Module author: Levavasseur Guillaume (CNRS/IPSL) &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
@@ -2117,7 +2476,7 @@ ArgumentParser add_argument() method.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.8.1',
+            VERSION:'2.9.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

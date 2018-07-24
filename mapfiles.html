@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generate mapfile for ESGF publication &mdash; esgprep 2.8.1 documentation</title>
+  <title>Generate mapfile for ESGF publication &mdash; esgprep 2.9.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.8.1 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.9.0 documentation" href="index.html"/>
         <link rel="next" title="Frequently asked questions" href="faq.html"/>
         <link rel="prev" title="Check CV against configuration INI files" href="checkvocab.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                2.8
+                2.9
               </div>
             
           
@@ -95,11 +95,13 @@
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetchtables.html">Fetch CMOR tables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="checkvocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Generate mapfile for ESGF publication</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#default-mapfile-generation">Default mapfile generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mapfile-without-files-checksums">Mapfile without files checksums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mapfile-with-pre-calculated-checksums">Mapfile with pre-calculated checksums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mapfile-without-drs-versions">Mapfile without DRS versions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mapfile-name-using-tokens">Mapfile name using tokens</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#organize-your-mapfiles">Organize your mapfiles</a></li>
@@ -206,7 +208,7 @@ describes a file to publish, using the following format:</p>
 <dl class="docutils">
 <dt>Several <code class="docutils literal"><span class="pre">esgmapfile</span></code> actions are available to manage your mapfiles:</dt>
 <dd><ul class="first last simple">
-<li><code class="docutils literal"><span class="pre">make</span></code> generates the mapfiles,</li>
+<li><code class="docutils literal"><span class="pre">make</span></code> generates the mapfiles (the default),</li>
 <li><code class="docutils literal"><span class="pre">show</span></code> displays the expected mapfiles path to be generated.</li>
 </ul>
 </dd>
@@ -225,6 +227,18 @@ directory is used.</p>
 <p>Because this could be time consuming <code class="docutils literal"><span class="pre">--no-checksum</span></code> allows you not include the file checksum into your mapfile(s).</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
 </pre></div>
+</div>
+</div>
+<div class="section" id="mapfile-with-pre-calculated-checksums">
+<h2>Mapfile with pre-calculated checksums<a class="headerlink" href="#mapfile-with-pre-calculated-checksums" title="Permalink to this headline">¶</a></h2>
+<p>If your file checkusms have been already caclulated apart, you can submit a file to <code class="docutils literal"><span class="pre">esgmapfile</span></code> with the checksum
+list. This checksum file must have the same format as the output of the UNIX command-lines “<a href="#id1"><span class="problematic" id="id2">*</span></a>sum”.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --checksums-from /PATH/TO/CHECKSUMS/FILE
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In the case of unfound checksums, it falls back to compute the checksum as normal.</p>
 </div>
 </div>
 <div class="section" id="mapfile-without-drs-versions">
@@ -323,9 +337,8 @@ You can show the mapfiles full path to be generated from:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile show --project PROJECT_ID --dataset-id DATASET_ID
 </pre></div>
 </div>
-<p>In the case of <code class="docutils literal"><span class="pre">--dataset-list</span></code> and <code class="docutils literal"><span class="pre">--dataset-id</span></code> if no file or dataset ID submitted, the standard input is used.</p>
+<p>In the case of <code class="docutils literal"><span class="pre">--dataset-list</span></code> if no file submitted, the standard input is used.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgmapfile show --project PROJECT_ID --dataset-list &lt; /PATH/TO/TXT_FILE
-$&gt; esgmapfile show --project PROJECT_ID --dataset-id &lt; DATASET_ID
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -335,6 +348,14 @@ $&gt; esgmapfile show --project PROJECT_ID --dataset-id &lt; DATASET_ID
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">All the <code class="docutils literal"><span class="pre">make</span></code> arguments can be safely combined with <code class="docutils literal"><span class="pre">show</span></code>.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Print only mapfile basename instead of the mapfile full path adding <code class="docutils literal"><span class="pre">--basename</span></code> flag.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">To only print the result without any other info use <code class="docutils literal"><span class="pre">--quiet</span></code> flag.</p>
 </div>
 </div>
 <div class="section" id="exit-status">
@@ -347,19 +368,8 @@ $&gt; esgmapfile show --project PROJECT_ID --dataset-id &lt; DATASET_ID
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt>Status = 1</dt>
-<dd>No files found. No mapfile(s) generated.</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Status = 2</dt>
-<dd>Some scan errors occurred. Some files have been skipped or failed during the scan potentially leading to incomplete
-mapfiles. See the error logfile.</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Status = 3</dt>
-<dd>All the files have been skipped or failed during the scan leading to no mapfile(s). See the error logfile.</dd>
+<dt>Status &gt; 0</dt>
+<dd>Some scan errors occurred or files have been skipped. The error code indicates the number of errors.</dd>
 </dl>
 </li>
 </ul>
@@ -411,7 +421,7 @@ mapfiles. See the error logfile.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.8.1',
+            VERSION:'2.9.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

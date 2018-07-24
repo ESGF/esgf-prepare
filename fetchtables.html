@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fetch ESGF configuration INI files &mdash; esgprep 2.9.0 documentation</title>
+  <title>Fetch CMOR tables &mdash; esgprep 2.9.0 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="esgprep 2.9.0 documentation" href="index.html"/>
-        <link rel="next" title="Fetch CMOR tables" href="fetchtables.html"/>
-        <link rel="prev" title="Generic usage" href="usage.html"/> 
+        <link rel="next" title="Manage local data through the DRS" href="drs.html"/>
+        <link rel="prev" title="Fetch ESGF configuration INI files" href="fetchini.html"/> 
 
   
   <script src="static/js/modernizr.min.js"></script>
@@ -94,9 +94,12 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Fetch ESGF configuration INI files</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#fetch-esg-project-id-ini-file-s">Fetch <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> file(s)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fetch-file-s-from-the-devel-branch">Fetch file(s) from the devel branch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Fetch CMOR tables</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fetch-tables-for-one-or-several-project">Fetch tables for one or several project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fetch-tables-from-particular-branch-or-tag">Fetch tables from particular branch or tag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fetch-tables-using-branch-or-tag-regular-expression">Fetch tables using branch or tag regular expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#change-output-directory">Change output directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#keep-existing-file-s">Keep existing file(s)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#enforce-overwriting">Enforce overwriting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#enable-file-backup">Enable file backup</a></li>
@@ -104,7 +107,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="fetchtables.html">Fetch CMOR tables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="checkvocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
@@ -156,13 +158,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Fetch ESGF configuration INI files</li>
+      <li>Fetch CMOR tables</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="sources/fetchini.rst.txt" rel="nofollow"> View page source</a>
+            <a href="sources/fetchtables.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -175,43 +177,71 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="fetch-esgf-configuration-ini-files">
-<span id="fetchini"></span><h1>Fetch ESGF configuration INI files<a class="headerlink" href="#fetch-esgf-configuration-ini-files" title="Permalink to this headline">¶</a></h1>
-<p>The ESGF publishing client and most of the ESGF tools rely on configuration files of different kinds, which are the
-primary means of configuring the ESGF publisher. The <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> files declare all facets and allowed
-values according to the <em>Data Reference Syntax</em> (DRS) and the controlled vocabularies of the corresponding project. The
-<code class="docutils literal"><span class="pre">fetch-ini</span></code> command allows you to download preset files hosted on
-<a class="reference external" href="https://github.com/ESGF/config/">a GitHub repository</a>. If you prepare your data outside of an ESGF node using
-<code class="docutils literal"><span class="pre">esgprep</span></code> as a full standalone toolbox, this step is mandatory. Keep in mind that the fetched files have to be
-reviewed to ensure a correct configuration of your projects.</p>
-<div class="section" id="fetch-esg-project-id-ini-file-s">
-<h2>Fetch <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> file(s)<a class="headerlink" href="#fetch-esg-project-id-ini-file-s" title="Permalink to this headline">¶</a></h2>
-<p>Without project argument, all the configuration files will be downloaded.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchini
-$&gt; esgfetchini --project PROJECT_ID
-$&gt; esgfetchini --project PROJECT_ID1 PROJECT_ID2
+  <div class="section" id="fetch-cmor-tables">
+<span id="fetchtables"></span><h1>Fetch CMOR tables<a class="headerlink" href="#fetch-cmor-tables" title="Permalink to this headline">¶</a></h1>
+<p>Some ESGF tools relating to standardization process or data quality control require tables describing CF variables,
+theirs coordinates or their attributes. For instance, <a class="reference external" href="https://cmor.llnl.gov/mydoc_cmip6_validator/">PrePARE</a> relies
+on those tables to ensure netCDF files comply to CMIP6 specifications and Data Reference Syntax. Such tables are
+initially produced to standardize ESGF data in a CF-compliant way trhough the Climate Model Output Rewriter (CMOR).
+The CMOR tables are available for different ESGF projects and hosted on an official <a class="reference external" href="https://github.com/PCMDI">GitHub repository</a>.
+Keep in mind that the fetched files have to be reviewed to ensure a correct configuration of your projects.</p>
+<div class="section" id="fetch-tables-for-one-or-several-project">
+<h2>Fetch tables for one or several project<a class="headerlink" href="#fetch-tables-for-one-or-several-project" title="Permalink to this headline">¶</a></h2>
+<p>Without project argument, all the available tables will be downloaded.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchtables
+$&gt; esgfetchtables --project PROJECT_ID
+$&gt; esgfetchtables --project PROJECT_ID1 PROJECT_ID2
 </pre></div>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">If a configuration file already exists, the default is to overwrite it only if local and remote checksums are different.</p>
+<p class="last">If a table already exists for one project, the default is to overwrite it only if local and remote checksums are different.</p>
 </div>
 </div>
-<div class="section" id="fetch-file-s-from-the-devel-branch">
-<h2>Fetch file(s) from the devel branch<a class="headerlink" href="#fetch-file-s-from-the-devel-branch" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchini --devel
+<div class="section" id="fetch-tables-from-particular-branch-or-tag">
+<h2>Fetch tables from particular branch or tag<a class="headerlink" href="#fetch-tables-from-particular-branch-or-tag" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchtables --branch BRANCH
+$&gt; esgfetchtables --tag TAG
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><code class="docutils literal"><span class="pre">--branch</span></code> and <code class="docutils literal"><span class="pre">--tag</span></code> cannot be used simultaneously. Default is <code class="docutils literal"><span class="pre">--branch</span> <span class="pre">master</span></code>.</p>
+</div>
+</div>
+<div class="section" id="fetch-tables-using-branch-or-tag-regular-expression">
+<h2>Fetch tables using branch or tag regular expression<a class="headerlink" href="#fetch-tables-using-branch-or-tag-regular-expression" title="Permalink to this headline">¶</a></h2>
+<p>This can be useful to fetch several branches or tags at a time.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchtables --branch-regex REGEX
+$&gt; esgfetchtables --tag-regex REGEX
 </pre></div>
 </div>
 </div>
+<div class="section" id="change-output-directory">
+<h2>Change output directory<a class="headerlink" href="#change-output-directory" title="Permalink to this headline">¶</a></h2>
+<p>If not path submitted, the table will be download in <code class="docutils literal"><span class="pre">/usr/local</span></code> by default. If it doesn’t exist or is inaccessible
+for writing, your current working directory will be used instead. To change the tables output directory:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchtables --table-dir PATH
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the submitted directory doesn’t exist it will be created.</p>
+</div>
+<p><code class="docutils literal"><span class="pre">esgfetchtables</span></code> downloads tables into the appropriate <code class="docutils literal"><span class="pre">&lt;project&gt;-cmor-tables</span></code> folder by adding a sub-folder
+corresponding to the desired branch(s) or tag(s). Thus, the final output directory has the following format:
+<code class="docutils literal"><span class="pre">&lt;table_dir&gt;/&lt;project&gt;-cmor-tables/&lt;branch&gt;/tag&gt;</span></code>.</p>
+<p>The branch or tag sub-folder can be disable to follow <code class="docutils literal"><span class="pre">&lt;table_dir&gt;/&lt;project&gt;-cmor-tables/</span></code> format only:</p>
+</div>
 <div class="section" id="keep-existing-file-s">
 <h2>Keep existing file(s)<a class="headerlink" href="#keep-existing-file-s" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchini -k
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchtables -k
 </pre></div>
 </div>
 </div>
 <div class="section" id="enforce-overwriting">
 <h2>Enforce overwriting<a class="headerlink" href="#enforce-overwriting" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchini -o
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchtables -o
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -228,8 +258,8 @@ $&gt; esgfetchini --project PROJECT_ID1 PROJECT_ID2
 <li><code class="docutils literal"><span class="pre">keep_versions</span></code> moves the existing file to a subdirectory called <code class="docutils literal"><span class="pre">bkp</span></code> and add a timestamp to the filename.</li>
 </ul>
 </div></blockquote>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchini -b
-$&gt; esgfetchini -b keep_versions
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; esgfetchtables -b
+$&gt; esgfetchtables -b keep_versions
 </pre></div>
 </div>
 </div>
@@ -248,7 +278,7 @@ $&gt; esgfetchini -b keep_versions
 <div><ul class="simple">
 <li><dl class="first docutils">
 <dt>Status = 0</dt>
-<dd>All the configuration files have been successfully fetched.</dd>
+<dd>All the tables have been successfully fetched.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
@@ -271,10 +301,10 @@ $&gt; esgfetchini -b keep_versions
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="fetchtables.html" class="btn btn-neutral float-right" title="Fetch CMOR tables" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="drs.html" class="btn btn-neutral float-right" title="Manage local data through the DRS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="usage.html" class="btn btn-neutral" title="Generic usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="fetchini.html" class="btn btn-neutral" title="Fetch ESGF configuration INI files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

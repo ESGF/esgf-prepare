@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Change Log &mdash; esgprep 2.8.1 documentation</title>
+  <title>Change Log &mdash; esgprep 2.9.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.8.1 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.9.0 documentation" href="index.html"/>
         <link rel="next" title="Code documentation" href="autodoc.html"/>
         <link rel="prev" title="Credits" href="credits.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                2.8
+                2.9
               </div>
             
           
@@ -95,12 +95,16 @@
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetchtables.html">Fetch CMOR tables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="checkvocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v2-9-0-2018-07-24">v2.9.0 (2018-07-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-8-3-2018-06-25">v2.8.3 (2018-06-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-8-2-2018-06-06">v2.8.2 (2018-06-06)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-8-1-2018-04-20">v2.8.1 (2018-04-20)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-8-0-2018-04-05">v2.8.0 (2018-04-05)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-7-40-2018-03-14">v2.7.40 (2018-03-14)</a></li>
@@ -178,6 +182,66 @@
             
   <div class="section" id="change-log">
 <span id="log"></span><h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v2-9-0-2018-07-24">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.9.0">v2.9.0</a> (2018-07-24)<a class="headerlink" href="#v2-9-0-2018-07-24" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.8.3...v2.9.0">Full
+Changelog</a></p>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>in esgmapfile, do not skip “hidden” directories which are part of the
+specified path
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/37">#37</a></li>
+</ul>
+</div>
+<div class="section" id="v2-8-3-2018-06-25">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.8.3">v2.8.3</a> (2018-06-25)<a class="headerlink" href="#v2-8-3-2018-06-25" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.8.2...v2.8.3">Full
+Changelog</a></p>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>GitHub env variable to release API rate limit
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/35">#35</a></li>
+<li>Thread error when run occurs in the same directory as the scanned
+directory <a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/34">#34</a></li>
+<li>GitHubAPIRateLimit hit when testing installation
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/33">#33</a></li>
+<li>esgdrs: add option to disable checksums
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/31">#31</a></li>
+<li>esgdrs: use checksums from mapfiles if available
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/30">#30</a></li>
+<li>esgdrs: only checksum pairs of files with same name
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/29">#29</a></li>
+<li>Feature request: esgmapfile to use table of checksums
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/26">#26</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul class="simple">
+<li>Various changes re esgfetchtables - details below.
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/38">#38</a>
+(<a class="reference external" href="https://github.com/alaniwi">alaniwi</a>)</li>
+</ul>
+</div>
+<div class="section" id="v2-8-2-2018-06-06">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.8.2">v2.8.2</a> (2018-06-06)<a class="headerlink" href="#v2-8-2-2018-06-06" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.8.1...v2.8.2">Full
+Changelog</a></p>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>Review the args with FileType
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/27">#27</a></li>
+<li>failure in esgtest_publish and manual test
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/25">#25</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul class="simple">
+<li>stat outside iterator in checksum
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/32">#32</a>
+(<a class="reference external" href="https://github.com/alaniwi">alaniwi</a>)</li>
+<li>exception handling tweaks
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/28">#28</a>
+(<a class="reference external" href="https://github.com/alaniwi">alaniwi</a>)</li>
+</ul>
+</div>
 <div class="section" id="v2-8-1-2018-04-20">
 <h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.8.1">v2.8.1</a> (2018-04-20)<a class="headerlink" href="#v2-8-1-2018-04-20" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.8.0...v2.8.1">Full
@@ -509,7 +573,7 @@ in “esgprep drs”
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.8.1',
+            VERSION:'2.9.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

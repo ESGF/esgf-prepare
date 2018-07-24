@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.fetchini.main &mdash; esgprep 2.8.1 documentation</title>
+  <title>esgprep.fetchini.main &mdash; esgprep 2.9.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.8.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.9.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                2.8
+                2.9
               </div>
             
           
@@ -94,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../fetchini.html">Fetch ESGF configuration INI files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fetchtables.html">Fetch CMOR tables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../checkvocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
@@ -174,105 +175,35 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">hashlib</span> <span class="k">import</span> <span class="n">sha1</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
 
-<span class="kn">import</span> <span class="nn">requests</span>
-
-<span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">context</span> <span class="k">import</span> <span class="n">ProcessingContext</span>
-<span class="kn">from</span> <span class="nn">custom_exceptions</span> <span class="k">import</span> <span class="n">GitHubException</span>
-<span class="kn">from</span> <span class="nn">misc</span> <span class="k">import</span> <span class="n">gh_request_content</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.github</span> <span class="k">import</span> <span class="o">*</span>
 
 
-<div class="viewcode-block" id="backup"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.backup">[docs]</a><span class="k">def</span> <span class="nf">backup</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="make_outdir"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.make_outdir">[docs]</a><span class="k">def</span> <span class="nf">make_outdir</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Backup a local file following different modes:</span>
+<span class="sd">    Build the output directory as follows:</span>
 
-<span class="sd">     * &quot;one_version&quot; renames the existing file in its source directory adding a &quot;.bkp&quot; extension to the filename.</span>
-<span class="sd">     * &quot;keep_versions&quot; moves the existing file in a child directory called &quot;bkp&quot; and add a timestamp to the filename.</span>
-
-<span class="sd">    :param str f: The file to backup</span>
-<span class="sd">    :param str mode: The backup mode to follow</span>
+<span class="sd">    :param str root: The root directory</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;one_version&#39;</span><span class="p">:</span>
-            <span class="n">dst</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.bkp&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;keep_versions&#39;</span><span class="p">:</span>
-            <span class="n">bkpdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="s1">&#39;bkp&#39;</span><span class="p">)</span>
-            <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bkpdir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">-%H%M%S&#39;</span><span class="p">),</span>
-                                                      <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)))</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">bkpdir</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-                <span class="k">pass</span>
-            <span class="k">finally</span><span class="p">:</span>
-                <span class="c1"># Overwritten silently if destination file already exists</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># No backup = default</span>
-            <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="write_content"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.write_content">[docs]</a><span class="k">def</span> <span class="nf">write_content</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Write GitHub content into a file.</span>
-<span class="sd">    </span>
-<span class="sd">    :param str outfile: The output file </span>
-<span class="sd">    :param str content: The file content to write</span>
-<span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="do_fetching"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.do_fetching">[docs]</a><span class="k">def</span> <span class="nf">do_fetching</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">remote_checksum</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns True or False depending on decision schema</span>
-
-<span class="sd">    :param str f: The file to test</span>
-<span class="sd">    :param str remote_checksum: The remote file checksum</span>
-<span class="sd">    :param boolean overwrite: True if overwrite existing files</span>
-<span class="sd">    :param boolean keep: True if keep existing files</span>
-<span class="sd">    :returns: True depending on the conditions</span>
-<span class="sd">    :rtype: *boolean*</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">githash</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">==</span> <span class="n">remote_checksum</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Local &quot;</span><span class="si">{}</span><span class="s1">&quot; does not match version on GitHub. &#39;</span>
-                                <span class="s1">&#39;The file is either outdated or was modified.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">))))</span>
-                <span class="k">if</span> <span class="n">keep</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">False</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">True</span></div>
-
-
-<div class="viewcode-block" id="githash"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.githash">[docs]</a><span class="k">def</span> <span class="nf">githash</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Makes Git checksum (as called by &quot;git hash-object&quot;) of a file</span>
-
-<span class="sd">    :param outfile:</span>
-<span class="sd">    :returns: The SHA1 sum</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">sha1</span><span class="p">()</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;blob </span><span class="si">%u</span><span class="se">\0</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">unicode</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">())</span></div>
+    <span class="n">outdir</span> <span class="o">=</span> <span class="n">root</span>
+    <span class="c1"># If directory does not already exist</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">outdir</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> created&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># If default tables directory does not exists and without write access</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Cannot use &quot;</span><span class="si">{}</span><span class="s1">&quot; (OSError </span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">) -- &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;Use &quot;</span><span class="si">{}</span><span class="s1">&quot; instead.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;ini&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">outdir</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> created&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">outdir</span></div>
 
 
 <div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.main.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
@@ -289,27 +220,46 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Instantiate processing context manager</span>
     <span class="k">with</span> <span class="n">ProcessingContext</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">ctx</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">targets</span><span class="p">:</span>
-                <span class="c1"># Set full url</span>
-                <span class="n">url</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">INI_FILE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span>
+        <span class="c1"># Make output directory</span>
+        <span class="n">outdir</span> <span class="o">=</span> <span class="n">make_outdir</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span>
+        <span class="c1"># Counter</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># Set output file full path</span>
-                <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">INI_FILE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="p">))</span>
-                <span class="c1"># Get GitHub file content</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">gh_request_content</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
-                <span class="n">sha</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;sha&#39;</span><span class="p">]</span>
-                <span class="n">content</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;download_url&#39;</span><span class="p">],</span> <span class="n">auth</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-                <span class="c1"># Fetching True/False depending on flags and file checksum</span>
-                <span class="k">if</span> <span class="n">do_fetching</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">sha</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">keep</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">overwrite</span><span class="p">):</span>
-                    <span class="c1"># Backup old file if exists</span>
-                    <span class="n">backup</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">backup_mode</span><span class="p">)</span>
-                    <span class="c1"># Write new file</span>
-                    <span class="n">write_content</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> :: FETCHED (in </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_URL</span><span class="p">),</span> <span class="n">outfile</span><span class="p">))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> :: SKIPPED&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">LEN_URL</span><span class="p">)))</span>
-        <span class="k">except</span> <span class="n">GitHubException</span><span class="p">:</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="kc">True</span></div>
+                <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                <span class="c1"># Get checksum</span>
+                <span class="n">download_url</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;download_url&#39;</span><span class="p">]</span>
+                <span class="n">sha</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;sha&#39;</span><span class="p">]</span>
+                <span class="c1"># Get GitHub file</span>
+                <span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">download_url</span><span class="p">,</span>
+                      <span class="n">outfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">,</span>
+                      <span class="n">auth</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">auth</span><span class="p">,</span>
+                      <span class="n">sha</span><span class="o">=</span><span class="n">sha</span><span class="p">,</span>
+                      <span class="n">keep</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">keep</span><span class="p">,</span>
+                      <span class="n">overwrite</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">overwrite</span><span class="p">,</span>
+                      <span class="n">backup_mode</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">backup_mode</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+                <span class="k">raise</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">download_url</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;download_url&#39;</span><span class="p">]</span>
+                <span class="n">exc</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">TAGS</span><span class="o">.</span><span class="n">FAIL</span> <span class="o">+</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">HEADER</span><span class="p">(</span><span class="n">download_url</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">progress</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">percentage</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">progress</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="n">ctx</span><span class="o">.</span><span class="n">nfiles</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">OKBLUE</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">Fetching project(s) config: &#39;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">% | </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1"> files&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">percentage</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">nfiles</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># Flush buffer</span>
+    <span class="n">Print</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="c1"># Evaluate errors and exit with appropriated return code</span>
+    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -346,7 +296,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.8.1',
+            VERSION:'2.9.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

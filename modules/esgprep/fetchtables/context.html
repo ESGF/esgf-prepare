@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.fetchini.context &mdash; esgprep 2.9.0 documentation</title>
+  <title>esgprep.fetchtables.context &mdash; esgprep 2.9.0 documentation</title>
   
 
   
@@ -148,7 +148,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>esgprep.fetchini.context</li>
+      <li>esgprep.fetchtables.context</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -165,7 +165,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for esgprep.fetchini.context</h1><div class="highlight"><pre>
+  <h1>Source code for esgprep.fetchtables.context</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
@@ -176,12 +176,13 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.constants</span> <span class="k">import</span> <span class="n">GITHUB_API_PARAMETER</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.collectors</span> <span class="k">import</span> <span class="n">FilterCollection</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.context</span> <span class="k">import</span> <span class="n">GitHubBaseContext</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.github</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.custom_print</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.github</span> <span class="k">import</span> <span class="n">gh_request_content</span>
 
 
-<div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchini.context.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="n">GitHubBaseContext</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.fetchtables.context.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="n">GitHubBaseContext</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Encapsulates the processing context/information for main process.</span>
 
@@ -193,21 +194,47 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ProcessingContext</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">i</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ref</span> <span class="o">=</span> <span class="s1">&#39;devel&#39;</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">devel</span> <span class="k">else</span> <span class="s1">&#39;master&#39;</span>
+        <span class="c1"># Fetching context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tables_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">tables_dir</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_subfolder</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">no_subfolder</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">GITHUB_CONTENT_API</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">+=</span> <span class="n">GITHUB_API_PARAMETER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;ref&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ref_url</span> <span class="o">=</span> <span class="n">GITHUB_REFS_API</span>
+        <span class="c1"># Fetching behavior</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">tag</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_url</span> <span class="o">+=</span> <span class="s1">&#39;/tags&#39;</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">tag_regex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_regex</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">tag_regex</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_url</span> <span class="o">+=</span> <span class="s1">&#39;/tags&#39;</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">branch_regex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_regex</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">branch_regex</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_url</span> <span class="o">+=</span> <span class="s1">&#39;/heads&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if not set with --branch default is &quot;master&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">branch</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_url</span> <span class="o">+=</span> <span class="s1">&#39;/heads&#39;</span>
+        <span class="c1"># Fetching filters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span> <span class="o">=</span> <span class="n">FilterCollection</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">include_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">regex</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">include_file</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Default include all files</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="s1">&#39;^.*$&#39;</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">exclude_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">regex</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">exclude_file</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Default exclude hidden files</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_filter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="s1">&#39;^\..*$&#39;</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ProcessingContext</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Fetch from &quot;</span><span class="si">{}</span><span class="s1">&quot; GitHub reference&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">))</span>
-        <span class="c1"># Get files infos from repository content</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">gh_request_content</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
-        <span class="n">infos</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span> <span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">INI_PATTERN</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])}</span>
+        <span class="c1"># Get the project list to retrieve</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">gh_request_content</span><span class="p">(</span><span class="n">GITHUB_REPOS_API</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
+        <span class="n">repos</span> <span class="o">=</span> <span class="p">[</span><span class="n">repo</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">REPO_NAME_PATTERN</span><span class="p">,</span> <span class="n">repo</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])]</span>
         <span class="c1"># Get the list of project to fetch</span>
-        <span class="n">p_found</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">INI_PATTERN</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">infos</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
-        <span class="c1"># Control specified project names</span>
+        <span class="n">p_found</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">REPO_NAME_PATTERN</span><span class="p">,</span> <span class="n">repo</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">repos</span><span class="p">])</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">:</span>
             <span class="n">p</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
             <span class="n">p_avail</span> <span class="o">=</span> <span class="n">p_found</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -215,16 +242,9 @@
                 <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;No such project(s): </span><span class="si">{}</span><span class="s1"> -- &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">p_avail</span><span class="p">)))</span>
                 <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;Available remote projects are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">p_found</span><span class="p">)))</span>
                 <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">p_avail</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Get all projects</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">p_found</span>
-        <span class="c1"># Remove undesired files</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">infos</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">[</span><span class="s1">&#39;esg.</span><span class="si">{}</span><span class="s1">.ini&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">]}</span>
-        <span class="c1"># Get number of files to fetch</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfiles</span><span class="p">:</span>
-            <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No files found on remote repository&#39;</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 </pre></div>
 
