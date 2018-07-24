@@ -16,7 +16,7 @@ from utils.parser import MultilineFormatter, CustomArgumentParser
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
 
-def get_args():
+def get_args(args=None):
     """
     Returns parsed command-line arguments.
 
@@ -101,16 +101,16 @@ def get_args():
         action='store_true',
         default=False,
         help=DEVEL_HELP)
-    return main.prog, main.parse_args()
+    return main.prog, main.parse_args(args)
 
 
-def main():
+def main(args=None):
     """
     Run main program
 
     """
     # Get command-line arguments
-    prog, args = get_args()
+    prog, args = get_args(args)
     setattr(args, 'prog', prog)
     if not hasattr(args, 'quiet'):
         setattr(args, 'quiet', None)

@@ -51,7 +51,7 @@ class ProcessingContext(GitHubBaseContext):
             # Get all projects
             self.project = p_found
         # Remove undesired files
-        self.files = {k: v for k, v in infos.items() if ['esg.{}.ini'.format(p) for p in self.project]}
+        self.files = {k: v for k, v in infos.items() if k in ['esg.{}.ini'.format(p) for p in self.project]}
         # Get number of files to fetch
         self.nfiles = len(self.files)
         if not self.nfiles:
