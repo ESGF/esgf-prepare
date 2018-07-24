@@ -4,6 +4,69 @@
 Change Log
 ==========
 
+`v2.9.0 <https://github.com/ESGF/esgf-prepare/tree/v2.9.0>`__ (2018-07-24)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.8.3...v2.9.0>`__
+
+**Closed issues:**
+
+-  in esgmapfile, do not skip "hidden" directories which are part of the
+   specified path
+   `#37 <https://github.com/ESGF/esgf-prepare/issues/37>`__
+
+`v2.8.3 <https://github.com/ESGF/esgf-prepare/tree/v2.8.3>`__ (2018-06-25)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.8.2...v2.8.3>`__
+
+**Closed issues:**
+
+-  GitHub env variable to release API rate limit
+   `#35 <https://github.com/ESGF/esgf-prepare/issues/35>`__
+-  Thread error when run occurs in the same directory as the scanned
+   directory `#34 <https://github.com/ESGF/esgf-prepare/issues/34>`__
+-  GitHubAPIRateLimit hit when testing installation
+   `#33 <https://github.com/ESGF/esgf-prepare/issues/33>`__
+-  esgdrs: add option to disable checksums
+   `#31 <https://github.com/ESGF/esgf-prepare/issues/31>`__
+-  esgdrs: use checksums from mapfiles if available
+   `#30 <https://github.com/ESGF/esgf-prepare/issues/30>`__
+-  esgdrs: only checksum pairs of files with same name
+   `#29 <https://github.com/ESGF/esgf-prepare/issues/29>`__
+-  Feature request: esgmapfile to use table of checksums
+   `#26 <https://github.com/ESGF/esgf-prepare/issues/26>`__
+
+**Merged pull requests:**
+
+-  Various changes re esgfetchtables - details below.
+   `#38 <https://github.com/ESGF/esgf-prepare/pull/38>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+
+`v2.8.2 <https://github.com/ESGF/esgf-prepare/tree/v2.8.2>`__ (2018-06-06)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.8.1...v2.8.2>`__
+
+**Closed issues:**
+
+-  Review the args with FileType
+   `#27 <https://github.com/ESGF/esgf-prepare/issues/27>`__
+-  failure in esgtest\_publish and manual test
+   `#25 <https://github.com/ESGF/esgf-prepare/issues/25>`__
+
+**Merged pull requests:**
+
+-  stat outside iterator in checksum
+   `#32 <https://github.com/ESGF/esgf-prepare/pull/32>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+-  exception handling tweaks
+   `#28 <https://github.com/ESGF/esgf-prepare/pull/28>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+
 `v2.8.1 <https://github.com/ESGF/esgf-prepare/tree/v2.8.1>`__ (2018-04-20)
 --------------------------------------------------------------------------
 
