@@ -9,7 +9,7 @@
 import os
 import sys
 from argparse import FileType
-
+from esgprep.utils.help import *
 from esgprep.checkvocab.main import run
 from utils.constants import *
 from utils.parser import MultilineFormatter, DirectoryChecker, regex_validator, CustomArgumentParser, keyval_converter, \
@@ -57,7 +57,7 @@ def get_args():
         nargs='?',
         help=LOG_HELP)
     main.add_argument(
-        '--debug',
+        '-d', '--debug',
         action='store_true',
         default=False,
         help=VERBOSE_HELP)
@@ -88,7 +88,7 @@ def get_args():
         help=DATASET_LIST_HELP)
     main.add_argument(
         '-p', '--project',
-        metavar='PROJECT_ID',
+        metavar='NAME',
         type=str,
         required=True,
         help=PROJECT_HELP['checkvocab'])
@@ -100,19 +100,19 @@ def get_args():
         help=SET_KEY_HELP)
     main.add_argument(
         '--ignore-dir',
-        metavar="PYTHON_REGEX",
+        metavar="'^.*/(files|latest|\.\w*).*$'",
         type=regex_validator,
         default='^.*/(files|latest|\.[\w]*).*$',
         help=IGNORE_DIR_HELP)
     main.add_argument(
         '--include-file',
-        metavar='PYTHON_REGEX',
+        metavar="'^.*\.nc$'",
         type=regex_validator,
         action='append',
-        help=INCLUDE_FILE_HELP)
+        help=INCLUDE_FILE_HELP['checkvocab'])
     main.add_argument(
         '--exclude-file',
-        metavar='PYTHON_REGEX',
+        metavar="'^\..*$'",
         type=regex_validator,
         action='append',
         help=EXCLUDE_FILE_HELP)

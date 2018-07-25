@@ -11,6 +11,7 @@ import sys
 
 from esgprep.fetchtables.main import run
 from utils.constants import *
+from utils.help import *
 from utils.parser import MultilineFormatter, CustomArgumentParser, regex_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
@@ -55,13 +56,13 @@ def get_args():
         nargs='?',
         help=LOG_HELP)
     main.add_argument(
-        '--debug',
+        '-d', '--debug',
         action='store_true',
         default=False,
         help=VERBOSE_HELP)
     main.add_argument(
         '-p', '--project',
-        metavar='PROJECT_ID',
+        metavar='NAME',
         type=str,
         nargs='+',
         help=PROJECT_HELP['fetchtables'])
@@ -125,13 +126,13 @@ def get_args():
         help=BRANCH_REGEX_HELP)
     main.add_argument(
         '--include-file',
-        metavar='PYTHON_REGEX',
+        metavar="'^.*$'",
         type=regex_validator,
         action='append',
-        help=INCLUDE_FILE_HELP)
+        help=INCLUDE_FILE_HELP['fetchtables'])
     main.add_argument(
         '--exclude-file',
-        metavar='PYTHON_REGEX',
+        metavar="'^\..*$'",
         type=regex_validator,
         action='append',
         help=EXCLUDE_FILE_HELP)

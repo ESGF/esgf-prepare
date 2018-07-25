@@ -11,6 +11,7 @@ import sys
 
 from esgprep.fetchini.main import run
 from utils.constants import *
+from utils.help import *
 from utils.parser import MultilineFormatter, CustomArgumentParser
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
@@ -55,7 +56,7 @@ def get_args(args=None):
         nargs='?',
         help=LOG_HELP)
     main.add_argument(
-        '--debug',
+        '-d', '--debug',
         action='store_true',
         default=False,
         help=VERBOSE_HELP)

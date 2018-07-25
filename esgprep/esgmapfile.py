@@ -11,7 +11,7 @@ import argparse
 import os
 import sys
 from argparse import FileType
-
+from esgprep.utils.help import *
 from esgprep.mapfile.main import run
 from utils.constants import *
 from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, CustomArgumentParser, \
@@ -70,13 +70,13 @@ def get_args():
         nargs='?',
         help=LOG_HELP)
     parent.add_argument(
-        '--debug',
+        '-d', '--debug',
         action='store_true',
         default=False,
         help=VERBOSE_HELP)
     parent.add_argument(
         '-p', '--project',
-        metavar='PROJECT_ID',
+        metavar='NAME',
         type=str,
         required=True,
         help=PROJECT_HELP['mapfile'])
@@ -115,19 +115,19 @@ def get_args():
         help=NO_VERSION_HELP)
     parent.add_argument(
         '--ignore-dir',
-        metavar='\"^.*/(files|\.\w*).*$\"',
+        metavar="'^.*/(files|\.\w*).*$'",
         type=str,
         default='^.*/(files|\.[\w]*).*$',
         help=IGNORE_DIR_HELP)
     parent.add_argument(
         '--include-file',
-        metavar='\"^.*\.nc$\"',
+        metavar="'^.*\.nc$'",
         type=regex_validator,
         action='append',
-        help=INCLUDE_FILE_HELP)
+        help=INCLUDE_FILE_HELP['mapfile'])
     parent.add_argument(
         '--exclude-file',
-        metavar='\"^\..*$\"',
+        metavar="'^\..*$'",
         type=regex_validator,
         action='append',
         help=EXCLUDE_FILE_HELP)
