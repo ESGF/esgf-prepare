@@ -43,6 +43,14 @@ class File(object):
         self.is_duplicate = False
         # DRS path
         self.drs = None
+        # Checksum
+        self.checksum = None
+        # Latest version checksum
+        self.latest_checksum = None
+        # Tracking ID
+        self.tracking_id = None
+        # Latest version tracking ID
+        self.latest_tracking_id = None
 
     def get(self, key):
         """
@@ -393,7 +401,7 @@ class DRSTree(Tree):
             self.d_lengths[0] = max([len(i) for i in self.paths.keys()])
         self.d_lengths.append(sum(self.d_lengths) + 2)
 
-    def create_leaf(self, nodes, leaf, label, src, mode, origin=None):
+    def create_leaf(self, nodes, leaf, label, src, mode, origin=None, force=False):
         """
         Creates all upstream nodes to a DRS leaf.
         The :func:`esgprep.drs.handler.DRSLeaf` class is added to data leaf nodes.
@@ -414,6 +422,8 @@ class DRSTree(Tree):
                     self.create_node(tag=nodes[i],
                                      identifier=node_id)
                 elif i == len(nodes) - 1:
+                    if self.contains(node_id) and force:
+                        self.remove_node(node_id)
                     parent_node_id = os.path.join(*nodes[:i])
                     self.create_node(tag=label,
                                      identifier=node_id,
