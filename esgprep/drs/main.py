@@ -65,7 +65,7 @@ def process(source):
         if not fh.drs.path().lower().startswith(pctx.project.lower()):
             raise InconsistentDRSPath(pctx.project, fh.drs.path())
         # Compute file checksum
-        if not pctx.no_checksum:
+        if fh.drs.v_latest and not pctx.no_checksum:
             fh.checksum = checksum(fh.ffp, pctx.checksum_type)
         # Get file tracking id
         fh.tracking_id = get_tracking_id(fh.ffp, pctx.project)

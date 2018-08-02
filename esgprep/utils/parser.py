@@ -25,7 +25,10 @@ class MultilineFormatter(RawTextHelpFormatter):
 
     def __init__(self, prog):
         # Overload the HelpFormatter class.
-        rows, columns = os.popen('stty size', 'r').read().split()
+        try:
+            rows, columns = os.popen('stty size', 'r').read().split()
+        except ValueError:
+            rows, columns = 120, 120
         super(MultilineFormatter, self).__init__(prog, max_help_position=100, width=int(columns))
 
 
