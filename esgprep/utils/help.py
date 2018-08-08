@@ -83,7 +83,7 @@ VERSION_HELP = """Program version.
 """
 
 INI_HELP = """Initialization/configuration directory containing "esg.ini" and "esg.<project>.ini" files.
-Default is to use "$ESGINI" environment variable.
+Default is to use "$ESGINI_DIR" environment variable.
 If not set, the usual ESGF datanode directory is used (i.e., "/esg/config/esgcet/").
 
 """
