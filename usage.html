@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generic usage &mdash; esgprep 2.9.0 documentation</title>
+  <title>Generic usage &mdash; esgprep 2.9.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.9.0 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.9.1 documentation" href="index.html"/>
         <link rel="next" title="Fetch ESGF configuration INI files" href="fetchini.html"/>
         <link rel="prev" title="Configuration" href="configuration.html"/> 
 
@@ -229,7 +229,7 @@ correspond to a section name of the configuration file(s).</p>
 </div>
 <div class="section" id="submit-a-configuration-directory">
 <h2>Submit a configuration directory<a class="headerlink" href="#submit-a-configuration-directory" title="Permalink to this headline">¶</a></h2>
-<p>By default, the configuration files are fetched or read from the <code class="docutils literal"><span class="pre">$ESGINI</span></code> environment variable. If not exists,
+<p>By default, the configuration files are fetched or read from the <code class="docutils literal"><span class="pre">$ESGINI_DIR</span></code> environment variable. If not exists,
 <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code> that is the usual configuration directory on ESGF nodes is used. If you’re preparing your data
 outside of an ESGF node, you can submit another directory to fetch and read the configuration files.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$&gt; COMMAND <span class="o">[</span>SUBCOMMAND<span class="o">]</span> -i /PATH/TO/CONFIG/
@@ -345,7 +345,7 @@ CPU processes (as returned by <code class="docutils literal"><span class="pre">m
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.9.0',
+            VERSION:'2.9.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.drs.handler &mdash; esgprep 2.9.0 documentation</title>
+  <title>esgprep.drs.handler &mdash; esgprep 2.9.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.9.0 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.9.1 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -211,6 +211,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_duplicate</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># DRS path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Checksum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checksum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Latest version checksum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latest_checksum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Tracking ID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracking_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Latest version tracking ID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latest_tracking_id</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="File.get"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.File.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -561,7 +569,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_lengths</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DRSTree.create_leaf"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.create_leaf">[docs]</a>    <span class="k">def</span> <span class="nf">create_leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">leaf</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DRSTree.create_leaf"><a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.handler.DRSTree.create_leaf">[docs]</a>    <span class="k">def</span> <span class="nf">create_leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">leaf</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates all upstream nodes to a DRS leaf.</span>
 <span class="sd">        The :func:`esgprep.drs.handler.DRSLeaf` class is added to data leaf nodes.</span>
@@ -582,6 +590,8 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                                      <span class="n">identifier</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span> <span class="ow">and</span> <span class="n">force</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
                     <span class="n">parent_node_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">nodes</span><span class="p">[:</span><span class="n">i</span><span class="p">])</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
                                      <span class="n">identifier</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span>
@@ -758,7 +768,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.9.0',
+            VERSION:'2.9.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

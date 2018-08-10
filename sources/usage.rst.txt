@@ -55,7 +55,7 @@ correspond to a section name of the configuration file(s).
 Submit a configuration directory
 ********************************
 
-By default, the configuration files are fetched or read from the ``$ESGINI`` environment variable. If not exists,
+By default, the configuration files are fetched or read from the ``$ESGINI_DIR`` environment variable. If not exists,
 ``/esg/config/esgcet`` that is the usual configuration directory on ESGF nodes is used. If you're preparing your data
 outside of an ESGF node, you can submit another directory to fetch and read the configuration files.
 
