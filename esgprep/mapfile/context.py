@@ -58,7 +58,6 @@ class ProcessingContext(MultiprocessingContext):
         self.no_cleanup = args.no_cleanup
         # Mapfile path display behavior
         self.basename = args.basename if hasattr(args, 'basename') else False
-        self.quiet = args.quiet if hasattr(args, 'quiet') else False
         # Scan behavior
         self.all = args.all_versions
         if self.all:

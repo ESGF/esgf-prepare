@@ -25,7 +25,7 @@ class BaseContext(object):
 
     def __init__(self, args):
         # Init print management
-        Print.init(log=args.log, debug=args.debug, cmd=args.prog, quiet=args.quiet)
+        Print.init(log=args.log, debug=args.debug, cmd=args.prog)
         # Print command-line
         Print.command()
         # Get project

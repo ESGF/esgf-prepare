@@ -140,16 +140,14 @@ class Print(object):
     LOG = None
     DEBUG = False
     CMD = None
-    QUIET = None
     BUFFER = Value(c_char_p, '')
     LOGFILE = None
     CARRIAGE_RETURNED = True
 
     @staticmethod
-    def init(log, debug, cmd, quiet):
+    def init(log, debug, cmd):
         Print.LOG = log
         Print.DEBUG = debug
-        Print.QUIET = quiet
         Print.CMD = cmd
         logname = '{}-{}'.format(Print.CMD, datetime.now().strftime("%Y%m%d-%H%M%S"))
         if Print.LOG:
@@ -184,11 +182,10 @@ class Print(object):
     def progress(msg):
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
-        if not Print.QUIET:
-            if Print.LOG:
-                Print.print_to_stdout(msg)
-            elif not Print.DEBUG:
-                Print.print_to_stdout(msg)
+        if Print.LOG:
+            Print.print_to_stdout(msg)
+        elif not Print.DEBUG:
+            Print.print_to_stdout(msg)
 
     @staticmethod
     def command(msg=None):
@@ -197,11 +194,10 @@ class Print(object):
         msg = TAGS.COMMAND + COLOR('magenta')(msg) + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
-        if not Print.QUIET:
-            if Print.LOG:
-                Print.print_to_logfile(msg)
-            elif Print.DEBUG:
-                Print.print_to_stdout(msg)
+        if Print.LOG:
+            Print.print_to_logfile(msg)
+        elif Print.DEBUG:
+            Print.print_to_stdout(msg)
 
     @staticmethod
     def log(msg=None):
@@ -218,30 +214,28 @@ class Print(object):
         msg += '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
-        if not Print.QUIET:
-            if Print.LOG:
-                Print.print_to_stdout(msg)
-                Print.print_to_logfile(msg)
-            else:
-                Print.print_to_stdout(msg)
+        if Print.LOG:
+            Print.print_to_stdout(msg)
+            Print.print_to_logfile(msg)
+        else:
+            Print.print_to_stdout(msg)
 
     @staticmethod
     def info(msg):
         msg += '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
-        if not Print.QUIET:
-            if Print.LOG:
-                Print.print_to_logfile(msg)
-            elif Print.DEBUG:
-                Print.print_to_stdout(msg)
+        if Print.LOG:
+            Print.print_to_logfile(msg)
+        elif Print.DEBUG:
+            Print.print_to_stdout(msg)
 
     @staticmethod
     def debug(msg):
         msg = TAGS.DEBUG + COLOR().italic(msg) + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
-        if not Print.QUIET and Print.DEBUG:
+        if Print.DEBUG:
             if Print.LOG:
                 Print.print_to_logfile(msg)
             else:
@@ -252,11 +246,10 @@ class Print(object):
         msg = TAGS.WARNING + COLOR().bold(msg) + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
-        if not Print.QUIET:
-            if Print.LOG:
-                Print.print_to_logfile(msg)
-            else:
-                Print.print_to_stdout(msg)
+        if Print.LOG:
+            Print.print_to_logfile(msg)
+        else:
+            Print.print_to_stdout(msg)
 
     @staticmethod
     def error(msg, buffer=False):

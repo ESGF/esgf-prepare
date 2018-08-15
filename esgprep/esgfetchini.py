@@ -113,8 +113,6 @@ def main(args=None):
     # Get command-line arguments
     prog, args = get_args(args)
     setattr(args, 'prog', prog)
-    if not hasattr(args, 'quiet'):
-        setattr(args, 'quiet', None)
     # Run program
     run(args)
 
