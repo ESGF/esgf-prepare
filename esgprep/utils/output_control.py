@@ -1,5 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
-Class to allow switching output messages on and off.
+    :platform: Unix
+    :synopsis: Class to allow switching output messages on and off.
+
 """
 
 import sys
@@ -30,27 +35,3 @@ class OutputControl:
     def stderr_off(self):
         sys.stderr.flush()
         os.dup2(self.null_fh, self.stderr_fh)
-
-
-
-
-# test code
-if __name__ == '__main__':
-
-    oc = OutputControl()
-
-    for i in range(10):
-
-        if i % 2 == 0:
-            oc.stdout_on()
-        else:
-            oc.stdout_off()
-
-        if i % 3 == 0:
-            oc.stderr_on()
-        else:
-            oc.stderr_off()
-
-        print "stdout:", i
-        sys.stderr.write("stderr: {}\n".format(i))
-
