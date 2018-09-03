@@ -77,6 +77,7 @@ class ProcessingContext(MultiprocessingContext):
             # Instantiate file collector to walk through the tree
             self.source_type = 'file'
             self.sources = VersionedPathCollector(sources=self.directory,
+                                                  project=self.project,
                                                   dir_format=self.cfg.translate('directory_format'))
             # Translate directory format pattern
             self.pattern = self.cfg.translate('directory_format', add_ending_filename=True)
