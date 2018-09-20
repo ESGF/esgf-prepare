@@ -4,6 +4,33 @@
 Change Log
 ==========
 
+`v2.9.2 <https://github.com/ESGF/esgf-prepare/tree/v2.9.2>`__ (2018-09-20)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.9.1...v2.9.2>`__
+
+**Fixed bugs:**
+
+-  esgfetchini doesn't write to /esg/config/esgcet in 2.9.0
+   `#39 <https://github.com/ESGF/esgf-prepare/issues/39>`__
+
+**Closed issues:**
+
+-  Conflicting with cdf2cim, when installed second
+   `#42 <https://github.com/ESGF/esgf-prepare/issues/42>`__
+-  mapfile does not generate with 2.9.0; no error
+   `#40 <https://github.com/ESGF/esgf-prepare/issues/40>`__
+
+**Merged pull requests:**
+
+-  KeyError thrown if project doesn't exist in PID\_PREFIXES dictionary
+   `#43 <https://github.com/ESGF/esgf-prepare/pull/43>`__
+   (`chrisacbr <https://github.com/chrisacbr>`__)
+-  fix unwanted characters in ``esgmapfile show --quiet`` output (again)
+   `#41 <https://github.com/ESGF/esgf-prepare/pull/41>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+
 `v2.9.1 <https://github.com/ESGF/esgf-prepare/tree/v2.9.1>`__ (2018-08-10)
 --------------------------------------------------------------------------
 
