@@ -202,9 +202,8 @@ def get_tracking_id(ffp, project):
                 prefix, uid = id.split('/')
                 assert prefix == PID_PREFIXES[project]
             except ValueError:
-                prefix = None
                 uid = id
-                assert project not in PID_PREFIXES
+                assert project not in PID_PREFIXES.keys()
             assert is_uuid(uid)
             return id
         else:
