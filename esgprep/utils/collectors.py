@@ -160,7 +160,8 @@ class VersionedPathCollector(PathCollector):
                         latest_version = sorted(path_versions)[-1]
                         # Pick up the latest version among encountered versions
                         self.PathFilter.add(name='version_filter', regex='/{}'.format(latest_version))
-                    if self.PathFilter(root.split(source)[1]):
+                    if self.PathFilter(root):
+                    #if self.PathFilter(root.split(source)[1]):
                         # Dereference latest symlink (only) in the end
                         if path_version == 'latest':
                             # Keep parentheses in pattern to get "latest" part of the split list
@@ -180,7 +181,7 @@ class VersionedPathCollector(PathCollector):
         # Replace project regex by its expected lower-cased value
         # This is to get an anchor in the regex
         # This ensure to capture the right version group in the directory format if exists in the directory input
-        regex = re.compile(self.format.replace('/(?P<project>[\w.-]+)/', '/{}/'.format(self.project)))
+        regex = re.compile(self.format.replace('/(?P<project>[\w.-]+)/', '/{}/'.format(self.project.lower())))
         version = None
         # Test directory_format regex without <filename> part
         while 'version' in regex.groupindex.keys():
