@@ -23,7 +23,7 @@ requirements:
   run:
     - python
     - lockfile
-    - esgconfigparser
+    - esgf-config-parser
     - requests
     - fuzzywuzzy
     - netCDF4
