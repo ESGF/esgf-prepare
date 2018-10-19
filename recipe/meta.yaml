@@ -1,9 +1,9 @@
 package:
-  name: esgfpub
+  name: esgprep
   version: {{ environ['VERSION'] }}
 
 source:
-  git_url: git://github.com/E3SM-Project/esgfpub.git
+  git_url: git://github.com/sterlingbaldwin/esgf-prepare.git
   git_tag: {{ environ['TAG'] }}
 
 build:
@@ -11,8 +11,8 @@ build:
   string: {{ environ['BUILD_NAME'] }}
 
 about:
-    home: https://github.com/E3SM-Project/esgfpub
-    summary: Automated publication to ESGF
+    home: http://esgf.github.io/esgf-prepare/
+    summary: Toolbox preparing your data for ESGF publication
 
 requirements:
   build:
@@ -22,6 +22,10 @@ requirements:
   
   run:
     - python
-    - tqdm
-    - configobj
-    
+    - lockfile==0.12.2
+    - esgconfigparser==0.1.17
+    - requests==2.19.1
+    - fuzzywuzzy==0.16.0
+    - netCDF4==1.4.0
+    - hurry.filesize==0.9
+    - treelib==1.4.0

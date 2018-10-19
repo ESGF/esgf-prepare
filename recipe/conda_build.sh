@@ -1,9 +1,9 @@
-export VERSION="0.0.1"
+export VERSION="2.9.2"
 export BUILD_NAME="0"
 export CONDA_BLD_PATH=~/conda-bld
 USER="e3sm"
 PLATFORM="linux-64"
-PKG="esgf-prepare"
+PKG="esgprep"
 
 if [ -d $CONDA_BLD_PATH ]; then
     rm -rf $CONDA_BLD_PATH
