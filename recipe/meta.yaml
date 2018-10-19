@@ -22,10 +22,10 @@ requirements:
   
   run:
     - python
-    - lockfile==0.12.2
-    - esgconfigparser==0.1.17
-    - requests==2.19.1
-    - fuzzywuzzy==0.16.0
-    - netCDF4==1.4.0
-    - hurry.filesize==0.9
-    - treelib==1.4.0
+    - lockfile
+    - esgconfigparser
+    - requests
+    - fuzzywuzzy
+    - netCDF4
+    - hurry.filesize
+    - treelib
