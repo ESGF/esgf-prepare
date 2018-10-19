@@ -1,0 +1,27 @@
+package:
+  name: esgfpub
+  version: {{ environ['VERSION'] }}
+
+source:
+  git_url: git://github.com/E3SM-Project/esgfpub.git
+  git_tag: {{ environ['TAG'] }}
+
+build:
+  script: python setup.py install
+  string: {{ environ['BUILD_NAME'] }}
+
+about:
+    home: https://github.com/E3SM-Project/esgfpub
+    summary: Automated publication to ESGF
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - pip
+  
+  run:
+    - python
+    - tqdm
+    - configobj
+    
