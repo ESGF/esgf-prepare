@@ -8,7 +8,7 @@ source:
 
 build:
   noarch: python
-  script: python ./recipe/setup.py install
+  script: python setup.py install --build-for-conda
   string: {{ environ['BUILD_NAME'] }}
 
 about:
@@ -20,7 +20,7 @@ requirements:
     - python
     - setuptools
     - pip
-  
+
   run:
     - python
     - lockfile
