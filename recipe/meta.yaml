@@ -7,6 +7,7 @@ source:
   git_tag: {{ environ['TAG'] }}
 
 build:
+  noarch: python
   script: python setup.py install
   string: {{ environ['BUILD_NAME'] }}
 

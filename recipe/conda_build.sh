@@ -2,7 +2,7 @@ export VERSION="2.9.2"
 export BUILD_NAME="0"
 export CONDA_BLD_PATH=~/conda-bld
 USER="e3sm"
-PLATFORM="linux-64"
+PLATFORM="noarch"
 PKG="esgprep"
 
 if [ -d $CONDA_BLD_PATH ]; then
