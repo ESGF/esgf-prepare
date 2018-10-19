@@ -3,7 +3,7 @@ package:
   version: {{ environ['VERSION'] }}
 
 source:
-  git_url: git://github.com/ESGF/esgf-prepare.git
+  git_url: git://github.com/sterlingbaldwin/esgf-prepare.git
   git_tag: {{ environ['TAG'] }}
 
 build:
