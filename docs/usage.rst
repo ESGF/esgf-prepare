@@ -16,14 +16,14 @@ Check the help
 
 .. code-block:: bash
 
-    $> COMMAND [SUBCOMMAND] -h
+    $> COMMAND [SUBCOMMAND] {-h,--help}
 
 Check the version
 *****************
 
 .. code-block:: bash
 
-    $> COMMAND -v
+    $> COMMAND {-v,--version
 
 .. note:: The program version will be the same for all the esgprep tools.
 
@@ -35,11 +35,10 @@ verbose mode displaying each step with useful additional information.
 
 .. code-block:: bash
 
-    $> COMMAND [SUBCOMMAND] --debug
+    $> COMMAND [SUBCOMMAND] {-d,--debug}
 
 .. warning::
     This debug/verbose mode is silently activated in the case of a logfile (i.e., no progress bars).
-
 
 Specify the project
 *******************
@@ -50,7 +49,7 @@ correspond to a section name of the configuration file(s).
 
 .. code-block:: bash
 
-    $> COMMAND [SUBCOMMAND] --project PROJECT_ID
+    $> COMMAND [SUBCOMMAND] {-p,--project} PROJECT_ID
 
 Submit a configuration directory
 ********************************
@@ -70,16 +69,13 @@ outside of an ESGF node, you can submit another directory to fetch and read the 
 Use a logfile
 *************
 
-All errors and exceptions are logged into a file named ``esgprep-YYYYMMDD-HHMMSS-PID.err``.
-Other information are logged into a file named ``esgprep-YYYYMMDD-HHMMSS-PID.log`` only if ``--log`` is submitted.
-If not, the standard output is used following the verbose mode.
+Outputs can be logged into a file named ``PROG-YYYYMMDD-HHMMSS-PID.log``. If not, the standard output is used following the verbose mode.
 By default, the logfiles are stored in a ``logs`` folder created in your current working directory (if not exists).
 It can be changed by adding a optional logfile directory to the flag.
 
 .. code-block:: bash
 
-    $> COMMAND [SUBCOMMAND] -l
-    $> COMMAND [SUBCOMMAND] -l /PATH/TO/LOGDIR/
+    $> COMMAND [SUBCOMMAND] -l [/PATH/TO/LOGDIR/]
 
 Use filters
 ***********
@@ -119,10 +115,12 @@ CPU processes (as returned by ``multiprocessing.cpu_count()``). Default is set t
 
 .. code-block:: bash
 
-    $> COMMAND [SUBCOMMAND] --max-processes 4
+    $> COMMAND [SUBCOMMAND] --max-processes INTEGER
+
+.. warning:: The number of maximal processes is limited to the maximum CPU count in any case.
 
 Exit status
 ***********
 
- * Status = 99
+ * Status = -1
     Argument parsing error.

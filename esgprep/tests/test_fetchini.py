@@ -7,14 +7,13 @@
 
 """
 
-from esgprep.esgfetchini import main
-from subprocess import call
-import os
-import sys
-from shutil import rmtree
-import unittest
-from nose.plugins.attrib import attr
 import logging
+import os
+from shutil import rmtree
+from subprocess import call
+
+from esgprep.esgfetchini import main
+
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -59,7 +58,6 @@ class TestFetchINI(object):
         for name, arg in args.iteritems():
             fetch_projects.description = name
             yield fetch_projects, name, '-i {} '.format(INI_TEST_DIR) + arg
-
 
 
 def fetch_projects(name, arg):

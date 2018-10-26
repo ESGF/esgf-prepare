@@ -17,9 +17,9 @@ from context import ProcessingContext
 from custom_exceptions import *
 from esgprep.utils.custom_print import *
 from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext
+from esgprep.utils.output_control import OutputControl
 from handler import File, Dataset
 from lockfile import LockFile
-from esgprep.utils.output_control import OutputControl
 
 
 def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_version, mapfile_drs=None, basename=False):

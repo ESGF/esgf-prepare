@@ -169,7 +169,6 @@ def tree_builder(fh):
                 # Walk through the latest dataset version and create a symlink for each file with a different
                 # filename than the processed one
                 for root, _, filenames in os.walk(fh.drs.path(f_part=False, latest=True, root=True)):
-                    print filenames
                     for filename in filenames:
                         # Add latest files as tree leaves with version to upgrade instead of latest version
                         # i.e., copy latest dataset leaves to Tree
@@ -319,6 +318,7 @@ def run(args):
             # Build DRS tree
             cctx['progress'].value = 0
             initializer(cctx.keys(), cctx.values())
+            handlers = [h for h in handlers if h is not None]
             results = [x for x in itertools.imap(tree_builder, handlers)]
             Print.progress('\n')
         else:

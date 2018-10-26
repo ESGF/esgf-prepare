@@ -6,14 +6,12 @@
     :synopsis: Toolbox to prepare ESGF data for publication.
 
 """
-import os
-import sys
 from argparse import FileType
-from esgprep.utils.help import *
+
 from esgprep.checkvocab.main import run
+from esgprep.utils.help import *
 from utils.constants import *
-from utils.parser import MultilineFormatter, DirectoryChecker, regex_validator, CustomArgumentParser, keyval_converter, \
-    processes_validator
+from utils.parser import *
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 

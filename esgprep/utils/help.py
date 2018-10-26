@@ -216,7 +216,7 @@ Default excludes all hidden files.
 """
 
 DRS_SUBCOMMANDS = {
-    'list':"""
+    'list': """
 {}
 
 The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs list" subcommand lists of the publication-level dataset corresponding to your MIP-compliant files. You can easily check how many files are part of each dataset with their respective size. The version status is also print to check which is the current latest dataset version in the root directory structure and the dataset version to upgrade. Each run also produces a temporary file which stores the scan results to be used by next subcommands avoiding to rescan a lot of files.
@@ -271,7 +271,7 @@ See "esgdrs tree -h" for full help.
 See "esgdrs todo -h" for full help.
 
 """,
-    'upgrade':"""Makes changes to upgrade datasets to the next version.
+    'upgrade': """Makes changes to upgrade datasets to the next version.
 See "esgdrs upgrade -h" for full help.
 
 """

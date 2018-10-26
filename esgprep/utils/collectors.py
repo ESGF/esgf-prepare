@@ -161,7 +161,7 @@ class VersionedPathCollector(PathCollector):
                         # Pick up the latest version among encountered versions
                         self.PathFilter.add(name='version_filter', regex='/{}'.format(latest_version))
                     if self.PathFilter(root):
-                    #if self.PathFilter(root.split(source)[1]):
+                        # if self.PathFilter(root.split(source)[1]):
                         # Dereference latest symlink (only) in the end
                         if path_version == 'latest':
                             # Keep parentheses in pattern to get "latest" part of the split list

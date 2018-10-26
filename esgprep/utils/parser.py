@@ -158,7 +158,7 @@ class CustomArgumentParser(ArgumentParser):
 
         """
         self.print_usage(sys.stderr)
-        self.exit(99, gettext('%s: error: %s\n') % (self.prog, message))
+        self.exit(-1, gettext('%s: error: %s\n') % (self.prog, message))
 
     def set_default_subparser(self, name, args=None):
         """

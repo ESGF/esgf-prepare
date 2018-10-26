@@ -7,15 +7,12 @@
 
 """
 
-import argparse
-import os
-import sys
 from argparse import FileType
-from esgprep.utils.help import *
+
 from esgprep.mapfile.main import run
+from esgprep.utils.help import *
 from utils.constants import *
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, regex_validator, CustomArgumentParser, \
-    processes_validator
+from utils.parser import *
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 

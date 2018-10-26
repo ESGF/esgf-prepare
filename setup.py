@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
 from esgprep.utils.constants import VERSION
+from setuptools import setup, find_packages
 
 setup(name='esgprep',
       version=VERSION,
