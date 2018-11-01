@@ -12,6 +12,7 @@ import re
 import sys
 from uuid import uuid4 as uuid
 
+from esgprep.utils.custom_exceptions import NoFileFound
 from esgprep.utils.misc import match, remove
 
 
@@ -43,16 +44,14 @@ class Collector(object):
     Base collector class to yield regular NetCDF files.
 
     :param list sources: The list of sources to parse
-    :param object data: Any object to attach to each collected data
     :returns: The data collector
     :rtype: *iter*
 
     """
 
-    def __init__(self, sources, spinner=True, data=None):
+    def __init__(self, sources, spinner=True):
         self.spinner = spinner
         self.sources = sources
-        self.data = data
         self.FileFilter = FilterCollection()
         self.PathFilter = FilterCollection()
         assert isinstance(self.sources, list)
@@ -60,11 +59,13 @@ class Collector(object):
     def __iter__(self):
         for source in self.sources:
             for root, _, filenames in os.walk(source, followlinks=True):
-                if self.PathFilter(root):
+                # Apply path filters only on recursion
+                # Source path can include hidden directories
+                if self.PathFilter(root.split(source)[1]):
                     for filename in sorted(filenames):
                         ffp = os.path.join(root, filename)
                         if os.path.isfile(ffp) and self.FileFilter(filename):
-                            yield self.attach(ffp)
+                            yield ffp
 
     def __len__(self):
         """
@@ -75,25 +76,17 @@ class Collector(object):
 
         """
         progress = Collecting(self.spinner)
-        s = 0
-        for _ in self.__iter__():
-            progress.next()
-            s += 1
-        if self.spinner:
-            sys.stdout.write('\r\033[K')
-            sys.stdout.flush()
+        try:
+            s = 0
+            for _ in self.__iter__():
+                progress.next()
+                s += 1
+            if self.spinner:
+                sys.stdout.write('\r\033[K')
+                sys.stdout.flush()
+        except StopIteration:
+            raise NoFileFound(self.sources)
         return s
-
-    def attach(self, item):
-        """
-        Attach any object to the each collector item.
-
-        :param str item: The collector item
-        :returns: The collector item with the "data" object
-        :rtype: *tuple*
-
-        """
-        return (item, self.data) if self.data else item
 
 
 class PathCollector(Collector):
@@ -117,11 +110,11 @@ class PathCollector(Collector):
         """
         for source in self.sources:
             for root, _, filenames in os.walk(source, followlinks=True):
-                if self.PathFilter(root):
+                if self.PathFilter(root.split(source)[1]):
                     for filename in sorted(filenames):
                         ffp = os.path.join(root, filename)
                         if os.path.isfile(ffp) and self.FileFilter(filename):
-                            yield self.attach(ffp)
+                            yield ffp
 
 
 class VersionedPathCollector(PathCollector):
@@ -132,8 +125,9 @@ class VersionedPathCollector(PathCollector):
 
     """
 
-    def __init__(self, dir_format, *args, **kwargs):
+    def __init__(self, project, dir_format, *args, **kwargs):
         super(VersionedPathCollector, self).__init__(*args, **kwargs)
+        self.project = project
         self.format = dir_format
         self.default = False
 
@@ -166,14 +160,14 @@ class VersionedPathCollector(PathCollector):
                         latest_version = sorted(path_versions)[-1]
                         # Pick up the latest version among encountered versions
                         self.PathFilter.add(name='version_filter', regex='/{}'.format(latest_version))
-                    if self.PathFilter(root):
+                    if self.PathFilter(root.split(source)[1]):
                         # Dereference latest symlink (only) in the end
                         if path_version == 'latest':
                             # Keep parentheses in pattern to get "latest" part of the split list
                             target = os.path.realpath(os.path.join(*re.split(r'/(latest)/', ffp)[:-1]))
                             ffp = os.path.join(target, *re.split(r'/(latest)/', ffp)[-1:])
                         if os.path.isfile(ffp) and self.FileFilter(filename):
-                            yield self.attach(ffp)
+                            yield ffp
 
     def version_finder(self, directory):
         """
@@ -183,13 +177,16 @@ class VersionedPathCollector(PathCollector):
         :rtype: *str*
 
         """
-        regex = re.compile(self.format)
+        # Replace project regex by its expected lower-cased value
+        # This is to get an anchor in the regex
+        # This ensure to capture the right version group in the directory format if exists in the directory input
+        regex = re.compile(self.format.replace('/(?P<project>[\w.-]+)/', '/{}/'.format(self.project)))
         version = None
         # Test directory_format regex without <filename> part
         while 'version' in regex.groupindex.keys():
-            if regex.search(directory):
+            if regex.search(directory.lower()):
                 # If version facet found return its value
-                version = regex.search(directory).groupdict()['version']
+                version = regex.search(directory.lower()).groupdict()['version']
                 break
             else:
                 # Walk backward the regex to find the version facet if exists
@@ -218,9 +215,9 @@ class DatasetCollector(Collector):
         """
         for source in self.sources:
             if self.versioned:
-                yield self.attach(source)
+                yield source
             else:
-                yield self.attach(remove('((\.v|#)[0-9]+)?\s*$', source))
+                yield remove('((\.v|#)[0-9]+)?\s*$', source)
 
 
 class FilterCollection(object):

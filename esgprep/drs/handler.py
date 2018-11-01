@@ -8,23 +8,20 @@
 """
 
 import getpass
-import logging
-import re
 from collections import OrderedDict
 from os import remove
 from tempfile import NamedTemporaryFile
 
 from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions, NoConfigOption
-from fuzzywuzzy import fuzz, process
-from hurry.filesize import size
-from netCDF4 import Dataset
-from treelib import Tree
-from treelib.tree import DuplicatedNodeIdError
-
 from constants import *
 from custom_exceptions import *
-from esgprep.utils.custom_exceptions import *
-from esgprep.utils.misc import checksum
+from esgprep.utils.custom_print import *
+from esgprep.utils.misc import checksum, ncopen
+from fuzzywuzzy.fuzz import partial_ratio
+from fuzzywuzzy.process import extractOne
+from hurry.filesize import size
+from treelib import Tree
+from treelib.tree import DuplicatedNodeIdError
 
 
 class File(object):
@@ -44,6 +41,16 @@ class File(object):
         self.size = os.stat(self.ffp).st_size
         # Is duplicated (default is False if no latest version exists)
         self.is_duplicate = False
+        # DRS path
+        self.drs = None
+        # Checksum
+        self.checksum = None
+        # Latest version checksum
+        self.latest_checksum = None
+        # Tracking ID
+        self.tracking_id = None
+        # Latest version tracking ID
+        self.latest_tracking_id = None
 
     def get(self, key):
         """
@@ -78,13 +85,9 @@ class File(object):
 
         """
         # Get attributes from NetCDF global attributes
-        try:
-            nc = Dataset(self.ffp)
+        with ncopen(self.ffp) as nc:
             for attr in nc.ncattrs():
                 self.attributes[attr] = nc.getncattr(attr)
-            nc.close()
-        except IOError:
-            raise InvalidNetCDFFile(self.ffp)
         # Get attributes from filename, overwriting existing ones
         match = re.search(pattern, self.filename)
         if not match:
@@ -126,11 +129,11 @@ class File(object):
                         raise NoNetCDFAttribute(set_keys[facet], self.ffp)
                 else:
                     # Find closest NetCDF attributes in terms of partial string comparison
-                    key, score = process.extractOne(facet, self.attributes.keys(), scorer=fuzz.partial_ratio)
+                    key, score = extractOne(facet, self.attributes.keys(), scorer=partial_ratio)
                     if score >= 80:
                         # Rename attribute key
                         self.attributes[facet] = self.attributes.pop(key)
-                        logging.warning('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
+                        Print.debug('Consider "{}" attribute instead of "{}" facet'.format(key, facet))
                         config.check_options({facet: self.attributes[facet]})
                     else:
                         raise NoConfigOptions(facet)
@@ -245,7 +248,7 @@ class DRSPath(object):
         """
         # Test if dataset path already exists
         dset_path = self.path(f_part=False, version=False, root=True)
-        if os.path.isdir(dset_path):
+        if os.path.isdir(dset_path) and os.listdir(dset_path):
             # Get and sort all existing dataset versions
             versions = sorted([v for v in os.listdir(dset_path) if re.compile(r'v[\d]+').search(v)])
             # Upgrade version should not already exist
@@ -296,7 +299,7 @@ class DRSLeaf(object):
             except OSError:
                 pass
         # Unlink symbolic link if already exists
-        if self.mode == 'symlink' and os.path.exists(self.dst):
+        if self.mode == 'symlink' and os.path.lexists(self.dst):
             line = '{} {}'.format('rm -f', self.dst)
             print_cmd(line, commands_file, todo_only)
             if not todo_only:
@@ -368,7 +371,7 @@ class DRSTree(Tree):
 
     """
 
-    def __init__(self, root, version, mode, outfile=None):
+    def __init__(self, root=None, version=None, mode=None, outfile=None):
         # Retrieve original class init
         Tree.__init__(self)
         # Dataset and files record
@@ -393,11 +396,12 @@ class DRSTree(Tree):
         Gets the string lengths for comfort display.
 
         """
-        self.d_lengths = []
-        self.d_lengths = [max([len(i) for i in self.paths.keys()]), 20, 20, 16, 16]
+        self.d_lengths = [50, 20, 20, 16, 16]
+        if self.paths:
+            self.d_lengths[0] = max([len(i) for i in self.paths.keys()])
         self.d_lengths.append(sum(self.d_lengths) + 2)
 
-    def create_leaf(self, nodes, leaf, label, src, mode, origin=None):
+    def create_leaf(self, nodes, leaf, label, src, mode, origin=None, force=False):
         """
         Creates all upstream nodes to a DRS leaf.
         The :func:`esgprep.drs.handler.DRSLeaf` class is added to data leaf nodes.
@@ -418,6 +422,8 @@ class DRSTree(Tree):
                     self.create_node(tag=nodes[i],
                                      identifier=node_id)
                 elif i == len(nodes) - 1:
+                    if self.contains(node_id) and force:
+                        self.remove_node(node_id)
                     parent_node_id = os.path.join(*nodes[:i])
                     self.create_node(tag=label,
                                      identifier=node_id,

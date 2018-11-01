@@ -7,17 +7,13 @@
 
 """
 
-import logging
-import os
-import sys
-
-from tqdm import tqdm
-
 from constants import *
-from esgprep.utils.ctx_base import BaseContext
+from esgprep.utils.constants import GITHUB_API_PARAMETER
+from esgprep.utils.context import GitHubBaseContext
+from esgprep.utils.github import *
 
 
-class ProcessingContext(BaseContext):
+class ProcessingContext(GitHubBaseContext):
     """
     Encapsulates the processing context/information for main process.
 
@@ -28,64 +24,38 @@ class ProcessingContext(BaseContext):
     """
 
     def __init__(self, args):
-        self.pbar = args.pbar
-        self.projects = args.project
-        self.keep = args.k
-        self.overwrite = args.o
-        self.backup_mode = args.b
-        self.gh_user = args.gh_user
-        self.gh_password = args.gh_password
+        super(ProcessingContext, self).__init__(args)
         self.config_dir = os.path.realpath(os.path.normpath(args.i))
-        self.url = GITHUB_FILE_API
-        if args.devel:
-            self.url += '?ref=devel'
-        self.error = False
+        self.ref = 'devel' if args.devel else 'master'
+        self.url = GITHUB_CONTENT_API
+        self.url += GITHUB_API_PARAMETER.format('ref', self.ref)
+        self.files = None
 
     def __enter__(self):
-        # Init GitHub authentication
-        self.auth = self.authenticate()
-        # Init output directory
-        self.make_ini_dir()
-        # Init the project list to retrieve
-        self.targets = self.target_projects(
-            pattern = 'esg\.(.+?)\.ini',
-            url_format = self.url.format('')
-            )
-        # Init progress bar
-        nfiles = len(self.targets)
-        if self.pbar and nfiles:
-            self.targets = tqdm(self.targets,
-                                desc='Fetching project(s) config',
-                                total=nfiles,
-                                bar_format='{desc}: {percentage:3.0f}% | {n_fmt}/{total_fmt} files',
-                                ncols=100,
-                                file=sys.stdout)
-        elif not nfiles:
-            logging.info('No files found on remote repository')
+        super(ProcessingContext, self).__enter__()
+        Print.debug('Fetch from "{}" GitHub reference'.format(self.ref))
+        # Get files infos from repository content
+        r = gh_request_content(url=self.url, auth=self.auth)
+        infos = {f['name']: f for f in r.json() if re.search(INI_PATTERN, f['name'])}
+        # Get the list of project to fetch
+        p_found = set([re.search(INI_PATTERN, x).group(1) for x in infos.keys()])
+        # Control specified project names
+        if self.project:
+            p = set(self.project)
+            p_avail = p_found.intersection(p)
+            if p.difference(p_avail):
+                msg = 'No such project(s): {} -- '.format(', '.join(p.difference(p_avail)))
+                msg += 'Available remote projects are: {}'.format(', '.join(list(p_found)))
+                Print.warning(msg)
+            self.project = p_avail
+        else:
+            # Get all projects
+            self.project = p_found
+        # Remove undesired files
+        self.files = {k: v for k, v in infos.items() if k in ['esg.{}.ini'.format(p) for p in self.project]}
+        # Get number of files to fetch
+        self.nfiles = len(self.files)
+        if not self.nfiles:
+            Print.warning('No files found on remote repository')
+            sys.exit(2)
         return self
-
-    def __exit__(self, *exc):
-        # Default is sys.exit(0)
-        if self.error:
-            sys.exit(1)
-
-    def make_ini_dir(self):
-        """
-        Build the output directory as follows:
-         - If ESGF node and args.i = /esg/config/esgcet -> exists
-         - If not ESGF node and args.i = /esg/config/esgcet -> doesn't exist -> use $PWD/ini instead
-         - If ESGF node and args.i = other -> if not exists make it
-         - If not ESGF node and args.i = other -> if not exists make it
-
-        """
-        # If directory does not already exist
-        if not os.path.isdir(self.config_dir):
-            try:
-                os.makedirs(self.config_dir)
-                logging.warning('{} created'.format(self.config_dir))
-            except OSError:
-                # If default directory does not exists
-                self.config_dir = os.path.join(os.getcwd(), 'ini')
-                if not os.path.isdir(self.config_dir):
-                    os.makedirs(self.config_dir)
-                    logging.warning('{} created'.format(self.config_dir))

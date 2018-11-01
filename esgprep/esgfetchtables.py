@@ -6,13 +6,13 @@
     :synopsis: Toolbox to prepare ESGF data for publication.
 
 """
-
 import os
-from importlib import import_module
+import sys
 
+from esgprep.fetchtables.main import run
 from utils.constants import *
-from utils.misc import init_logging
-from utils.parser import MultilineFormatter, _ArgumentParser, regex_validator
+from utils.help import *
+from utils.parser import MultilineFormatter, CustomArgumentParser, regex_validator
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -25,7 +25,7 @@ def get_args():
     :rtype: *argparse.Namespace*
 
     """
-    main = _ArgumentParser(
+    main = CustomArgumentParser(
         prog='esgfetchtables',
         description=PROGRAM_DESC['fetchtables'],
         formatter_class=MultilineFormatter,
@@ -38,39 +38,34 @@ def get_args():
         action='help',
         help=HELP)
     main.add_argument(
-        '--test',
-        action='store_true',
-        default=False,
-        help=TEST_HELP['program'])
-    main.add_argument(
         '-v', '--version',
         action='version',
         version='%(prog)s ({})'.format(__version__),
         help=VERSION_HELP)
     main.add_argument(
         '--tables-dir',
-        metavar='/usr/local/',
+        metavar='$CMOR_TABLES',
         type=str,
-        default='/usr/local/',
+        default=os.environ['CMOR_TABLES'] if 'CMOR_TABLES' in os.environ.keys() else '/usr/local/',
         help=TABLES_DIR_HELP)
     main.add_argument(
-        '--log',
+        '-l', '--log',
         metavar='CWD',
         type=str,
         const='{}/logs'.format(os.getcwd()),
         nargs='?',
         help=LOG_HELP)
     main.add_argument(
-        '--debug',
+        '-d', '--debug',
         action='store_true',
         default=False,
         help=VERBOSE_HELP)
     main.add_argument(
-        '--project',
-        metavar='PROJECT_ID',
+        '-p', '--project',
+        metavar='NAME',
         type=str,
         nargs='+',
-        help=PROJECT_HELP['fetchini'])
+        help=PROJECT_HELP['fetchtables'])
     group = main.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '-k',
@@ -91,10 +86,10 @@ def get_args():
         const='one_version',
         help=BACKUP_HELP)
     main.add_argument(
-        '--no-ref-folder',
+        '--no-subfolder',
         action='store_true',
         default=False,
-        help=NO_REF_FOLDER_HELP)
+        help=NO_SUBFOLDER_HELP)
     main.add_argument(
         '--gh-user',
         metavar='USERNAME',
@@ -131,40 +126,31 @@ def get_args():
         help=BRANCH_REGEX_HELP)
     main.add_argument(
         '--include-file',
-        metavar='PYTHON_REGEX',
+        metavar="'^.*$'",
         type=regex_validator,
         action='append',
-        help=INCLUDE_FILE_HELP)
+        help=INCLUDE_FILE_HELP['fetchtables'])
     main.add_argument(
         '--exclude-file',
-        metavar='PYTHON_REGEX',
+        metavar="'^\..*$'",
         type=regex_validator,
         action='append',
         help=EXCLUDE_FILE_HELP)
-    return main.parse_args()
+    return main.prog, main.parse_args()
 
 
-def run():
+def main():
     """
     Run main program
 
     """
     # Get command-line arguments
-    args = get_args()
-    # Initialize logger depending on log and debug mode
-    init_logging(log=args.log, debug=args.debug)
-    # Print progress bar if no log and no debug mode
-    setattr(args, 'pbar', True if not args.log and not args.debug else False)
+    prog, args = get_args()
+    setattr(args, 'prog', prog)
     # Run program
-    if args.test:
-        print('"esgfetchtables" test suite not available. Coming soon!')
-        exit()
-        #  test = import_module('.test', package='esgprep.mapfile')
-        #  test.run()
-    else:
-        main = import_module('.main', package='esgprep.fetchtables')
-        main.run(args)
+    run(args)
 
 
 if __name__ == "__main__":
-    run()
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    main()

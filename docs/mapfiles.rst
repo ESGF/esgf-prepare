@@ -22,7 +22,7 @@ describes a file to publish, using the following format:
  6. To store ONE mapfile PER dataset is strongly recommended.
 
 Several ``esgmapfile`` actions are available to manage your mapfiles:
- - ``make`` generates the mapfiles,
+ - ``make`` generates the mapfiles (the default),
  - ``show`` displays the expected mapfiles path to be generated.
 
 Default mapfile generation
@@ -44,6 +44,19 @@ Because this could be time consuming ``--no-checksum`` allows you not include th
 .. code-block:: bash
 
     $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
+
+Mapfile with pre-calculated checksums
+*************************************
+
+If your file checksum have been already calculated apart, you can submit a file to ``esgmapfile`` with the checksums
+list. This checksum file must have the same format as the output of the UNIX command-lines "\*sum".
+
+.. code-block:: bash
+
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --checksums-from /PATH/TO/CHECKSUMS/FILE
+
+
+.. note:: In the case of unfound checksums, it falls back to compute the checksum as normal.
 
 Mapfile without DRS versions
 ****************************
@@ -152,26 +165,24 @@ You can show the mapfiles full path to be generated from:
 
     $> esgmapfile show --project PROJECT_ID --dataset-id DATASET_ID
 
-In the case of ``--dataset-list`` and ``--dataset-id`` if no file or dataset ID submitted, the standard input is used.
+In the case of ``--dataset-list`` if no file submitted, the standard input is used.
 
 .. code-block:: bash
 
     $> esgmapfile show --project PROJECT_ID --dataset-list < /PATH/TO/TXT_FILE
-    $> esgmapfile show --project PROJECT_ID --dataset-id < DATASET_ID
 
 .. warning:: In the case of dataset IDs the version suffix is expected.
 
 .. note:: All the ``make`` arguments can be safely combined with ``show``.
+
+.. note:: Print only mapfile basename instead of the mapfile full path adding ``--basename`` flag.
+
+.. note:: To only print the result without any other info use ``--quiet`` flag.
 
 Exit status
 ***********
 
  * Status = 0
     All the files have been successfully scanned and the mapfile(s) properly generated.
- * Status = 1
-    No files found. No mapfile(s) generated.
- * Status = 2
-    Some scan errors occurred. Some files have been skipped or failed during the scan potentially leading to incomplete
-    mapfiles. See the error logfile.
- * Status = 3
-    All the files have been skipped or failed during the scan leading to no mapfile(s). See the error logfile.
+ * Status > 0
+    Some scan errors occurred or files have been skipped. The error code indicates the number of errors.

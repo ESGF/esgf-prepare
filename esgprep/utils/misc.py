@@ -8,70 +8,54 @@
 """
 
 import hashlib
-import logging
-import os
 import pickle
-import re
-import requests
+from uuid import UUID
 
-from custom_exceptions import *
+from custom_print import *
+from esgprep.drs.constants import PID_PREFIXES
+from netCDF4 import Dataset
 
 
-class LogFilter(object):
+class ProcessContext(object):
     """
-    Log filter with upper log level to use with the Python
-    `logging <https://docs.python.org/2/library/logging.html>`_ module.
+    Encapsulates the processing context/information for child process.
 
-    """
-
-    def __init__(self, level):
-        self.level = level
-
-    def filter(self, log_record):
-        """
-        Set the upper log level.
-
-        """
-        return log_record.levelno <= self.level
-
-
-def init_logging(log, debug=False, level='INFO'):
-    """
-    Initiates the logging configuration (output, date/message formatting).
-    If a directory is submitted the logfile name is unique and formatted as follows:
-    ``name-YYYYMMDD-HHMMSS-JOBID.log``If ``None`` the standard output is used.
-
-    :param str log: The logfile directory.
-    :param boolean debug: Debug mode.
-    :param boolean quiet: Silent mode.
-    :param str level: The log level.
+    :param dict args: Dictionary of argument to pass to child process
+    :returns: The processing context
+    :rtype: *ProcessContext*
 
     """
-    logging.getLogger("requests").setLevel(logging.CRITICAL)  # Disables logging message from request library
-    logname = 'esgprep-{}-{}'.format(datetime.now().strftime("%Y%m%d-%H%M%S"), os.getpid())
-    formatter = logging.Formatter(fmt='%(levelname)-10s %(asctime)s %(message)s')
-    if log:
-        if not os.path.isdir(log):
-            os.makedirs(log)
-        logfile = os.path.join(log, logname)
-    else:
-        logfile = os.path.join(os.getcwd(), logname)
-    logging.getLogger().setLevel(logging.DEBUG)
-    error_handler = logging.FileHandler(filename='{}.err'.format(logfile), delay=True)
-    error_handler.setLevel(logging.ERROR)
-    error_handler.setFormatter(formatter)
-    logging.getLogger().addHandler(error_handler)
-    if log:
-        stream_handler = logging.FileHandler(filename='{}.log'.format(logfile), delay=True)
-    else:
-        if debug:
-            stream_handler = logging.StreamHandler()
-        else:
-            stream_handler = logging.NullHandler()
-    stream_handler.setLevel(logging.__dict__[level])
-    stream_handler.addFilter(LogFilter(logging.WARNING))
-    stream_handler.setFormatter(formatter)
-    logging.getLogger().addHandler(stream_handler)
+
+    def __init__(self, args):
+        assert isinstance(args, dict)
+        for key, value in args.items():
+            setattr(self, key, value)
+
+
+class ncopen(object):
+    """
+    Properly opens a netCDF file
+
+    :param str path: The netCDF file full path
+    :returns: The netCDF dataset object
+    :rtype: *netCDF4.Dataset*
+
+    """
+
+    def __init__(self, path, mode='r'):
+        self.path = path
+        self.mode = mode
+        self.nc = None
+
+    def __enter__(self):
+        try:
+            self.nc = Dataset(self.path, self.mode)
+        except IOError:
+            raise InvalidNetCDFFile(self.path)
+        return self.nc
+
+    def __exit__(self, *exc):
+        self.nc.close()
 
 
 def remove(pattern, string):
@@ -185,7 +169,7 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
         raise InvalidChecksumType(checksum_type)
     except KeyboardInterrupt:
         raise
-    except:
+    except Exception:
         raise ChecksumFail(ffp, checksum_type)
 
 
@@ -203,117 +187,41 @@ def get_checksum_pattern(checksum_type):
     return re.compile('^[0-9a-f]{{{}}}$'.format(checksum_length))
 
 
-def gh_request_content(url, auth=None):
+def get_tracking_id(ffp, project):
     """
-    Gets the GitHub content of a file or a directory.
+    Get and validate tracking_id/PID string from netCDF global attributes of file
 
-    :param str url: The GitHub url to request
-    :param *requests.auth.HTTPBasicAuth* auth: The authenticator object
-    :returns: The GitHub request content
-    :rtype: *requests.models.Response*
-    :raises Error: If user not authorized to read GitHub repository
-    :raises Error: If user exceed the GitHub API rate limit
-    :raises Error: If the queried content does not exist
-    :raises Error: If the GitHub request fails for other reasons
-
+    :param str ffp: The file full path
+    :param str project: The project name
+    :returns: THe tracking_id string
     """
-    GitHubException.URI = url
-    r = requests.get(url, auth=auth)
-    if r.status_code == 200:
-        return r
-    elif r.status_code == 401:
-        raise GitHubUnauthorized()
-    elif r.status_code == 403:
-        raise GitHubAPIRateLimit(int(r.headers['X-RateLimit-Reset']))
-    elif r.status_code == 404:
-        raise GitHubFileNotFound()
-    else:
-        raise GitHubConnectionError()
-
-
-def backup(f, mode=None):
-    """
-    Backup a local file following different modes:
-
-     * "one_version" renames the existing file in its source directory adding a ".bkp" extension to the filename.
-     * "keep_versions" moves the existing file in a child directory called "bkp" and add a timestamp to the filename.
-
-    :param str f: The file to backup
-    :param str mode: The backup mode to follow
-
-    """
-    if os.path.isfile(f):
-        if mode == 'one_version':
-            dst = '{}.bkp'.format(f)
-            os.rename(f, dst)
-        elif mode == 'keep_versions':
-            bkpdir = os.path.join(os.path.dirname(f), 'bkp')
-            dst = os.path.join(bkpdir, '{}.{}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'),
-                                                      os.path.basename(f)))
+    with ncopen(ffp) as f:
+        if 'tracking_id' in f.ncattrs():
+            id = f.getncattr('tracking_id')
             try:
-                os.makedirs(bkpdir)
-            except OSError:
-                pass
-            finally:
-                # Overwritten silently if destination file already exists
-                os.rename(f, dst)
+                prefix, uid = id.split('/')
+                assert prefix == PID_PREFIXES[project]
+            except ValueError:
+                uid = id
+                assert project not in PID_PREFIXES.keys()
+            assert is_uuid(uid)
+            return id
         else:
-            # No backup = default
-            pass
+            return None
 
 
-def write_content(outfile, content):
+def is_uuid(uuid_string, version=4):
     """
-    Write GitHub content into a file.
+    Returns True is validated string is a UUID.
 
-    :param str outfile: The output file
-    :param str content: The file content to write
-
-    """
-    with open(outfile, 'w+') as f:
-        f.write(content.encode('utf-8'))
-
-
-def do_fetching(f, remote_checksum, keep, overwrite):
-    """
-    Returns True or False depending on decision schema
-
-    :param str f: The file to test
-    :param str remote_checksum: The remote file checksum
-    :param boolean overwrite: True if overwrite existing files
-    :param boolean keep: True if keep existing files
-    :returns: True depending on the conditions
+    :param str uuid_string: The string to validate
+    :param int version: The UUID version to use, default is 4
+    :returns: True if uuid_string is a valid uuid
     :rtype: *boolean*
 
     """
-    if overwrite:
-        return True
-    else:
-        if not os.path.isfile(f):
-            return True
-        else:
-            if githash(f) == remote_checksum:
-                return False
-            else:
-                logging.warning('Local "{}" does not match version on GitHub. '
-                                'The file is either outdated or was modified.'.format((os.path.basename(f))))
-                if keep:
-                    return False
-                else:
-                    return True
-
-
-def githash(outfile):
-    """
-    Makes Git checksum (as called by "git hash-object") of a file
-
-    :param outfile:
-    :returns: The SHA1 sum
-
-    """
-    with open(outfile) as f:
-        data = f.read()
-    s = hashlib.sha1()
-    s.update("blob %u\0" % len(data))
-    s.update(data)
-    return unicode(s.hexdigest())
+    try:
+        uid = UUID(uuid_string, version=version)
+        return uid.hex == uuid_string.replace('-', '')
+    except ValueError:
+        return False

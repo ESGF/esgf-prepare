@@ -71,10 +71,13 @@ To release the Github API rate limit, submit your GitHub username and password.
 
     $> esgfetchini --gh-user MY_GH_USER --gh-password MY_GH_PASSWORD
 
+Instead of submitting your login and password on the command-line, you can also simply export the following variables
+``$GH_USER`` and ``$GH_PASSWORD`` in your UNIX environment.
+
 Exit status
 ***********
 
  * Status = 0
-    All the configuration have been successfully fetched.
+    All the configuration files have been successfully fetched.
  * Status = 1
-    One or several errors occurred. See the error logfile.
+    One or several errors occurred.

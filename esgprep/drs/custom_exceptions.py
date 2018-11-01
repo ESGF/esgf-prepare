@@ -48,6 +48,19 @@ class DuplicatedFile(Exception):
         super(self.__class__, self).__init__(self.msg)
 
 
+class UnchangedTrackingID(Exception):
+    """
+    Raised if a NetCDF file already has the tracking ID of submitted file to upgrade.
+
+    """
+
+    def __init__(self, latest, latest_id, upgrade, upgrade_id):
+        self.msg = "Latest file version has the same tracking ID/PID, which has to be unique."
+        self.msg += "\n<latest  file: '{} - {}'>".format(latest_id, latest)
+        self.msg += "\n<upgrade file: '{} - {}'>".format(upgrade_id, upgrade)
+        super(self.__class__, self).__init__(self.msg)
+
+
 class NoVersionPattern(Exception):
     """
     Raised if no version facet found in the destination format.
@@ -115,4 +128,17 @@ class MigrationDenied(Exception):
         self.msg += "\n<dst: '{}'>".format(dst)
         self.msg += "\n<mode: '{}'>".format(mode)
         self.msg += "\n<reason: '{}'>".format(reason)
+        super(self.__class__, self).__init__(self.msg)
+
+
+class InconsistentDRSPath(Exception):
+    """
+    Raised when DRS path doesn't start with the project ID.
+
+    """
+
+    def __init__(self, project, path):
+        self.msg = "DRS path must start with the project name (case-insensitive)."
+        self.msg += "\n<project: '{}'>".format(project)
+        self.msg += "\n<path: '{}'>".format(path)
         super(self.__class__, self).__init__(self.msg)

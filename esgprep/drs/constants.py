@@ -35,8 +35,33 @@ CONTROLLED_ARGS = ['directory',
                    'mode',
                    'version',
                    'root',
+                   'no_checksum',
                    'upgrade_from_latest',
-                   'ignore_from_latest']
+                   'ignore_from_latest',
+                   'ignore_from_incoming']
+
+# List of variable required by each process
+PROCESS_VARS = ['root',
+                'pattern',
+                'facets',
+                'set_values',
+                'set_keys',
+                'cfg',
+                'project',
+                'lock',
+                'progress',
+                'nbsources',
+                'no_checksum',
+                'checksum_type',
+                'mode',
+                'upgrade_from_latest',
+                'ignore_from_latest',
+                'ignore_from_incoming']
 
 # Tree context file
 TREE_FILE = '/tmp/DRSTree_{}.pkl'.format(environ['USER'])
+
+# PID prefixes
+PID_PREFIXES = {'cmip6': 'hdl:21.14100',
+                'cordex': 'hdl:21.14102',
+                'obs4mips': 'hdl:21.14103'}
