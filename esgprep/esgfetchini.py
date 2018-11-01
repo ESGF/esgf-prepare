@@ -6,17 +6,16 @@
     :synopsis: Toolbox to prepare ESGF data for publication.
 
 """
-import os
-import sys
 
 from esgprep.fetchini.main import run
 from utils.constants import *
-from utils.parser import MultilineFormatter, CustomArgumentParser
+from utils.help import *
+from utils.parser import *
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
 
-def get_args():
+def get_args(args=None):
     """
     Returns parsed command-line arguments.
 
@@ -43,9 +42,9 @@ def get_args():
         help=VERSION_HELP)
     main.add_argument(
         '-i',
-        metavar='$ESGINI',
+        metavar='$ESGINI_DIR',
         type=str,
-        default=os.environ['ESGINI'] if 'ESGINI' in os.environ.keys() else '/esg/config/esgcet',
+        default=os.environ['ESGINI_DIR'] if 'ESGINI_DIR' in os.environ.keys() else '/esg/config/esgcet',
         help=INI_HELP)
     main.add_argument(
         '-l', '--log',
@@ -55,7 +54,7 @@ def get_args():
         nargs='?',
         help=LOG_HELP)
     main.add_argument(
-        '--debug',
+        '-d', '--debug',
         action='store_true',
         default=False,
         help=VERBOSE_HELP)
@@ -101,19 +100,17 @@ def get_args():
         action='store_true',
         default=False,
         help=DEVEL_HELP)
-    return main.prog, main.parse_args()
+    return main.prog, main.parse_args(args)
 
 
-def main():
+def main(args=None):
     """
     Run main program
 
     """
     # Get command-line arguments
-    prog, args = get_args()
+    prog, args = get_args(args)
     setattr(args, 'prog', prog)
-    if not hasattr(args, 'quiet'):
-        setattr(args, 'quiet', None)
     # Run program
     run(args)
 

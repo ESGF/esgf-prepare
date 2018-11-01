@@ -9,10 +9,12 @@
 
 import hashlib
 import pickle
-from netCDF4 import Dataset
-from custom_print import *
 from uuid import UUID
+
+from custom_print import *
 from esgprep.drs.constants import PID_PREFIXES
+from netCDF4 import Dataset
+
 
 class ProcessContext(object):
     """
@@ -198,9 +200,10 @@ def get_tracking_id(ffp, project):
             id = f.getncattr('tracking_id')
             try:
                 prefix, uid = id.split('/')
+                assert prefix == PID_PREFIXES[project]
             except ValueError:
-                prefix = None; uid = id
-            assert prefix == PID_PREFIXES[project]
+                uid = id
+                assert project not in PID_PREFIXES.keys()
             assert is_uuid(uid)
             return id
         else:

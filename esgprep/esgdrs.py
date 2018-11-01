@@ -7,15 +7,12 @@
 
 """
 
-import argparse
-import os
-import sys
 from argparse import FileType
 
 from esgprep.drs.main import run
+from esgprep.utils.help import *
 from utils.constants import *
-from utils.parser import MultilineFormatter, DirectoryChecker, VersionChecker, CustomArgumentParser, keyval_converter, \
-    processes_validator
+from utils.parser import *
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
@@ -58,9 +55,9 @@ def get_args():
         help=HELP)
     parent.add_argument(
         '-i',
-        metavar='$ESGINI',
+        metavar='$ESGINI_DIR',
         action=DirectoryChecker,
-        default=os.environ['ESGINI'] if 'ESGINI' in os.environ.keys() else '/esg/config/esgcet',
+        default=os.environ['ESGINI_DIR'] if 'ESGINI_DIR' in os.environ.keys() else '/esg/config/esgcet',
         help=INI_HELP)
     parent.add_argument(
         '-l', '--log',
@@ -70,7 +67,7 @@ def get_args():
         nargs='?',
         help=LOG_HELP)
     parent.add_argument(
-        '--debug',
+        '-d', '--debug',
         action='store_true',
         default=False,
         help=VERBOSE_HELP)
@@ -81,7 +78,7 @@ def get_args():
         help=DIRECTORY_HELP['drs'])
     parent.add_argument(
         '-p', '--project',
-        metavar='PROJECT_ID',
+        metavar='NAME',
         type=str,
         required=True,
         help=PROJECT_HELP['drs'])
@@ -222,8 +219,6 @@ def main():
     # Get command-line arguments
     prog, args = get_args()
     setattr(args, 'prog', prog)
-    if not hasattr(args, 'quiet'):
-        setattr(args, 'quiet', None)
     # Run program
     run(args)
 

@@ -11,13 +11,12 @@ import argparse
 import os
 import re
 import sys
-import textwrap
-from argparse import HelpFormatter, ArgumentTypeError, Action, ArgumentParser
+from argparse import RawTextHelpFormatter, ArgumentTypeError, Action, ArgumentParser
 from datetime import datetime
 from gettext import gettext
 
 
-class MultilineFormatter(HelpFormatter):
+class MultilineFormatter(RawTextHelpFormatter):
     """
     Custom formatter class for argument parser to use with the Python
     `argparse <https://docs.python.org/2/library/argparse.html>`_ module.
@@ -26,32 +25,11 @@ class MultilineFormatter(HelpFormatter):
 
     def __init__(self, prog):
         # Overload the HelpFormatter class.
-        super(MultilineFormatter, self).__init__(prog, max_help_position=60, width=100)
-
-    def _fill_text(self, text, width, indent):
-        # Rewrites the _fill_text method to support multiline description.
-        text = self._whitespace_matcher.sub(' ', text).strip()
-        multiline_text = ''
-        paragraphs = text.split('|n|n ')
-        for paragraph in paragraphs:
-            lines = paragraph.split('|n ')
-            for line in lines:
-                formatted_line = textwrap.fill(line, width,
-                                               initial_indent=indent,
-                                               subsequent_indent=indent) + '\n'
-                multiline_text += formatted_line
-            multiline_text += '\n'
-        return multiline_text
-
-    def _split_lines(self, text, width):
-        # Rewrites the _split_lines method to support multiline helps.
-        text = self._whitespace_matcher.sub(' ', text).strip()
-        lines = text.split('|n ')
-        multiline_text = []
-        for line in lines:
-            multiline_text.append(textwrap.fill(line, width))
-        multiline_text[-1] += '\n'
-        return multiline_text
+        try:
+            rows, columns = os.popen('stty size', 'r').read().split()
+        except ValueError:
+            rows, columns = 120, 120
+        super(MultilineFormatter, self).__init__(prog, max_help_position=100, width=int(columns))
 
 
 class DirectoryChecker(Action):
@@ -180,7 +158,7 @@ class CustomArgumentParser(ArgumentParser):
 
         """
         self.print_usage(sys.stderr)
-        self.exit(99, gettext('%s: error: %s\n') % (self.prog, message))
+        self.exit(-1, gettext('%s: error: %s\n') % (self.prog, message))
 
     def set_default_subparser(self, name, args=None):
         """
@@ -206,29 +184,3 @@ class CustomArgumentParser(ArgumentParser):
                     sys.argv.insert(1, name)
                 else:
                     args.insert(0, name)
-
-
-class DirectoryType(object):
-    """
-    Instances of DirType are typically passed as type= arguments to the
-    ArgumentParser add_argument() method.
-
-    """
-
-    def __call__(self, string):
-        # the special argument "-" means sys.std{in,out}
-        if string == '-':
-            return sys.stdin
-        # all other arguments are used as file names
-        msg = 'No such directory: {}'.format(string)
-        try:
-            string = os.path.abspath(os.path.normpath(string))
-            if os.path.isdir(string):
-                return string
-            else:
-                raise ArgumentTypeError(msg)
-        except AttributeError:
-            raise ArgumentTypeError(msg)
-
-    def __repr__(self):
-        return '{}'.format(type(self).__name__)

@@ -13,17 +13,8 @@ from multiprocessing.managers import SyncManager
 
 from ESGConfigParser import SectionParser
 from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
-from esgprep.drs.handler import DRSTree
 from esgprep.utils.custom_print import *
 from requests.auth import HTTPBasicAuth
-
-SyncManager.register('tree', DRSTree, exposed=('create_leaf',
-                                               'get_display_lengths',
-                                               'check_uniqueness',
-                                               'list',
-                                               'todo',
-                                               'tree'
-                                               'upgrade'))
 
 
 class BaseContext(object):
@@ -34,7 +25,7 @@ class BaseContext(object):
 
     def __init__(self, args):
         # Init print management
-        Print.init(log=args.log, debug=args.debug, cmd=args.prog, quiet=args.quiet)
+        Print.init(log=args.log, debug=args.debug, cmd=args.prog)
         # Print command-line
         Print.command()
         # Get project

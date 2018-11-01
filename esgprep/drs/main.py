@@ -64,6 +64,19 @@ def process(source):
         # Ensure that the called project section is ALWAYS part of the DRS path elements (case insensitive)
         if not fh.drs.path().lower().startswith(pctx.project.lower()):
             raise InconsistentDRSPath(pctx.project, fh.drs.path())
+        # Compute file checksum
+        if fh.drs.v_latest and not pctx.no_checksum:
+            fh.checksum = checksum(fh.ffp, pctx.checksum_type)
+        # Get file tracking id
+        fh.tracking_id = get_tracking_id(fh.ffp, pctx.project)
+        if fh.drs.v_latest:
+            latest_file = os.path.join(fh.drs.path(latest=True, root=True), fh.filename)
+            # Compute checksum of latest file version if exists
+            if os.path.exists(latest_file) and not pctx.no_checksum:
+                fh.latest_checksum = checksum(latest_file, pctx.checksum_type)
+            # Get tracking_id of latest file version if exists
+            if os.path.exists(latest_file):
+                fh.latest_tracking_id = get_tracking_id(latest_file, pctx.project)
         msg = TAGS.SUCCESS + 'Processing {}'.format(COLORS.HEADER(fh.ffp))
         Print.info(msg)
         return fh
@@ -119,17 +132,13 @@ def tree_builder(fh):
                     # If checksumming disabled duplicated files cannot be detected
                     # In this case, incoming files are assumed to be different in any cases
                     # Duplicated files should not exist.
-                    latest_checksum = checksum(latest_file, pctx.checksum_type)
-                    current_checksum = checksum(fh.ffp, pctx.checksum_type)
                     # Check if processed file is a duplicate in comparison with latest version
-                    if latest_checksum == current_checksum:
+                    if fh.latest_checksum == fh.checksum:
                         fh.is_duplicate = True
                 if not fh.is_duplicate:
                     # If files are different check that PID/tracking_id is different from latest version
-                    latest_tracking_id = get_tracking_id(latest_file, pctx.project)
-                    current_tracking_id = get_tracking_id(fh.ffp, pctx.project)
-                    if latest_tracking_id == current_tracking_id:
-                        raise UnchangedTrackingID(latest_file, latest_tracking_id, fh.ffp, current_tracking_id)
+                    if fh.latest_tracking_id == fh.tracking_id:
+                        raise UnchangedTrackingID(latest_file, fh.latest_tracking_id, fh.ffp, fh.tracking_id)
 
         # Start the tree generation
         if not fh.is_duplicate:
@@ -142,7 +151,8 @@ def tree_builder(fh):
                              label='{}{}{}'.format(fh.filename, LINK_SEPARATOR, os.path.join(*src)),
                              src=os.path.join(*src),
                              mode='symlink',
-                             origin=fh.ffp)
+                             origin=fh.ffp,
+                             force=True)
             # Add the "latest" node for symlink
             tree.create_leaf(nodes=fh.drs.items(f_part=False, version=False, root=True),
                              leaf='latest',
@@ -164,8 +174,8 @@ def tree_builder(fh):
                         # i.e., copy latest dataset leaves to Tree
                         # Except if file has be ignored from latest version (i.e., with known issue)
                         # Except if file leaf has already been created to avoid overwriting new version
-                        if filename != fh.filename and filename not in pctx.ignore_from_latest and \
-                                filename not in [leaf.tag for leaf in tree.leaves()]:
+                        # leaf will be not create if already exists
+                        if filename != fh.filename and filename not in pctx.ignore_from_latest:
                             src = os.path.join(root, filename)
                             tree.create_leaf(nodes=fh.drs.items(root=True),
                                              leaf=filename,
@@ -173,6 +183,7 @@ def tree_builder(fh):
                                              src=os.readlink(src),
                                              mode='symlink',
                                              origin=os.path.realpath(src))
+
         else:
             # Pickup the latest file version
             latest_file = os.path.join(fh.drs.path(latest=True, root=True), fh.filename)
@@ -307,6 +318,7 @@ def run(args):
             # Build DRS tree
             cctx['progress'].value = 0
             initializer(cctx.keys(), cctx.values())
+            handlers = [h for h in handlers if h is not None]
             results = [x for x in itertools.imap(tree_builder, handlers)]
             Print.progress('\n')
         else:

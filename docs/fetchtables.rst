@@ -63,10 +63,9 @@ corresponding to the desired branch(s) or tag(s). Thus, the final output directo
 
 The branch or tag sub-folder can be disable to follow ``<table_dir>/<project>-cmor-tables/`` format only:
 
-.. code-block::
+.. code-block:: bash
 
     $> esgfetchtables --no-subfolder
-
 
 Keep existing file(s)
 *********************

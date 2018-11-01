@@ -58,7 +58,6 @@ class ProcessingContext(MultiprocessingContext):
         self.no_cleanup = args.no_cleanup
         # Mapfile path display behavior
         self.basename = args.basename if hasattr(args, 'basename') else False
-        self.quiet = args.quiet if hasattr(args, 'quiet') else False
         # Scan behavior
         self.all = args.all_versions
         if self.all:
@@ -78,6 +77,7 @@ class ProcessingContext(MultiprocessingContext):
             # Instantiate file collector to walk through the tree
             self.source_type = 'file'
             self.sources = VersionedPathCollector(sources=self.directory,
+                                                  project=self.project,
                                                   dir_format=self.cfg.translate('directory_format'))
             # Translate directory format pattern
             self.pattern = self.cfg.translate('directory_format', add_ending_filename=True)

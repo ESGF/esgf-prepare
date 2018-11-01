@@ -48,8 +48,8 @@ Because this could be time consuming ``--no-checksum`` allows you not include th
 Mapfile with pre-calculated checksums
 *************************************
 
-If your file checkusms have been already caclulated apart, you can submit a file to ``esgmapfile`` with the checksum
-list. This checksum file must have the same format as the output of the UNIX command-lines "*sum".
+If your file checksum have been already calculated apart, you can submit a file to ``esgmapfile`` with the checksums
+list. This checksum file must have the same format as the output of the UNIX command-lines "\*sum".
 
 .. code-block:: bash
 

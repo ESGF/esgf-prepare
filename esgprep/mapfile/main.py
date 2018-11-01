@@ -17,6 +17,7 @@ from context import ProcessingContext
 from custom_exceptions import *
 from esgprep.utils.custom_print import *
 from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext
+from esgprep.utils.output_control import OutputControl
 from handler import File, Dataset
 from lockfile import LockFile
 
@@ -253,6 +254,14 @@ def run(args):
     :param ArgumentParser args: Command-line arguments parser
 
     """
+
+    # Deal with 'quiet' option separately. If set, turn off all output 
+    # before creating ProcessingContext, and turn it on only when needed
+    quiet = args.quiet if hasattr(args, 'quiet') else False
+    if quiet:
+        output_control = OutputControl()
+        output_control.stdout_off()
+
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
         # Init process context
@@ -286,7 +295,13 @@ def run(args):
                 # Remove mapfile working extension
                 if ctx.action == 'show':
                     # Print mapfiles to be generated
-                    Print.result(remove(WORKING_EXTENSION, mapfile))
+                    result = remove(WORKING_EXTENSION, mapfile)
+                    if quiet:
+                        output_control.stdout_on()
+                        print result
+                        output_control.stdout_off()
+                    else:
+                        Print.result(result)
                 elif ctx.action == 'make':
                     # A final mapfile is silently overwritten if already exists
                     os.rename(mapfile, remove(WORKING_EXTENSION, mapfile))
