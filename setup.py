@@ -66,7 +66,7 @@ else:
           python_requires='>=2.7, <3.0',
           install_requires=['lockfile==0.12.2',
                             'esgconfigparser==0.1.17',
-                            'requests==2.19.1',
+                            'requests==2.20.0',
                             'fuzzywuzzy==0.16.0',
                             'netCDF4==1.4.0',
                             'hurry.filesize==0.9',
