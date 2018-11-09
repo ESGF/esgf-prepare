@@ -13,7 +13,7 @@ from datetime import datetime
 VERSION = '2.9.3'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=9, day=21).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=11, day=9).strftime("%Y-%d-%m")
 
 # Shell colors map
 SHELL_COLORS = {'red': 1,
