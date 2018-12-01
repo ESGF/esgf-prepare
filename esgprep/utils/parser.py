@@ -15,6 +15,20 @@ from argparse import RawTextHelpFormatter, ArgumentTypeError, Action, ArgumentPa
 from datetime import datetime
 from gettext import gettext
 
+from esgprep.utils.help import COLOR_HELP, NO_COLOR_HELP
+
+
+def add_color_arg(parser):
+    group = parser.add_mutually_exclusive_group(required=False)
+
+    group.add_argument('--color',
+                        action='store_true',
+                        help=COLOR_HELP)
+
+    group.add_argument('--no-color',
+                       action='store_true',
+                       help=NO_COLOR_HELP)
+
 
 class MultilineFormatter(RawTextHelpFormatter):
     """

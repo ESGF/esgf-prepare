@@ -30,6 +30,7 @@ class BaseContext(object):
         Print.command()
         # Get project
         self.project = args.project
+        self._process_color_arg(args)
 
     def __enter__(self):
         pass
@@ -38,6 +39,13 @@ class BaseContext(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Print log path if exists
         Print.log()
+
+    def _process_color_arg(self, args):
+        # process --color / --no-color arg if present
+        if 'color' in args and args.color:
+            enable_colors()
+        if 'no_color' in args and args.no_color:
+            disable_colors()
 
 
 class GitHubBaseContext(BaseContext):
