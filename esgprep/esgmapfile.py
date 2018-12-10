@@ -219,6 +219,8 @@ def get_args():
         action='store_true',
         default=False,
         help=BASENAME_HELP)
+    add_color_arg(show)
+    add_color_arg(make)
     main.set_default_subparser('make')
     return main.prog, main.parse_args()
 

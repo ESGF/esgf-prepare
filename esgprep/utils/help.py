@@ -485,3 +485,11 @@ BASENAME_HELP = """Display result basename only (i.e., mapfile name without root
 Default prints the full mapfile path.
 
 """
+
+COLOR_HELP = """Enable colors. (Default is to enable when writing to a terminal.)
+
+"""
+
+NO_COLOR_HELP = """Disable colors.
+
+"""

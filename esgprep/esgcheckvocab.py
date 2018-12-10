@@ -120,6 +120,7 @@ def get_args():
         type=processes_validator,
         default=4,
         help=MAX_PROCESSES_HELP)
+    add_color_arg(main)
     return main.prog, main.parse_args()
 
 

@@ -17,6 +17,15 @@ from constants import SHELL_COLORS
 from custom_exceptions import *
 
 
+_colors_enabled = [sys.stdout.isatty()]
+
+def enable_colors():
+    _colors_enabled[0] = True
+
+def disable_colors():
+    _colors_enabled[0] = False
+
+
 class COLOR:
     """
     Define color object for print statements
@@ -64,11 +73,16 @@ class COLOR:
         return self.__call__(msg)
 
     def __call__(self, msg):
-        if msg:
-            return self.colorstr + msg + COLOR.RESTORE
+        if _colors_enabled[0]:
+            if msg:
+                return self.colorstr + msg + COLOR.RESTORE
+            else:
+                return self.colorstr
         else:
-            return self.colorstr
-
+            if msg:
+                return msg
+            else:
+                return ''
 
 class COLORS:
     """
@@ -112,24 +126,47 @@ class COLORS:
         return COLOR('cyan').bold(msg)
 
 
-class TAGS:
+class _TAGS:
     """
     Tags strings for print statements
-
     """
-    SKIP = COLORS.WARNING(':: SKIPPED :: ')
-    FETCH = COLORS.SUCCESS(':: FETCHED :: ')
-    DEBUG = COLORS.DEBUG(':: DEBUG   :: ')
-    INFO = COLORS.INFO(':: INFO    :: ')
-    WARNING = COLORS.WARNING(':: WARNING :: ')
-    ERROR = COLORS.ERROR(':: ERROR   :: ')
-    SUCCESS = COLORS.SUCCESS(':: SUCCESS :: ')
-    FAIL = COLORS.FAIL(':: FAIL    :: ')
-    LOG = COLORS.HEADER(':: LOG     :: ')
-    COMMAND = COLORS.HEADER(':: COMMAND :: ')
+    # these are evaluated as properties, in order to defer until after 
+    # enable_colors or disable_colors has been called during initialisation
+
+    @property
+    def SKIP(self): return COLORS.WARNING(':: SKIPPED :: ')
+
+    @property
+    def FETCH(self): return COLORS.SUCCESS(':: FETCHED :: ')
+
+    @property
+    def DEBUG(self): return COLORS.DEBUG(':: DEBUG   :: ')
+
+    @property
+    def INFO(self): return COLORS.INFO(':: INFO    :: ')
+
+    @property
+    def WARNING(self): return COLORS.WARNING(':: WARNING :: ')
+
+    @property
+    def ERROR(self): return COLORS.ERROR(':: ERROR   :: ')
+
+    @property
+    def SUCCESS(self): return COLORS.SUCCESS(':: SUCCESS :: ')
+
+    @property
+    def FAIL(self): return COLORS.FAIL(':: FAIL    :: ')
+
+    @property
+    def LOG(self): return COLORS.HEADER(':: LOG     :: ')
+
+    @property
+    def COMMAND(self): return COLORS.HEADER(':: COMMAND :: ')
 
     def __init__(self):
         pass
+
+TAGS = _TAGS()
 
 
 class Print(object):
