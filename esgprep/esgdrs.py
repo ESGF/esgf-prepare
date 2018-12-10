@@ -207,6 +207,8 @@ def get_args():
         parents=[parent])
     upgrade._optionals.title = OPTIONAL
     upgrade._positionals.title = POSITIONAL
+    for parser in main, list, tree, todo, upgrade:
+        add_color_arg(parser)
     main.set_default_subparser('list')
     return main.prog, main.parse_args()
 

@@ -134,6 +134,7 @@ def get_args():
         type=regex_validator,
         action='append',
         help=EXCLUDE_FILE_HELP)
+    add_color_arg(main)
     return main.prog, main.parse_args()
 
 
