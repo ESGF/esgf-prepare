@@ -87,7 +87,8 @@ class File(object):
         # Get attributes from NetCDF global attributes
         with ncopen(self.ffp) as nc:
             for attr in nc.ncattrs():
-                self.attributes[attr] = nc.getncattr(attr)
+                # If attribute value is a separated list, pick up the first item as facet value
+                self.attributes[attr] = nc.getncattr(attr).split()[0]
         # Get attributes from filename, overwriting existing ones
         match = re.search(pattern, self.filename)
         if not match:
