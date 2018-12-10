@@ -23,12 +23,19 @@ class MultilineFormatter(RawTextHelpFormatter):
 
     """
 
-    def __init__(self, prog):
+    def __init__(self, prog, default_columns=120):
         # Overload the HelpFormatter class.
-        try:
-            rows, columns = os.popen('stty size', 'r').read().split()
-        except ValueError:
-            rows, columns = 120, 120
+
+        # stty fails if stdin is not a terminal.
+        # But also check stdout, so that when writing to a file 
+        # behaviour is independent of terminal device.
+        if sys.stdin.isatty() and sys.stdout.isatty():            
+            try:
+                _, columns = os.popen('stty size', 'r').read().split()
+            except ValueError:
+                columns = default_columns
+        else:
+            columns = default_columns
         super(MultilineFormatter, self).__init__(prog, max_help_position=100, width=int(columns))
 
 
