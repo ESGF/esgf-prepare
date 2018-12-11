@@ -144,6 +144,15 @@ def get_args():
         action='store_true',
         default=False,
         help=NO_CLEANUP_HELP)
+    group = parent.add_mutually_exclusive_group(required=False)
+    group.add_argument(
+        '--color',
+        action='store_true',
+        help=COLOR_HELP)
+    group.add_argument(
+        '--no-color',
+        action='store_true',
+        help=NO_COLOR_HELP)
     # Subparser for "esgmapfile make"
     make = subparsers.add_parser(
         'make',
@@ -219,8 +228,6 @@ def get_args():
         action='store_true',
         default=False,
         help=BASENAME_HELP)
-    add_color_arg(show)
-    add_color_arg(make)
     main.set_default_subparser('make')
     return main.prog, main.parse_args()
 

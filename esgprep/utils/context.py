@@ -28,9 +28,9 @@ class BaseContext(object):
         Print.init(log=args.log, debug=args.debug, cmd=args.prog)
         # Print command-line
         Print.command()
+        self._process_color_arg(args)
         # Get project
         self.project = args.project
-        self._process_color_arg(args)
 
     def __enter__(self):
         pass

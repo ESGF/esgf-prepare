@@ -100,6 +100,15 @@ def get_args(args=None):
         action='store_true',
         default=False,
         help=DEVEL_HELP)
+    group = main.add_mutually_exclusive_group(required=False)
+    group.add_argument(
+        '--color',
+        action='store_true',
+        help=COLOR_HELP)
+    group.add_argument(
+        '--no-color',
+        action='store_true',
+        help=NO_COLOR_HELP)
     return main.prog, main.parse_args(args)
 
 

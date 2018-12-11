@@ -16,11 +16,12 @@ from multiprocessing import Value
 from constants import SHELL_COLORS
 from custom_exceptions import *
 
-
 _colors_enabled = [sys.stdout.isatty()]
+
 
 def enable_colors():
     _colors_enabled[0] = True
+
 
 def disable_colors():
     _colors_enabled[0] = False
@@ -84,6 +85,7 @@ class COLOR:
             else:
                 return ''
 
+
 class COLORS:
     """
     String colors for print statements
@@ -129,9 +131,10 @@ class COLORS:
 class _TAGS:
     """
     Tags strings for print statements
+    These are evaluated as properties, in order to defer until after
+    enable_colors or disable_colors has been called during initialisation
+
     """
-    # these are evaluated as properties, in order to defer until after 
-    # enable_colors or disable_colors has been called during initialisation
 
     @property
     def SKIP(self): return COLORS.WARNING(':: SKIPPED :: ')
@@ -165,6 +168,7 @@ class _TAGS:
 
     def __init__(self):
         pass
+
 
 TAGS = _TAGS()
 

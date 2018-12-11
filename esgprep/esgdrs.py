@@ -163,6 +163,15 @@ def get_args():
         type=processes_validator,
         default=4,
         help=MAX_PROCESSES_HELP)
+    group = parent.add_mutually_exclusive_group(required=False)
+    group.add_argument(
+        '--color',
+        action='store_true',
+        help=COLOR_HELP)
+    group.add_argument(
+        '--no-color',
+        action='store_true',
+        help=NO_COLOR_HELP)
     # Subparser for "esgdrs list"
     list = subparsers.add_parser(
         'list',
@@ -207,8 +216,6 @@ def get_args():
         parents=[parent])
     upgrade._optionals.title = OPTIONAL
     upgrade._positionals.title = POSITIONAL
-    for parser in main, list, tree, todo, upgrade:
-        add_color_arg(parser)
     main.set_default_subparser('list')
     return main.prog, main.parse_args()
 

@@ -134,7 +134,15 @@ def get_args():
         type=regex_validator,
         action='append',
         help=EXCLUDE_FILE_HELP)
-    add_color_arg(main)
+    group = main.add_mutually_exclusive_group(required=False)
+    group.add_argument(
+        '--color',
+        action='store_true',
+        help=COLOR_HELP)
+    group.add_argument(
+        '--no-color',
+        action='store_true',
+        help=NO_COLOR_HELP)
     return main.prog, main.parse_args()
 
 
