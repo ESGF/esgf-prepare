@@ -4,6 +4,42 @@
 Change Log
 ==========
 
+`v2.9.4 <https://github.com/ESGF/esgf-prepare/tree/v2.9.4>`__ (2018-12-18)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.9.3...v2.9.4>`__
+
+**Closed issues:**
+
+-  disable colours option
+   `#51 <https://github.com/ESGF/esgf-prepare/issues/51>`__
+-  stty errors `#50 <https://github.com/ESGF/esgf-prepare/issues/50>`__
+
+**Merged pull requests:**
+
+-  only run stty if input/output are to a tty [#50]
+   `#53 <https://github.com/ESGF/esgf-prepare/pull/53>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+-  add --color and --no-color args to commands
+   `#52 <https://github.com/ESGF/esgf-prepare/pull/52>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+
+`v2.9.3 <https://github.com/ESGF/esgf-prepare/tree/v2.9.3>`__ (2018-11-09)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.9.2...v2.9.3>`__
+
+**Merged pull requests:**
+
+-  Update requests
+   `#48 <https://github.com/ESGF/esgf-prepare/pull/48>`__
+   (`sashakames <https://github.com/sashakames>`__)
+-  Conda build recipe
+   `#46 <https://github.com/ESGF/esgf-prepare/pull/46>`__
+   (`sterlingbaldwin <https://github.com/sterlingbaldwin>`__)
+
 `v2.9.2 <https://github.com/ESGF/esgf-prepare/tree/v2.9.2>`__ (2018-09-20)
 --------------------------------------------------------------------------
 
