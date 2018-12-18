@@ -23,7 +23,7 @@ Check the version
 
 .. code-block:: bash
 
-    $> COMMAND {-v,--version
+    $> COMMAND {-v,--version}
 
 .. note:: The program version will be the same for all the esgprep tools.
 
@@ -118,6 +118,17 @@ CPU processes (as returned by ``multiprocessing.cpu_count()``). Default is set t
     $> COMMAND [SUBCOMMAND] --max-processes INTEGER
 
 .. warning:: The number of maximal processes is limited to the maximum CPU count in any case.
+
+Toggle color prompt
+*******************
+
+``esgprep`` commands prompot you different results in a color fashion to emphasise useful information.
+Those colors can lead to undesired characters into the logs or machine-readable processes. Default is to
+enable colors when priting to a terminal. You can switch on/off colors print by using:
+
+.. code-block:: bash
+
+    $> COMMAND [SUBCOMMAND] {--color, --no-color}
 
 Exit status
 ***********

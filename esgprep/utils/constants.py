@@ -10,10 +10,10 @@
 from datetime import datetime
 
 # Program version
-VERSION = '2.9.3'
+VERSION = '2.9.4'
 
 # Date
-VERSION_DATE = datetime(year=2018, month=11, day=9).strftime("%Y-%d-%m")
+VERSION_DATE = datetime(year=2018, month=12, day=10).strftime("%Y-%d-%m")
 
 # Shell colors map
 SHELL_COLORS = {'red': 1,
