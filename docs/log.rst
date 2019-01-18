@@ -4,6 +4,19 @@
 Change Log
 ==========
 
+`v2.9.5 <https://github.com/ESGF/esgf-prepare/tree/v2.9.5>`__ (2019-01-18)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.9.4...v2.9.5>`__
+
+**Closed issues:**
+
+-  remove unnecessary execute flags
+   `#54 <https://github.com/ESGF/esgf-prepare/issues/54>`__
+-  requests version
+   `#49 <https://github.com/ESGF/esgf-prepare/issues/49>`__
+
 `v2.9.4 <https://github.com/ESGF/esgf-prepare/tree/v2.9.4>`__ (2018-12-18)
 --------------------------------------------------------------------------
 
