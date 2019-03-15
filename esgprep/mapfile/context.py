@@ -52,7 +52,7 @@ class ProcessingContext(MultiprocessingContext):
         # Mapfile naming
         self.mapfile_name = args.mapfile
         self.outdir = args.outdir
-        if not args.no_cleanup:
+        if self.action == 'make' and not args.no_cleanup:
             self.clean()
         self.no_cleanup = args.no_cleanup
         # Mapfile path display behavior
