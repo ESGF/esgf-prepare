@@ -199,6 +199,7 @@ def tree_builder(fh):
         # Record entry for list()
         record = {'src': fh.ffp,
                   'dst': fh.drs.path(root=True),
+                  'dset_root': os.path.dirname(fh.drs.path(f_part=False, root=True)),
                   'filename': fh.filename,
                   'latest': fh.drs.v_latest or 'Initial',
                   'size': fh.size,

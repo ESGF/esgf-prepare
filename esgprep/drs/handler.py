@@ -456,13 +456,25 @@ class DRSTree(Tree):
         """
         Check tree upgrade uniqueness.
         Each data version to upgrade has to be stricly different from the latest version if exists.
-        Consequently, each dataset upgrade version has to contain at least one file with is_duplicate = False
 
         """
         for dset_path, incomings in self.paths.items():
-            latest_version = sorted([incoming['latest'] for incoming in incomings])[-1]
-            if all([incoming['is_duplicated'] for incoming in incomings]):
+            filenames = [incoming['filename'] for incoming in incomings]
+            duplicates = [incoming['is_duplicate'] for incoming in incomings]
+            latests = [incoming['latest'] for incoming in incomings]
+            roots = [incoming['dset_root'] for incoming in incomings]
+            assert latests.count(latests[0]) == len(latests)
+            latest_version = latests[0]
+            assert roots.count(roots[0]) == len(roots)
+            dset_root = roots[0]
+            latest_filenames = list()
+            for _, _, filenames in os.walk(os.path.join(dset_root, latest_version)):
+                latest_filenames.extend(filenames)
+            # An upgrade version is different if it contains at least one file with is_duplicate = False
+            # And it has the same number of files than the "latest" version
+            if all(duplicates) and set(latest_filenames) == set(filenames):
                 raise DuplicatedDataset(dset_path, latest_version)
+
 
     def list(self):
         """
@@ -480,7 +492,9 @@ class DRSTree(Tree):
             dset_dir, dset_version = os.path.dirname(dset_path), os.path.basename(dset_path)
             publication_level = os.path.normpath(dset_dir)
             files_number = len(incomings)
-            latest_version = sorted([incoming['latest'] for incoming in incomings])[-1]
+            l = [incoming['latest'] for incoming in incomings]
+            assert l.count(l[0]) == len(l)
+            latest_version = l[0]
             total_size = size(sum([incoming['size'] for incoming in incomings]))
             print('{}{}->{}{}{}'.format(publication_level.ljust(self.d_lengths[0]),
                                         latest_version.center(self.d_lengths[1]),
