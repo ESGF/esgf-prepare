@@ -14,7 +14,7 @@ from constants import *
 from context import ProcessingContext
 from custom_exceptions import *
 from esgprep.utils.custom_print import *
-from esgprep.utils.misc import load, store, evaluate, checksum, ProcessContext, get_tracking_id
+from esgprep.utils.misc import load, store, evaluate, ProcessContext, get_tracking_id, get_checksum
 from handler import File, DRSPath, DRSTree
 
 
@@ -63,19 +63,38 @@ def process(source):
         # Ensure that the called project section is ALWAYS part of the DRS path elements (case insensitive)
         if not fh.drs.path().lower().startswith(pctx.project.lower()):
             raise InconsistentDRSPath(pctx.project, fh.drs.path())
-        # Compute file checksum
-        if fh.drs.v_latest and not pctx.no_checksum:
-            fh.checksum = checksum(fh.ffp, pctx.checksum_type)
-        # Get file tracking id
-        fh.tracking_id = get_tracking_id(fh.ffp, pctx.project)
+        # Evaluate if processing file already exists in the latest existing dataset version (i.e., "is duplicated")
+        # Default: fh.is_duplicate = False
+        # 1. If a latest dataset version exists
         if fh.drs.v_latest:
+            # Build corresponding latest file path
             latest_file = os.path.join(fh.drs.path(latest=True, root=True), fh.filename)
-            # Compute checksum of latest file version if exists
-            if os.path.exists(latest_file) and not pctx.no_checksum:
-                fh.latest_checksum = checksum(latest_file, pctx.checksum_type)
-            # Get tracking_id of latest file version if exists
+            # 2. Test if a file with the same filename exists in latest version
             if os.path.exists(latest_file):
-                fh.latest_tracking_id = get_tracking_id(latest_file, pctx.project)
+                # Get tracking ID (None if not recorded into the file)
+                fh.tracking_id = get_tracking_id(fh.ffp, pctx.project)
+                latest_tracking_id = get_tracking_id(latest_file, pctx.project)
+                # 3. Test if tracking IDs are different (i.e., keep is_duplicate = False)
+                if fh.tracking_id == latest_tracking_id:
+                    latest_size = os.stat(latest_file).st_size
+                    # 4. Test if file sizes are different (i.e., keep is_duplicate = False)
+                    if fh.size == latest_size and not pctx.no_checksum:
+                        # Read or compute the checksums
+                        fh.checksum = get_checksum(fh.ffp, pctx.checksum_type, pctx.checksums_from)
+                        latest_checksum = get_checksum(latest_file, pctx.checksum_type, pctx.checksums_from)
+                        # store checksum
+                        if fh.checksum == latest_checksum:
+                            fh.is_duplicate = True
+                        elif fh.tracking_id and latest_tracking_id:
+                            # If the checksums are different, the tracking ID must not be identical if exist.
+                            # If no tracking IDs keep to is_duplicate = False
+                            raise UnchangedTrackingID(latest_file, latest_tracking_id,
+                                                      fh.ffp, fh.tracking_id)
+                    elif fh.tracking_id and latest_tracking_id:
+                        # If the sizes are different, the tracking ID must not be identical if exist.
+                        # If no tracking IDs keep to is_duplicate = False
+                        raise UnchangedTrackingID(latest_file, latest_tracking_id,
+                                                  fh.ffp, fh.tracking_id)
         msg = TAGS.SUCCESS + 'Processing {}'.format(COLORS.HEADER(fh.ffp))
         Print.info(msg)
         return fh
@@ -108,37 +127,9 @@ def tree_builder(fh):
     assert 'pctx' in globals().keys()
     pctx = globals()['pctx']
     try:
-        # If a latest version already exists make some checks FIRST to stop file process
-        if fh.drs.v_latest:
-            # Latest version should be older than upgrade version
-            if int(DRSPath.TREE_VERSION[1:]) <= int(fh.drs.v_latest[1:]):
-                raise OlderUpgrade(DRSPath.TREE_VERSION, fh.drs.v_latest)
-            # Walk through the latest dataset version to check its uniqueness with file checksums
-            if not pctx.no_checksum:
-                dset_nid = fh.drs.path(f_part=False, latest=True, root=True)
-                if dset_nid not in tree.hash.keys():
-                    tree.hash[dset_nid] = dict()
-                    tree.hash[dset_nid]['latest'] = dict()
-                    for root, _, filenames in os.walk(fh.drs.path(f_part=False, latest=True, root=True)):
-                        for filename in filenames:
-                            tree.hash[dset_nid]['latest'][filename] = checksum(os.path.join(root, filename),
-                                                                               pctx.checksum_type)
-            # Pickup the latest file version
-            latest_file = os.path.join(fh.drs.path(latest=True, root=True), fh.filename)
-            # Check latest file if exists
-            if os.path.exists(latest_file):
-                if not pctx.no_checksum:
-                    # If checksumming disabled duplicated files cannot be detected
-                    # In this case, incoming files are assumed to be different in any cases
-                    # Duplicated files should not exist.
-                    # Check if processed file is a duplicate in comparison with latest version
-                    if fh.latest_checksum == fh.checksum:
-                        fh.is_duplicate = True
-                if not fh.is_duplicate:
-                    # If files are different check that PID/tracking_id is different from latest version
-                    if fh.latest_tracking_id == fh.tracking_id:
-                        raise UnchangedTrackingID(latest_file, fh.latest_tracking_id, fh.ffp, fh.tracking_id)
-
+        # If a latest version already exists it should be older than upgrade version
+        if fh.drs.v_latest and int(DRSPath.TREE_VERSION[1:]) <= int(fh.drs.v_latest[1:]):
+            raise OlderUpgrade(DRSPath.TREE_VERSION, fh.drs.v_latest)
         # Start the tree generation
         if not fh.is_duplicate:
             # Add the processed file to the "vYYYYMMDD" node
@@ -210,7 +201,8 @@ def tree_builder(fh):
                   'dst': fh.drs.path(root=True),
                   'filename': fh.filename,
                   'latest': fh.drs.v_latest or 'Initial',
-                  'size': fh.size}
+                  'size': fh.size,
+                  'is_duplicate': fh.is_duplicate}
         if fh.drs.path(f_part=False) in tree.paths.keys():
             tree.paths[fh.drs.path(f_part=False)].append(record)
         else:
@@ -346,8 +338,7 @@ def run(args):
         # Evaluates the scan results to trigger the DRS tree action
         if evaluate(results):
             # Check upgrade uniqueness
-            if not ctx.no_checksum:
-                tree.check_uniqueness(ctx.checksum_type)
+            tree.check_uniqueness()
             # Apply tree action
             tree.get_display_lengths()
             getattr(tree, ctx.action)()

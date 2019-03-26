@@ -11,9 +11,9 @@ import re
 
 from ESGConfigParser import interpolate
 from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOption, MissingPatternKey
+
 from constants import *
 from esgprep.utils.custom_exceptions import *
-from esgprep.utils.misc import checksum
 
 
 class Source(object):
@@ -134,15 +134,3 @@ class File(Source):
         self.size = os.stat(self.source).st_size
         # Retrieve file mtime
         self.mtime = os.stat(self.source).st_mtime
-
-    def checksum(self, checksum_type):
-        """
-        Does the checksum by the Shell avoiding Python memory limits.
-
-        :param str checksum_type: Checksum type
-        :returns: The checksum
-        :rtype: *str*
-        :raises Error: If the checksum fails
-
-        """
-        return checksum(self.source, checksum_type)

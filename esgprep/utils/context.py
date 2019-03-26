@@ -12,8 +12,9 @@ from multiprocessing.managers import SyncManager
 
 from ESGConfigParser import SectionParser
 from ESGConfigParser.custom_exceptions import NoConfigOption, NoConfigSection
-from esgprep.utils.custom_print import *
 from requests.auth import HTTPBasicAuth
+
+from esgprep.utils.custom_print import *
 
 
 class BaseContext(object):

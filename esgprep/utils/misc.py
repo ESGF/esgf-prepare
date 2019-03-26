@@ -10,9 +10,10 @@ import hashlib
 import pickle
 from uuid import UUID
 
+from netCDF4 import Dataset
+
 from custom_print import *
 from esgprep.drs.constants import PID_PREFIXES
-from netCDF4 import Dataset
 
 
 class ProcessContext(object):
@@ -224,3 +225,39 @@ def is_uuid(uuid_string, version=4):
         return uid.hex == uuid_string.replace('-', '')
     except ValueError:
         return False
+
+
+def load_checksums(checksum_file):
+    """
+    Convert checksums file input as dictionary where (key: value) pairs respectively
+    are the file path and its checksum.
+
+    :param FileObject checksum_file: The submitted checksum file
+    :returns: The loaded checksums
+    :rtype: *dict*
+
+    """
+    checksums = dict()
+    for checksum, path in [entry.split() for entry in checksum_file.read().splitlines()]:
+        path = os.path.abspath(os.path.normpath(path))
+        checksums[path] = checksum
+    return checksums
+
+
+def get_checksum(ffp, checksum_type='sha256', checksums_from_file=None):
+    """
+    Get file checksum.
+    Allows to submit a list of checksums in a dictionary way {file: checksum}, to be used by --checksums-from flag.
+
+    :param str checksum_type: Checksum type
+    :param dict checksums_from_file: Checksums from file
+    :returns: The checksum
+    :rtype: *str*
+    :raises Error: If the checksum fails
+
+    """
+    if checksums_from_file:
+        if ffp in checksums_from_file:
+            if re.match(get_checksum_pattern(checksum_type), checksums_from_file[ffp]):
+                return checksums_from_file[ffp]
+    return checksum(ffp, checksum_type)

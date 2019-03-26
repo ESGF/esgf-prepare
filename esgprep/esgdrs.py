@@ -158,6 +158,11 @@ def get_args():
         default=False,
         help=NO_CHECKSUM_HELP['drs'])
     parent.add_argument(
+        '--checksums-from',
+        metavar='CHECKSUM_FILE',
+        type=FileType('r'),
+        help=CHECKSUMS_FROM_HELP)
+    parent.add_argument(
         '--max-processes',
         metavar='4',
         type=processes_validator,

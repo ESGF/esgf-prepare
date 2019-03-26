@@ -8,12 +8,12 @@
 
 from uuid import uuid4 as uuid
 
-from ESGConfigParser import SectionParser
 from constants import *
 from custom_exceptions import *
 from esgprep.utils.collectors import Collector
 from esgprep.utils.context import MultiprocessingContext
 from esgprep.utils.custom_print import *
+from esgprep.utils.misc import load_checksums
 from handler import DRSTree, DRSPath
 
 
@@ -64,10 +64,16 @@ class ProcessingContext(MultiprocessingContext):
             self.commands_file = None
         if self.overwrite_commands_file and not self.commands_file:
             Print.warning('"--overwrite-commands-file" ignored')
+        # Checksumming
+        if hasattr(args, 'checksums_from'):
+            if args.checksums_from:
+                self.checksums_from = load_checksums(args.checksums_from)
+            else:
+                self.checksums_from = args.checksums_from
         self.no_checksum = args.no_checksum
         if self.no_checksum:
             msg = 'Checksumming disabled, DRS breach could occur -- '
-            msg += 'Incoming files are all supposed to be different from latest version if exists --'
+            msg += 'Duplicated files will not be detected properly -- '
             msg += 'It is highly recommend to activate checksumming processes.'
             Print.warning(msg)
 
@@ -125,21 +131,3 @@ class ProcessingContext(MultiprocessingContext):
                 msg += 'Please use "--overwrite-commands-file" option.'
                 Print.error(COLORS.FAIL(msg))
                 sys.exit(1)
-
-    def get_checksum_type(self):
-        """
-        Gets the checksum type to use.
-        Be careful to Exception constants by reading two different sections.
-
-        :returns: The checksum type
-        :rtype: *str*
-
-        """
-        _cfg = SectionParser(section='DEFAULT', directory=self.config_dir)
-        if _cfg.has_option('checksum', section='DEFAULT'):
-            checksum_type = _cfg.get_options_from_table('checksum')[0][1].lower()
-        else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
-            checksum_type = 'sha256'
-        if checksum_type not in checksum_types:
-            raise InvalidChecksumType(checksum_type)
-        return checksum_type

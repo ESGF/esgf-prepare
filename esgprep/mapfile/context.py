@@ -12,6 +12,7 @@ from constants import *
 from esgprep.utils.collectors import VersionedPathCollector, DatasetCollector
 from esgprep.utils.context import MultiprocessingContext
 from esgprep.utils.custom_print import *
+from esgprep.utils.misc import load_checksums
 
 
 class ProcessingContext(MultiprocessingContext):
@@ -34,7 +35,6 @@ class ProcessingContext(MultiprocessingContext):
         self.no_checksum = None
         if hasattr(args, 'no_checksum'):
             self.no_checksum = args.no_checksum
-
         self.notes_title = None
         if hasattr(args, 'tech_notes_title'):
             self.notes_title = args.tech_notes_title
@@ -44,7 +44,7 @@ class ProcessingContext(MultiprocessingContext):
         self.checksums_from = None
         if hasattr(args, 'checksums_from'):
             if args.checksums_from:
-                self.checksums_from = self.load_checksums(args.checksums_from)
+                self.checksums_from = load_checksums(args.checksums_from)
             else:
                 self.checksums_from = args.checksums_from
         self.no_version = args.no_version
@@ -138,20 +138,3 @@ class ProcessingContext(MultiprocessingContext):
         for root, _, filenames in os.walk(self.outdir):
             for filename in fnmatch.filter(filenames, '*{}'.format(WORKING_EXTENSION)):
                 os.remove(os.path.join(root, filename))
-
-    @staticmethod
-    def load_checksums(checksum_file):
-        """
-        Convert checksums file input as dictionary where (key: value) pairs respectively
-        are the file path and its checksum.
-
-        :param FileObject checksum_file: The submitted checksum file
-        :returns: The loaded checksums
-        :rtype: *dict*
-
-        """
-        checksums = dict()
-        for checksum, path in [entry.split() for entry in checksum_file.read().splitlines()]:
-            path = os.path.abspath(os.path.normpath(path))
-            checksums[path] = checksum
-        return checksums

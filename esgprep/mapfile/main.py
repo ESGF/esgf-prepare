@@ -11,14 +11,15 @@ import traceback
 from multiprocessing import Pool
 
 from ESGConfigParser import interpolate, MissingPatternKey, BadInterpolation, InterpolationDepthError
+from lockfile import LockFile
+
 from constants import *
 from context import ProcessingContext
 from custom_exceptions import *
 from esgprep.utils.custom_print import *
-from esgprep.utils.misc import evaluate, remove, get_checksum_pattern, ProcessContext
+from esgprep.utils.misc import evaluate, remove, get_checksum, ProcessContext
 from esgprep.utils.output_control import OutputControl
 from handler import File, Dataset
-from lockfile import LockFile
 
 
 def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_version, mapfile_drs=None, basename=False):
@@ -172,26 +173,8 @@ def process(source):
             # Generate the corresponding mapfile entry/line
             optional_attrs = dict()
             optional_attrs['mod_time'] = sh.mtime
-            if not pctx.no_checksum:
-                if pctx.checksums_from:
-                    if source in pctx.checksums_from.keys():
-                        if re.match(get_checksum_pattern(pctx.checksum_type), pctx.checksums_from[source]):
-                            optional_attrs['checksum'] = pctx.checksums_from[source]
-                        else:
-                            msg = 'Invalid {} checksum pattern: {} -- '.format(pctx.checksum_type,
-                                                                               pctx.checksums_from[source])
-                            msg += 'Recomputing checksum.'
-                            with pctx.lock:
-                                Print.warning(msg)
-                            optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
-                    else:
-                        msg = 'Entry not found in checksum file: {} -- '.format(source)
-                        msg += 'Recomputing checksum.'
-                        with pctx.lock:
-                            Print.warning(msg)
-                        optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
-                else:
-                    optional_attrs['checksum'] = sh.checksum(pctx.checksum_type)
+            if pctx.no_checksum:
+                optional_attrs['checksum'] = get_checksum(sh.source, pctx.checksum_type, pctx.checksums_from)
                 optional_attrs['checksum_type'] = pctx.checksum_type.upper()
             optional_attrs['dataset_tech_notes'] = pctx.notes_url
             optional_attrs['dataset_tech_notes_title'] = pctx.notes_title

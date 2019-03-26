@@ -12,15 +12,16 @@ from os import remove
 from tempfile import NamedTemporaryFile
 
 from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOptions, NoConfigOption
-from constants import *
-from custom_exceptions import *
-from esgprep.utils.custom_print import *
-from esgprep.utils.misc import checksum, ncopen
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
 from hurry.filesize import size
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
+
+from constants import *
+from custom_exceptions import *
+from esgprep.utils.custom_print import *
+from esgprep.utils.misc import ncopen
 
 
 class File(object):
@@ -44,12 +45,8 @@ class File(object):
         self.drs = None
         # Checksum
         self.checksum = None
-        # Latest version checksum
-        self.latest_checksum = None
         # Tracking ID
         self.tracking_id = None
-        # Latest version tracking ID
-        self.latest_tracking_id = None
 
     def get(self, key):
         """
@@ -455,21 +452,17 @@ class DRSTree(Tree):
                 if self[node].is_leaf():
                     yield self[node]
 
-    def check_uniqueness(self, checksum_type):
+    def check_uniqueness(self):
         """
-        Check tree upgrade uniqueness. Each data version to upgrade has to be stricly different
-        from the latest version if exists.
+        Check tree upgrade uniqueness.
+        Each data version to upgrade has to be stricly different from the latest version if exists.
+        Consequently, each dataset upgrade version has to contain at least one file with is_duplicate = False
 
         """
-        for latest_dset in self.hash.keys():
-            latest_path, latest_version = os.path.dirname(latest_dset), os.path.basename(latest_dset)
-            self.hash[latest_dset]['upgrade'] = dict()
-            for dset_leaf in self.leaves(root=os.path.join(latest_path, DRSPath.TREE_VERSION)):
-                filename = os.path.basename(dset_leaf.data.origin)
-                self.hash[latest_dset]['upgrade'][filename] = checksum(dset_leaf.data.origin,
-                                                                       checksum_type)
-            if self.hash[latest_dset]['latest'] == self.hash[latest_dset]['upgrade']:
-                raise DuplicatedDataset(latest_path, latest_version)
+        for dset_path, incomings in self.paths.items():
+            latest_version = sorted([incoming['latest'] for incoming in incomings])[-1]
+            if all([incoming['is_duplicated'] for incoming in incomings]):
+                raise DuplicatedDataset(dset_path, latest_version)
 
     def list(self):
         """
