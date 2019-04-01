@@ -4,6 +4,27 @@
 Change Log
 ==========
 
+`v2.9.6 <https://github.com/ESGF/esgf-prepare/tree/v2.9.6>`__ (2019-04-01)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.9.5...v2.9.6>`__
+
+**Implemented enhancements:**
+
+-  command to test dataset ID validity
+   `#44 <https://github.com/ESGF/esgf-prepare/issues/44>`__
+
+**Closed issues:**
+
+-  reduction of checksumming in esgdrs
+   `#57 <https://github.com/ESGF/esgf-prepare/issues/57>`__
+-  "esgmapfile show" attempts filesystem writes (and can fail due a to
+   race condition)
+   `#56 <https://github.com/ESGF/esgf-prepare/issues/56>`__
+-  esgdrs failure on non-ascii character in netCDF attribute
+   `#55 <https://github.com/ESGF/esgf-prepare/issues/55>`__
+
 `v2.9.5 <https://github.com/ESGF/esgf-prepare/tree/v2.9.5>`__ (2019-01-18)
 --------------------------------------------------------------------------
 
