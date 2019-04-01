@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Change Log &mdash; esgprep 2.9.1 documentation</title>
+  <title>Change Log &mdash; esgprep 2.9.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.9.1 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.9.6 documentation" href="index.html"/>
         <link rel="next" title="Code documentation" href="autodoc.html"/>
         <link rel="prev" title="Credits" href="credits.html"/> 
 
@@ -102,6 +102,11 @@
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v2-9-6-2019-04-01">v2.9.6 (2019-04-01)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-9-5-2019-01-18">v2.9.5 (2019-01-18)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-9-4-2018-12-18">v2.9.4 (2018-12-18)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-9-3-2018-11-09">v2.9.3 (2018-11-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-9-2-2018-09-20">v2.9.2 (2018-09-20)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-9-1-2018-08-10">v2.9.1 (2018-08-10)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-9-0-2018-07-24">v2.9.0 (2018-07-24)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-8-3-2018-06-25">v2.8.3 (2018-06-25)</a></li>
@@ -183,6 +188,98 @@
             
   <div class="section" id="change-log">
 <span id="log"></span><h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v2-9-6-2019-04-01">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.9.6">v2.9.6</a> (2019-04-01)<a class="headerlink" href="#v2-9-6-2019-04-01" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.9.5...v2.9.6">Full
+Changelog</a></p>
+<p><strong>Implemented enhancements:</strong></p>
+<ul class="simple">
+<li>command to test dataset ID validity
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/44">#44</a></li>
+</ul>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>reduction of checksumming in esgdrs
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/57">#57</a></li>
+<li>“esgmapfile show” attempts filesystem writes (and can fail due a to
+race condition)
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/56">#56</a></li>
+<li>esgdrs failure on non-ascii character in netCDF attribute
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/55">#55</a></li>
+</ul>
+</div>
+<div class="section" id="v2-9-5-2019-01-18">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.9.5">v2.9.5</a> (2019-01-18)<a class="headerlink" href="#v2-9-5-2019-01-18" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.9.4...v2.9.5">Full
+Changelog</a></p>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>remove unnecessary execute flags
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/54">#54</a></li>
+<li>requests version
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/49">#49</a></li>
+</ul>
+</div>
+<div class="section" id="v2-9-4-2018-12-18">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.9.4">v2.9.4</a> (2018-12-18)<a class="headerlink" href="#v2-9-4-2018-12-18" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.9.3...v2.9.4">Full
+Changelog</a></p>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>disable colours option
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/51">#51</a></li>
+<li>stty errors <a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/50">#50</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul class="simple">
+<li>only run stty if input/output are to a tty [#50]
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/53">#53</a>
+(<a class="reference external" href="https://github.com/alaniwi">alaniwi</a>)</li>
+<li>add –color and –no-color args to commands
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/52">#52</a>
+(<a class="reference external" href="https://github.com/alaniwi">alaniwi</a>)</li>
+</ul>
+</div>
+<div class="section" id="v2-9-3-2018-11-09">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.9.3">v2.9.3</a> (2018-11-09)<a class="headerlink" href="#v2-9-3-2018-11-09" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.9.2...v2.9.3">Full
+Changelog</a></p>
+<p><strong>Merged pull requests:</strong></p>
+<ul class="simple">
+<li>Update requests
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/48">#48</a>
+(<a class="reference external" href="https://github.com/sashakames">sashakames</a>)</li>
+<li>Conda build recipe
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/46">#46</a>
+(<a class="reference external" href="https://github.com/sterlingbaldwin">sterlingbaldwin</a>)</li>
+</ul>
+</div>
+<div class="section" id="v2-9-2-2018-09-20">
+<h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.9.2">v2.9.2</a> (2018-09-20)<a class="headerlink" href="#v2-9-2-2018-09-20" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.9.1...v2.9.2">Full
+Changelog</a></p>
+<p><strong>Fixed bugs:</strong></p>
+<ul class="simple">
+<li>esgfetchini doesn’t write to /esg/config/esgcet in 2.9.0
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/39">#39</a></li>
+</ul>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li>Conflicting with cdf2cim, when installed second
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/42">#42</a></li>
+<li>mapfile does not generate with 2.9.0; no error
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues/40">#40</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul class="simple">
+<li>KeyError thrown if project doesn’t exist in PID_PREFIXES dictionary
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/43">#43</a>
+(<a class="reference external" href="https://github.com/chrisacbr">chrisacbr</a>)</li>
+<li>fix unwanted characters in <code class="docutils literal"><span class="pre">esgmapfile</span> <span class="pre">show</span> <span class="pre">--quiet</span></code> output (again)
+<a class="reference external" href="https://github.com/ESGF/esgf-prepare/pull/41">#41</a>
+(<a class="reference external" href="https://github.com/alaniwi">alaniwi</a>)</li>
+</ul>
+</div>
 <div class="section" id="v2-9-1-2018-08-10">
 <h2><a class="reference external" href="https://github.com/ESGF/esgf-prepare/tree/v2.9.1">v2.9.1</a> (2018-08-10)<a class="headerlink" href="#v2-9-1-2018-08-10" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://github.com/ESGF/esgf-prepare/compare/v2.9.0...v2.9.1">Full
@@ -579,7 +676,7 @@ in “esgprep drs”
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.9.1',
+            VERSION:'2.9.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

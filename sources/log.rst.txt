@@ -4,6 +4,103 @@
 Change Log
 ==========
 
+`v2.9.6 <https://github.com/ESGF/esgf-prepare/tree/v2.9.6>`__ (2019-04-01)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.9.5...v2.9.6>`__
+
+**Implemented enhancements:**
+
+-  command to test dataset ID validity
+   `#44 <https://github.com/ESGF/esgf-prepare/issues/44>`__
+
+**Closed issues:**
+
+-  reduction of checksumming in esgdrs
+   `#57 <https://github.com/ESGF/esgf-prepare/issues/57>`__
+-  "esgmapfile show" attempts filesystem writes (and can fail due a to
+   race condition)
+   `#56 <https://github.com/ESGF/esgf-prepare/issues/56>`__
+-  esgdrs failure on non-ascii character in netCDF attribute
+   `#55 <https://github.com/ESGF/esgf-prepare/issues/55>`__
+
+`v2.9.5 <https://github.com/ESGF/esgf-prepare/tree/v2.9.5>`__ (2019-01-18)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.9.4...v2.9.5>`__
+
+**Closed issues:**
+
+-  remove unnecessary execute flags
+   `#54 <https://github.com/ESGF/esgf-prepare/issues/54>`__
+-  requests version
+   `#49 <https://github.com/ESGF/esgf-prepare/issues/49>`__
+
+`v2.9.4 <https://github.com/ESGF/esgf-prepare/tree/v2.9.4>`__ (2018-12-18)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.9.3...v2.9.4>`__
+
+**Closed issues:**
+
+-  disable colours option
+   `#51 <https://github.com/ESGF/esgf-prepare/issues/51>`__
+-  stty errors `#50 <https://github.com/ESGF/esgf-prepare/issues/50>`__
+
+**Merged pull requests:**
+
+-  only run stty if input/output are to a tty [#50]
+   `#53 <https://github.com/ESGF/esgf-prepare/pull/53>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+-  add --color and --no-color args to commands
+   `#52 <https://github.com/ESGF/esgf-prepare/pull/52>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+
+`v2.9.3 <https://github.com/ESGF/esgf-prepare/tree/v2.9.3>`__ (2018-11-09)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.9.2...v2.9.3>`__
+
+**Merged pull requests:**
+
+-  Update requests
+   `#48 <https://github.com/ESGF/esgf-prepare/pull/48>`__
+   (`sashakames <https://github.com/sashakames>`__)
+-  Conda build recipe
+   `#46 <https://github.com/ESGF/esgf-prepare/pull/46>`__
+   (`sterlingbaldwin <https://github.com/sterlingbaldwin>`__)
+
+`v2.9.2 <https://github.com/ESGF/esgf-prepare/tree/v2.9.2>`__ (2018-09-20)
+--------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/ESGF/esgf-prepare/compare/v2.9.1...v2.9.2>`__
+
+**Fixed bugs:**
+
+-  esgfetchini doesn't write to /esg/config/esgcet in 2.9.0
+   `#39 <https://github.com/ESGF/esgf-prepare/issues/39>`__
+
+**Closed issues:**
+
+-  Conflicting with cdf2cim, when installed second
+   `#42 <https://github.com/ESGF/esgf-prepare/issues/42>`__
+-  mapfile does not generate with 2.9.0; no error
+   `#40 <https://github.com/ESGF/esgf-prepare/issues/40>`__
+
+**Merged pull requests:**
+
+-  KeyError thrown if project doesn't exist in PID\_PREFIXES dictionary
+   `#43 <https://github.com/ESGF/esgf-prepare/pull/43>`__
+   (`chrisacbr <https://github.com/chrisacbr>`__)
+-  fix unwanted characters in ``esgmapfile show --quiet`` output (again)
+   `#41 <https://github.com/ESGF/esgf-prepare/pull/41>`__
+   (`alaniwi <https://github.com/alaniwi>`__)
+
 `v2.9.1 <https://github.com/ESGF/esgf-prepare/tree/v2.9.1>`__ (2018-08-10)
 --------------------------------------------------------------------------
 

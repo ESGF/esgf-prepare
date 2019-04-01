@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.misc &mdash; esgprep 2.9.1 documentation</title>
+  <title>esgprep.utils.misc &mdash; esgprep 2.9.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.9.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.9.6 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -166,8 +166,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for esgprep.utils.misc</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :platform: Unix</span>
@@ -179,9 +178,10 @@
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">UUID</span>
 
+<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
+
 <span class="kn">from</span> <span class="nn">custom_print</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">esgprep.drs.constants</span> <span class="k">import</span> <span class="n">PID_PREFIXES</span>
-<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
 
 
 <div class="viewcode-block" id="ProcessContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.ProcessContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -368,10 +368,10 @@
             <span class="nb">id</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">getncattr</span><span class="p">(</span><span class="s1">&#39;tracking_id&#39;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">prefix</span><span class="p">,</span> <span class="n">uid</span> <span class="o">=</span> <span class="nb">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">prefix</span> <span class="o">==</span> <span class="n">PID_PREFIXES</span><span class="p">[</span><span class="n">project</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="n">prefix</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">uid</span> <span class="o">=</span> <span class="nb">id</span>
-            <span class="k">assert</span> <span class="n">prefix</span> <span class="o">==</span> <span class="n">PID_PREFIXES</span><span class="p">[</span><span class="n">project</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">project</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">PID_PREFIXES</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
             <span class="k">assert</span> <span class="n">is_uuid</span><span class="p">(</span><span class="n">uid</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">id</span>
         <span class="k">else</span><span class="p">:</span>
@@ -393,6 +393,42 @@
         <span class="k">return</span> <span class="n">uid</span><span class="o">.</span><span class="n">hex</span> <span class="o">==</span> <span class="n">uuid_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="load_checksums"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.load_checksums">[docs]</a><span class="k">def</span> <span class="nf">load_checksums</span><span class="p">(</span><span class="n">checksum_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert checksums file input as dictionary where (key: value) pairs respectively</span>
+<span class="sd">    are the file path and its checksum.</span>
+
+<span class="sd">    :param FileObject checksum_file: The submitted checksum file</span>
+<span class="sd">    :returns: The loaded checksums</span>
+<span class="sd">    :rtype: *dict*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">checksums</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">checksum</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">checksum_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()]:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">checksums</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">checksum</span>
+    <span class="k">return</span> <span class="n">checksums</span></div>
+
+
+<div class="viewcode-block" id="get_checksum"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.misc.get_checksum">[docs]</a><span class="k">def</span> <span class="nf">get_checksum</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="o">=</span><span class="s1">&#39;sha256&#39;</span><span class="p">,</span> <span class="n">checksums_from_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get file checksum.</span>
+<span class="sd">    Allows to submit a list of checksums in a dictionary way {file: checksum}, to be used by --checksums-from flag.</span>
+
+<span class="sd">    :param str checksum_type: Checksum type</span>
+<span class="sd">    :param dict checksums_from_file: Checksums from file</span>
+<span class="sd">    :returns: The checksum</span>
+<span class="sd">    :rtype: *str*</span>
+<span class="sd">    :raises Error: If the checksum fails</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">checksums_from_file</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ffp</span> <span class="ow">in</span> <span class="n">checksums_from_file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">get_checksum_pattern</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">),</span> <span class="n">checksums_from_file</span><span class="p">[</span><span class="n">ffp</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="n">checksums_from_file</span><span class="p">[</span><span class="n">ffp</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">checksum</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -429,7 +465,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.9.1',
+            VERSION:'2.9.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

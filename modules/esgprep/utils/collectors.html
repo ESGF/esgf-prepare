@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.collectors &mdash; esgprep 2.9.1 documentation</title>
+  <title>esgprep.utils.collectors &mdash; esgprep 2.9.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.9.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.9.6 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -166,8 +166,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for esgprep.utils.collectors</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :platform: Unix</span>
@@ -293,8 +292,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_format</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">dir_format</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VersionedPathCollector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">dir_format</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -327,7 +327,8 @@
                         <span class="n">latest_version</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">path_versions</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                         <span class="c1"># Pick up the latest version among encountered versions</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;version_filter&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">latest_version</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">source</span><span class="p">)[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PathFilter</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+                        <span class="c1"># if self.PathFilter(root.split(source)[1]):</span>
                         <span class="c1"># Dereference latest symlink (only) in the end</span>
                         <span class="k">if</span> <span class="n">path_version</span> <span class="o">==</span> <span class="s1">&#39;latest&#39;</span><span class="p">:</span>
                             <span class="c1"># Keep parentheses in pattern to get &quot;latest&quot; part of the split list</span>
@@ -344,13 +345,16 @@
 <span class="sd">        :rtype: *str*</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
+        <span class="c1"># Replace project regex by its expected lower-cased value</span>
+        <span class="c1"># This is to get an anchor in the regex</span>
+        <span class="c1"># This ensure to capture the right version group in the directory format if exists in the directory input</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/(?P&lt;project&gt;[\w.-]+)/&#39;</span><span class="p">,</span> <span class="s1">&#39;/</span><span class="si">{}</span><span class="s1">/&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">())))</span>
         <span class="n">version</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Test directory_format regex without &lt;filename&gt; part</span>
         <span class="k">while</span> <span class="s1">&#39;version&#39;</span> <span class="ow">in</span> <span class="n">regex</span><span class="o">.</span><span class="n">groupindex</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">directory</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
                 <span class="c1"># If version facet found return its value</span>
-                <span class="n">version</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">directory</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
                 <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Walk backward the regex to find the version facet if exists</span>
@@ -442,7 +446,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.9.1',
+            VERSION:'2.9.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

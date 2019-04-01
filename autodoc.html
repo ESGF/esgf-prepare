@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code documentation &mdash; esgprep 2.9.1 documentation</title>
+  <title>Code documentation &mdash; esgprep 2.9.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.9.1 documentation" href="index.html"/>
+    <link rel="top" title="esgprep 2.9.6 documentation" href="index.html"/>
         <link rel="prev" title="Change Log" href="log.html"/> 
 
   
@@ -581,23 +581,6 @@ and depending on <code class="docutils literal"><span class="pre">--overwrite-co
 either delete it or throw a fatal error.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="esgprep.drs.context.ProcessingContext.get_checksum_type">
-<code class="descname">get_checksum_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/context.html#ProcessingContext.get_checksum_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.context.ProcessingContext.get_checksum_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the checksum type to use.
-Be careful to Exception constants by reading two different sections.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The checksum type</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </dd></dl>
 
 <span class="target" id="module-esgprep.drs.handler"></span><table class="docutils field-list" frame="void" rules="none">
@@ -886,6 +869,7 @@ The <a class="reference internal" href="#esgprep.drs.handler.DRSLeaf" title="esg
 <li><strong>src</strong> (<em>str</em>) – The source of the leaf</li>
 <li><strong>mode</strong> (<em>str</em>) – The migration mode (e.g., ‘copy’, ‘move’, etc.)</li>
 <li><strong>origin</strong> (<em>str</em>) – The original file full path used for the DRSLeaf source</li>
+<li><strong>force</strong> (<em>boolean</em>) – Overwrite node creation if True and node exists</li>
 </ul>
 </td>
 </tr>
@@ -901,9 +885,9 @@ The <a class="reference internal" href="#esgprep.drs.handler.DRSLeaf" title="esg
 
 <dl class="method">
 <dt id="esgprep.drs.handler.DRSTree.check_uniqueness">
-<code class="descname">check_uniqueness</code><span class="sig-paren">(</span><em>checksum_type</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree.check_uniqueness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree.check_uniqueness" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check tree upgrade uniqueness. Each data version to upgrade has to be stricly different
-from the latest version if exists.</p>
+<code class="descname">check_uniqueness</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/drs/handler.html#DRSTree.check_uniqueness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.drs.handler.DRSTree.check_uniqueness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check tree upgrade uniqueness.
+Each data version to upgrade has to be stricly different from the latest version if exists.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1298,25 +1282,6 @@ from the latest version if exists.</p>
 Incomplete mapfiles from a previous run are silently removed.</p>
 </dd></dl>
 
-<dl class="staticmethod">
-<dt id="esgprep.mapfile.context.ProcessingContext.load_checksums">
-<em class="property">static </em><code class="descname">load_checksums</code><span class="sig-paren">(</span><em>checksum_file</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/context.html#ProcessingContext.load_checksums"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.context.ProcessingContext.load_checksums" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert checksums file input as dictionary where (key: value) pairs respectively
-are the file path and its checksum.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>checksum_file</strong> (<em>FileObject</em>) – The submitted checksum file</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The loaded checksums</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>dict</em></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </dd></dl>
 
 <span class="target" id="module-esgprep.mapfile.custom_exceptions"></span><table class="docutils field-list" frame="void" rules="none">
@@ -1461,26 +1426,6 @@ it follows the symlink to complete the DRS attributes.</p>
 <dt id="esgprep.mapfile.handler.File">
 <em class="property">class </em><code class="descclassname">esgprep.mapfile.handler.</code><code class="descname">File</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File" title="Permalink to this definition">¶</a></dt>
 <dd><p>File handler class</p>
-<dl class="method">
-<dt id="esgprep.mapfile.handler.File.checksum">
-<code class="descname">checksum</code><span class="sig-paren">(</span><em>checksum_type</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/mapfile/handler.html#File.checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.mapfile.handler.File.checksum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Does the checksum by the Shell avoiding Python memory limits.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>checksum_type</strong> (<em>str</em>) – Checksum type</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The checksum</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>str</em></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>Error</strong> – If the checksum fails</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </dd></dl>
 
 <span class="target" id="module-esgprep.mapfile.main"></span><table class="docutils field-list" frame="void" rules="none">
@@ -1707,7 +1652,7 @@ Each process adds one line to the appropriate mapfile</p>
 
 <dl class="class">
 <dt id="esgprep.utils.collectors.VersionedPathCollector">
-<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">VersionedPathCollector</code><span class="sig-paren">(</span><em>dir_format</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#VersionedPathCollector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.VersionedPathCollector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.utils.collectors.</code><code class="descname">VersionedPathCollector</code><span class="sig-paren">(</span><em>project</em>, <em>dir_format</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/collectors.html#VersionedPathCollector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.collectors.VersionedPathCollector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Collector class to yield files from a list of versioned directories to parse.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1925,9 +1870,11 @@ Default is no color (i.e., restore original color)</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="esgprep.utils.custom_print.TAGS">
-<em class="property">class </em><code class="descclassname">esgprep.utils.custom_print.</code><code class="descname">TAGS</code><a class="reference internal" href="modules/esgprep/utils/custom_print.html#TAGS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_print.TAGS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tags strings for print statements</p>
+<dt id="esgprep.utils.custom_print._TAGS">
+<em class="property">class </em><code class="descclassname">esgprep.utils.custom_print.</code><code class="descname">_TAGS</code><a class="reference internal" href="modules/esgprep/utils/custom_print.html#_TAGS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.custom_print._TAGS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tags strings for print statements
+These are evaluated as properties, in order to defer until after
+enable_colors or disable_colors has been called during initialisation</p>
 </dd></dl>
 
 <dl class="class">
@@ -2305,6 +2252,53 @@ Default is to match inclusive regex.</p>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="esgprep.utils.misc.load_checksums">
+<code class="descclassname">esgprep.utils.misc.</code><code class="descname">load_checksums</code><span class="sig-paren">(</span><em>checksum_file</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#load_checksums"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.load_checksums" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert checksums file input as dictionary where (key: value) pairs respectively
+are the file path and its checksum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>checksum_file</strong> (<em>FileObject</em>) – The submitted checksum file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The loaded checksums</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em>dict</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="esgprep.utils.misc.get_checksum">
+<code class="descclassname">esgprep.utils.misc.</code><code class="descname">get_checksum</code><span class="sig-paren">(</span><em>ffp</em>, <em>checksum_type='sha256'</em>, <em>checksums_from_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/misc.html#get_checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.misc.get_checksum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get file checksum.
+Allows to submit a list of checksums in a dictionary way {file: checksum}, to be used by –checksums-from flag.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>checksum_type</strong> (<em>str</em>) – Checksum type</li>
+<li><strong>checksums_from_file</strong> (<em>dict</em>) – Checksums from file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The checksum</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><em>str</em></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>Error</strong> – If the checksum fails</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <span class="target" id="module-esgprep.utils.parser"></span><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2317,7 +2311,7 @@ Default is to match inclusive regex.</p>
 </table>
 <dl class="class">
 <dt id="esgprep.utils.parser.MultilineFormatter">
-<em class="property">class </em><code class="descclassname">esgprep.utils.parser.</code><code class="descname">MultilineFormatter</code><span class="sig-paren">(</span><em>prog</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#MultilineFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.MultilineFormatter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">esgprep.utils.parser.</code><code class="descname">MultilineFormatter</code><span class="sig-paren">(</span><em>prog</em>, <em>default_columns=120</em><span class="sig-paren">)</span><a class="reference internal" href="modules/esgprep/utils/parser.html#MultilineFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#esgprep.utils.parser.MultilineFormatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Custom formatter class for argument parser to use with the Python
 <a class="reference external" href="https://docs.python.org/2/library/argparse.html">argparse</a> module.</p>
 </dd></dl>
@@ -2476,7 +2470,7 @@ Default is to match inclusive regex.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.9.1',
+            VERSION:'2.9.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

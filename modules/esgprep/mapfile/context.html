@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.mapfile.context &mdash; esgprep 2.9.1 documentation</title>
+  <title>esgprep.mapfile.context &mdash; esgprep 2.9.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.9.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.9.6 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -166,8 +166,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for esgprep.mapfile.context</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :platform: Unix</span>
@@ -181,6 +180,7 @@
 <span class="kn">from</span> <span class="nn">esgprep.utils.collectors</span> <span class="k">import</span> <span class="n">VersionedPathCollector</span><span class="p">,</span> <span class="n">DatasetCollector</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.context</span> <span class="k">import</span> <span class="n">MultiprocessingContext</span>
 <span class="kn">from</span> <span class="nn">esgprep.utils.custom_print</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">esgprep.utils.misc</span> <span class="k">import</span> <span class="n">load_checksums</span>
 
 
 <div class="viewcode-block" id="ProcessingContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.context.ProcessingContext">[docs]</a><span class="k">class</span> <span class="nc">ProcessingContext</span><span class="p">(</span><span class="n">MultiprocessingContext</span><span class="p">):</span>
@@ -203,7 +203,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;no_checksum&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">no_checksum</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">notes_title</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;tech_notes_title&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">notes_title</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">tech_notes_title</span>
@@ -213,7 +212,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;checksums_from&#39;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">checksums_from</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_checksums</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">checksums_from</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span> <span class="o">=</span> <span class="n">load_checksums</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">checksums_from</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">checksums_from</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">no_version</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">no_version</span>
@@ -221,12 +220,11 @@
         <span class="c1"># Mapfile naming</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapfile_name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">mapfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">outdir</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cleanup</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;make&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cleanup</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">no_cleanup</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">no_cleanup</span>
         <span class="c1"># Mapfile path display behavior</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">basename</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;basename&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">quiet</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;quiet&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
         <span class="c1"># Scan behavior</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">all_versions</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
@@ -246,6 +244,7 @@
             <span class="c1"># Instantiate file collector to walk through the tree</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">source_type</span> <span class="o">=</span> <span class="s1">&#39;file&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">VersionedPathCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span>
+                                                  <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>
                                                   <span class="n">dir_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">))</span>
             <span class="c1"># Translate directory format pattern</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;directory_format&#39;</span><span class="p">,</span> <span class="n">add_ending_filename</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -306,24 +305,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="s1">&#39;*</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">)):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="ProcessingContext.load_checksums"><a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.context.ProcessingContext.load_checksums">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_checksums</span><span class="p">(</span><span class="n">checksum_file</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert checksums file input as dictionary where (key: value) pairs respectively</span>
-<span class="sd">        are the file path and its checksum.</span>
-
-<span class="sd">        :param FileObject checksum_file: The submitted checksum file</span>
-<span class="sd">        :returns: The loaded checksums</span>
-<span class="sd">        :rtype: *dict*</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">checksums</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">checksum</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">checksum_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()]:</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
-            <span class="n">checksums</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">checksum</span>
-        <span class="k">return</span> <span class="n">checksums</span></div></div>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span></div></div>
 </pre></div>
 
            </div>
@@ -360,7 +342,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.9.1',
+            VERSION:'2.9.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

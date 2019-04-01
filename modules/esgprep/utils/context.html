@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>esgprep.utils.context &mdash; esgprep 2.9.1 documentation</title>
+  <title>esgprep.utils.context &mdash; esgprep 2.9.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="esgprep 2.9.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="esgprep 2.9.6 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -166,8 +166,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for esgprep.utils.context</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :platform: Unix</span>
@@ -181,8 +180,9 @@
 
 <span class="kn">from</span> <span class="nn">ESGConfigParser</span> <span class="k">import</span> <span class="n">SectionParser</span>
 <span class="kn">from</span> <span class="nn">ESGConfigParser.custom_exceptions</span> <span class="k">import</span> <span class="n">NoConfigOption</span><span class="p">,</span> <span class="n">NoConfigSection</span>
-<span class="kn">from</span> <span class="nn">esgprep.utils.custom_print</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">requests.auth</span> <span class="k">import</span> <span class="n">HTTPBasicAuth</span>
+
+<span class="kn">from</span> <span class="nn">esgprep.utils.custom_print</span> <span class="k">import</span> <span class="o">*</span>
 
 
 <div class="viewcode-block" id="BaseContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.context.BaseContext">[docs]</a><span class="k">class</span> <span class="nc">BaseContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -193,9 +193,10 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
         <span class="c1"># Init print management</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">prog</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">quiet</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">prog</span><span class="p">)</span>
         <span class="c1"># Print command-line</span>
         <span class="n">Print</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_color_arg</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="c1"># Get project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">project</span>
 
@@ -205,7 +206,14 @@
 
     <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="c1"># Print log path if exists</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">log</span><span class="p">()</span></div>
+        <span class="n">Print</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_process_color_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="c1"># process --color / --no-color arg if present</span>
+        <span class="k">if</span> <span class="s1">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">color</span><span class="p">:</span>
+            <span class="n">enable_colors</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;no_color&#39;</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">no_color</span><span class="p">:</span>
+            <span class="n">disable_colors</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="GitHubBaseContext"><a class="viewcode-back" href="../../../autodoc.html#esgprep.utils.context.GitHubBaseContext">[docs]</a><span class="k">class</span> <span class="nc">GitHubBaseContext</span><span class="p">(</span><span class="n">BaseContext</span><span class="p">):</span>
@@ -404,7 +412,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.9.1',
+            VERSION:'2.9.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
