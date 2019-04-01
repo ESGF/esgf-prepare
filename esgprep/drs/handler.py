@@ -409,6 +409,7 @@ class DRSTree(Tree):
         :param str src: The source of the leaf
         :param str mode: The migration mode (e.g., 'copy', 'move', etc.)
         :param str origin: The original file full path used for the DRSLeaf source
+        :param boolean force: Overwrite node creation if True and node exists
 
         """
         nodes.append(leaf)
@@ -475,7 +476,6 @@ class DRSTree(Tree):
             if all(duplicates) and set(latest_filenames) == set(filenames):
                 raise DuplicatedDataset(dset_path, latest_version)
 
-
     def list(self):
         """
         List and summary upgrade information at the publication level.
@@ -492,9 +492,9 @@ class DRSTree(Tree):
             dset_dir, dset_version = os.path.dirname(dset_path), os.path.basename(dset_path)
             publication_level = os.path.normpath(dset_dir)
             files_number = len(incomings)
-            l = [incoming['latest'] for incoming in incomings]
-            assert l.count(l[0]) == len(l)
-            latest_version = l[0]
+            latests = [incoming['latest'] for incoming in incomings]
+            assert latests.count(latests[0]) == len(latests)
+            latest_version = latests[0]
             total_size = size(sum([incoming['size'] for incoming in incomings]))
             print('{}{}->{}{}{}'.format(publication_level.ljust(self.d_lengths[0]),
                                         latest_version.center(self.d_lengths[1]),
