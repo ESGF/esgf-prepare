@@ -173,7 +173,7 @@ def process(source):
             # Generate the corresponding mapfile entry/line
             optional_attrs = dict()
             optional_attrs['mod_time'] = sh.mtime
-            if pctx.no_checksum:
+            if not pctx.no_checksum:
                 optional_attrs['checksum'] = get_checksum(sh.source, pctx.checksum_type, pctx.checksums_from)
                 optional_attrs['checksum_type'] = pctx.checksum_type.upper()
             optional_attrs['dataset_tech_notes'] = pctx.notes_url
