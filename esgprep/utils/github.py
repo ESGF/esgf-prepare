@@ -6,8 +6,8 @@
 
 """
 
+import os
 import hashlib
-
 import requests
 
 from esgprep.utils.custom_print import *
@@ -96,8 +96,19 @@ def write_content(outfile, content):
     :param str content: The file content to write
 
     """
-    with open(outfile, 'w+') as f:
+
+def write_content(outfile, content):
+
+    tmpfile = outfile + ".tmp"
+    
+    with open(tmpfile, 'w+') as f:
         f.write(content.encode('utf-8'))
+
+    try:
+        os.rename(tmpfile, outfile)
+    except OSError:
+        os.remove(tmpfile)
+        raise
 
 
 def do_fetching(f, remote_checksum, keep, overwrite):
