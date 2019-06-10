@@ -97,8 +97,6 @@ def write_content(outfile, content):
 
     """
 
-def write_content(outfile, content):
-
     tmpfile = outfile + ".tmp"
     
     with open(tmpfile, 'w+') as f:
