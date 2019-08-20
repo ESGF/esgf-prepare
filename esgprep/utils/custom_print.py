@@ -211,10 +211,11 @@ class Print(object):
 
     @staticmethod
     def print_to_stdout(msg):
+        if Print.LOG_TO_STDOUT:
+            return
         Print.check_carriage_return(msg)
-        if not Print.LOG_TO_STDOUT:
-            sys.stdout.write(msg)
-            sys.stdout.flush()
+        sys.stdout.write(msg)
+        sys.stdout.flush()
 
     @staticmethod
     def print_to_logfile(msg):
