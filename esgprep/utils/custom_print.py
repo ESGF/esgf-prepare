@@ -180,6 +180,7 @@ class Print(object):
     LOG = None
     DEBUG = False
     CMD = None
+    LOG_TO_STDOUT = False
     BUFFER = Value(c_char_p, '')
     LOGFILE = None
     CARRIAGE_RETURNED = True
@@ -189,6 +190,9 @@ class Print(object):
         Print.LOG = log
         Print.DEBUG = debug
         Print.CMD = cmd
+        Print.LOG_TO_STDOUT = (log == '-')
+        if Print.LOG_TO_STDOUT:
+            return
         logname = '{}-{}'.format(Print.CMD, datetime.now().strftime("%Y%m%d-%H%M%S"))
         if Print.LOG:
             logdir = Print.LOG
@@ -208,15 +212,20 @@ class Print(object):
     @staticmethod
     def print_to_stdout(msg):
         Print.check_carriage_return(msg)
-        sys.stdout.write(msg)
-        sys.stdout.flush()
+        if not Print.LOG_TO_STDOUT:
+            sys.stdout.write(msg)
+            sys.stdout.flush()
 
     @staticmethod
     def print_to_logfile(msg):
         Print.check_carriage_return(msg)
-        with open(Print.LOGFILE, 'a+') as f:
-            msg = re.sub('\\033\[([\d];)?[\d]*m', '', msg)
-            f.write(msg)
+        msg = re.sub('\\033\[([\d];)?[\d]*m', '', msg)
+        if Print.LOG_TO_STDOUT:
+            sys.stdout.write(msg)
+            sys.stdout.flush()
+        else:
+            with open(Print.LOGFILE, 'a+') as f:
+                f.write(msg)
 
     @staticmethod
     def progress(msg):

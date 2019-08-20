@@ -89,6 +89,7 @@ If not set, the usual ESGF datanode directory is used (i.e., "/esg/config/esgcet
 
 LOG_HELP = """Logfile directory.
 If not, standard output is used.
+Special case, with '--log -', messages are written to standard output as they would appear in a log file, and the usual output to standard output is suppressed.
 
 """
 
