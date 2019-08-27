@@ -10,8 +10,8 @@ from os import link, symlink, environ
 from shutil import copy2 as copy
 from shutil import move
 
-# Facets ignored during checking
-IGNORED_KEYS = ['root', 'filename', 'version', 'period_start', 'period_end']
+# Spinner description.
+SPINNER_DESC = 'DRS tree generation'
 
 # Symbolic link separator
 LINK_SEPARATOR = ' --> '
@@ -41,16 +41,15 @@ CONTROLLED_ARGS = ['directory',
                    'ignore_from_incoming']
 
 # List of variable required by each process
-PROCESS_VARS = ['root',
-                'pattern',
-                'facets',
+PROCESS_VARS = ['cmd',
+                'action',
+                'root',
                 'set_values',
                 'set_keys',
-                'cfg',
-                'project',
                 'lock',
+                'errors',
+                'msg_length',
                 'progress',
-                'nbsources',
                 'no_checksum',
                 'checksums_from',
                 'checksum_type',

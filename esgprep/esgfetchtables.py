@@ -7,22 +7,18 @@
 
 """
 
+from esgprep import __version__
+from esgprep._utils.help import *
+from esgprep._utils.parser import *
 from esgprep.fetchtables.main import run
-from utils.constants import *
-from utils.help import *
-from utils.parser import *
-
-__version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
 
 def get_args():
     """
     Returns parsed command-line arguments.
 
-    :returns: The argument parser
-    :rtype: *argparse.Namespace*
-
     """
+    # Instantiate argument parser.
     main = CustomArgumentParser(
         prog='esgfetchtables',
         description=PROGRAM_DESC['fetchtables'],
@@ -44,7 +40,7 @@ def get_args():
         '--tables-dir',
         metavar='$CMOR_TABLES',
         type=str,
-        default=os.environ['CMOR_TABLES'] if 'CMOR_TABLES' in os.environ.keys() else '/usr/local/',
+        default=os.getenv('CMOR_TABLES', '/usr/local'),
         help=TABLES_DIR_HELP)
     main.add_argument(
         '-l', '--log',
@@ -90,15 +86,15 @@ def get_args():
         help=NO_SUBFOLDER_HELP)
     main.add_argument(
         '--gh-user',
-        metavar='USERNAME',
+        metavar='$GH_USER',
         type=str,
-        default=os.environ['GH_USER'] if 'GH_USER' in os.environ.keys() else None,
+        default=os.getenv('GH_USER', None),
         help=GITHUB_USER_HELP)
     main.add_argument(
         '--gh-password',
-        metavar='PASSWORD',
+        metavar='$GH_PASSWORD',
         type=str,
-        default=os.environ['GH_PASSWORD'] if 'GH_PASSWORD' in os.environ.keys() else None,
+        default=os.getenv('GH_PASSWORD', None),
         help=GITHUB_PASSWORD_HELP)
     ref = main.add_mutually_exclusive_group(required=False)
     ref.add_argument(
@@ -143,6 +139,8 @@ def get_args():
         '--no-color',
         action='store_true',
         help=NO_COLOR_HELP)
+
+    # Return command-line parser & program name.
     return main.prog, main.parse_args()
 
 
@@ -151,10 +149,13 @@ def main():
     Run main program
 
     """
-    # Get command-line arguments
+    # Get command-line arguments.
     prog, args = get_args()
+
+    # Add program name as argument.
     setattr(args, 'prog', prog)
-    # Run program
+
+    # Run program.
     run(args)
 
 

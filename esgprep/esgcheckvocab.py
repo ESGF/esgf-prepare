@@ -8,22 +8,18 @@
 """
 from argparse import FileType
 
+from esgprep import __version__
+from esgprep._utils.help import *
+from esgprep._utils.parser import *
 from esgprep.checkvocab.main import run
-from esgprep.utils.help import *
-from utils.constants import *
-from utils.parser import *
-
-__version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
 
 def get_args():
     """
     Returns parsed command-line arguments.
 
-    :returns: The argument parser
-    :rtype: *argparse.Namespace*
-
     """
+    # Instantiate argument parser.
     main = CustomArgumentParser(
         prog='esgcheckvocab',
         description=PROGRAM_DESC['checkvocab'],
@@ -44,8 +40,8 @@ def get_args():
     main.add_argument(
         '-i',
         metavar='$ESGINI_DIR',
-        action=DirectoryChecker,
-        default=os.environ['ESGINI_DIR'] if 'ESGINI_DIR' in os.environ.keys() else '/esg/config/esgcet',
+        action=ConfigFileLoader,
+        default=os.getenv('ESGINI_DIR', '/esg/config/esgcet'),
         help=INI_HELP)
     main.add_argument(
         '-l', '--log',
@@ -107,12 +103,14 @@ def get_args():
         metavar="'^.*\.nc$'",
         type=regex_validator,
         action='append',
+        default=['^.*\.nc$'],
         help=INCLUDE_FILE_HELP['checkvocab'])
     main.add_argument(
         '--exclude-file',
         metavar="'^\..*$'",
         type=regex_validator,
         action='append',
+        default=['^\..*$'],
         help=EXCLUDE_FILE_HELP)
     main.add_argument(
         '--max-processes',
@@ -129,6 +127,8 @@ def get_args():
         '--no-color',
         action='store_true',
         help=NO_COLOR_HELP)
+
+    # Return command-line parser & program name.
     return main.prog, main.parse_args()
 
 
@@ -137,10 +137,13 @@ def main():
     Run main program
 
     """
-    # Get command-line arguments
+    # Get command-line arguments.
     prog, args = get_args()
+
+    # Add program name as argument.
     setattr(args, 'prog', prog)
-    # Run program
+
+    # Run program.
     run(args)
 
 

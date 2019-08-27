@@ -8,25 +8,28 @@
 
 import traceback
 
-from context import ProcessingContext
-from esgprep.utils.github import *
+from esgprep._utils.github import *
+from esgprep.fetchini.context import ProcessingContext
 
 
 def make_outdir(root):
     """
-    Build the output directory as follows:
-
-    :param str root: The root directory
+    Builds the INI output directory.
 
     """
+    # Retrieve root directory from command-line.
     outdir = root
-    # If directory does not already exist
+
+    # If submitted root directory does not exist.
     if not os.path.isdir(outdir):
+
+        # Try to make it.
         try:
             os.makedirs(outdir)
             Print.warning('{} created'.format(outdir))
+
+        # Error rollbacks to the current working directory (default).
         except OSError as e:
-            # If default tables directory does not exists and without write access
             msg = 'Cannot use "{}" (OSError {}: {}) -- '.format(outdir, e.errno, e.strerror)
             msg += 'Use "{}" instead.'.format(os.getcwd())
             Print.warning(msg)
@@ -34,35 +37,41 @@ def make_outdir(root):
             if not os.path.isdir(outdir):
                 os.makedirs(outdir)
                 Print.warning('{} created'.format(outdir))
+
+    # Return output directory.
     return outdir
 
 
 def run(args):
     """
-    Main process that:
-
-     * Decide to fetch or not depending on file presence/absence and command-line arguments,
-     * Gets the GitHub file content from full API URL,
-     * Backups old file if desired,
-     * Writes response into INI file.
-
-    :param ArgumentParser args: Parsed command-line arguments
+    Main process.
 
     """
-    # Instantiate processing context manager
+    # Instantiate processing context
     with ProcessingContext(args) as ctx:
+
         # Make output directory
         outdir = make_outdir(root=ctx.config_dir)
-        # Counter
+
+        # Reset counter
         progress = 0
+
+        # Iterates over files to fetch.
         for f, info in ctx.files.items():
+
+            # Escape in case of error.
             try:
-                # Set output file full path
+
+                # Set output full path of the file.
                 outfile = os.path.join(outdir, f)
-                # Get checksum
-                download_url = info['download_url']
+
+                # Get remote checksum infos.
                 sha = info['sha']
-                # Get GitHub file
+
+                # Get remote download URL.
+                download_url = info['download_url']
+
+                # Fetch GitHub file
                 fetch(url=download_url,
                       outfile=outfile,
                       auth=ctx.auth,
@@ -70,8 +79,12 @@ def run(args):
                       keep=ctx.keep,
                       overwrite=ctx.overwrite,
                       backup_mode=ctx.backup_mode)
+
+            # Catch unknown exception into error log instead of stop the process.
             except KeyboardInterrupt:
                 raise
+
+            # Catch known exception with its traceback.
             except Exception:
                 download_url = info['download_url']
                 exc = traceback.format_exc().splitlines()
@@ -79,15 +92,20 @@ def run(args):
                 msg += '\n'.join(exc)
                 Print.exception(msg, buffer=True)
                 ctx.error = True
+
+            # Print progress.
             finally:
                 progress += 1
                 percentage = int(progress * 100 / ctx.nfiles)
                 msg = COLORS.OKBLUE('\rFetching project(s) config: ')
                 msg += '{}% | {}/{} files'.format(percentage, progress, ctx.nfiles)
                 Print.progress(msg)
+
         Print.progress('\n')
-    # Flush buffer
+
+    # Flush buffer.
     Print.flush()
-    # Evaluate errors and exit with appropriated return code
+
+    # Evaluate errors & exit with corresponding return code.
     if ctx.error:
         sys.exit(1)

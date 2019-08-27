@@ -2,6 +2,8 @@ requests
 fuzzywuzzy
 netCDF4
 lockfile
+pyessv
 hurry.filesize
 treelib
 esgconfigparser
+python-Levenshtein

@@ -7,32 +7,24 @@
 
 """
 
-from argparse import FileType
-
+from esgprep import __version__
+from esgprep._utils.help import *
+from esgprep._utils.parser import *
 from esgprep.mapfile.main import run
-from esgprep.utils.help import *
-from utils.constants import *
-from utils.parser import *
-
-__version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
 
 def get_args():
     """
     Returns parsed command-line arguments.
 
-    :returns: The argument parser
-    :rtype: *argparse.Namespace*
-
     """
+    # Instantiate argument parser.
     main = CustomArgumentParser(
         prog='esgmapfile',
         description=PROGRAM_DESC['mapfile'],
         formatter_class=MultilineFormatter,
         add_help=False,
         epilog=EPILOG)
-    main._optionals.title = OPTIONAL
-    main._positionals.title = POSITIONAL
     main.add_argument(
         '-h', '--help',
         action='help',
@@ -44,10 +36,11 @@ def get_args():
         help=VERSION_HELP)
     subparsers = main.add_subparsers(
         title=SUBCOMMANDS,
-        dest='action',
+        dest='cmd',
         metavar='',
         help='')
-    # Parent parser with common arguments
+
+    # Add parent parser with common arguments.
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument(
         '-h', '--help',
@@ -56,8 +49,8 @@ def get_args():
     parent.add_argument(
         '-i',
         metavar='$ESGINI_DIR',
-        action=DirectoryChecker,
-        default=os.environ['ESGINI_DIR'] if 'ESGINI_DIR' in os.environ.keys() else '/esg/config/esgcet',
+        action=ConfigFileLoader,
+        default=os.getenv('ESGINI_DIR', '/esg/config/esgcet'),
         help=INI_HELP)
     parent.add_argument(
         '-l', '--log',
@@ -113,7 +106,7 @@ def get_args():
     parent.add_argument(
         '--ignore-dir',
         metavar="'^.*/(files|\.\w*).*$'",
-        type=str,
+        type=regex_validator,
         default='^.*/(files|\.[\w]*).*$',
         help=IGNORE_DIR_HELP)
     parent.add_argument(
@@ -121,12 +114,14 @@ def get_args():
         metavar="'^.*\.nc$'",
         type=regex_validator,
         action='append',
+        default=['^.*\.nc$'],
         help=INCLUDE_FILE_HELP['mapfile'])
     parent.add_argument(
         '--exclude-file',
         metavar="'^\..*$'",
         type=regex_validator,
         action='append',
+        default=['^\..*$'],
         help=EXCLUDE_FILE_HELP)
     parent.add_argument(
         '--dataset-name',
@@ -139,11 +134,6 @@ def get_args():
         type=processes_validator,
         default=4,
         help=MAX_PROCESSES_HELP)
-    parent.add_argument(
-        '--no-cleanup',
-        action='store_true',
-        default=False,
-        help=NO_CLEANUP_HELP)
     group = parent.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--color',
@@ -153,7 +143,8 @@ def get_args():
         '--no-color',
         action='store_true',
         help=NO_COLOR_HELP)
-    # Subparser for "esgmapfile make"
+
+    # Add subparser.
     make = subparsers.add_parser(
         'make',
         prog='esgmapfile make',
@@ -162,8 +153,7 @@ def get_args():
         help=MAPFILE_HELPS['make'],
         add_help=False,
         parents=[parent])
-    make._optionals.title = OPTIONAL
-    make._positionals.title = POSITIONAL
+
     make.add_argument(
         'directory',
         action=DirectoryChecker,
@@ -187,9 +177,15 @@ def get_args():
     make.add_argument(
         '--checksums-from',
         metavar='CHECKSUM_FILE',
-        type=FileType('r'),
+        type=ChecksumsReader,
         help=CHECKSUMS_FROM_HELP)
-    # Subparser for "esgmapfile show"
+    make.add_argument(
+        '--no-cleanup',
+        action='store_true',
+        default=False,
+        help=NO_CLEANUP_HELP)
+
+    # Add subparser.
     show = subparsers.add_parser(
         'show',
         prog='esgmapfile show',
@@ -198,25 +194,25 @@ def get_args():
         help=MAPFILE_HELPS['show'],
         add_help=False,
         parents=[parent])
-    show._optionals.title = OPTIONAL
-    show._positionals.title = POSITIONAL
+
     group = show.add_mutually_exclusive_group(required=True)
     group.add_argument(
         '--directory',
+        metavar='PATH',
         action=DirectoryChecker,
         nargs='+',
         help=DIRECTORY_HELP['mapfile'])
     group.add_argument(
         '--dataset-list',
         metavar='TXT_FILE',
-        type=FileType('r'),
+        type=DatasetsReader,
         nargs='?',
         const=sys.stdin,
         help=DATASET_LIST_HELP)
     group.add_argument(
         '--dataset-id',
         metavar='DATASET_ID',
-        type=str,
+        action='append',
         help=DATASET_ID_HELP)
     show.add_argument(
         '--quiet',
@@ -228,7 +224,8 @@ def get_args():
         action='store_true',
         default=False,
         help=BASENAME_HELP)
-    main.set_default_subparser('make')
+
+    # Return command-line parser & program name.
     return main.prog, main.parse_args()
 
 
@@ -237,10 +234,16 @@ def main():
     Run main program
 
     """
-    # Get command-line arguments
+    # Get command-line arguments.
     prog, args = get_args()
+
+    # Set default sub-command.
+    args.cmd = 'make' if not args.cmd else args.cmd
+
+    # Add program name as argument.
     setattr(args, 'prog', prog)
-    # Run program
+
+    # Run program.
     run(args)
 
 

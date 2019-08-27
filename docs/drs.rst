@@ -31,7 +31,8 @@ corresponding ``esg.<project>.ini`` file. The DRS facets values are deduced from
 List the datasets related to the incoming files
 ***********************************************
 
-The resulting table lists each dataset with:
+The ``list`` action lists the publication-level dataset corresponding to your MIP-compliant files. The resulting table
+lists each dataset with:
  - the latest known version on the filesystem (i.e., the root directory),
  - the upgraded version to apply,
  - the number of related incoming files,
@@ -41,13 +42,15 @@ The resulting table lists each dataset with:
 
     $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/
 
-`esgdrs`` doesn't have filter arguments as ``esgmapfile``. It only support non-hidden netCDF files. Nevertheless,
+``esgdrs`` doesn't have filter arguments as ``esgmapfile``. It only support non-hidden netCDF files. Nevertheless,
 to ignore some files your can submit a list of files to ignore during data discovery:
 
 .. code-block:: bash
 
     $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/ --ignore-from-incoming /PATH/TO/LIST/OF/FILES/TO/IGNORE
 
+.. note:: Each run also produces a temporary file which stores the scan results to be used by next subcommands avoiding
+to rescan a lot of files.
 
 Set a facet value
 *****************
@@ -91,7 +94,10 @@ The upgraded version can be set using ``--version YYYYMMDD`` instead of the curr
 Visualize the excepted DRS tree
 *******************************
 
-In order to save disk space, the scanned files are moved into ``files/dYYYYMMDD`` folders. The ``vYYYYMMDD`` has a
+The ``tree` action allows you to print the expected DRS tree in a similar way as the Unix "tree" command.
+All the DRS parts from the root to the filename are shown. In addition, the symlink skeleton between the dataset
+versions and the "latest" symlinks are displayed as it will be generated on your filesystem. Indeed, in order to save
+disk space, the scanned files are moved into ``files/dYYYYMMDD`` folders. The ``vYYYYMMDD`` has a
 symbolic links skeleton that avoid to duplicate files between two versions.
 
 .. code-block:: bash
@@ -116,8 +122,9 @@ By default, the DRS tree is built from your current directory. This can be chang
 List Unix command to apply
 **************************
 
-The ``todo`` action can be seen as a dry-run to check which unix commands should be apply to build the expected DRS
-tree. At this step, no file are moved or copy to the final DRS.
+The ``todo`` action allows to check deeper which Unix commands would be run on the filesystem in order to upgrade
+the datasets versions. It can be seen as a dry-run to check which unix commands should be apply to build the expected
+DRS tree. At this step, no file are moved or copy to the final DRS.
 
 .. code-block:: bash
 
@@ -137,6 +144,9 @@ To overwrite existing file:
 .. code-block:: bash
 
     $> esgdrs todo --project PROJECT_ID /PATH/TO/SCAN/ --commands-file /PATH/TO/COMMANDS.txt --overwrite-commands-file
+
+.. warning:: The ``drs`` action is also able to remove incoming files in some particular case
+(see ``--upgrade-from-latest`` and ``--ignore-from-latest`` options).
 
 Change the migration mode
 *************************
@@ -160,7 +170,8 @@ for the dataset versioning.
 Run the DRS upgrade
 *******************
 
-This will apply all the Unix command you can print with the ``todo`` action.
+The ``upgrade`` action automatically places your MIP-compliant netCDF files into the DRS directory structure.
+It applies the Unix commands listed by ``todo`` action to generated the DRS tree displayed by ``tree`` action.
 
 .. code-block:: bash
 

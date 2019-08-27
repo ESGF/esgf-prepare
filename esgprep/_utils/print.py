@@ -1,29 +1,22 @@
 # -*- coding: utf-8 -*-
 
 """
-    :platform: Unix
-    :synopsis: Useful functions to use with this package.
+.. module:: esgprep._utils.print.py
+   :platform: Unix
+   :synopsis: Printing management.
+
+.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.fr>
 
 """
 
 import os
 import re
 import sys
-from ctypes import c_char_p
-from multiprocessing import Value
+from ctypes import c_wchar_p
+from multiprocessing.sharedctypes import Value
 
-from constants import SHELL_COLORS
-from custom_exceptions import *
-
-_colors_enabled = [sys.stdout.isatty()]
-
-
-def enable_colors():
-    _colors_enabled[0] = True
-
-
-def disable_colors():
-    _colors_enabled[0] = False
+from esgprep.constants import SHELL_COLORS
+from esgprep._exceptions.github import *
 
 
 class COLOR:
@@ -32,9 +25,16 @@ class COLOR:
     Default is no color (i.e., restore original color)
 
     """
+    # Build color palette.
     PALETTE = {color: i + 30 for (color, i) in SHELL_COLORS.items()}
+
+    # Update palette with light colors.
     PALETTE.update({'light ' + color: i + 90 for (color, i) in SHELL_COLORS.items()})
+
+    # Set no color code.
     RESTORE = '\033[0m'
+
+    COLORS = sys.stdout.isatty()
 
     def __init__(self, color=None):
         if color in COLOR.PALETTE.keys():
@@ -42,9 +42,13 @@ class COLOR:
         else:
             self.color = 0
         assert isinstance(self.color, int)
+
+        # Initialized string with selected color.
         self.colorstr = '\033[{}m'.format(str(self.color))
 
     def bold(self, msg=None):
+
+        # Add bold effect code.
         if self.color == 0:
             self.colorstr = self.colorstr.replace('[0', '[1')
         else:
@@ -52,6 +56,8 @@ class COLOR:
         return self.__call__(msg)
 
     def italic(self, msg=None):
+
+        # Add italic effect code.
         if self.color == 0:
             self.colorstr = self.colorstr.replace('[0', '[3')
         else:
@@ -59,6 +65,8 @@ class COLOR:
         return self.__call__(msg)
 
     def underline(self, msg=None):
+
+        # Add underline effect code.
         if self.color == 0:
             self.colorstr = self.colorstr.replace('[0', '[4')
         else:
@@ -66,6 +74,8 @@ class COLOR:
         return self.__call__(msg)
 
     def blink(self, msg=None):
+
+        # Add blink effect code.
         if self.color == 0:
             self.colorstr = self.colorstr.replace('[0', '[5')
         else:
@@ -73,7 +83,7 @@ class COLOR:
         return self.__call__(msg)
 
     def __call__(self, msg):
-        if _colors_enabled[0]:
+        if COLOR.COLORS:
             if msg:
                 return self.colorstr + msg + COLOR.RESTORE
             else:
@@ -87,7 +97,7 @@ class COLOR:
 
 class COLORS:
     """
-    String colors for print statements
+    Preset colors statements depending on the status.
 
     """
 
@@ -129,7 +139,7 @@ class COLORS:
 
 class _TAGS:
     """
-    Tags strings for print statements
+    Tags strings for print statements.
     These are evaluated as properties, in order to defer until after
     enable_colors or disable_colors has been called during initialisation
 
@@ -137,9 +147,6 @@ class _TAGS:
 
     @property
     def SKIP(self): return COLORS.WARNING(':: SKIPPED :: ')
-
-    @property
-    def FETCH(self): return COLORS.SUCCESS(':: FETCHED :: ')
 
     @property
     def DEBUG(self): return COLORS.DEBUG(':: DEBUG   :: ')
@@ -180,23 +187,35 @@ class Print(object):
     LOG = None
     DEBUG = False
     CMD = None
-    BUFFER = Value(c_char_p, '')
+    LOG_TO_STDOUT = False
     LOGFILE = None
     CARRIAGE_RETURNED = True
+
+    # Instantiate buffer as a C character data typecode for shared memory.
+    BUFFER = Value(c_wchar_p, '')
 
     @staticmethod
     def init(log, debug, cmd):
         Print.LOG = log
         Print.DEBUG = debug
         Print.CMD = cmd
-        logname = '{}-{}'.format(Print.CMD, datetime.now().strftime("%Y%m%d-%H%M%S"))
-        if Print.LOG:
-            logdir = Print.LOG
-            if not os.path.isdir(Print.LOG):
-                os.makedirs(Print.LOG)
-        else:
-            logdir = os.getcwd()
-        Print.LOGFILE = os.path.join(logdir, logname + '.log')
+        Print.LOG_TO_STDOUT = (log == '-')
+        if not Print.LOG_TO_STDOUT:
+
+            # Build logfile name.
+            logname = '{}-{}'.format(Print.CMD, datetime.now().strftime("%Y%m%d-%H%M%S"))
+            if Print.LOG:
+                logdir = Print.LOG
+
+                # Create logfile directory if not exists.
+                if not os.path.isdir(Print.LOG):
+                    os.makedirs(Print.LOG)
+
+            else:
+                logdir = os.getcwd()
+
+            # Built logfile full path.
+            Print.LOGFILE = os.path.join(logdir, logname + '.log')
 
     @staticmethod
     def check_carriage_return(msg):
@@ -207,16 +226,21 @@ class Print(object):
 
     @staticmethod
     def print_to_stdout(msg):
-        Print.check_carriage_return(msg)
-        sys.stdout.write(msg)
-        sys.stdout.flush()
+        if not Print.LOG_TO_STDOUT:
+            Print.check_carriage_return(msg)
+            sys.stdout.write(msg)
+            sys.stdout.flush()
 
     @staticmethod
     def print_to_logfile(msg):
         Print.check_carriage_return(msg)
-        with open(Print.LOGFILE, 'a+') as f:
-            msg = re.sub('\\033\[([\d];)?[\d]*m', '', msg)
-            f.write(msg)
+        msg = re.sub('\\033\[([\d];)?[\d]*m', '', msg)
+        if Print.LOG_TO_STDOUT:
+            sys.stdout.write(msg)
+            sys.stdout.flush()
+        else:
+            with open(Print.LOGFILE, 'a+') as f:
+                f.write(msg)
 
     @staticmethod
     def progress(msg):
@@ -262,7 +286,7 @@ class Print(object):
 
     @staticmethod
     def info(msg):
-        msg += '\n'
+        msg = TAGS.INFO + COLORS.INFO(msg) + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
         if Print.LOG:
@@ -272,7 +296,7 @@ class Print(object):
 
     @staticmethod
     def debug(msg):
-        msg = TAGS.DEBUG + COLOR().italic(msg) + '\n'
+        msg = TAGS.DEBUG + COLORS.DEBUG(msg) + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
         if Print.DEBUG:
@@ -293,7 +317,7 @@ class Print(object):
 
     @staticmethod
     def error(msg, buffer=False):
-        msg = TAGS.ERROR + msg + '\n'
+        msg = TAGS.ERROR + COLORS.WARNING(msg) + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
         if Print.LOG:
@@ -307,7 +331,7 @@ class Print(object):
 
     @staticmethod
     def success(msg, buffer=False):
-        msg = TAGS.SUCCESS + msg + '\n'
+        msg = TAGS.SUCCESS + COLORS.SUCCESS(msg) + '\n'
         if not Print.CARRIAGE_RETURNED:
             msg = '\n' + msg
         if Print.LOG:
@@ -315,8 +339,6 @@ class Print(object):
         elif buffer:
             Print.BUFFER.value += msg
         elif Print.DEBUG:
-            Print.print_to_stdout(msg)
-        else:
             Print.print_to_stdout(msg)
 
     @staticmethod
@@ -355,3 +377,11 @@ class Print(object):
             else:
                 Print.print_to_stdout(Print.BUFFER.value)
             Print.BUFFER.value = ''
+
+    @staticmethod
+    def enable_colors():
+        COLOR.COLORS = True
+
+    @staticmethod
+    def disable_colors():
+        COLOR.COLORS = False

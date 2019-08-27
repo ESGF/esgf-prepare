@@ -8,31 +8,35 @@
 
 import traceback
 
-from constants import *
-from context import ProcessingContext
-from esgprep.utils.constants import GITHUB_API_PARAMETER
-from esgprep.utils.github import *
+from esgprep.constants import GITHUB_API_PARAMETER
+from esgprep._utils.github import *
+from esgprep.fetchtables.constants import *
+from esgprep.fetchtables.context import ProcessingContext
 
 
 def make_outdir(tables_dir, repository, reference=None):
     """
-    Build the output directory.
-
-    :param str tables_dir: The CMOR tables directory submitted
-    :param str repository: The GitHub repository name
-    :param str reference: The GitHub reference name (tag or branch)
+    Builds the CMOR table output directory.
 
     """
+
+    # Output directory = submitted root + project repository name.
     outdir = os.path.join(tables_dir, repository)
+
+    # Join GitHub reference/branch/tag.
     if reference:
         outdir = os.path.join(outdir, reference)
-    # If directory does not already exist
+
+    # If output directory does not exist.
     if not os.path.isdir(outdir):
+
+        # Try to make it.
         try:
             os.makedirs(outdir)
             Print.warning('{} created'.format(outdir))
+
+        # Error rollbacks on the current working directory (default).
         except OSError as e:
-            # If default tables directory does not exists and without write access
             msg = 'Cannot use "{}" (OSError {}: {}) -- '.format(outdir, e.errno, e.strerror)
             msg += 'Use "{}" instead.'.format(os.getcwd())
             Print.warning(msg)
@@ -42,97 +46,55 @@ def make_outdir(tables_dir, repository, reference=None):
             if not os.path.isdir(outdir):
                 os.makedirs(outdir)
                 Print.warning('"{}" created'.format(outdir))
+
+    # Return output directory.
     return outdir
 
 
 def get_special_case(f, url, repo, ref, auth):
     """
-    Get a dictionary of (filename -> file_info) pairs to be used for 
-    named files in place of the file info from the general API call
-    done for the directory.  file_info should contain at least
-    the elements 'sha' and 'download_url'
+    Get a specific file info to fetch to be used for named files in place of the file info from the general API call.
+
     """
+    # Build corresponding GitHub API to call
     url = url.format(repo)
     url += '/{}'.format(f)
     url += GITHUB_API_PARAMETER.format('ref', ref)
-    r = gh_request_content(url=url, auth=auth)
-    Print.debug('Set special GitHub reference -- "{}": "{}"'.format(f, ref))
-    return {f: r.json()}
 
+    # Get the file infos to fetch.
+    try:
+        r = gh_request_content(url=url, auth=auth)
+        Print.debug('Set special GitHub reference -- "{}": "{}"'.format(f, ref))
 
-def fetch_gh_ref(url, outdir, auth, keep, overwrite, backup_mode, filter, special_cases=None):
-    """
-    Fetch all files for a single reference (e.g. tag or branch) of a GitHub repository
+        # Returns a dictionary of {filename: file_info} pairs to be used by main process.
+        return {f: r.json()}
 
-    """
-    # Get GitHub file content
-    r = gh_request_content(url=url, auth=auth)
-    files = dict([(f['name'], f) for f in r.json() if filter(f['name'])])
-    # Get number of files
-    nfiles = len(files)
-    if not nfiles:
-        Print.warning('No files found on remote repository: {}'.format(url))
-    # Counter
-    progress = 0
-    for f, info in files.items():
-        try:
-            # Overwrite info by special cases ones
-            if special_cases and f in special_cases.keys():
-                info = special_cases[f]
-            # Set output file full path
-            outfile = os.path.join(outdir, f)
-            # Get checksum
-            download_url = info['download_url']
-            sha = info['sha']
-            # Get GitHub file
-            fetch(url=download_url,
-                  outfile=outfile,
-                  auth=auth,
-                  sha=sha,
-                  keep=keep,
-                  overwrite=overwrite,
-                  backup_mode=backup_mode)
-        except KeyboardInterrupt:
-            raise
-        except Exception:
-            download_url = info['download_url']
-            exc = traceback.format_exc().splitlines()
-            msg = TAGS.FAIL + COLORS.HEADER(download_url) + '\n'
-            msg += '\n'.join(exc)
-            Print.exception(msg, buffer=True)
-        finally:
-            project = re.search(REPO_NAME_PATTERN, url).group(1).split('/')[-1]
-            ref = url.split('=')[-1]
-            progress += 1
-            percentage = int(progress * 100 / nfiles)
-            msg = COLORS.OKBLUE('\rFetching {} tables from {} reference: '.format(project, ref))
-            msg += '{}% | {}/{} files'.format(percentage, progress, nfiles)
-            Print.progress(msg)
-    Print.progress('\n')
+    except GitHubFileNotFound:
+        pass
 
 
 def run(args):
     """
-    Main process that:
-
-     * Decide to fetch or not depending on file presence/absence and command-line arguments,
-     * Gets the GitHub file content from full API URL,
-     * Backups old file if desired,
-     * Writes response into table file.
-
-    :param ArgumentParser args: Parsed command-line arguments
+    Main process.
 
     """
-    # Instantiate processing context manager
+    # Instantiate processing context
     with ProcessingContext(args) as ctx:
+
+        # Iterates over project names.
         for project in ctx.project:
+
+            # Escape in case of error.
             try:
-                # Set repository name
+
+                # Set project repository name.
                 repo = REPO_PATTERN.format(project)
-                # Get the list of available refs for that repository
+
+                # Get the list of available GitHub reference/branch/tag for that repository.
                 r = gh_request_content(url=ctx.ref_url.format(repo), auth=ctx.auth)
                 refs = [os.path.basename(ref['url']) for ref in r.json()]
-                # Get refs to fetch
+
+                # Filter Github reference depending on the command-line.
                 if hasattr(ctx, 'ref'):
                     if ctx.ref not in refs:
                         raise GitHubReferenceNotFound(ctx.ref, refs)
@@ -143,30 +105,95 @@ def run(args):
                         raise GitHubReferenceNotFound(ctx.ref_regex.pattern, refs)
                 Print.debug('GitHub Available reference(s): {}'.format(', '.join(sorted(refs))))
                 Print.info('Selected GitHub reference(s): {}'.format(', '.join(sorted(fetch_refs))))
-                # Get special case for CMIP6_CV.json file
+
+                # Get special case for CMIP6_CV.json file, always from master branch.
                 special_cases = get_special_case(f='CMIP6_CV.json', url=ctx.url, repo=repo, ref='master', auth=ctx.auth)
-                # Fetch each ref
+
+                # Iterates over desired GitHub reference.
                 for ref in fetch_refs:
+
+                    # Escape in case of error.
                     try:
-                        # Set reference url
+
+                        # Set reference API URL.
                         url = ctx.url.format(repo)
                         if ref:
                             url += GITHUB_API_PARAMETER.format('ref', ref)
+
                         Print.debug('Fetch {} tables from "{}" GitHub reference'.format(project, ref))
-                        # Build output directory
+
+                        # Make output directory w/ subfolder tree structure.
                         if ctx.no_subfolder:
                             outdir = make_outdir(ctx.tables_dir, repo)
                         else:
                             outdir = make_outdir(ctx.tables_dir, repo, ref)
-                        # Fetch GitHub reference
-                        fetch_gh_ref(url=url,
-                                     outdir=outdir,
-                                     auth=ctx.auth,
-                                     keep=ctx.keep,
-                                     overwrite=ctx.overwrite,
-                                     backup_mode=ctx.backup_mode,
-                                     filter=ctx.file_filter,
-                                     special_cases=special_cases)
+
+                        # Get available CMOR table with corresponding download URL.
+                        r = gh_request_content(url=url, auth=ctx.auth)
+                        ctx.files = dict([(f['name'], f) for f in r.json() if ctx.file_filter(f['name'])])
+
+                        # Get number of files
+                        nfiles = len(ctx.files)
+                        if not nfiles:
+                            Print.warning('No files found on remote repository: {}'.format(url))
+
+                        # Reset counter
+                        progress = 0
+
+                        # Iterates over files to fetch.
+                        for f, info in ctx.files.items():
+
+                            # Escape in case of error.
+                            try:
+
+                                # Overwrite info by special cases ones
+                                if special_cases and f in special_cases.keys():
+                                    info = special_cases[f]
+
+                                # Set output full path of the file.
+                                outfile = os.path.join(outdir, f)
+
+                                # Get remote checksum infos.
+                                sha = info['sha']
+
+                                # Get remote download URL.
+                                download_url = info['download_url']
+
+                                # Fetch GitHub file
+                                fetch(url=download_url,
+                                      outfile=outfile,
+                                      auth=ctx.auth,
+                                      sha=sha,
+                                      keep=ctx.keep,
+                                      overwrite=ctx.overwrite,
+                                      backup_mode=ctx.backup_mode)
+
+                            # Catch unknown exception into error log instead of stop the process.
+                            except KeyboardInterrupt:
+                                raise
+
+                            # Catch known exception with its traceback.
+                            except Exception:
+                                download_url = info['download_url']
+                                exc = traceback.format_exc().splitlines()
+                                msg = TAGS.FAIL + COLORS.HEADER(download_url) + '\n'
+                                msg += '\n'.join(exc)
+                                Print.exception(msg, buffer=True)
+                                ctx.error = True
+
+                            # Print progress.
+                            finally:
+                                project = re.search(REPO_NAME_PATTERN, url).group(1).split('/')[-1]
+                                ref = url.split('=')[-1]
+                                progress += 1
+                                percentage = int(progress * 100 / nfiles)
+                                msg = COLORS.OKBLUE('\rFetching {} tables from {} reference: '.format(project, ref))
+                                msg += '{}% | {}/{} files'.format(percentage, progress, nfiles)
+                                Print.progress(msg)
+
+                        Print.progress('\n')
+
+                    # Catch known exception with its traceback.
                     except Exception:
                         exc = traceback.format_exc().splitlines()
                         msg = TAGS.FAIL
@@ -175,6 +202,8 @@ def run(args):
                         msg += '\n'.join(exc)
                         Print.exception(msg, buffer=True)
                         ctx.error = True
+
+            # Catch known exception with its traceback.
             except Exception:
                 exc = traceback.format_exc().splitlines()
                 msg = TAGS.FAIL
@@ -182,8 +211,10 @@ def run(args):
                 msg += '\n'.join(exc)
                 Print.exception(msg, buffer=True)
                 ctx.error = True
-    # Flush buffer
+
+    # Flush buffer.
     Print.flush()
-    # Evaluate errors and exit with appropriated return code
+
+    # Evaluate errors & exit with corresponding return code.
     if ctx.error:
         sys.exit(1)

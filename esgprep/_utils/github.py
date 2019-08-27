@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-    :platform: Unix
-    :synopsis: Useful functions to use with this package.
+.. module:: esgprep._utils.github.py
+   :platform: Unix
+   :synopsis: Utilities for GitHub interaction.
+
+.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.fr>
 
 """
 
@@ -10,47 +13,65 @@ import hashlib
 
 import requests
 
-from esgprep.utils.custom_print import *
+from esgprep._utils.print import *
+from base64 import b64decode
 
+def fetch(url, outfile, auth, sha, keep, overwrite, backup_mode, blob=False):
+    """
+    Fetches a file from a GitHub repository.
 
-def fetch(url, outfile, auth, sha, keep, overwrite, backup_mode):
-    # Fetching True/False depending on flags and file checksum
+    """
+    # Evaluate if fetching required.
     if do_fetching(outfile, sha, keep, overwrite):
-        # Backup old file if exists
+
+        # Backup existing file.
         backup(outfile, mode=backup_mode)
-        # Get content
-        content = requests.get(url, auth=auth).text
-        # Write new file
+
+        # Fetch GitHub file content.
+        if blob:
+            content = b64decode(requests.get(url, auth=auth).json()['content']).decode()
+        else:
+            content = requests.get(url, auth=auth).text
+
+        # Write content into file.
         write_content(outfile, content)
-        Print.info(TAGS.FETCH + '{} --> {}'.format(url, outfile))
+
+        Print.success('Fetched: {} --> {}'.format(url, outfile))
+
     else:
-        Print.info(TAGS.SKIP + url)
+
+        Print.error('Skipped: {}'.format(url))
 
 
 def gh_request_content(url, auth=None):
     """
-    Gets the GitHub content of a file or a directory.
-
-    :param str url: The GitHub url to request
-    :param *requests.auth.HTTPBasicAuth* auth: The authenticator object
-    :returns: The GitHub request content
-    :rtype: *requests.models.Response*
-    :raises Error: If user not authorized to read GitHub repository
-    :raises Error: If user exceed the GitHub API rate limit
-    :raises Error: If the queried content does not exist
-    :raises Error: If the GitHub request fails for other reasons
+    Gets content from a GitHub URL.
 
     """
+    # Set URL in GitHub Exception
     GitHubException.URI = url
+
+    # URL get.
     r = requests.get(url, auth=auth)
+
+    # Manage HTTP returned codes.
+    # Success.
     if r.status_code == 200:
         return r
+
+    # Unauthorized.
     elif r.status_code == 401:
         raise GitHubUnauthorized()
+
+    # GitHub API rate limit.
     elif r.status_code == 403:
         raise GitHubAPIRateLimit(int(r.headers['X-RateLimit-Reset']))
+
+    # File not found.
     elif r.status_code == 404:
         raise GitHubFileNotFound()
+
+    # Other connection error.
     else:
         raise GitHubConnectionError()
 
@@ -62,29 +83,44 @@ def backup(f, mode=None):
      * "one_version" renames the existing file in its source directory adding a ".bkp" extension to the filename.
      * "keep_versions" moves the existing file in a child directory called "bkp" and add a timestamp to the filename.
 
-    :param str f: The file to backup
-    :param str mode: The backup mode to follow
-
     """
     if os.path.isfile(f):
+
+        # "one_version" mode.
         if mode == 'one_version':
+
+            # Add ".bkp" suffix.
             dst = '{}.bkp'.format(f)
+
+            # Rename existing file.
             os.rename(f, dst)
+
             Print.debug('Old "{}" saved under "{}"'.format(f, dst))
+
+        # "keep_versions" mode.
         elif mode == 'keep_versions':
+
+            # Build backup directory.
             bkpdir = os.path.join(os.path.dirname(f), 'bkp')
+
+            # Build destination file.
             dst = os.path.join(bkpdir, '{}.{}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'),
                                                       os.path.basename(f)))
+
+            # Make backup directory.
             try:
                 os.makedirs(bkpdir)
             except OSError:
                 pass
             finally:
-                # Overwritten silently if destination file already exists
+
+                # Move/overwrite destination file.
                 os.rename(f, dst)
                 Print.debug('Old "{}" saved under "{}"'.format(f, dst))
+
         else:
-            # No backup = default
+
+            # Default is no backup.
             pass
 
 
@@ -92,38 +128,49 @@ def write_content(outfile, content):
     """
     Write GitHub content into a file.
 
-    :param str outfile: The output file
-    :param str content: The file content to write
-
     """
-    with open(outfile, 'w+') as f:
-        f.write(content.encode('utf-8'))
+
+    tmpfile = outfile + ".tmp"
+
+    with open(tmpfile, 'w+') as f:
+        f.write(content)
+
+    try:
+        os.rename(tmpfile, outfile)
+
+    except OSError:
+        os.remove(tmpfile)
+        raise
 
 
 def do_fetching(f, remote_checksum, keep, overwrite):
     """
-    Returns True or False depending on decision schema
-
-    :param str f: The file to test
-    :param str remote_checksum: The remote file checksum
-    :param boolean overwrite: True if overwrite existing files
-    :param boolean keep: True if keep existing files
-    :returns: True depending on the conditions
-    :rtype: *boolean*
+    Returns True or False evaluating a decision schema to fetch a file.
 
     """
+    # Fetch if overwrite set to True
     if overwrite:
         return True
+
     else:
+
+        # Fetch if file does not exist.
         if not os.path.isfile(f):
             return True
+
         else:
+
+            # Do not fetch if unchanged checksum.
             if githash(f) == remote_checksum:
                 return False
+
             else:
+
                 msg = 'Local "{}" does not match version on GitHub -- '.format((os.path.basename(f)))
                 msg += 'The file is either outdated or was modified.'
                 Print.debug(msg)
+
+                # Fetch outdated/modified files is "keep" set to False.
                 if keep:
                     return False
                 else:
@@ -132,15 +179,12 @@ def do_fetching(f, remote_checksum, keep, overwrite):
 
 def githash(outfile):
     """
-    Makes Git checksum (as called by "git hash-object") of a file
-
-    :param outfile:
-    :returns: The SHA1 sum
+    Computes SHA1 checksum in the same way as Git checksum (as called by "git hash-object").
 
     """
     with open(outfile) as f:
         data = f.read()
     s = hashlib.sha1()
-    s.update("blob %u\0" % len(data))
-    s.update(data)
-    return unicode(s.hexdigest())
+    s.update('blob {}\0'.format(len(data)).encode('utf-8'))
+    s.update(data.encode('utf-8'))
+    return s.hexdigest()

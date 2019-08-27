@@ -6,74 +6,62 @@
 
 """
 
-from constants import *
-from esgprep.utils.collectors import PathCollector, DatasetCollector, Collector
-from esgprep.utils.context import MultiprocessingContext
-from esgprep.utils.custom_print import *
+from esgprep._collectors.dataset_id import DatasetCollector
+from esgprep._collectors.drs_path import DRSPathCollector
+from esgprep._collectors import Collector
+from esgprep._contexts.multiprocessing import MultiprocessingContext
 
 
 class ProcessingContext(MultiprocessingContext):
     """
-    Encapsulates the processing context/information for main process.
-
-    :param ArgumentParser args: The command-line arguments parser
-    :returns: The processing context
-    :rtype: *ProcessingContext*
+    Processing context class to drive main process.
 
     """
 
     def __init__(self, args):
         super(ProcessingContext, self).__init__(args)
-        # True if undeclared facets
-        self.any_undeclared = False
-        # Add sources values to process manager
-        if self.use_pool:
-            self.source_values = self.manager.dict({})
-        else:
-            self.source_values = dict()
+
 
     def __enter__(self):
         super(ProcessingContext, self).__enter__()
-        # Get the DRS facet keys from pattern
-        self.facets = list()
-        self.facets = re.compile(self.cfg.translate('directory_format', add_ending_filename=True)).groupindex.keys()
-        self.facets.extend(re.compile(self.cfg.translate('dataset_id')).groupindex.keys())
-        self.facets = set(self.facets).difference(set(IGNORED_KEYS))
-        # Init data collector
+
+        # Instantiate data collector.
+        # The input source is a list directories.
         if self.directory:
-            # The source is a list of directories
-            self.source_type = 'file'
-            self.sources = PathCollector(sources=self.directory)
-            # Init file filter
+
+            # Instantiate file collector to walk through the tree.
+            self.sources = DRSPathCollector(sources=self.directory)
+
+            # Initialize file filter.
             for regex, inclusive in self.file_filter:
                 self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
-            # Init dir filter
+
+            # Initialize directory filter.
             self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
-            self.pattern = self.cfg.translate('directory_format', add_ending_filename=True)
+
+        # The source is a list of files (potentially from stdin).
         elif self.incoming:
-            # The source is a dataset ID (potentially from stdin)
-            self.source_type = 'file'
+
+            # Instantiate file collector to walk through the tree.
             self.sources = Collector(sources=self.incoming)
-            # Init file filter
+
+            # Initialize file filters.
             for regex, inclusive in self.file_filter:
                 self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
-            # Init dir filter
+
+            # Initialize directory filter.
             self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
-            # Translate dataset_id format
-            self.pattern = self.cfg.translate('filename_format')
+
+        # The source is a dataset ID (potentially from stdin).
         elif self.dataset_id:
-            # The source is a dataset ID (potentially from stdin)
-            self.source_type = 'dataset'
-            self.sources = DatasetCollector(sources=[self.dataset_id], versioned=False)
-            # Translate dataset_id format
-            self.pattern = self.cfg.translate('dataset_id')
+
+            # Instantiate dataset collector.
+            self.sources = DatasetCollector(sources=[self.dataset_id])
+
+        # The source is a list of files (i.e., a list of datasets)
         else:
-            # The source is a list of files (i.e., several dataset lists)
-            # Has to be tested at the end because args.dataset_list never None, see __init__ comment.
-            self.source_type = 'dataset'
-            self.sources = DatasetCollector(sources=[x.strip() for x in self.dataset_list.readlines() if x.strip()],
-                                            versioned=False)
-            self.pattern = self.cfg.translate('dataset_id')
-        # Get number of sources
-        self.nbsources = len(self.sources)
+
+            # Instantiate dataset collector.
+            self.sources = DatasetCollector(sources=[x.strip() for x in self.dataset_list.readlines() if x.strip()])
+
         return self

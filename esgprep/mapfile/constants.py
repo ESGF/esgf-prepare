@@ -6,36 +6,29 @@
 
 """
 
-# Facets ignored during checking
-IGNORED_KEYS = ['root', 'filename', 'period_start', 'period_end']
+# Spinner description.
+SPINNER_DESC = 'Mapfiles generation'
 
 # List of variable required by each process
-PROCESS_VARS = ['project',
-                'action',
-                'source_type',
-                'pattern',
+PROCESS_VARS = ['cmd',
+                'project',
                 'dataset_name',
                 'no_version',
                 'outdir',
                 'mapfile_name',
-                'mapfile_drs',
                 'basename',
                 'no_checksum',
                 'checksums_from',
+                'progress',
+                'msg_length',
                 'checksum_type',
                 'notes_url',
                 'notes_title',
-                'cfg',
-                'facets',
-                'progress',
-                'nbsources',
-                'lock']
+                'lock',
+                'errors']
 
-# Mapfile extension during processing
+# Mapfile extension during processing.
 WORKING_EXTENSION = '.part'
 
-# Source type label
-SOURCE_TYPE = {
-    'file': 'file(s)',
-    'dataset': 'dataset(s)'
-}
+# Mapfile final extension.
+MAPFILE_EXTENSION = '.map'

@@ -7,22 +7,18 @@
 
 """
 
+from esgprep import __version__
+from esgprep._utils.help import *
+from esgprep._utils.parser import *
 from esgprep.fetchini.main import run
-from utils.constants import *
-from utils.help import *
-from utils.parser import *
-
-__version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
 
 def get_args(args=None):
     """
     Returns parsed command-line arguments.
 
-    :returns: The argument parser
-    :rtype: *argparse.Namespace*
-
     """
+    # Instantiate argument parser.
     main = CustomArgumentParser(
         prog='esgfetchini',
         description=PROGRAM_DESC['fetchini'],
@@ -44,7 +40,7 @@ def get_args(args=None):
         '-i',
         metavar='$ESGINI_DIR',
         type=str,
-        default=os.environ['ESGINI_DIR'] if 'ESGINI_DIR' in os.environ.keys() else '/esg/config/esgcet',
+        default=os.getenv('ESGINI_DIR', '/esg/config/esgcet'),
         help=INI_HELP)
     main.add_argument(
         '-l', '--log',
@@ -86,13 +82,13 @@ def get_args(args=None):
     main.add_argument(
         '--gh-user',
         metavar='USERNAME',
-        default=os.environ['GH_USER'] if 'GH_USER' in os.environ.keys() else None,
+        default=os.getenv('USERNAME', None),
         type=str,
         help=GITHUB_USER_HELP)
     main.add_argument(
         '--gh-password',
-        metavar='PASSWORD',
-        default=os.environ['GH_PASSWORD'] if 'GH_PASSWORD' in os.environ.keys() else None,
+        metavar='$GH_PASSWORD',
+        default=os.getenv('GH_PASSWORD', None),
         type=str,
         help=GITHUB_PASSWORD_HELP)
     main.add_argument(
@@ -109,6 +105,8 @@ def get_args(args=None):
         '--no-color',
         action='store_true',
         help=NO_COLOR_HELP)
+
+    # Return command-line parser & program name.
     return main.prog, main.parse_args(args)
 
 
@@ -119,7 +117,10 @@ def main(args=None):
     """
     # Get command-line arguments
     prog, args = get_args(args)
+
+    # Add program name as argument.
     setattr(args, 'prog', prog)
+
     # Run program
     run(args)
 

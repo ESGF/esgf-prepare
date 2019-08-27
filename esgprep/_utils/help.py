@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """
-    :platform: Unix
-    :synopsis: Constants used for help message.
+.. module:: esgprep._utils.help.py
+   :platform: Unix
+   :synopsis: Command-line help.
+
+.. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.fr>
 
 """
 
-from custom_print import *
+from esgprep._utils.print import *
 
 # Help
 TITLE = COLOR('yellow').bold(""".___ ___ ___ ___ ___ ___ ___.
@@ -25,6 +28,14 @@ PROGRAM_DESC = {
 {}
 
 {} Most of other ESGF tool rely on configuration files of different kinds. The "esg.<project_id>.ini" files  declare all the facets and allowed values according to the Data Reference Syntax (DRS) and the controlled vocabularies of the corresponding project. "esgfetchini" allows you to properly download and deploy those configuration files hosted on an official GitHub repository. Keep in mind that the fetched files have to be reviewed to ensure a correct configuration of your side.
+
+{}
+
+{}""".format(TITLE, INTRO, URL, DEFAULT),
+    'fetchcv': """
+{}
+
+{} "esgprep" relies on the "pyessv" library to deal with Controlled Vocabularies. "esgfetchcv" allows you to properly download the "pyessv-archive" required to follow the Data Reference Syntax of the corresponding project. The "pyessv-archive" is composed by a set of manisfests and JSON files hosted on an official GitHub repository.
 
 {}
 
@@ -87,8 +98,16 @@ If not set, the usual ESGF datanode directory is used (i.e., "/esg/config/esgcet
 
 """
 
+CV_HELP = """Initialization directory containing the "pyessv" archive.
+Default is to use "$PYESSV_ARCHIVE_HOME" environment variable.
+If not set, the usual "pyessv" home directory is used (i.e., "$HOME/.esdoc/pyessv-archive/").
+
+
+"""
+
 LOG_HELP = """Logfile directory.
 If not, standard output is used.
+Special case, with '--log -', messages are written to standard output as they would appear in a log file, and the usual output to standard output is suppressed.
 
 """
 
@@ -101,6 +120,10 @@ SUBCOMMANDS = COLOR('red')("""Subcommands""")
 PROJECT_HELP = {
     'fetchini': """One or more lower-cased project name(s).
 If not, all "esg.*.ini" are fetched.
+
+""",
+    'fetchcv': """One or more lower-cased project name(s).
+If not, all projects within an authority are fetched.
 
 """,
     'fetchtables': """One or more lower-cased project name(s).
@@ -117,6 +140,11 @@ If not, all "*-cmor-tables" contents are fetched.
 
 """
 }
+
+AUTHORITY_HELP = """One or more lower-cased authority name(s).
+If not, all CV authorities are fetched.
+
+"""
 
 KEEP_HELP = """Ignore and keep existing file(s) without prompting.
 
@@ -215,40 +243,30 @@ Default excludes all hidden files.
 """
 
 DRS_SUBCOMMANDS = {
-    'list': """
+    'make': """
 {}
 
-The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs list" subcommand lists of the publication-level dataset corresponding to your MIP-compliant files. You can easily check how many files are part of each dataset with their respective size. The version status is also print to check which is the current latest dataset version in the root directory structure and the dataset version to upgrade. Each run also produces a temporary file which stores the scan results to be used by next subcommands avoiding to rescan a lot of files.
-
-{}
-
-{}
-
-""".format(TITLE, URL, DEFAULT),
-    'tree': """
-{}
-
-The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs tree" subcommand allows you to print the expected DRS tree in a similar way as the Unix "tree" command. All the DRS parts from the root to the filename are shown. In addition, the symlink skeleton between the dataset versions and the "latest" symlinks are displayed as it will be generated on your filesystem.
+The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs make" subcommand allows you to generate the appropriate directory structure from incoming netCDF files following several modes of migration.
 
 {}
 
 {}
 
 """.format(TITLE, URL, DEFAULT),
-    'todo': """
-{}|n|n
+    'remove': """
+{}
 
-The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs todo" subcommand allows you to check deeper which Unix commands would be run on your filesystem in order to upgrade your datasets versions. Be careful that "esgdrs" is also able to remove incoming files in some particular case (see --upgrade-from-latest and --ignore-from-latest options).
+The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs remove" subcommand allows you to remove one or several dataset versions from you local directory structure preserving the symlink skeleton of remaining versions.
 
 {}
 
 {}
 
 """.format(TITLE, URL, DEFAULT),
-    'upgrade': """
-{}|n|n
+    'latest': """
+{}
 
-The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs upgrade" subcommand allows you to automatically place your MIP-compliant netCDF files into the DRS directory structure. It applies the Unix commands listed by "esgdrs todo" to generated the DRS tree displayed by "esgdrs tree".
+The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs latest" subcommand allows you to generate create the "latest" symlink on a generated directory structure, if they do not already exist.
 
 {}
 
@@ -258,23 +276,22 @@ The Data Reference Syntax (DRS) defines the way your data have to follow on your
 }
 
 DRS_HELPS = {
-    'list': """Lists publication-level datasets (default).
-See "esgdrs list -h" for full help.
-
+    'make': """Generates DRS tree (default).
+See "esgdrs make -h" for full help.
 """,
-    'tree': """Displays the final DRS tree.
-See "esgdrs tree -h" for full help.
-
+    'remove': """Removes dataset versions safely.
+See "esgdrs remove -h" for full help.
 """,
-    'todo': """Shows file operations pending for the next version.
-See "esgdrs todo -h" for full help.
-
-""",
-    'upgrade': """Makes changes to upgrade datasets to the next version.
-See "esgdrs upgrade -h" for full help.
-
+    'latest': """Creates "latest" symbolic link at the version level.
+See "esgdrs latest -h" for full help.
 """
 }
+
+ACTION_HELP = """- "list": Lists publication-level datasets (default).
+- "tree": Displays the final DRS tree.
+- "todo": Shows file operations pending for the next version.
+- "upgrade": Makes changes to upgrade datasets to the next version.
+"""
 
 ROOT_HELP = """Root directory to build the DRS.
 
@@ -360,6 +377,8 @@ SYMLINK_HELP = """Symbolic link incoming files to the DRS tree.
 Default is moving files.
 
 """
+
+MOVE_HELP = """Move incoming files to the DRS tree (default)."""
 
 MAX_PROCESSES_HELP = """Number of maximal processes to simultaneously treat several files (useful if checksum calculation is enabled).
 Set to "1" seems sequential processing.
@@ -473,6 +492,7 @@ NO_CLEANUP_HELP = """Disables output directory cleanup prior to mapfile process.
 """
 
 DATASET_ID_HELP = """The dataset identifier dot-separated with or without the ending version.
+Duplicate the flag to submit several dataset identifiers.
 
 """
 

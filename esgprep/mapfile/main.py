@@ -6,91 +6,55 @@
 
 """
 
-import itertools
 import traceback
+from collections import namedtuple
 from multiprocessing import Pool
 
-from ESGConfigParser import interpolate, MissingPatternKey, BadInterpolation, InterpolationDepthError
 from lockfile import LockFile
+from esgprep.constants import FRAMES, FINAL_FRAME, FINAL_STATUS
+from esgprep import _STDOUT
+from esgprep._utils.checksum import get_checksum
+from esgprep.mapfile.constants import WORKING_EXTENSION, MAPFILE_EXTENSION, PROCESS_VARS, SPINNER_DESC
+from esgprep.mapfile.context import ProcessingContext
+from esgprep._utils.path import *
+import signal
 
-from constants import *
-from context import ProcessingContext
-from custom_exceptions import *
-from esgprep.utils.custom_print import *
-from esgprep.utils.misc import evaluate, remove, get_checksum, ProcessContext
-from esgprep.utils.output_control import OutputControl
-from handler import File, Dataset
-
-
-def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_version, mapfile_drs=None, basename=False):
+def build_mapfile_name(name, identifier, version):
     """
-    Builds the mapfile full path depending on:
-
-     * the --mapfile name using tokens,
-     * an optional mapfile tree declared in configuration file with ``mapfile_drs``,
-     * the --outdir output directory.
-
-    :param str outdir: The output directory (default is current working directory)
-    :param dict attributes: The facets values deduces from file full path
-    :param str mapfile_name: An optional mapfile name from the command-line
-    :param str dataset_id: The dataset id
-    :param str dataset_version: The dataset version
-    :param str mapfile_drs: The optional mapfile tree
-    :param boolean basename: True to only get mapfile name without root directory
-    :returns: The mapfile full path
-    :rtype: *str*
+    Injects token values and returns mapfile name.
 
     """
-    # Deduce output directory from --outdir and 'mapfile_drs'
-    if not basename:
-        if mapfile_drs:
-            try:
-                outdir = os.path.join(outdir, interpolate(mapfile_drs, attributes))
-            except (BadInterpolation, InterpolationDepthError):
-                raise MissingPatternKey(attributes.keys(), mapfile_drs)
+    # Inject dataset name.
+    if re.compile(r'{dataset_id}').search(name):
+        name = re.sub(r'{dataset_id}', identifier, name)
+
+    # Inject dataset version.
+    if re.compile(r'{version}').search(name):
+        if version:
+            name = re.sub(r'{version}', version, name)
         else:
-            outdir = os.path.realpath(outdir)
-    # Create output directory if not exists, catch OSError instead
-    try:
-        os.makedirs(outdir)
-    except OSError:
-        pass
-    # Deduce mapfile name from --mapfile argument
-    if re.compile(r'{dataset_id}').search(mapfile_name):
-        mapfile_name = re.sub(r'{dataset_id}', dataset_id, mapfile_name)
-    if re.compile(r'{version}').search(mapfile_name):
-        if dataset_version:
-            mapfile_name = re.sub(r'{version}', dataset_version, mapfile_name)
-        else:
-            mapfile_name = re.sub(r'\.{version}', '', mapfile_name)
-    if re.compile(r'{date}').search(mapfile_name):
-        mapfile_name = re.sub(r'{date}', datetime.now().strftime("%Y%d%m"), mapfile_name)
-    if re.compile(r'{job_id}').search(mapfile_name):
-        mapfile_name = re.sub(r'{job_id}', str(os.getpid()), mapfile_name)
-    # Add a "working extension" pending for the end of process
-    if basename:
-        return mapfile_name + WORKING_EXTENSION
-    else:
-        return os.path.join(outdir, mapfile_name) + WORKING_EXTENSION
+            name = re.sub(r'\.{version}', '', name)
+
+    # Inject date.
+    if re.compile(r'{date}').search(name):
+        name = re.sub(r'{date}', datetime.now().strftime("%Y%d%m"), name)
+
+    # Inject job id.
+    if re.compile(r'{job_id}').search(name):
+        name = re.sub(r'{job_id}', str(os.getpid()), name)
+
+    # Return path object with working extension.
+    return Path(name).with_suffix(WORKING_EXTENSION)
 
 
-def mapfile_entry(dataset_id, dataset_version, ffp, size, optional_attrs):
+def build_mapfile_entry(dataset_name, dataset_version, ffp, size, optional_attrs):
     """
-    Builds the mapfile entry corresponding to a processed file.
-
-    :param str dataset_id: The dataset id
-    :param str dataset_version: The dataset version
-    :param str ffp: The file full path
-    :param str size: The file size
-    :param dict optional_attrs: Optional attributes to append to mapfile lines
-    :returns: The mapfile line/entry
-    :rtype: *str*
+    Generate mapfile line corresponding to the source.
 
     """
-    line = [dataset_id]
-    # Add version number to dataset identifier if --no-version flag is disabled
+    line = [dataset_name]
     if dataset_version:
-        line = ['{}#{}'.format(dataset_id, dataset_version[1:])]
+        line = ['{}#{}'.format(dataset_name, dataset_version)]
     line.append(ffp)
     line.append(str(size))
     for k, v in optional_attrs.items():
@@ -99,194 +63,298 @@ def mapfile_entry(dataset_id, dataset_version, ffp, size, optional_attrs):
     return ' | '.join(line) + '\n'
 
 
-def write(outfile, entry):
+def write(outpath, line):
     """
-    Inserts a mapfile entry.
+    Append line to a mapfile.
     It generates a lockfile to avoid that several threads write on the same file at the same time.
     A LockFile is acquired and released after writing. Acquiring LockFile is timeouted if it's locked by other thread.
-    Each process adds one line to the appropriate mapfile
-
-    :param str outfile: The output mapfile full path
-    :param str entry: The mapfile entry to write
+    Each process adds one line to the appropriate mapfile.
 
     """
-    lock = LockFile(outfile)
+    lock = LockFile(outpath)
     with lock:
-        with open(outfile, 'a+') as mapfile:
-            mapfile.write(entry)
+        with outpath.open('a+') as mapfile:
+            mapfile.write(line)
 
 
 def process(source):
     """
-    File process that:
-
-     * Handles file,
-     * Harvests directory attributes,
-     * Check DRS attributes against CV,
-     * Builds dataset ID,
-     * Retrieves file size,
-     * Does checksums,
-     * Deduces mapfile name,
-     * Writes the corresponding mapfile entry.
-
-    Any error leads to skip the file. It does not stop the process.
-
-    :param str source: The source to process could be a path or a dataset ID
-    :returns: The output mapfile full path
-    :rtype: *str*
+    Child process.
+    Any error switches to the next child process.
+    It does not stop the main process at all.
 
     """
-    # Get process content from process global env
+    # Retrieve child processing content.
     assert 'pctx' in globals().keys()
     pctx = globals()['pctx']
-    # Block to avoid program stop if a thread fails
+
+    # Escape in case of error.
     try:
-        if pctx.source_type == 'file':
-            # Instantiate source handle as file
-            sh = File(source)
-        else:
-            # Instantiate source handler as dataset
-            sh = Dataset(source)
-        # Matching between directory_format and file full path
-        sh.load_attributes(pattern=pctx.pattern)
-        # Deduce dataset_id
-        dataset_id = pctx.dataset_name
+        # Get dataset version.
+        dataset_version = get_version(source)
+
+        # Build dataset identifier.
+        # DRS terms are validated during this step.
+        dataset_name = pctx.dataset_name
         if not pctx.dataset_name:
-            sh.check_facets(facets=pctx.facets,
-                            config=pctx.cfg)
-            dataset_id = sh.get_dataset_id(pctx.cfg.get('dataset_id', raw=True))
-        # Ensure that the first facet is ALWAYS the same as the called project section (case insensitive)
-        if not dataset_id.lower().startswith(pctx.project.lower()):
-            raise InconsistentDatasetID(pctx.project, dataset_id.lower())
-        # Deduce dataset_version
-        dataset_version = sh.get_dataset_version(pctx.no_version)
-        # Build mapfile name depending on the --mapfile flag and appropriate tokens
-        outfile = get_output_mapfile(outdir=pctx.outdir,
-                                     attributes=sh.attributes,
-                                     mapfile_name=pctx.mapfile_name,
-                                     dataset_id=dataset_id,
-                                     dataset_version=dataset_version,
-                                     mapfile_drs=pctx.mapfile_drs,
-                                     basename=pctx.basename)
-        # Dry-run: don't write mapfile to only show their paths
-        if pctx.action == 'make':
-            # Generate the corresponding mapfile entry/line
+            dataset_name = dataset_id(source)
+
+        # Check dataset identifier is not None.
+        if not dataset_name:
+            Print.debug('Dataset name is None')
+            return False
+
+        # Remove without ending version from dataset identifier.
+        dataset_name = re.sub(r'\.latest|\.v[0-9]*$', '', dataset_name)
+
+        # Build mapfile directory.
+        outdir = Path(pctx.outdir).resolve(strict=False)
+        try:
+            outdir = outdir.joinpath(pctx.cfg.get(section='config:{}'.format(source.project),
+                                                  option='mapfile_drs',
+                                                  vars=source.terms))
+
+        except:
+            pass
+
+        # Build mapfile name.
+        outfile = build_mapfile_name(pctx.mapfile_name, dataset_name, dataset_version)
+
+        # Build full mapfile path.
+        outpath = outdir.joinpath(outfile)
+
+        # Show command - Returns mapfile name only.
+        if pctx.cmd == 'show' and pctx.basename:
+            return outfile
+
+        # Make command - Write mapfile.
+        if pctx.cmd == 'make':
+
+            # Create mapfile directory.
+            try:
+                os.makedirs(outdir)
+            except OSError:
+                pass
+
+            # Gathers optional mapfile info into a dictionary.
             optional_attrs = dict()
-            optional_attrs['mod_time'] = sh.mtime
-            if pctx.no_checksum:
-                optional_attrs['checksum'] = get_checksum(sh.source, pctx.checksum_type, pctx.checksums_from)
+            optional_attrs['mod_time'] = source.stat().st_mtime
+            if not pctx.no_checksum:
+                optional_attrs['checksum'] = get_checksum(str(source), pctx.checksum_type, pctx.checksums_from)
                 optional_attrs['checksum_type'] = pctx.checksum_type.upper()
             optional_attrs['dataset_tech_notes'] = pctx.notes_url
             optional_attrs['dataset_tech_notes_title'] = pctx.notes_title
-            line = mapfile_entry(dataset_id=dataset_id,
-                                 dataset_version=dataset_version,
-                                 ffp=source,
-                                 size=sh.size,
-                                 optional_attrs=optional_attrs)
-            write(outfile, line)
-            msg = TAGS.SUCCESS
-            msg += '{}'.format(os.path.splitext(os.path.basename(outfile))[0])
-            msg += ' <-- ' + COLORS.HEADER(source)
+
+            # Generate the corresponding mapfile entry/line.
+            if pctx.no_version:
+                dataset_version = None
+            line = build_mapfile_entry(dataset_name=dataset_name,
+                                       dataset_version=dataset_version,
+                                       ffp=str(source),
+                                       size=source.stat().st_size,
+                                       optional_attrs=optional_attrs)
+
+            # Write line into mapfile.
+            write(outpath, line)
+
+            # Print success.
+            msg = '{} <-- {}'.format(outfile.with_suffix(''), source)
             with pctx.lock:
-                Print.info(msg)
-        # Return mapfile name
-        return outfile
-    # Catch any exception into error log instead of stop the run
+                Print.success(msg)
+
+        # Return mapfile path.
+        return outpath
+
     except KeyboardInterrupt:
+
+        # Lock error number.
+        with pctx.lock:
+
+            # Increase error counter.
+            pctx.errors.value += 1
+
         raise
+
+    # Catch known exception with its traceback.
     except Exception:
-        exc = traceback.format_exc().splitlines()
-        msg = TAGS.SKIP + COLORS.HEADER(source) + '\n'
-        msg += '\n'.join(exc)
+
+        # Lock error number.
         with pctx.lock:
+
+            # Increase error counter.
+            pctx.errors.value += 1
+
+            # Format & print exception traceback.
+            exc = traceback.format_exc().splitlines()
+            msg = TAGS.SKIP + COLORS.HEADER(str(source)) + '\n'
+            msg += '\n'.join(exc)
             Print.exception(msg, buffer=True)
+
         return None
+
     finally:
+
+        # Lock progress value.
         with pctx.lock:
+
+            # Increase progress counter.
             pctx.progress.value += 1
-            percentage = int(pctx.progress.value * 100 / pctx.nbsources)
-            msg = COLORS.OKBLUE('\rMapfile(s) generation: ')
-            msg += '{}% | {}/{} {}'.format(percentage, pctx.progress.value,
-                                           pctx.nbsources, SOURCE_TYPE[pctx.source_type])
+
+            # Clear previous print.
+            msg = '\r{}'.format(' ' * pctx.msg_length.value)
             Print.progress(msg)
 
+            # Print progress bar.
+            msg = '\r{} {} {}'.format(COLORS.OKBLUE(SPINNER_DESC),
+                                      FRAMES[pctx.progress.value % len(FRAMES)],
+                                      source)
+            Print.progress(msg)
 
-def initializer(keys, values):
-    """
-    Initialize process context by setting particular variables as global variables.
+            # Set new message length.
+            pctx.msg_length.value = len(msg)
 
-    :param list keys: Argument name list
-    :param list values: Argument value list
 
-    """
-    assert len(keys) == len(values)
-    global pctx
-    pctx = ProcessContext({key: values[i] for i, key in enumerate(keys)})
+class Runner(object):
+
+    def __init__(self, processes, init_args):
+
+        # Initialize the pool.
+        self.pool = None
+        if processes != 1:
+            self.pool = Pool(processes=processes,
+                             initializer=self._initializer,
+                             initargs=(init_args.keys(), init_args.values()))
+
+        # Initialise context.
+        else:
+            self._initializer(init_args.keys(), init_args.values())
+
+    @staticmethod
+    def _initializer(keys, values):
+        """
+        Initialize process context by setting particular variables as global variables.
+
+        """
+        assert len(keys) == len(values)
+        global pctx
+        pctx = namedtuple("ChildProcess", keys)(*values)
+
+    def _handle_sigterm(self, signum, frame):
+        if self.pool:
+            self.pool.terminate()
+        os._exit(1)
+
+    def run(self, sources):
+
+        # Instantiate signal handler.
+        sig_handler = signal.signal(signal.SIGTERM, self._handle_sigterm)
+
+        # Instantiate pool of processes.
+        if self.pool:
+
+            # Instantiate pool iterator.
+            processes = self.pool.imap(process, sources)
+
+        # Sequential processing use basic map function.
+        else:
+
+            # Instantiate processes iterator.
+            processes = map(process, sources)
+
+        # Run processes & get the list of results.
+        results = [x for x in processes]
+
+        # Terminate pool in case of SIGTERM signal.
+        signal.signal(signal.SIGTERM, sig_handler)
+
+        # Close the pool.
+        if self.pool:
+            self.pool.close()
+            self.pool.join()
+
+        return results
 
 
 def run(args):
     """
-    Main process that:
-
-     * Instantiates processing context,
-     * Parallelizes file processing with threads pools,
-     * Copies mapfile(s) to the output directory,
-     * Evaluate exit status.
-
-    :param ArgumentParser args: Command-line arguments parser
+    Main process.
 
     """
-
-    # Deal with 'quiet' option separately. If set, turn off all output 
-    # before creating ProcessingContext, and turn it on only when needed
+    # Deal with 'quiet' option separately.
+    # Turn off all output before creating ProcessingContext.
+    # Turn it on only when needed.
     quiet = args.quiet if hasattr(args, 'quiet') else False
     if quiet:
-        output_control = OutputControl()
-        output_control.stdout_off()
+        _STDOUT.stdout_off()
 
     # Instantiate processing context
     with ProcessingContext(args) as ctx:
-        # Init process context
+
+        # Shared processing context between child processes as dictionary.
         cctx = {name: getattr(ctx, name) for name in PROCESS_VARS}
-        # Init progress bar
-        if ctx.use_pool:
-            # Init processes pool
-            pool = Pool(processes=ctx.processes, initializer=initializer, initargs=(cctx.keys(), cctx.values()))
-            processes = pool.imap(process, ctx.sources)
-        else:
-            initializer(cctx.keys(), cctx.values())
-            processes = itertools.imap(process, ctx.sources)
-        # Process supplied sources
-        results = [x for x in processes]
-        # Close pool of workers if exists
-        if 'pool' in locals().keys():
-            locals()['pool'].close()
-            locals()['pool'].join()
-        Print.progress('\n')
-        # Flush buffer
+
+        # Instantiate the runner.
+        r = Runner(ctx.processes, init_args=cctx)
+
+        # Get runner results.
+        results = r.run(ctx.sources)
+
+        # Final print.
+        msg = '\r{}'.format(' ' * ctx.msg_length.value)
+        Print.progress(msg)
+        msg = '\r{} {} {}\n'.format(COLORS.OKBLUE(SPINNER_DESC), FINAL_FRAME, FINAL_STATUS)
+        Print.progress(msg)
+
+        # Flush buffer.
         Print.flush()
-        # Get number of files scanned (excluding errors/skipped files)
-        ctx.scan_data = len(filter(None, results))
-        # Get number of scan errors
-        ctx.scan_errors = results.count(None)
-        # Get number of generated mapfiles
-        ctx.nbmap = len(filter(None, set(results)))
-        # Evaluates the scan results to finalize mapfiles writing
-        if evaluate(results):
+
+        # Get number of sources (without "Completed" step).
+        ctx.nbsources = ctx.progress.value
+
+        # Number of success (excluding errors/skipped files).
+        ctx.success = len(list(filter(None, results)))
+
+        # Number of generated mapfiles.
+        ctx.nbmap = len(list(filter(None, set(results))))
+
+        # Evaluate the list of results triggering action.
+        if any(results):
+
+            # Iterate over written mapfiles.
             for mapfile in filter(None, set(results)):
-                # Remove mapfile working extension
-                if ctx.action == 'show':
-                    # Print mapfiles to be generated
-                    result = remove(WORKING_EXTENSION, mapfile)
+
+                # Count number of expected lines.
+                expected_lines = results.count(mapfile)
+
+                # Count number of lines in written mapfile.
+                with open(mapfile) as f:
+                    lines = len(f.readlines())
+
+                # Sanity check that the mapfile has the appropriate lines number.
+                assert lines == expected_lines, "Wrong lines number : {}, {} expected - {}".format(lines,
+                                                                                                   expected_lines,
+                                                                                                   mapfile)
+
+                # Set mapfile final extension.
+                result = mapfile.with_suffix(MAPFILE_EXTENSION)
+
+                # Print mapfiles to be generated.
+                if ctx.cmd == 'show':
+
+                    # Disable quiet mode to print results.
                     if quiet:
-                        output_control.stdout_on()
-                        print result
-                        output_control.stdout_off()
+                        _STDOUT.stdout_on()
+                        print(str(result))
+                        _STDOUT.stdout_off()
                     else:
-                        Print.result(result)
-                elif ctx.action == 'make':
+                        Print.result(str(result))
+
+                # Do mapfile renaming.
+                elif ctx.cmd == 'make':
+
                     # A final mapfile is silently overwritten if already exists
-                    os.rename(mapfile, remove(WORKING_EXTENSION, mapfile))
-    # Evaluate errors and exit with appropriated return code
-    if ctx.scan_errors > 0:
-        sys.exit(ctx.scan_errors)
+                    mapfile.rename(result)
+
+    # Evaluate errors & exit with corresponding return code.
+    if ctx.errors.value > 0:
+        sys.exit(ctx.errors.value)
