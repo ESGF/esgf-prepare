@@ -6,12 +6,11 @@
     :synopsis: Toolbox to prepare ESGF data for publication.
 
 """
-from argparse import FileType
 
 from esgprep import __version__
 from esgprep._utils.help import *
 from esgprep._utils.parser import *
-from esgprep.checkvocab.main import run
+from esgprep.checkvocab import run
 
 
 def get_args():
@@ -69,17 +68,17 @@ def get_args():
         nargs='+',
         help=DIRECTORY_HELP['checkvocab'])
     group.add_argument(
-        '--dataset-id',
-        metavar='DATASET_ID',
-        type=str,
-        help=DATASET_ID_HELP)
-    group.add_argument(
         '--dataset-list',
         metavar='TXT_FILE',
-        type=FileType('r'),
+        type=DatasetsReader,
         nargs='?',
         const=sys.stdin,
         help=DATASET_LIST_HELP)
+    group.add_argument(
+        '--dataset-id',
+        metavar='DATASET_ID',
+        action='append',
+        help=DATASET_ID_HELP)
     main.add_argument(
         '-p', '--project',
         metavar='NAME',
@@ -142,6 +141,9 @@ def main():
 
     # Add program name as argument.
     setattr(args, 'prog', prog)
+
+    # Add phony command action triggering worker name.
+    setattr(args, 'cmd', 'check')
 
     # Run program.
     run(args)

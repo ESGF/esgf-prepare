@@ -6,9 +6,9 @@
 
 """
 
-from esgprep.constants import GITHUB_API_PARAMETER
 from esgprep._contexts.github import GitHubBaseContext
 from esgprep._utils.github import *
+from esgprep.constants import GITHUB_API_PARAMETER
 from esgprep.fetchini.constants import *
 
 

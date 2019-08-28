@@ -470,20 +470,11 @@ This sets the {version} token to "latest" into the mapfile name, but picked up t
 
 """
 
-NO_VERSION_HELP = """Does not includes DRS version into the dataset identifier.
-
-"""
-
 TECH_NOTES_URL_HELP = """URL of the technical notes to be associated with each dataset.
 
 """
 
 TECH_NOTES_TITLE_HELP = """Technical notes title for display.
-
-"""
-
-DATASET_NAME_HELP = """String name of the dataset.
-If specified, all files will belong to the specified dataset, regardless of the DRS.
 
 """
 

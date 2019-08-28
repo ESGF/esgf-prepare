@@ -6,9 +6,9 @@
 
 """
 
+from esgprep._collectors import Collector
 from esgprep._collectors.dataset_id import DatasetCollector
 from esgprep._collectors.drs_path import DRSPathCollector
-from esgprep._collectors import Collector
 from esgprep._contexts.multiprocessing import MultiprocessingContext
 
 
@@ -20,7 +20,6 @@ class ProcessingContext(MultiprocessingContext):
 
     def __init__(self, args):
         super(ProcessingContext, self).__init__(args)
-
 
     def __enter__(self):
         super(ProcessingContext, self).__enter__()
@@ -52,16 +51,10 @@ class ProcessingContext(MultiprocessingContext):
             # Initialize directory filter.
             self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
 
-        # The source is a dataset ID (potentially from stdin).
-        elif self.dataset_id:
-
-            # Instantiate dataset collector.
-            self.sources = DatasetCollector(sources=[self.dataset_id])
-
-        # The source is a list of files (i.e., a list of datasets)
+        # The input source is a list of dataset identifiers (potentially from stdin).
         else:
 
             # Instantiate dataset collector.
-            self.sources = DatasetCollector(sources=[x.strip() for x in self.dataset_list.readlines() if x.strip()])
+            self.sources = DatasetCollector(sources=self.dataset)
 
         return self

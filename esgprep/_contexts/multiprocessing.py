@@ -9,14 +9,25 @@
 
 """
 
+import signal
 from configparser import NoOptionError, NoSectionError
 from hashlib import algorithms_available as checksum_types
-from multiprocessing import Lock
+from importlib import import_module
+from multiprocessing import Lock, Pool
 from multiprocessing.managers import SyncManager
+
 import pyessv
 from esgprep._contexts import BaseContext
 from esgprep._exceptions import InvalidChecksumType, MissingCVdata
+from esgprep._handlers.drs_tree import DRSTree
 from esgprep._utils.print import *
+
+
+class Manager(SyncManager):
+    pass
+
+
+Manager.register('DRSTree', DRSTree)
 
 
 class MultiprocessingContext(BaseContext):
@@ -41,10 +52,10 @@ class MultiprocessingContext(BaseContext):
         self.directory = self.set('directory')
 
         # Set input dataset list.
-        self.dataset_list = self.set('dataset_list')
+        self.dataset = self.set('dataset_list')
 
         # Set input dataset ID.
-        self.dataset_id = self.set('dataset_id')
+        self.dataset = self.set('dataset_id')
 
         # Set input free directory.
         self.incoming = self.set('incoming')
@@ -75,7 +86,7 @@ class MultiprocessingContext(BaseContext):
         # Instantiate multiprocessing manager & set progress counter.
         if self.use_pool:
             # Multiprocessing manager starts within a multiprocessing pool only.
-            self.manager = SyncManager()
+            self.manager = Manager()
             self.manager.start()
 
             # Instantiate print buffer.
@@ -89,13 +100,14 @@ class MultiprocessingContext(BaseContext):
 
             # Instantiate spinner message length.
             self.msg_length = self.manager.Value('i', 0)
+
+            # Instantiate stdout lock.
+            self.lock = self.manager.Lock()
         else:
             self.errors = Value('i', 0)
             self.progress = Value('i', 0)
             self.msg_length = Value('i', 0)
-
-        # Instantiate stdout lock
-        self.lock = Lock()
+            self.lock = Lock()
 
         # Discover a specified DRS version number.
         self.version = self.set('version')
@@ -180,3 +192,55 @@ class MultiprocessingContext(BaseContext):
             return self.cfg.get(section='config:{}'.format(self.project), option='pyessv_authority')
         except (NoSectionError, NoOptionError):
             return 'wcrp'
+
+
+class Runner(object):
+
+    def __init__(self, processes):
+
+        # Initialize the pool.
+        self.pool = None
+
+        if processes != 1:
+            self.pool = Pool(processes=processes)
+
+    def _handle_sigterm(self, signum, frame):
+
+        # Properly kill the pool in case of SIGTERM.
+        if self.pool:
+            self.pool.terminate()
+
+        os._exit(1)
+
+    def run(self, sources, ctx):
+
+        # Instantiate signal handler.
+        sig_handler = signal.signal(signal.SIGTERM, self._handle_sigterm)
+
+        # Import the appropriate worker.
+        process = getattr(import_module('esgprep.{}.{}'.format(ctx.prog[3:], ctx.cmd)), 'Process')
+
+        # Instantiate pool of processes.
+        if self.pool:
+
+            # Instantiate pool iterator.
+            processes = self.pool.imap(process(ctx), sources)
+
+        # Sequential processing use basic map function.
+        else:
+
+            # Instantiate processes iterator.
+            processes = map(process(ctx), sources)
+
+        # Run processes & get the list of results.
+        results = [x for x in processes]
+
+        # Terminate pool in case of SIGTERM signal.
+        signal.signal(signal.SIGTERM, sig_handler)
+
+        # Close the pool.
+        if self.pool:
+            self.pool.close()
+            self.pool.join()
+
+        return results

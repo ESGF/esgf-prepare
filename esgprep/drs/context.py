@@ -10,6 +10,7 @@ from esgprep._collectors import Collector
 from esgprep._collectors.dataset_id import DatasetCollector
 from esgprep._collectors.drs_path import DRSPathCollector
 from esgprep._contexts.multiprocessing import MultiprocessingContext
+from esgprep._handlers.drs_tree import DRSTree
 from esgprep._utils.print import *
 
 
@@ -27,6 +28,9 @@ class ProcessingContext(MultiprocessingContext):
 
         # Force rescanning files.
         self.rescan = self.set('rescan')
+
+        # Remove all DRS versions.
+        self.all = self.set('all_versions')
 
         # Set DRS facet value mapping.
         self.set_values = self.set('set_values', dict())
@@ -71,6 +75,12 @@ class ProcessingContext(MultiprocessingContext):
             msg += 'It is highly recommend to activate checksumming process.'
             Print.warning(msg)
 
+        # Instantiate DRS tree.
+        if self.use_pool:
+            self.tree = self.manager.DRSTree(self.root, self.version, self.mode, self.commands_file)
+        else:
+            self.tree = DRSTree(self.root, self.version, self.mode, self.commands_file)
+
     def __enter__(self):
         super(ProcessingContext, self).__enter__()
 
@@ -110,8 +120,10 @@ class ProcessingContext(MultiprocessingContext):
                     self.sources.PathFilter.add(name='version_filter', regex='/latest', inclusive=False)
                     self.sources.default = True
 
-            # The input source is a list of dataset identifiers.
+            # The input source is a list of dataset identifiers (potentially from stdin).
             else:
+
+                # Instantiate dataset collector.
                 self.sources = DatasetCollector(sources=self.dataset)
 
         return self

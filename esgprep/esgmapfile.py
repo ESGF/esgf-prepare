@@ -10,7 +10,7 @@
 from esgprep import __version__
 from esgprep._utils.help import *
 from esgprep._utils.parser import *
-from esgprep.mapfile.main import run
+from esgprep.mapfile import run
 
 
 def get_args():
@@ -99,11 +99,6 @@ def get_args():
         default=False,
         help=LATEST_SYMLINK_HELP)
     parent.add_argument(
-        '--no-version',
-        action='store_true',
-        default=False,
-        help=NO_VERSION_HELP)
-    parent.add_argument(
         '--ignore-dir',
         metavar="'^.*/(files|\.\w*).*$'",
         type=regex_validator,
@@ -123,11 +118,6 @@ def get_args():
         action='append',
         default=['^\..*$'],
         help=EXCLUDE_FILE_HELP)
-    parent.add_argument(
-        '--dataset-name',
-        metavar='DATASET_NAME',
-        type=str,
-        help=DATASET_NAME_HELP)
     parent.add_argument(
         '--max-processes',
         metavar='4',
@@ -165,6 +155,11 @@ def get_args():
         default=False,
         help=NO_CHECKSUM_HELP['mapfile'])
     make.add_argument(
+        '--checksums-from',
+        metavar='CHECKSUM_FILE',
+        type=ChecksumsReader,
+        help=CHECKSUMS_FROM_HELP)
+    make.add_argument(
         '--tech-notes-url',
         metavar='URL',
         type=str,
@@ -174,11 +169,6 @@ def get_args():
         metavar='TITLE',
         type=str,
         help=TECH_NOTES_TITLE_HELP)
-    make.add_argument(
-        '--checksums-from',
-        metavar='CHECKSUM_FILE',
-        type=ChecksumsReader,
-        help=CHECKSUMS_FROM_HELP)
     make.add_argument(
         '--no-cleanup',
         action='store_true',

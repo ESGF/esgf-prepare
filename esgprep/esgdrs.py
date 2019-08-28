@@ -12,7 +12,7 @@ from argparse import FileType
 from esgprep import __version__
 from esgprep._utils.help import *
 from esgprep._utils.parser import *
-from esgprep.drs.main import run
+from esgprep.drs import run
 
 
 def get_args():
@@ -242,11 +242,17 @@ def get_args():
         metavar='DATASET_ID',
         action='append',
         help=DATASET_ID_HELP)
-    remove.add_argument(
+    group = remove.add_mutually_exclusive_group(required=False)
+    group.add_argument(
         '--version',
         metavar=datetime.now().strftime("%Y%m%d"),
         action=VersionChecker,
         help=SET_VERSION_HELP['drs'])
+    group.add_argument(
+        '--all-versions',
+        action='store_true',
+        default=False,
+        help=ALL_VERSIONS_HELP)
 
     # Add subparser.
     latest = subparsers.add_parser(

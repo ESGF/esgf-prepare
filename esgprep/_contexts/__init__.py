@@ -35,6 +35,9 @@ class BaseContext(object):
         # Set project.
         self.project = self.set('project')
 
+        # Set program.
+        self.prog = self.set('prog')
+
     def __enter__(self):
 
         # Print command-line running.

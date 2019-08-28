@@ -154,6 +154,7 @@ class NoProjectCodeFound(Exception):
         self.msg += "\n<keys: '{}'>".format(val)
         super(self.__class__, self).__init__(self.msg)
 
+
 class MissingCVdata(Exception):
     """
     Raised when CV data is missing for an authority/project.

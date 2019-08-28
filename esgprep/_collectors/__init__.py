@@ -9,13 +9,14 @@
 
 """
 
+from pathlib import Path
 from typing import Pattern
 from uuid import uuid4 as uuid
 
 from esgprep._exceptions import NoFileFound
 from esgprep._utils import match
 from esgprep._utils.print import *
-from pathlib import Path
+
 
 class Collector(object):
     """
@@ -58,7 +59,6 @@ class Collector(object):
 
                             # Apply file filter on filename.
                             if path.is_file() and self.FileFilter(filename):
-
                                 # Yield file full path.
                                 yield path
 

@@ -10,7 +10,7 @@
 from esgprep import __version__
 from esgprep._utils.help import *
 from esgprep._utils.parser import *
-from esgprep.fetchini.main import run
+from esgprep.fetchini import run
 
 
 def get_args(args=None):

@@ -9,9 +9,8 @@
 
 """
 
-from esgprep._utils.cv import *
-from pyessv._exceptions import TemplateParsingError, TemplateValueError
 from esgprep._handlers.dataset_id import Dataset
+from pyessv._exceptions import TemplateParsingError, TemplateValueError
 
 
 def get_project(dataset):
@@ -37,6 +36,7 @@ def get_project(dataset):
     else:
         Print.debug('Unable to match one project code: {}'.format(dataset.identifier))
         return None
+
 
 def get_terms(dataset):
     """
@@ -71,3 +71,24 @@ def get_terms(dataset):
         Print.debug('Invalid dataset identifier -- {}'.format(error))
 
     return terms
+
+
+def dataset_id(path):
+    """
+    Returns the dataset identifier string corresponding to the dataset object.
+
+    """
+    # Instantiate identifier.
+    identifier = None
+
+    # Get pyessv terms.
+    terms = get_terms(path)
+
+    if terms:
+        # Get project code.
+        project = get_project(path)
+
+        # Build identifier.
+        identifier = pyessv.build_dataset_identifier(project.name, set(terms.values()))
+
+    return identifier

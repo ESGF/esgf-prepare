@@ -24,12 +24,6 @@ class ProcessingContext(MultiprocessingContext):
     def __init__(self, args):
         super(ProcessingContext, self).__init__(args)
 
-        # Enable/disable ending version in mapfile.
-        self.no_version = self.set('no_version')
-
-        # Set a fixed dataset id name.
-        self.dataset_name = self.set('dataset_name')
-
         # Set notes title.
         self.notes_title = self.set('tech_notes_title')
 
@@ -54,10 +48,6 @@ class ProcessingContext(MultiprocessingContext):
 
         # Discover all DRS versions.
         self.all = self.set('all_versions')
-
-        # Enable ending version in mapfile when --all-versions.
-        if self.all:
-            self.no_version = False
 
         # Set mapfile counter.
         self.nbmap = 0
@@ -96,8 +86,10 @@ class ProcessingContext(MultiprocessingContext):
                 self.sources.PathFilter.add(name='version_filter', regex='/latest', inclusive=False)
                 self.sources.default = True
 
-        # The input source is a list of dataset identifiers.
+        # The input source is a list of dataset identifiers (potentially from stdin).
         else:
+
+            # Instantiate dataset collector.
             self.sources = DatasetCollector(sources=self.dataset)
 
         return self

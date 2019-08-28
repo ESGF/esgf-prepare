@@ -11,10 +11,9 @@
 
 import getpass
 
-from requests.auth import HTTPBasicAuth
-
 from esgprep._contexts import BaseContext
 from esgprep._utils.print import *
+from requests.auth import HTTPBasicAuth
 
 
 class GitHubBaseContext(BaseContext):

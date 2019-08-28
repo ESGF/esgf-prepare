@@ -11,18 +11,18 @@
 
 import getpass
 from os import remove
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from hurry.filesize import size
-from treelib import Tree
-from treelib.tree import DuplicatedNodeIdError
-
+from esgprep import _STDOUT
 from esgprep._exceptions import DuplicatedDataset
 from esgprep._exceptions.io import *
 from esgprep._utils.print import *
 from esgprep.drs.constants import *
-from esgprep import _STDOUT
-from pathlib import Path
+from hurry.filesize import size
+from treelib import Tree
+from treelib.tree import DuplicatedNodeIdError
+
 
 class DRSLeaf(object):
     """
@@ -383,7 +383,7 @@ def print_cmd(line, quiet=False, todo_only=False):
         print(line)
 
 #    if commands_file and todo_only:
- #       with open(commands_file, mode) as f:
-  #          f.write('{}\n'.format(line))
-   # else:
-    #    print(line)
+#       with open(commands_file, mode) as f:
+#          f.write('{}\n'.format(line))
+# else:
+#    print(line)

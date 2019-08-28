@@ -6,14 +6,14 @@
 
 """
 
+from ctypes import c_bool
 from multiprocessing import Lock
 from multiprocessing.managers import SyncManager
 
 from esgprep._contexts.github import GitHubBaseContext
 from esgprep._utils.github import *
 from esgprep.fetchcv.constants import *
-from ctypes import c_bool
-from multiprocessing.sharedctypes import Value
+
 
 class ProcessingContext(GitHubBaseContext):
     """

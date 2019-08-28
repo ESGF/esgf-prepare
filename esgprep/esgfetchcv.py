@@ -10,7 +10,7 @@
 from esgprep import __version__
 from esgprep._utils.help import *
 from esgprep._utils.parser import *
-from esgprep.fetchcv.main import run
+from esgprep.fetchcv import run
 
 
 def get_args(args=None):
@@ -127,6 +127,9 @@ def main(args=None):
 
     # Add program name as argument.
     setattr(args, 'prog', prog)
+
+    # Add phony command action triggering worker name.
+    setattr(args, 'cmd', 'fetch')
 
     # Run program
     run(args)

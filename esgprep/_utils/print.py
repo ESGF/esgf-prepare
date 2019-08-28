@@ -15,8 +15,8 @@ import sys
 from ctypes import c_wchar_p
 from multiprocessing.sharedctypes import Value
 
-from esgprep.constants import SHELL_COLORS
 from esgprep._exceptions.github import *
+from esgprep.constants import SHELL_COLORS
 
 
 class COLOR:

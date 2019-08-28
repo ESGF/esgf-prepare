@@ -13,6 +13,7 @@ from esgprep._collectors import Collector
 from esgprep._exceptions import NoFileFound
 from esgprep._utils.path import *
 
+
 class DRSPathCollector(Collector):
     """
     Collector class to yield files from a structured and versioned tree, aka DRS.
@@ -39,11 +40,14 @@ class DRSPathCollector(Collector):
                     # Instantiate path object.
                     path = Path(root)
 
-                    # Get version from path.
-                    version = get_version(path)
+                    # Get project from path.
+                    project = get_project(path)
+
+                    # Get version index.
+                    idx = version_idx(project, 'directory_structure')
 
                     # When DRS version depth/level is reached, it takes priority.
-                    if version:
+                    if len(get_drs(path).parts) == idx:
 
                         # Apply default behavior.
                         if self.default:
@@ -51,7 +55,7 @@ class DRSPathCollector(Collector):
                             latest_version = get_versions(path)[-1]
 
                             # Add version filter with latest version.
-                            self.PathFilter.add(name='version_filter', regex='/{}'.format(latest_version))
+                            self.PathFilter.add(name='version_filter', regex='/{}'.format(latest_version.name))
 
                         # Remove undesired subdirectories to prune os.walk.
                         dirs[:] = [d for d in dirs if self.PathFilter('/{}'.format(d))]
@@ -71,7 +75,6 @@ class DRSPathCollector(Collector):
 
                             # Apply file filters on filename.
                             if path.is_file() and self.FileFilter(path.name):
-
                                 # Yield DRSPath object.
                                 yield path
 

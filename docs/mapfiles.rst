@@ -132,15 +132,6 @@ Add technical notes
 
     $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --tech-notes-url URL --tech-notes-title TITLE
 
-Overwrite the dataset identifier
-********************************
-
-.. code-block:: bash
-
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --dataset-name DATASET_NAME
-
-.. warning:: All files will belong to the specified dataset, regardless of the DRS.
-
 Show the expected mapfile name and path
 ***************************************
 

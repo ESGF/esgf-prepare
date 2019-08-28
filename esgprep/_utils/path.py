@@ -10,8 +10,9 @@
 """
 
 from esgprep._utils.cv import *
-from pyessv._exceptions import TemplateParsingError, TemplateValueError
 from esgprep.constants import VERSION_PATTERN
+from pyessv._exceptions import TemplateParsingError, TemplateValueError
+
 
 def get_project(path):
     """
@@ -51,11 +52,11 @@ def project_idx(path):
     project = get_project(path)
 
     if project and project.name in str(path).lower():
-
         # Retrieve index of the project code in the path parts.
         idx = Path(str(path).lower()).parts.index(project.name)
 
     return idx
+
 
 def get_root(path):
     """
@@ -116,7 +117,7 @@ def get_drs_up(path):
         idx = version_idx(project, 'directory_structure')
 
         # Get DRS parts until the dataset version.
-        if len(drs.parts) >= (idx + 1) :
+        if len(drs.parts) >= (idx + 1):
             d_drs = Path(*drs.parts[:idx + 1])
 
     return d_drs
@@ -141,7 +142,7 @@ def get_drs_down(path):
         idx = version_idx(project, 'directory_structure')
 
         # Get DRS parts until the dataset version.
-        if len(drs.parts) >= (idx + 1) :
+        if len(drs.parts) >= (idx + 1):
             f_drs = Path(*drs.parts[idx + 1:])
 
     return f_drs
@@ -180,6 +181,7 @@ def get_version(path, integer=False):
                     version = v
 
     return version
+
 
 def get_variable(path):
     """
@@ -234,6 +236,10 @@ def dataset_path(path):
     # Get the version.
     version = get_version(path)
 
+    # Test current path.
+    if path.name == version:
+        return path
+
     # Iterate over the path parents.
     for parent in path.parents:
 
@@ -253,14 +259,18 @@ def get_versions(path):
     # Instantiate versions list.
     versions = list()
 
-    # Get dataset path.
-    dataset = dataset_path(path)
+    # Test current path.
+    if path.exists():
+        versions = [version for version in sorted(path.iterdir()) if re.match(r'^v[\d]+$', version.name)]
 
-    # Check dataset path exists.
-    if dataset and dataset.exists():
+    if not versions:
+        # Get dataset path.
+        dataset = dataset_path(path)
 
-        # Sort versions folders.
-        versions = [version for version in sorted(dataset.iterdir()) if re.match('^v[/d]+$', version.name)]
+        # Check dataset path exists.
+        if dataset and dataset.exists():
+            # Sort versions folders.
+            versions = [version for version in sorted(dataset.parent.iterdir()) if re.match(r'^v[\d]+$', version.name)]
 
     return versions
 
@@ -318,7 +328,6 @@ def with_latest_version(path):
     versions = get_versions(path)
 
     if versions:
-
         # Replace current version item by latest existing version.
         target = list(path.parts)
         target[target.index(version)] = versions[-1].name
@@ -365,6 +374,7 @@ def with_file_folder(path):
             target = Path(*target)
 
     return target
+
 
 def dataset_id(path):
     """

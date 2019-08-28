@@ -10,11 +10,11 @@
 """
 
 import hashlib
+from base64 import b64decode
 
 import requests
-
 from esgprep._utils.print import *
-from base64 import b64decode
+
 
 def fetch(url, outfile, auth, sha, keep, overwrite, backup_mode, blob=False):
     """

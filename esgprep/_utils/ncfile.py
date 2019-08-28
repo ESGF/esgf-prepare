@@ -229,6 +229,7 @@ def get_terms_from_attrs(attrs, set_values=None, set_keys=None):
 
     return terms
 
+
 def drs_path(attrs, set_values=None, set_keys=None):
     """
     Returns the corresponding directory structure string.

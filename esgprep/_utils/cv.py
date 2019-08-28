@@ -9,12 +9,6 @@
 
 """
 
-import hashlib
-from pathlib import Path
-
-import pyessv
-from esgprep._exceptions import InvalidChecksumType, ChecksumFail
-from esgprep._utils.print import *
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
 

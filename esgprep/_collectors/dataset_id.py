@@ -30,14 +30,8 @@ class DatasetCollector(Collector):
 
             # Iterate on input sources.
             for source in self.sources:
-
-                # Instantiate Dataset object.
-                source = Dataset(self.project, source)
-
-                # Validate dataset identifier against CV.
-                if source.validate():
-                    # Yield dataset ID.
-                    yield source
+                # Yield dataset object.
+                yield Dataset(source)
 
         except StopIteration:
             raise NoFileFound(self.sources)
