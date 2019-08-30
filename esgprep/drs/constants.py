@@ -6,7 +6,7 @@
 
 """
 
-from os import link, symlink, environ
+from os import link, symlink, environ, remove
 from shutil import copy2 as copy
 from shutil import move
 
@@ -25,7 +25,8 @@ UNIX_COMMAND_LABEL = {'symlink': 'ln -s',
 UNIX_COMMAND = {'symlink': symlink,
                 'link': link,
                 'copy': copy,
-                'move': move}
+                'move': move,
+                'remove': remove}
 
 # Command-line parameter to ignore
 CONTROLLED_ARGS = ['directory',

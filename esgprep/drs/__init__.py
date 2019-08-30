@@ -118,6 +118,12 @@ def run(args):
             # Check upgrade uniqueness
             ctx.tree.check_uniqueness()
 
+            #             # (vérifier si les dossier "dversion" ou 'var_version" correspondant à la version à supprimer sont vide.
+            #             # si empty supprimer le dossier.)
+            #             # faire equivalent rmdir dans dataset_path() pour supprimer les dossiers vides
+            #             # assurer qu'il n'y a pas de symlink mort.
+            # ctx.tree.rmdir()
+
             # Apply tree action
             ctx.tree.get_display_lengths()
             getattr(ctx.tree, ctx.action)(quiet=quiet)

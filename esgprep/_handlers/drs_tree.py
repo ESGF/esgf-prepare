@@ -10,7 +10,6 @@
 """
 
 import getpass
-from os import remove
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -30,7 +29,7 @@ class DRSLeaf(object):
 
     """
 
-    def __init__(self, src, dst, mode):
+    def __init__(self, dst, mode, src=None):
 
         # Source data path.
         self.src = src
@@ -69,10 +68,16 @@ class DRSLeaf(object):
                 os.remove(self.dst)
 
         # Make upgrade depending on the migration mode.
-        line = '{} {} {}'.format(UNIX_COMMAND_LABEL[self.mode], self.src, self.dst)
+        line = UNIX_COMMAND_LABEL[self.mode]
+        if self.src:
+            line += ' ' + self.src
+        line +=  ' ' + self.dst
         print_cmd(line, quiet, todo_only)
         if not todo_only:
-            UNIX_COMMAND[self.mode](self.src, self.dst)
+            if self.src:
+                UNIX_COMMAND[self.mode](self.src, self.dst)
+            else:
+                UNIX_COMMAND[self.mode](self.dst)
 
     def has_permissions(self, root):
         """
@@ -85,7 +90,7 @@ class DRSLeaf(object):
         if self.mode is 'move':
             if os.path.isabs(self.src) and not os.access(self.src, os.W_OK):
                 raise WriteAccessDenied(getpass.getuser(), self.src)
-        else:
+        elif self.mode != 'remove':
             if os.path.isabs(self.src) and not os.access(self.src, os.R_OK):
                 raise ReadAccessDenied(getpass.getuser(), self.src)
 
@@ -153,9 +158,6 @@ class DRSTree(Tree):
 
         # DRS root directory.
         self.drs_root = root
-
-        # Upgrade version.
-        self.drs_version = version
 
         # Migration mode.
         self.drs_mode = mode
@@ -275,6 +277,19 @@ class DRSTree(Tree):
                 if all(duplicates) and set(latest_filenames) == set(filenames):
                     raise DuplicatedDataset(dataset, latest_version)
 
+    def rmdir(self):
+        """
+        Remove empty version directory and its empty parents.
+
+        """
+        for dataset, infos in self.paths.items():
+            os.rmdir(infos['current'])
+            for parent in infos['current'].parents:
+                try:
+                    os.rmdir(parent)
+                except OSError:
+                    break
+
     def list(self, **kwargs):
         """
         Lists and summaries upgrade information at the publication level.
@@ -282,11 +297,18 @@ class DRSTree(Tree):
         """
         # Header.
         print(''.center(self.d_lengths[-1], '='))
-        print('{}{}->{}{}{}'.format('Publication level'.center(self.d_lengths[0]),
-                                    'Latest version'.center(self.d_lengths[1]),
-                                    'Upgrade version'.center(self.d_lengths[2]),
-                                    'Files to upgrade'.rjust(self.d_lengths[3]),
-                                    'Upgrade size'.rjust(self.d_lengths[4])))
+        header = 'Publication level'.center(self.d_lengths[0])
+        header += 'Latest version'.center(self.d_lengths[1])
+        if self.drs_mode == 'remove':
+            header += '<-'
+            header += 'Remove version'.center(self.d_lengths[2])
+            header += 'Files to remove'.rjust(self.d_lengths[3])
+        else:
+            header += '->'
+            header += 'Upgrade version'.center(self.d_lengths[2])
+            header += 'Files to upgrade'.rjust(self.d_lengths[3])
+        header += 'Total size'.rjust(self.d_lengths[4])
+        print(header)
         print(''.center(self.d_lengths[-1], '-'))
 
         # Body.
@@ -294,13 +316,18 @@ class DRSTree(Tree):
             pub_lvl = dataset
             nfiles = len(infos['files'])
             latest_version = infos['latest']
+            upgrade_version = infos['upgrade']
             total_size = size(sum([file['src'].stat().st_size for file in infos['files']]))
-
-            print('{}{}->{}{}{}'.format(pub_lvl.ljust(self.d_lengths[0]),
-                                        latest_version.center(self.d_lengths[1]),
-                                        self.drs_version.center(self.d_lengths[2]),
-                                        str(nfiles).rjust(self.d_lengths[3]),
-                                        total_size.rjust(self.d_lengths[4])))
+            body = pub_lvl.ljust(self.d_lengths[0])
+            body += latest_version.center(self.d_lengths[1])
+            if self.drs_mode == 'remove':
+                body += '<-'
+            else:
+                body += '->'
+            body += upgrade_version.center(self.d_lengths[2])
+            body += str(nfiles).rjust(self.d_lengths[3])
+            body += total_size.rjust(self.d_lengths[4])
+            print(body)
 
         # Footer.
         print(''.center(self.d_lengths[-1], '='))
@@ -312,7 +339,10 @@ class DRSTree(Tree):
         """
         # Header.
         print(''.center(self.d_lengths[-1], '='))
-        print('Upgrade DRS Tree'.center(self.d_lengths[-1]))
+        if self.drs_mode == 'remove':
+            print('Remove DRS Tree'.center(self.d_lengths[-1]))
+        else:
+            print('Upgrade DRS Tree'.center(self.d_lengths[-1]))
         print(''.center(self.d_lengths[-1], '-'))
 
         # Body.

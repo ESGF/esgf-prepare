@@ -33,6 +33,7 @@ class Process(object):
         self.set_keys = ctx.set_keys
         self.lock = ctx.lock
         self.errors = ctx.errors
+        self.version = ctx.version
         self.msg_length = ctx.msg_length
         self.progress = ctx.progress
         self.no_checksum = ctx.no_checksum
@@ -52,62 +53,6 @@ class Process(object):
         # Escape in case of error.
         try:
 
-            # Si remove/latest
-            # source est un DRSPath validé
-            # comme mapfile ? > renvoie une fichier only
-            # but : trouver dans "--root" la version correspondante
-            # checker exister
-            # ici doit renvoyé le "publication-level" > dataset_path()
-
-            # Si remove
-            # "scanner" le dataset_path() pour reconstruire l'arbre -> DRSTree
-            # repérérer la version à supprimer puis agir à l'intérieure POUR CHAQUE FICHIER
-            # principle -> si fichier != symlink => supprimer fichier sans autre action
-            # -> si fichier symlink anaylser le lien:
-            # --> le symlink pointe toujours vers [..]/files/[..]/...nc
-            # --> obtenir la cible des symlink équivalent des versions précédente et suivante (si elles existent)
-
-            # if suivante & précédentes ==> les trois versions existent
-            # if target(suivante) = target(précédente) ==> les trois target sont identique (à checker avec assert)
-            # --> supprimer symlink
-            # --> ne pas supprimer la cible dans files car pointée par les autres versions
-            # elif target(précédente) = target(courant) ==> la cible à supprimer et lié à la précédente version
-
-            # elif target(suivante) = target(courant) ==> la cible à supprimer et lié à la suivante version
-
-            # else: ==> les cibles des trois versions sont différentes
-            # --> supprimer symlink
-            # --> supprimer la cible dans files car pointée par AUCUNE autre version
-            # elif précédente ==> seule la version à supprimer et la précédente existent
-
-            # elif suivante ==> seule la version à supprimer et la suivante existent
-
-            # else: = seule la version à supprimer existent
-            # --> supprimer symlink
-            # --> supprimer la cible dans files car pointée par AUCUNE autre version
-            # checker le latest -> appeler le process du subparser "latest"
-
-            # supprimer le dossier "vYYYYMMDD"
-
-            # (vérifier si les dossier "dversion" ou 'var_version" correspondant à la version à supprimer sont vide.
-            # si empty supprimer le dossier.)
-            # faire equivalent rmdir dans dataset_path() pour supprimer les dossiers vides
-            # assurer qu'il n'y a pas de symlink mort.
-
-            #####
-            # if any(v == get_version(current_path) for v in versions) or len(versions) == 1:
-            # rm current_path.target
-            # unlink(current_path)
-            #####
-
-            # Si latest
-            # faire un os.readlink("latest"
-            # checker target = latest version
-            # voir script ad-hoc
-            # généré le DRSTree associé avec uniquement des DRSLeak "latest symlink"
-
-            # supprimer en replaçant les liens des fichiers et du latest.
-
             # Ignore files from incoming
             if source.name in self.ignore_from_incoming:
                 msg = TAGS.SKIP + COLORS.HEADER(str(source))
@@ -124,7 +69,7 @@ class Process(object):
             # Add filename to attributes.
             current_attrs['filename'] = source.name
             # Add dataset-version to attributes.
-            current_attrs['dataset-version'] = self.tree.drs_version
+            current_attrs['dataset-version'] = self.version
 
             # Instantiate file as no duplicate.
             is_duplicate = False
@@ -200,8 +145,8 @@ class Process(object):
                 nodes = list(dataset_path(current_path).parent.parts)
                 nodes.append('latest')
                 self.tree.create_leaf(nodes=nodes,
-                                      label='{}{}{}'.format('latest', LINK_SEPARATOR, self.tree.drs_version),
-                                      src=self.tree.drs_version,
+                                      label='{}{}{}'.format('latest', LINK_SEPARATOR, self.version),
+                                      src=self.version,
                                       mode='symlink')
 
                 # Add the current file to the "files" folder.
@@ -266,6 +211,7 @@ class Process(object):
                 self.tree.paths[key] = {}
                 self.tree.paths[key]['files'] = [record]
                 self.tree.paths[key]['latest'] = latest_version
+                self.tree.paths[key]['upgrade'] = self.version
 
             # Print info.
             msg = 'DRS Path = {}'.format(get_drs_up(current_path))

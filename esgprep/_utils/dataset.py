@@ -11,7 +11,8 @@
 
 from esgprep._handlers.dataset_id import Dataset
 from pyessv._exceptions import TemplateParsingError, TemplateValueError
-
+from esgprep._utils.print import *
+import pyessv
 
 def get_project(dataset):
     """
@@ -73,7 +74,7 @@ def get_terms(dataset):
     return terms
 
 
-def dataset_id(path):
+def dataset_id(dataset):
     """
     Returns the dataset identifier string corresponding to the dataset object.
 
@@ -82,13 +83,33 @@ def dataset_id(path):
     identifier = None
 
     # Get pyessv terms.
-    terms = get_terms(path)
+    terms = get_terms(dataset)
 
     if terms:
         # Get project code.
-        project = get_project(path)
+        project = get_project(dataset)
 
         # Build identifier.
         identifier = pyessv.build_dataset_identifier(project.name, set(terms.values()))
+
+    return identifier
+
+def directory_structure(dataset):
+    """
+    Returns the DRS directory corresponding to the dataset object.
+
+    """
+    # Instantiate identifier.
+    identifier = None
+
+    # Get pyessv terms.
+    terms = get_terms(dataset)
+
+    if terms:
+        # Get project code.
+        project = get_project(dataset)
+
+        # Build identifier.
+        identifier = pyessv.build_directory_structure(project.name, set(terms.values()))
 
     return identifier

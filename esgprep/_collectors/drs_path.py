@@ -26,6 +26,9 @@ class DRSPathCollector(Collector):
         # Initialize default behavior to False.
         self.default = False
 
+        # Initialize dataset path switch.
+        self.dataset_parent = False
+
     def __iter__(self):
 
         # StopIteration error means no files found in all input sources.
@@ -59,6 +62,11 @@ class DRSPathCollector(Collector):
 
                         # Remove undesired subdirectories to prune os.walk.
                         dirs[:] = [d for d in dirs if self.PathFilter('/{}'.format(d))]
+
+                        if self.dataset_parent and self.PathFilter(root):
+
+                            # Yield the version parent directory.
+                            yield path
 
                     # Iterate on discovered sorted filenames.
                     for filename in sorted(filenames):

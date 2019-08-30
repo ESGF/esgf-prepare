@@ -61,52 +61,21 @@ class Process(object):
             from esgprep._utils.path import get_terms, get_root, get_version
             current_path = source
             assert get_terms(source), 'Invalid path {}'.format(source)
-            root = get_root(current_path)
-            assert root, 'Invalid root path {}'.format(source)
-            version = get_version(current_path)
-            assert version, 'Invalid path version {}'.format(source)
 
             # Get all existing version.
             versions = get_versions(current_path)
-
-            # Keep only the current, latest and next versions of the file.
-            current_idx = versions.index(current_path)
-            versions = versions[(current_idx - 1 if current_idx - 1 >= 0 else 0): current_idx + 2]
+            assert versions, 'No versions found'
 
             # Get latest version.
-            latest_version = 'Initial'
-            if versions:
-                latest_version = get_version(versions[-1])
+            latest_version = get_version(versions[-1])
 
-            if current_path.is_symlink():
-
-                if any(v == current_path for v in versions) or len(versions) == 1:
-
-                    # Remove the current file from the "files" folder.
-                    self.tree.create_leaf(nodes=with_file_folder(current_path).parts,
-                                          label=current_path.name,
-                                          mode=self.mode)
-
-            # Remove the current file symlink from the "vYYYYMMDD" folder.
-            src = ['..'] * len(get_drs_down(current_path).parts)
-            src.append('files')
-            src += get_drs_down(with_file_folder(current_path)).parts
-            self.tree.create_leaf(nodes=current_path.parts,
-                                  label='{}{}{}'.format(current_path.name, LINK_SEPARATOR, os.path.join(*src)),
-                                  mode=self.mode,
-                                  force=True)
-
-            # Record entry for list() and uniqueness checkup.
-            key = str(get_drs_up(current_path).parent)
-            if key in self.tree.paths:
-                self.tree.paths[key]['files'].append(current_path)
-                assert latest_version == self.tree.paths[key]['latest']
-                assert version == self.tree.paths[key]['upgrade']
-            else:
-                self.tree.paths[key] = {}
-                self.tree.paths[key]['files'] = [current_path]
-                self.tree.paths[key]['latest'] = 'Initial' if len(versions) == 1 else get_version(versions[-1])
-                self.tree.paths[key]['upgrade'] = version
+            # Add the "latest" symlink node.
+            nodes = current_path.parts
+            nodes.append('latest')
+            self.tree.create_leaf(nodes=nodes,
+                                  label='{}{}{}'.format('latest', LINK_SEPARATOR, latest_version),
+                                  src=latest_version,
+                                  mode='symlink')
 
             # Print info.
             msg = 'DRS Path = {}'.format(get_drs_up(current_path))

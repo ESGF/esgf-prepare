@@ -63,6 +63,9 @@ class ProcessingContext(MultiprocessingContext):
         for mode in ['copy', 'link', 'symlink']:
             if hasattr(args, mode) and getattr(args, mode):
                 self.mode = mode
+        # Set migration mode as subcommand value if not the default.
+        if self.cmd != 'make':
+            self.mode = self.cmd
 
         # Set output commands file.
         self.commands_file = self.set('commands_file', None)
@@ -77,9 +80,9 @@ class ProcessingContext(MultiprocessingContext):
 
         # Instantiate DRS tree.
         if self.use_pool:
-            self.tree = self.manager.DRSTree(self.root, self.version, self.mode, self.commands_file)
+            self.tree = self.manager.DRSTree(self.root, self.mode, self.commands_file)
         else:
-            self.tree = DRSTree(self.root, self.version, self.mode, self.commands_file)
+            self.tree = DRSTree(self.root, self.mode, self.commands_file)
 
     def __enter__(self):
         super(ProcessingContext, self).__enter__()
@@ -119,6 +122,10 @@ class ProcessingContext(MultiprocessingContext):
                     # Default behavior: pick up the latest version among encountered versions.
                     self.sources.PathFilter.add(name='version_filter', regex='/latest', inclusive=False)
                     self.sources.default = True
+
+                # Returns only dataset parent directory.
+                if self.cmd == 'latest':
+                    self.sources.dataset_parent = True
 
             # The input source is a list of dataset identifiers (potentially from stdin).
             else:
