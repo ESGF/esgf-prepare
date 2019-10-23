@@ -134,12 +134,6 @@ def get_args():
         type=str,
         help=DATASET_NAME_HELP)
     parent.add_argument(
-        '--max-processes',
-        metavar='4',
-        type=processes_validator,
-        default=4,
-        help=MAX_PROCESSES_HELP)
-    parent.add_argument(
         '--no-cleanup',
         action='store_true',
         default=False,
@@ -189,6 +183,12 @@ def get_args():
         metavar='CHECKSUM_FILE',
         type=FileType('r'),
         help=CHECKSUMS_FROM_HELP)
+    make.add_argument(
+        '--max-processes',
+        metavar='4',
+        type=processes_validator,
+        default=4,
+        help=MAX_PROCESSES_HELP)
     # Subparser for "esgmapfile show"
     show = subparsers.add_parser(
         'show',

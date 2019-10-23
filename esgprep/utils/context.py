@@ -110,7 +110,13 @@ class MultiprocessingContext(BaseContext):
         if hasattr(args, 'incoming'):
             self.incoming = args.incoming
         # Multiprocessing configuration
-        self.processes = args.max_processes if args.max_processes <= cpu_count() else cpu_count()
+        if 'max_processes' in args:
+            # an operation which supports --max_processes
+            # (whether the value was specified by user, or argparse provided the default)
+            self.processes = args.max_processes if args.max_processes <= cpu_count() else cpu_count()
+        else:
+            # an operation which does not support --max_processes is defined as serial
+            self.processes = 1
         self.use_pool = (self.processes != 1)
         # Scan counters
         self.scan_errors = 0
