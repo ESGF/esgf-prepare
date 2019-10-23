@@ -110,7 +110,7 @@ class MultiprocessingContext(BaseContext):
         if hasattr(args, 'incoming'):
             self.incoming = args.incoming
         # Multiprocessing configuration
-        if 'max_processes' in args:
+        if hasattr(args, 'max_processes'):
             # an operation which supports --max_processes
             # (whether the value was specified by user, or argparse provided the default)
             self.processes = args.max_processes if args.max_processes <= cpu_count() else cpu_count()
