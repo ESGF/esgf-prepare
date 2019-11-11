@@ -85,9 +85,8 @@ class File(object):
             for attr in nc.ncattrs():
                 # If attribute value is a separated list, pick up the first item as facet value
                 values = unicode(nc.getncattr(attr)).split()
-                if not values:
-                    raise NoNetCDFAttribute(attr, self.ffp)
-                self.attributes[attr] = values[0]
+                if values:  # [test to ignore attributes containing only whitespace]
+                    self.attributes[attr] = values[0]
         # Get attributes from filename, overwriting existing ones
         match = re.search(pattern, self.filename)
         if not match:
