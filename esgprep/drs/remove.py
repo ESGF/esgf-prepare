@@ -14,6 +14,9 @@ from esgprep._utils.print import *
 from esgprep.constants import FRAMES
 from esgprep.drs.constants import *
 from pathlib import Path
+from esgprep._handlers.dataset_id import Dataset
+from esgprep._utils.dataset import directory_structure
+from esgprep._utils.path import get_terms, get_root, get_version
 
 class Process(object):
     """
@@ -51,16 +54,15 @@ class Process(object):
         # Escape in case of error.
         try:
 
-            # Test source type.
-            # Source is pathlib.Path from the DRSPathCollector.
-            #if isinstance(source, Path):
-            # Source is a Dataset from the DatasetCollector.
-            # else:
-            #    from esgprep._utils.dataset import directory_structure
+            # Convert dataset identifier into directory_structure.
+            if isinstance(source, Dataset):
+                current_path = directory_structure(source)
+            else:
+                current_path = source
 
-            from esgprep._utils.path import get_terms, get_root, get_version
-            current_path = source
+            # Validate directory structure.
             assert get_terms(source), 'Invalid path {}'.format(source)
+
             root = get_root(current_path)
             assert root, 'Invalid root path {}'.format(source)
             version = get_version(current_path)
@@ -78,23 +80,32 @@ class Process(object):
             if versions:
                 latest_version = get_version(versions[-1])
 
-            if current_path.is_symlink():
+            # Iterate over files in the version directory to remove.
+            for root, _, files in os.walk(current_path):
+                for file in files:
 
-                if any(v == current_path for v in versions) or len(versions) == 1:
+                    # Convert file into pathlib.Path()
+                    file = Path(root, file)
 
-                    # Remove the current file from the "files" folder.
-                    self.tree.create_leaf(nodes=with_file_folder(current_path).parts,
-                                          label=current_path.name,
-                                          mode=self.mode)
+                    # Check file is a symlink.
+                    if file.is_symlink():
 
-            # Remove the current file symlink from the "vYYYYMMDD" folder.
-            src = ['..'] * len(get_drs_down(current_path).parts)
-            src.append('files')
-            src += get_drs_down(with_file_folder(current_path)).parts
-            self.tree.create_leaf(nodes=current_path.parts,
-                                  label='{}{}{}'.format(current_path.name, LINK_SEPARATOR, os.path.join(*src)),
-                                  mode=self.mode,
-                                  force=True)
+                        # Check if targets of previous and next versions exists and are the same.
+                        if any(v == current_path for v in versions) or len(versions) == 1:
+
+                            # Remove the current file from the "files" folder.
+                            self.tree.create_leaf(nodes=with_file_folder(current_path).parts,
+                                                  label=current_path.name,
+                                                  mode=self.mode)
+
+                    # Remove the current file symlink from the "vYYYYMMDD" folder in any case.
+                    src = ['..'] * len(get_drs_down(current_path).parts)
+                    src.append('files')
+                    src += get_drs_down(with_file_folder(current_path)).parts
+                    self.tree.create_leaf(nodes=current_path.parts,
+                                          label='{}{}{}'.format(current_path.name, LINK_SEPARATOR, os.path.join(*src)),
+                                          mode=self.mode,
+                                          force=True)
 
             # Record entry for list() and uniqueness checkup.
             key = str(get_drs_up(current_path).parent)

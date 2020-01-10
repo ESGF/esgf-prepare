@@ -65,8 +65,16 @@ class DRSPathCollector(Collector):
 
                         if self.dataset_parent and self.PathFilter(root):
 
-                            # Yield the version parent directory.
-                            yield path
+                            # Iterate of sub-directories.
+                            for dir in dirs:
+
+                                # Yield the version directory.
+                                yield Path(root, dir)
+
+                    elif len(get_drs(path).parts) > idx and self.dataset_parent:
+
+                        # yield the version directory
+                        yield dataset_path(root)
 
                     # Iterate on discovered sorted filenames.
                     for filename in sorted(filenames):

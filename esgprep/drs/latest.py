@@ -13,7 +13,10 @@ from esgprep._utils.path import *
 from esgprep._utils.print import *
 from esgprep.constants import FRAMES
 from esgprep.drs.constants import *
-from pathlib import Path
+from esgprep._handlers.dataset_id import Dataset
+from esgprep._utils.dataset import directory_structure
+from esgprep._utils.path import get_terms, get_root, get_version
+
 
 class Process(object):
     """
@@ -51,15 +54,13 @@ class Process(object):
         # Escape in case of error.
         try:
 
-            # Test source type.
-            # Source is pathlib.Path from the DRSPathCollector.
-            #if isinstance(source, Path):
-            # Source is a Dataset from the DatasetCollector.
-            # else:
-            #    from esgprep._utils.dataset import directory_structure
+            # Convert dataset identifier into directory_structure.
+            if isinstance(source, Dataset):
+                current_path = directory_structure(source)
+            else:
+                current_path = source
 
-            from esgprep._utils.path import get_terms, get_root, get_version
-            current_path = source
+            # Validate directory structure.
             assert get_terms(source), 'Invalid path {}'.format(source)
 
             # Get all existing version.

@@ -61,10 +61,12 @@ class ncopen(object):
 def get_ncattrs(path):
     """
     Loads netCDF global attributes from a pathlib.Path as dictionary.
+    Ignores attributes with only whitespaces.
 
     """
     with ncopen(path) as nc:
-        return {attr: nc.getncattr(attr) for attr in nc.ncattrs()}
+
+        return {attr: nc.getncattr(attr)[0] for attr in nc.ncattrs() if (nc.getncattr(attr)).split()}
 
 
 def get_tracking_id(attrs):

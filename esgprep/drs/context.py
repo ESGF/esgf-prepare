@@ -123,9 +123,8 @@ class ProcessingContext(MultiprocessingContext):
                     self.sources.PathFilter.add(name='version_filter', regex='/latest', inclusive=False)
                     self.sources.default = True
 
-                # Returns only dataset parent directory.
-                if self.cmd == 'latest':
-                    self.sources.dataset_parent = True
+                # Returns only dataset parent directory instead of files.
+                self.sources.dataset_parent = True
 
             # The input source is a list of dataset identifiers (potentially from stdin).
             else:
