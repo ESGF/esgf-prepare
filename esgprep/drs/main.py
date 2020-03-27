@@ -63,6 +63,8 @@ def process(source):
         # Ensure that the called project section is ALWAYS part of the DRS path elements (case insensitive)
         if not fh.drs.path().lower().startswith(pctx.project.lower()):
             raise InconsistentDRSPath(pctx.project, fh.drs.path())
+        #Get tracking ID (None if not recorded into the file)
+        fh.tracking_id = get_tracking_id(fh.ffp, pctx.project)
         # Evaluate if processing file already exists in the latest existing dataset version (i.e., "is duplicated")
         # Default: fh.is_duplicate = False
         # 1. If a latest dataset version exists
@@ -72,7 +74,6 @@ def process(source):
             # 2. Test if a file with the same filename exists in latest version
             if os.path.exists(latest_file):
                 # Get tracking ID (None if not recorded into the file)
-                fh.tracking_id = get_tracking_id(fh.ffp, pctx.project)
                 latest_tracking_id = get_tracking_id(latest_file, pctx.project)
                 # 3. Test if tracking IDs are different (i.e., keep is_duplicate = False)
                 if fh.tracking_id == latest_tracking_id:
