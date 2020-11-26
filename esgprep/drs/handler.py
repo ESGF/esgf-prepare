@@ -460,7 +460,7 @@ class DRSTree(Tree):
 
         """
         for dset_path, incomings in self.paths.items():
-            filenames = [incoming['filename'] for incoming in incomings]
+            incoming_filenames = [incoming['filename'] for incoming in incomings]
             duplicates = [incoming['is_duplicate'] for incoming in incomings]
             latests = [incoming['latest'] for incoming in incomings]
             roots = [incoming['dset_root'] for incoming in incomings]
@@ -473,7 +473,7 @@ class DRSTree(Tree):
                 latest_filenames.extend(filenames)
             # An upgrade version is different if it contains at least one file with is_duplicate = False
             # And it has the same number of files than the "latest" version
-            if all(duplicates) and set(latest_filenames) == set(filenames):
+            if all(duplicates) and set(latest_filenames) == set(incoming_filenames):
                 raise DuplicatedDataset(dset_path, latest_version)
 
     def list(self):
