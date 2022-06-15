@@ -67,6 +67,7 @@ else:
           include_package_data=True,
           python_requires='>=2.7, <3.0',
           install_requires=['lockfile==0.12.2',
+                            'cftime==1.0.3.4'
                             'esgconfigparser==0.1.17',
                             'requests==2.20.0',
                             'fuzzywuzzy==0.16.0',
