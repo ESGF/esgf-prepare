@@ -23,6 +23,7 @@ requirements:
 
   run:
     - python
+    - cftime
     - lockfile
     - esgf-config-parser
     - requests
