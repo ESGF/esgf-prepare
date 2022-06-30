@@ -19,7 +19,7 @@ def get_collections(project, parser):
 
     """
     assert parser in project.data, 'Invalid parser.'
-    return [collection.replace('_', '-') for collection in project.data[parser]['collections']]
+    return [collection.replace('_', '-') for collection in project.data[parser]["collections"]]
 
 
 def version_idx(project, parser):
@@ -29,7 +29,8 @@ def version_idx(project, parser):
     """
     # Get version index from the corresponding pyessv template.
     # add 1 because pyessv template does not count project level.
-    return get_collections(project, parser).index('dataset-version') + 1
+
+    return get_collections(project, parser).index('version') + 1
 
 
 def variable_idx(project, parser):

@@ -72,9 +72,9 @@ def get_args():
         help=PROJECT_HELP['mapfile'])
     parent.add_argument(
         '--mapfile',
-        metavar='{dataset_id}.{version}.map',
+        metavar='{dataset_id}.v{version}.map',
         type=str,
-        default='{dataset_id}.{version}.map',
+        default='{dataset_id}.v{version}.map',
         help=MAPFILE_NAME_HELP)
     parent.add_argument(
         '--outdir',
@@ -145,7 +145,7 @@ def get_args():
         parents=[parent])
 
     make.add_argument(
-        'directory',
+        '--directory',
         action=DirectoryChecker,
         nargs='+',
         help=DIRECTORY_HELP['mapfile'])
@@ -232,7 +232,7 @@ def main():
 
     # Add program name as argument.
     setattr(args, 'prog', prog)
-
+    print("COUCOU", args)
     # Run program.
     run(args)
 

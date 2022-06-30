@@ -6,14 +6,14 @@
 
 """
 
-import traceback
+import traceback, re, os
 from pathlib import Path
 
 from esgprep._utils.checksum import get_checksum
 from esgprep.constants import FRAMES
 from esgprep.mapfile import build_mapfile_name, build_mapfile_entry, write
 from esgprep.mapfile.constants import SPINNER_DESC
-
+from esgprep._utils.print import Print, COLORS, TAGS
 
 class Process(object):
     """
@@ -52,7 +52,6 @@ class Process(object):
             # Import utilities depending on the source type.
             if isinstance(source, Path):
                 from esgprep._utils.path import get_terms, dataset_id, get_project
-
             else:
                 from esgprep._utils.dataset import get_terms, dataset_id, get_project
 
@@ -69,9 +68,10 @@ class Process(object):
             # Identifier does not always end by a version.
             dataset = identifier
             version = None
-            if re.match(r'\.latest|\.v[0-9]*$', identifier):
-                version = identifier.split('.')[-1]
-                dataset = '.'.join(*identifier.split('.')[:-1])
+
+            if re.search(r'\.latest|\.v[0-9]*$', str(identifier)):
+                version = identifier.split('.')[-1][1:] # remove "v" only for name in mapfile NOT for the mapfile name
+                dataset = '.'.join(identifier.split('.')[:-1])
 
             # Build mapfile name.
             outfile = build_mapfile_name(self.mapfile_name, dataset, version)

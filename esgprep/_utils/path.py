@@ -218,13 +218,15 @@ def get_terms(path):
 
     # Get DRS part of the path.
     drs = get_drs(path)
+    print("mDRS",drs)
 
     # Validate each drs items against CV.
     try:
-        terms = {term.collection.name: term for term in pyessv.parse_directory(project.name, str(drs))}
+        terms = {term.collection.name: term for term in pyessv.parse_directory(project.name, str(drs),4)}
 
     # Catch parsing errors.
     except (TemplateParsingError, TemplateValueError) as error:
+        print("OLAAAAAAA")
         Print.debug('Invalid DRS path -- {}'.format(error))
 
     return terms
@@ -237,7 +239,7 @@ def dataset_path(path):
     """
     # Get the version.
     version = get_version(path)
-
+    print("from_dataset_path",version)
     # Test current path.
     if path.name == version:
         return path
@@ -260,20 +262,23 @@ def get_versions(path):
     """
     # Instantiate versions list.
     versions = list()
-
+    print("COUCOU de get_version", path)
+    print("COUCOU", [version for version in sorted(path.iterdir())])
     # Test current path.
     if path.exists():
-        versions = [version for version in sorted(path.iterdir()) if re.match(r'^v[\d]+$', version.name)]
+        versions = [version for version in sorted(path.parent.iterdir()) if re.match(r'v[\d]', version.name)] # pourquoi iterdir (car on est déjà dans la verison) du coup iterdir nous renvoi le fichier ?
 
+    print("PATH exist:", versions )
     if not versions:
+        print("pas de version")
         # Get dataset path.
         dataset = dataset_path(path)
-
+        print("dataset", dataset)
         # Check dataset path exists.
         if dataset and dataset.exists():
             # Sort versions folders.
             versions = [version for version in sorted(dataset.parent.iterdir()) if re.match(r'^v[\d]+$', version.name)]
-
+            print("VERSION",versions)
     return versions
 
 
@@ -388,7 +393,7 @@ def dataset_id(path):
 
     # Get pyessv terms.
     terms = get_terms(path)
-
+    print("GETTERM! ",terms)
     if terms:
         # Get project code.
         project = get_project(path)

@@ -36,27 +36,42 @@ class DRSPathCollector(Collector):
 
             # Iterate on input sources.
             for source in self.sources:
-
+                print("SOURCE ",source)
                 # Walk through each source.
                 for root, dirs, filenames in os.walk(str(source), followlinks=True):
-
+                    print(root,dirs,filenames)
                     # Instantiate path object.
                     path = Path(root)
 
                     # Get project from path.
                     project = get_project(path)
-
+                    ############# TEST de load les terms ici ...###########"Surement temporaire
+                    """
+                    project = "cmip6"
+                    _PROJECT = project
+                    scopes = pyessv.all_scopes()
+                    scope = [scope for scope in scopes if scope.name == project][0]
+                    cmip6scope, _ = scopes
+                    for col in cmip6scope.collections:
+                        pyessv.load(col.namespace)
+                    a=2
+                    """
+                    ############################"
+                    #print("COUCOU",project)
                     # Get version index.
                     idx = version_idx(project, 'directory_structure')
-
+                    print("INDEX",idx) # pour cmip6 .. dans directory_structure .. a version est à l'indice 10 (précisé dans le MANIFEST)
                     # When DRS version depth/level is reached, it takes priority.
-                    if len(get_drs(path).parts) == idx:
 
+                    print(' Or on est là')
+                    print(get_drs(path).parts)
+                    if len(get_drs(path).parts) == idx: # on en est à la version
+                        print("len(get_drs(path).parts) == idx",len(get_drs(path).parts),idx)
                         # Apply default behavior.
                         if self.default:
                             #  Pick up the latest existing versions for the corresponding dataset.
                             latest_version = get_versions(path)[-1]
-
+                            print("La latest reperé :", latest_version)
                             # Add version filter with latest version.
                             self.PathFilter.add(name='version_filter', regex='/{}'.format(latest_version.name))
 

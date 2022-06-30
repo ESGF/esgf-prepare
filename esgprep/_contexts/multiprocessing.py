@@ -19,7 +19,7 @@ from multiprocessing.managers import SyncManager
 import pyessv
 from esgprep._contexts import BaseContext
 from esgprep._exceptions import InvalidChecksumType, MissingCVdata
-from esgprep._handlers.drs_tree import DRSTree
+#from esgprep._handlers.drs_tree import DRSTree
 from esgprep._utils.print import *
 
 
@@ -27,7 +27,7 @@ class Manager(SyncManager):
     pass
 
 
-Manager.register('DRSTree', DRSTree)
+#Manager.register('DRSTree', DRSTree)
 
 
 class MultiprocessingContext(BaseContext):
@@ -173,8 +173,8 @@ class MultiprocessingContext(BaseContext):
         checksum_type = 'sha256'
 
         # Get checksum type from configuration.
-        if 'checksum' in self.cfg.defaults():
-            checksum_type = self.cfg.defaults()['checksum'].split('|')[1].strip().lower()
+        #if 'checksum' in self.cfg.defaults():
+        #    checksum_type = self.cfg.defaults()['checksum'].split('|')[1].strip().lower()
 
         # Verify checksum type is valid.
         if checksum_type not in checksum_types:
@@ -190,7 +190,7 @@ class MultiprocessingContext(BaseContext):
         """
         try:
             return self.cfg.get(section='config:{}'.format(self.project), option='pyessv_authority')
-        except (NoSectionError, NoOptionError):
+        except (AttributeError, NoSectionError, NoOptionError):
             return 'wcrp'
 
 
@@ -213,7 +213,7 @@ class Runner(object):
         os._exit(1)
 
     def run(self, sources, ctx):
-
+        print("Dans multiproc f run: sources:",sources)
         # Instantiate signal handler.
         sig_handler = signal.signal(signal.SIGTERM, self._handle_sigterm)
 
