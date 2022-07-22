@@ -41,10 +41,10 @@ def get_mapfile_source_cmip6(pick: int):
 #def test_compare(path1: str, path2: str) -> None:
 #    assert type(compare(path1, path2)) == bool
 
-
+# put aside to not test that with pytest
 @given(cmip6mapfilepath())
 @settings(max_examples=10, suppress_health_check=(HealthCheck.too_slow,), deadline=None)
-def test_compare_map(infos):
+def aside_test_compare_map(infos):
     directory, filename, nc_dir = infos
     #print(directory, filename, nc_dir)
     # Need real mapfile infos

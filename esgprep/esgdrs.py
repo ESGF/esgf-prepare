@@ -223,6 +223,11 @@ def get_args():
         help=DRS_HELPS['remove'],
         add_help=False,
         parents=[parent])
+    remove.add_argument(  # Lolo change temporary add to be able to skip the use of pickle tree
+        '--rescan',
+        action='store_true',
+        default=False,
+        help=RESCAN_HELP)
     group = remove.add_mutually_exclusive_group(required=True)
     group.add_argument(
         '--directory',
@@ -242,6 +247,7 @@ def get_args():
         metavar='DATASET_ID',
         action='append',
         help=DATASET_ID_HELP)
+
     group = remove.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--version',
@@ -264,11 +270,15 @@ def get_args():
         add_help=False,
         parents=[parent])
     latest.add_argument(
-        'directory',
+        '--directory',
         action=DirectoryChecker,
         nargs='+',
         help=DIRECTORY_HELP['mapfile'])
-
+    latest.add_argument(
+        '--rescan',
+        action='store_true',
+        default=False,
+        help=RESCAN_HELP)
     # Return command-line parser & program name.
     return main.prog, main.parse_args()
 
@@ -286,7 +296,7 @@ def main():
 
     # Add program name as argument.
     setattr(args, 'prog', prog)
-
+    print(args)
     # Run program.
     run(args)
 

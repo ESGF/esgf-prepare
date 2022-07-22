@@ -65,8 +65,9 @@ def get_ncattrs(path):
 
     """
     with ncopen(path) as nc:
-
-        return {attr: nc.getncattr(attr)[0] for attr in nc.ncattrs() if (nc.getncattr(attr)).split()}
+        dic = {attr: nc.getncattr(attr) for attr in nc.ncattrs() if (str(nc.getncattr(attr)).split())}
+        return dic
+        #return {attr: nc.getncattr(attr)[0] for attr in nc.ncattrs() if (nc.getncattr(attr)).split()} #" Old
 
 
 def get_tracking_id(attrs):
@@ -140,7 +141,7 @@ def get_project(attrs):
         attrs = get_ncattrs(attrs)
 
     # Set project code from global attributes.
-    key, score = extractOne('project', attrs.keys(), scorer=partial_ratio)
+    key, score = extractOne('mip_era', attrs.keys(), scorer=partial_ratio)# QUESTION ; mip_era ? ou project ?
     if score < 80:
         raise NoProjectCodeFound(attrs)
     project = attrs[key].lower()
@@ -177,7 +178,7 @@ def get_terms(input):
     try:
 
         # Validate filename syntax.
-        terms = {term.collection.name: term for term in pyessv.parse_filename(project.name, filename)}
+        terms = {term.collection.raw_name: term for term in pyessv.parse_filename(project.name, filename, 4)}
 
     except (TemplateParsingError, TemplateValueError) as error:
         Print.debug('Invalid filename syntax -- {}'.format(error))
@@ -197,6 +198,10 @@ def get_terms_from_attrs(attrs, set_values=None, set_keys=None):
     project = get_project(attrs)
 
     # Iterate over missing collections required to build the DRS path.
+    myCollections = set(get_collections(project, 'directory_structure'))
+    myterms = terms
+    un = myCollections.difference(terms)
+    #deux = terms.difference(myCollections)
     for collection in set(get_collections(project, 'directory_structure')).difference(terms):
 
         # Check input set values.
@@ -213,7 +218,9 @@ def get_terms_from_attrs(attrs, set_values=None, set_keys=None):
                 term = attrs[set_keys[collection]].split()[0]
             except AttributeError:
                 raise NoNetCDFAttribute(set_keys[collection], attrs.keys())
-
+        # try to find attrs in netCDF global attributes
+        elif collection in attrs.keys():
+            term = attrs[collection]
         # Otherwise pick up missing collection from netCDF global attributes.
         else:
             # Find closest NetCDF attributes using partial string comparison

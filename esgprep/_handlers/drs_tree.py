@@ -52,16 +52,18 @@ class DRSLeaf(object):
         # --commands-file writes print statements ONLY in the submitted file
 
         # Make directory for destination path if not exist.
-        line = '{} {}'.format('mkdir -p', os.path.dirname(self.dst))
-        print_cmd(line, quiet, todo_only)
-        if not todo_only:
-            try:
-                os.makedirs(os.path.dirname(self.dst))
-            except OSError:
-                pass
+        if not Path(self.dst).exists():
+            if not todo_only:
+                try:
+                    os.makedirs(os.path.dirname(self.dst))
+                    line = '{} {}'.format('mkdir -p', os.path.dirname(self.dst))
+                    print_cmd(line, quiet, todo_only)
+
+                except OSError:
+                    pass
 
         # Unlink symbolic link if already exists.
-        if self.mode is 'symlink' and os.path.lexists(self.dst):
+        if self.mode == 'symlink' and os.path.lexists(self.dst):
             line = '{} {}'.format('rm -f', self.dst)
             print_cmd(line, quiet, todo_only)
             if not todo_only:
@@ -70,8 +72,8 @@ class DRSLeaf(object):
         # Make upgrade depending on the migration mode.
         line = UNIX_COMMAND_LABEL[self.mode]
         if self.src:
-            line += ' ' + self.src
-        line +=  ' ' + self.dst
+            line += ' ' + str(self.src) # Lolo change add str(Posix)
+        line += ' ' + str(self.dst) # Lolo change str(Posix)
         print_cmd(line, quiet, todo_only)
         if not todo_only:
             if self.src:
@@ -87,7 +89,7 @@ class DRSLeaf(object):
         """
         # Check src access.
         # Define src access depending on the migration mode
-        if self.mode is 'move':
+        if self.mode == 'move':
             if os.path.isabs(self.src) and not os.access(self.src, os.W_OK):
                 raise WriteAccessDenied(getpass.getuser(), self.src)
         elif self.mode != 'remove':
@@ -148,7 +150,7 @@ class DRSTree(Tree):
 
     """
 
-    def __init__(self, root=None, version=None, mode=None, outfile=None):
+    def __init__(self, root=None, mode=None, outfile=None): # Lolo Change version=Node en 2eme argument remove
 
         # Retrieve original class init
         Tree.__init__(self)
@@ -262,14 +264,17 @@ class DRSTree(Tree):
             if latest_version:
 
                 # Get the list of filenames from the incoming dataset.
-                filenames = [file['src'].name for file in infos['files']]
+                if "files" in infos.keys(): # Lolo Change entire line cause for remove there is no src ...
+
+                    filenames = [file['src'].name for file in infos['files'] if "src" in file.keys()] # Lolo Change :  if "src" in file.keys()
+                    #filenames = [file for file in infos['files']  ]  # Lolo Change :  if "src" in file.keys()
 
                 # Get the list of duplicate status from the incoming dataset.
                 duplicates = [file['is_duplicate'] for file in infos['files']]
 
                 # Get the list of filenames from the latest existing version.
                 latest_filenames = list()
-                for _, _, filenames in os.walk(Path(self.drs_root, dataset, latest_version)):
+                for _, _, filenames in os.walk(Path(self.drs_root or '', dataset, latest_version)): # Lolo change or '' pour eviter error avec remove
                     latest_filenames += filenames
 
                 # An upgrade version is different if it contains at least one file with is_duplicate = False
@@ -282,13 +287,43 @@ class DRSTree(Tree):
         Remove empty version directory and its empty parents.
 
         """
+        # TEST ça à l'air de marcher ..: au lieu de regarder dans self.path => qu'on a remplit au fur et à mesure .. on va directement checker le Tree
+        all_tree_nodes = self.all_nodes()
+        for node in all_tree_nodes[::-1]:
+            str_path = node.identifier
+            # c = node.data
+            # d = c.dst
+            # m_path = Path(node["data"]["dst"])
+            if Path(str_path).is_dir():
+                if len(os.listdir(str(str_path))) == 0:
+                    print("remove empty dir ", str_path)
+                    os.rmdir(str_path)
+
+
+        """
         for dataset, infos in self.paths.items():
-            os.rmdir(infos['current'])
-            for parent in infos['current'].parents:
-                try:
-                    os.rmdir(parent)
-                except OSError:
-                    break
+            # dans infos .. il y les records qu'on a rempli dans le Tree remove : self.tree.paths[key]['files'] = [record]
+            a = infos["files"]
+            list_dir_to_check = [i["dst"] for i in infos["files"]]
+            for f in list_dir_to_check:
+                if f.is_dir():
+                    if len(os.listdir(f)) == 0:  # empty dir
+                        print("remove dir ", f)
+                        os.rmdir(f)
+                    for parent in f.parents:
+                        try:
+                            if len(os.listdir(parent)) == 0:
+                                os.rmdir(parent)
+                                print("remove dir ", parent)
+                        except OSError:
+                            break
+            """
+            #os.rmdir(infos['current']) # Lolo There is not infos["current"] ??? Why ???
+            #for parent in infos['current'].parents:
+            #    try:
+            #        os.rmdir(parent)
+            #    except OSError:
+            #        break
 
     def list(self, **kwargs):
         """
@@ -316,8 +351,12 @@ class DRSTree(Tree):
             pub_lvl = dataset
             nfiles = len(infos['files'])
             latest_version = infos['latest']
-            upgrade_version = infos['upgrade']
-            total_size = size(sum([file['src'].stat().st_size for file in infos['files']]))
+            if "upgrade" in infos.keys(): # Lolo Change
+                upgrade_version = infos['upgrade']
+            else:
+                upgrade_version =""
+            if not self.drs_mode == 'remove': # Lolo Change entire line
+                total_size = size(sum([file['src'].stat().st_size for file in infos['files']]))
             body = pub_lvl.ljust(self.d_lengths[0])
             body += latest_version.center(self.d_lengths[1])
             if self.drs_mode == 'remove':
@@ -326,7 +365,9 @@ class DRSTree(Tree):
                 body += '->'
             body += upgrade_version.center(self.d_lengths[2])
             body += str(nfiles).rjust(self.d_lengths[3])
-            body += total_size.rjust(self.d_lengths[4])
+            if not self.drs_mode == 'remove':  # Lolo Change entire line
+
+                body += total_size.rjust(self.d_lengths[4])
             print(body)
 
         # Footer.

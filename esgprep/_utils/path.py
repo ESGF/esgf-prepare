@@ -92,7 +92,7 @@ def get_drs(path):
     if idx:
         # Remove root parts.
         # Do on parent if path is a file.
-        if path.is_file():
+        if path.is_file() or path.name[-3:]==".nc": # Lo ça ne fonctionne pas si le path correspond à un fichier qui n'est pas encore sur le disque du coup path[:-3]==".nc"
             drs = Path(*path.parent.parts[idx:])
         else:
             drs = Path(*path.parts[idx:])
@@ -120,7 +120,7 @@ def get_drs_up(path):
 
         # Get DRS parts until the dataset version.
         if len(drs.parts) >= (idx + 1):
-            d_drs = Path(*drs.parts[:idx + 1])
+            d_drs = Path(*drs.parts[:idx+1])
 
     return d_drs
 
@@ -145,7 +145,7 @@ def get_drs_down(path):
 
         # Get DRS parts until the dataset version.
         if len(drs.parts) >= (idx + 1):
-            f_drs = Path(*drs.parts[idx + 1:])
+            f_drs = Path(*drs.parts[idx+1:])
 
     return f_drs
 
@@ -226,7 +226,7 @@ def get_terms(path):
 
     # Catch parsing errors.
     except (TemplateParsingError, TemplateValueError) as error:
-        print("OLAAAAAAA")
+        #print("OLAAAAAAA")
         Print.debug('Invalid DRS path -- {}'.format(error))
 
     return terms
@@ -239,7 +239,7 @@ def dataset_path(path):
     """
     # Get the version.
     version = get_version(path)
-    print("from_dataset_path",version)
+    #print("from_dataset_path",version)
     # Test current path.
     if path.name == version:
         return path
@@ -262,23 +262,27 @@ def get_versions(path):
     """
     # Instantiate versions list.
     versions = list()
-    print("COUCOU de get_version", path)
-    print("COUCOU", [version for version in sorted(path.iterdir())])
+
     # Test current path.
     if path.exists():
-        versions = [version for version in sorted(path.parent.iterdir()) if re.match(r'v[\d]', version.name)] # pourquoi iterdir (car on est déjà dans la verison) du coup iterdir nous renvoi le fichier ?
+        #print("COUCOU de get_version", path)
+        #print("COUCOU", [version for version in sorted(path.iterdir())])
+        if path.is_dir():
+            versions = [version for version in sorted(path.iterdir()) if re.match(r'^v[\d]+$', version.name)]
+        #if not versions:
+        #    versions = [version for version in sorted(path.parent.iterdir()) if re.match(r'v[\d]', version.name)] # pourquoi iterdir (car on est déjà dans la verison) du coup iterdir nous renvoi le fichier ?
 
     print("PATH exist:", versions )
     if not versions:
-        print("pas de version")
+        #print("pas de version")
         # Get dataset path.
         dataset = dataset_path(path)
-        print("dataset", dataset)
+        #print("dataset", dataset)
         # Check dataset path exists.
         if dataset and dataset.exists():
             # Sort versions folders.
             versions = [version for version in sorted(dataset.parent.iterdir()) if re.match(r'^v[\d]+$', version.name)]
-            print("VERSION",versions)
+            #print("VERSION",versions)
     return versions
 
 
@@ -368,9 +372,11 @@ def with_file_folder(path):
 
             # Appends files subdirectories depending on the DRS fashion.
             # CMIP5 like DRS has a file dataset part.
-            if get_drs_down(path):
+            a=get_drs_down(path).name
+            #drsd = get_drs_down(path)
+            if get_drs_down(path).name:
                 # Get all drs parts.
-                target.append('{}_{}'.format(get_variable(path), get_version(path, integer=True)))
+                target.append('{}_{}'.format(get_variable(path), get_version(path, integer=True))) # LoLo pour CMIP5 je crois ? variable après version
             else:
                 target.append('d{}'.format(get_version(path, integer=True)))
 

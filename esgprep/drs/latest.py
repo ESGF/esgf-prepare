@@ -71,8 +71,9 @@ class Process(object):
             latest_version = get_version(versions[-1])
 
             # Add the "latest" symlink node.
-            nodes = current_path.parts
+            nodes = list(current_path.parts[:-1])
             nodes.append('latest')
+
             self.tree.create_leaf(nodes=nodes,
                                   label='{}{}{}'.format('latest', LINK_SEPARATOR, latest_version),
                                   src=latest_version,

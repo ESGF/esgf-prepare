@@ -70,6 +70,11 @@ class Process(object):
             current_attrs['filename'] = source.name
             # Add dataset-version to attributes.
             current_attrs['dataset-version'] = self.version
+            # Lo : Add member_id to attributes
+            if current_attrs['sub_experiment_id'] == "none":
+                current_attrs['member_id'] = current_attrs["variant_label"]
+            else:
+                current_attrs['member_id'] = current_attrs['sub_experiment_id'] + "-" + current_attrs["variant_label"]
 
             # Instantiate file as no duplicate.
             is_duplicate = False
@@ -132,9 +137,11 @@ class Process(object):
             if not is_duplicate:
 
                 # Add the current file to the "vYYYYMMDD" folder.
-                src = ['..'] * len(get_drs_down(current_path).parts)
+                src = ['..'] * (1+len(get_drs_down(current_path).parts)) # Lolo ajout [".."] au départ ..
                 src.append('files')
+                wff = with_file_folder(current_path)
                 src += get_drs_down(with_file_folder(current_path)).parts
+                src.append(current_path.name) #Lolo Test to add filename at the end of the relative path reconstructed
                 self.tree.create_leaf(nodes=current_path.parts,
                                       label='{}{}{}'.format(current_path.name, LINK_SEPARATOR, os.path.join(*src)),
                                       src=os.path.join(*src),
@@ -152,7 +159,7 @@ class Process(object):
                 # Add the current file to the "files" folder.
                 self.tree.create_leaf(nodes=with_file_folder(current_path).parts,
                                       label=current_path.name,
-                                      src=current_path,
+                                      src=source, # Lolo Change current_path to source
                                       mode=self.mode)
 
                 # If latest file version exist and --upgrade-from-latest submitted.

@@ -53,7 +53,7 @@ class Process(object):
         """
         # Escape in case of error.
         try:
-
+            print("SOURCE : ",source)
             # Convert dataset identifier into directory_structure.
             if isinstance(source, Dataset):
                 current_path = directory_structure(source)
@@ -72,7 +72,9 @@ class Process(object):
             versions = get_versions(current_path)
 
             # Keep only the current, latest and next versions of the file.
-            current_idx = versions.index(current_path)
+            if not current_path in versions :
+                return False
+            current_idx = versions.index(current_path) # crashes here if current_path is a file cause the are only folder in versions
             versions = versions[(current_idx - 1 if current_idx - 1 >= 0 else 0): current_idx + 2]
 
             # Get latest version.
@@ -92,32 +94,68 @@ class Process(object):
 
                         # Check if targets of previous and next versions exists and are the same.
                         if any(v == current_path for v in versions) or len(versions) == 1:
+                            # Remove the current file from the "files" folder. ORIGINAL
+                            # self.tree.create_leaf(nodes=with_file_folder(current_path).parts,
+                            #                      label=path.name,
+                            #                      mode=self.mode)
 
                             # Remove the current file from the "files" folder.
-                            self.tree.create_leaf(nodes=with_file_folder(current_path).parts,
-                                                  label=current_path.name,
+                            self.tree.create_leaf(nodes=with_file_folder(file).parts,
+                                                  label=file.name,
+                                                  src=None,
                                                   mode=self.mode)
 
+                            # self.tree.create_leaf(nodes=with_file_folder(file).parts,
+                            #                       # Lolo Change current_path par file
+                            #                       label=file.name,  # Lolo Change current_path par file
+                            #                       mode=self.mode)
                     # Remove the current file symlink from the "vYYYYMMDD" folder in any case.
-                    src = ['..'] * len(get_drs_down(current_path).parts)
+                    src = ['..']+['..'] * len(get_drs_down(current_path).parts)
                     src.append('files')
-                    src += get_drs_down(with_file_folder(current_path)).parts
-                    self.tree.create_leaf(nodes=current_path.parts,
-                                          label='{}{}{}'.format(current_path.name, LINK_SEPARATOR, os.path.join(*src)),
+                    src += get_drs_down(with_file_folder(file)).parts
+                    self.tree.create_leaf(nodes=file.parts,
+                                          label='{}{}{}'.format(file.name, LINK_SEPARATOR, os.path.join(*src)),
+                                          src=None,
                                           mode=self.mode,
                                           force=True)
 
+                    # Record entry for list() and uniqueness checkup.
+                    # En regardant make :
+                    """
+                    record = {  # s'src': source,
+                        'dst': file,
+                        'is_duplicate': False
+                    }
+                    #####
+                    key = str(get_drs_up(file).parent)  # Lolo Change file to source
+                    if key in self.tree.paths:
+                        self.tree.paths[key]['files'].append(record)  # Lolo Change file to record
+                        assert latest_version == self.tree.paths[key]['latest']
+                        assert version == self.tree.paths[key]['upgrade']
+                    else:
+                        self.tree.paths[key] = {}
+                        self.tree.paths[key]['files'] = [record]  # Lolo Change file to record
+                        self.tree.paths[key]['latest'] = 'Initial' if len(versions) == 1 else get_version(versions[-1])
+                        # self.tree.paths[key]['upgrade'] = version
+                    """
+
             # Record entry for list() and uniqueness checkup.
-            key = str(get_drs_up(current_path).parent)
+            # En regardant make :
+            record = {#s'src': source,
+                      'dst': current_path,
+                      'is_duplicate': False
+                      }
+            #####
+            key = str(get_drs_up(source).parent) # Lolo Change file to source
             if key in self.tree.paths:
-                self.tree.paths[key]['files'].append(current_path)
+                self.tree.paths[key]['files'].append(record) # Lolo Change file to record
                 assert latest_version == self.tree.paths[key]['latest']
                 assert version == self.tree.paths[key]['upgrade']
             else:
                 self.tree.paths[key] = {}
-                self.tree.paths[key]['files'] = [current_path]
+                self.tree.paths[key]['files'] = [record] # Lolo Change file to record
                 self.tree.paths[key]['latest'] = 'Initial' if len(versions) == 1 else get_version(versions[-1])
-                self.tree.paths[key]['upgrade'] = version
+                #self.tree.paths[key]['upgrade'] = version
 
             # Print info.
             msg = 'DRS Path = {}'.format(get_drs_up(current_path))

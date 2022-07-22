@@ -8,7 +8,7 @@
 .. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.fr>
 
 """
-
+import json
 from esgprep import _STDOUT
 from esgprep._contexts.multiprocessing import Runner
 from esgprep._utils import load, store
@@ -117,16 +117,22 @@ def run(args):
         if any(results):
             # Check upgrade uniqueness
             ctx.tree.check_uniqueness()
-
-            #             # (vérifier si les dossier "dversion" ou 'var_version" correspondant à la version à supprimer sont vide.
-            #             # si empty supprimer le dossier.)
-            #             # faire equivalent rmdir dans dataset_path() pour supprimer les dossiers vides
-            #             # assurer qu'il n'y a pas de symlink mort.
-            # ctx.tree.rmdir()
-
             # Apply tree action
             ctx.tree.get_display_lengths()
             getattr(ctx.tree, ctx.action)(quiet=quiet)
+
+            # (vérifier si les dossier "dversion" ou 'var_version" correspondant à la version à supprimer sont vide.
+            #             # si empty supprimer le dossier.)
+            #             # faire equivalent rmdir dans dataset_path() pour supprimer les dossiers vides
+            #             # assurer qu'il n'y a pas de symlink mort.
+
+            ctx.tree.rmdir() # remove empty folder # seems to work
+
+
+            #ctx.tree.show(line_type='ascii-ex',level=0)
+            #print(json.dumps(json.loads(ctx.tree.to_json()), indent=2))
+            #print()
+
 
     # Evaluate errors & exit with corresponding return code.
     if ctx.errors.value > 0:

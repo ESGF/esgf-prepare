@@ -20,7 +20,8 @@ LINK_SEPARATOR = ' --> '
 UNIX_COMMAND_LABEL = {'symlink': 'ln -s',
                       'link': 'ln',
                       'copy': 'cp',
-                      'move': 'mv'}
+                      'move': 'mv',
+                      'remove': 'rm'} # Lolo Change add 'remove' : 'rm'
 
 UNIX_COMMAND = {'symlink': symlink,
                 'link': link,

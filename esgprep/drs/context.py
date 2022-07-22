@@ -36,7 +36,7 @@ class ProcessingContext(MultiprocessingContext):
         self.set_values = self.set('set_values', dict())
 
         # Update DRS facet value mapping with version.
-        self.set_values.update({'dataset-version': self.version})
+        self.set_values.update({'version': self.version}) # Lo change dataset-version to version
 
         # Set DRS facet key mapping.
         self.set_keys = self.set('set_keys', dict())

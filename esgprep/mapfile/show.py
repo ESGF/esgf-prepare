@@ -50,10 +50,10 @@ class Process(object):
 
             else:
                 from esgprep._utils.dataset import get_terms, dataset_id, get_project
-            print("COUCOUCOUCOUCCOUCOU")
+            #print("COUCOUCOUCOUCCOUCOU")
             # Build dataset identifier.
             # DRS terms are validated during this step.
-            print("SOURCE:",source)
+            #print("SOURCE:",source)
             identifier = dataset_id(source)
 
             # Check dataset identifier is not None.
@@ -68,10 +68,10 @@ class Process(object):
             if re.match(r'\.latest|\.v[0-9]*$', identifier):
                 version = identifier.split('.')[-1]
                 dataset = '.'.join(*identifier.split('.')[:-1])
-            print("DATASET : ",dataset," VERSION : ",version)
+            #print("DATASET : ",dataset," VERSION : ",version)
             # Build mapfile name.
             outfile = build_mapfile_name(self.mapfile_name, dataset, version)
-            print("OutFile = ",outfile)
+            #print("OutFile = ",outfile)
             # Build mapfile directory.
             outdir = Path(self.outdir).resolve(strict=False)
             try:

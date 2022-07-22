@@ -31,7 +31,7 @@ SHELL_COLORS = {'red': 1,
 GITHUB_API_PARAMETER = '?{}={}'
 
 # DRS version pattern
-VERSION_PATTERN = '^(v[\d]+|latest)$'
+VERSION_PATTERN = '(v\d{8})|(latest)'# test changement ça  '^(v[\d]+|latest)$'
 
 # Spinner frames
 FRAMES = ["[-----<]",
