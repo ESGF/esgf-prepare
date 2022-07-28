@@ -119,6 +119,7 @@ def run(args):
             ctx.tree.check_uniqueness()
             # Apply tree action
             ctx.tree.get_display_lengths()
+
             getattr(ctx.tree, ctx.action)(quiet=quiet)
 
             # (vérifier si les dossier "dversion" ou 'var_version" correspondant à la version à supprimer sont vide.

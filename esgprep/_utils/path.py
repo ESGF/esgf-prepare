@@ -272,7 +272,7 @@ def get_versions(path):
         #if not versions:
         #    versions = [version for version in sorted(path.parent.iterdir()) if re.match(r'v[\d]', version.name)] # pourquoi iterdir (car on est déjà dans la verison) du coup iterdir nous renvoi le fichier ?
 
-    print("PATH exist:", versions )
+    #print("PATH exist:", versions )
     if not versions:
         #print("pas de version")
         # Get dataset path.

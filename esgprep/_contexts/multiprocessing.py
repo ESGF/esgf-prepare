@@ -14,12 +14,12 @@ from configparser import NoOptionError, NoSectionError
 from hashlib import algorithms_available as checksum_types
 from importlib import import_module
 from multiprocessing import Lock, Pool
-from multiprocessing.managers import SyncManager
+from multiprocessing.managers import SyncManager, NamespaceProxy
 
 import pyessv
 from esgprep._contexts import BaseContext
 from esgprep._exceptions import InvalidChecksumType, MissingCVdata
-#from esgprep._handlers.drs_tree import DRSTree
+from esgprep._handlers.drs_tree import DRSTree
 from esgprep._utils.print import *
 
 
@@ -27,7 +27,30 @@ class Manager(SyncManager):
     pass
 
 
-#Manager.register('DRSTree', DRSTree)
+class ManagerProxy(NamespaceProxy):
+    # We need to expose the same __dunder__ methods as NamespaceProxy,
+    # in addition to the b method.
+    _exposed_ = ('__getattribute__', '__setattr__', '__delattr__', 'get_display_lengths', 'add_path', 'append_path', 'create_leaf')
+
+    def get_display_lengths(self):
+        callmethod = object.__getattribute__(self, '_callmethod')
+        return callmethod('get_display_lengths')
+
+    def add_path(self, key, value):
+        callmethod = object.__getattribute__(self, '_callmethod')
+        return callmethod('add_path', args=(key, value,))
+
+    def append_path(self, key, what, value):
+        callmethod = object.__getattribute__(self, '_callmethod')
+        return callmethod('append_path', args=(key, what, value,))
+
+    def create_leaf(self, nodes, label, src, mode, force=False):
+        callmethod = object.__getattribute__(self, '_callmethod')
+        return callmethod('create_leaf', args=(nodes, label, src, mode, force,))
+
+
+
+Manager.register('DRSTree', DRSTree, ManagerProxy)
 
 
 class MultiprocessingContext(BaseContext):
@@ -173,7 +196,7 @@ class MultiprocessingContext(BaseContext):
         checksum_type = 'sha256'
 
         # Get checksum type from configuration.
-        #if 'checksum' in self.cfg.defaults():
+        # if 'checksum' in self.cfg.defaults():
         #    checksum_type = self.cfg.defaults()['checksum'].split('|')[1].strip().lower()
 
         # Verify checksum type is valid.
@@ -213,7 +236,7 @@ class Runner(object):
         os._exit(1)
 
     def run(self, sources, ctx):
-        print("Dans multiproc f run: sources:",sources)
+        print("Dans multiproc f run: sources:", sources)
         # Instantiate signal handler.
         sig_handler = signal.signal(signal.SIGTERM, self._handle_sigterm)
 

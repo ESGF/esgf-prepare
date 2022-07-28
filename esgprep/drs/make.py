@@ -212,13 +212,18 @@ class Process(object):
                       'is_duplicate': is_duplicate}
             key = str(get_drs_up(current_path).parent)
             if key in self.tree.paths:
-                self.tree.paths[key]['files'].append(record)
+                self.tree.append_path(key, "files", record)
+                #self.tree.paths[key]['files'].append(record)
                 assert latest_version == self.tree.paths[key]['latest']
             else:
-                self.tree.paths[key] = {}
-                self.tree.paths[key]['files'] = [record]
-                self.tree.paths[key]['latest'] = latest_version
-                self.tree.paths[key]['upgrade'] = self.version
+                infos = {"files": [record], "latest": latest_version, "upgrade": self.version}
+                self.tree.add_path(key, infos)
+                test = key
+                # Lolo Change into add_path method to set instance variable (pb for shared DRSTree between process)
+                #self.tree.paths[key] = {}
+                #self.tree.paths[key]['files'] = [record]
+                #self.tree.paths[key]['latest'] = latest_version
+                #self.tree.paths[key]['upgrade'] = self.version
 
             # Print info.
             msg = 'DRS Path = {}'.format(get_drs_up(current_path))

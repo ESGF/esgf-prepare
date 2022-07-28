@@ -72,8 +72,8 @@ class DRSLeaf(object):
         # Make upgrade depending on the migration mode.
         line = UNIX_COMMAND_LABEL[self.mode]
         if self.src:
-            line += ' ' + str(self.src) # Lolo change add str(Posix)
-        line += ' ' + str(self.dst) # Lolo change str(Posix)
+            line += ' ' + str(self.src)  # Lolo change add str(Posix)
+        line += ' ' + str(self.dst)  # Lolo change str(Posix)
         print_cmd(line, quiet, todo_only)
         if not todo_only:
             if self.src:
@@ -150,7 +150,7 @@ class DRSTree(Tree):
 
     """
 
-    def __init__(self, root=None, mode=None, outfile=None): # Lolo Change version=Node en 2eme argument remove
+    def __init__(self, root=None, mode=None, outfile=None):  # Lolo Change version=Node en 2eme argument remove
 
         # Retrieve original class init
         Tree.__init__(self)
@@ -176,15 +176,26 @@ class DRSTree(Tree):
         # Dataset hash record.
         self.hash = dict()
 
+    def add_path(self, key: str, value: dict):
+        self.paths[key] = value
+
+    def append_path(self, key: str, what: str, value: dict):
+        self.paths[key][what].append(value)
+
     def get_display_lengths(self):
         """
         Gets the string lengths for comfort display of "list" action.
 
         """
+        #print("On popule la liste")
         self.d_lengths = [50, 20, 20, 16, 16]
+        #print(" la liste", self.d_lengths.__repr__())
         if self.paths:
             self.d_lengths[0] = max([len(i) for i in self.paths.keys()])
         self.d_lengths.append(sum(self.d_lengths) + 2)
+        #print(repr(self))
+        #print("ctx ref", type(self), self.__repr__())
+        #print(" la liste", self.d_lengths)
 
     def create_leaf(self, nodes, label, src, mode, force=False):
         """
@@ -264,17 +275,19 @@ class DRSTree(Tree):
             if latest_version:
 
                 # Get the list of filenames from the incoming dataset.
-                if "files" in infos.keys(): # Lolo Change entire line cause for remove there is no src ...
+                if "files" in infos.keys():  # Lolo Change entire line cause for remove there is no src ...
 
-                    filenames = [file['src'].name for file in infos['files'] if "src" in file.keys()] # Lolo Change :  if "src" in file.keys()
-                    #filenames = [file for file in infos['files']  ]  # Lolo Change :  if "src" in file.keys()
+                    filenames = [file['src'].name for file in infos['files'] if
+                                 "src" in file.keys()]  # Lolo Change :  if "src" in file.keys()
+                    # filenames = [file for file in infos['files']  ]  # Lolo Change :  if "src" in file.keys()
 
                 # Get the list of duplicate status from the incoming dataset.
                 duplicates = [file['is_duplicate'] for file in infos['files']]
 
                 # Get the list of filenames from the latest existing version.
                 latest_filenames = list()
-                for _, _, filenames in os.walk(Path(self.drs_root or '', dataset, latest_version)): # Lolo change or '' pour eviter error avec remove
+                for _, _, filenames in os.walk(Path(self.drs_root or '', dataset,
+                                                    latest_version)):  # Lolo change or '' pour eviter error avec remove
                     latest_filenames += filenames
 
                 # An upgrade version is different if it contains at least one file with is_duplicate = False
@@ -294,11 +307,12 @@ class DRSTree(Tree):
             # c = node.data
             # d = c.dst
             # m_path = Path(node["data"]["dst"])
+            #print(str_path)
             if Path(str_path).is_dir():
                 if len(os.listdir(str(str_path))) == 0:
                     print("remove empty dir ", str_path)
                     os.rmdir(str_path)
-
+        """ manque le latest ? il n'y a pas de noeud latest dans le DRSTree ? """
 
         """
         for dataset, infos in self.paths.items():
@@ -318,12 +332,12 @@ class DRSTree(Tree):
                         except OSError:
                             break
             """
-            #os.rmdir(infos['current']) # Lolo There is not infos["current"] ??? Why ???
-            #for parent in infos['current'].parents:
-            #    try:
-            #        os.rmdir(parent)
-            #    except OSError:
-            #        break
+        # os.rmdir(infos['current']) # Lolo There is not infos["current"] ??? Why ???
+        # for parent in infos['current'].parents:
+        #    try:
+        #        os.rmdir(parent)
+        #    except OSError:
+        #        break
 
     def list(self, **kwargs):
         """
@@ -351,11 +365,11 @@ class DRSTree(Tree):
             pub_lvl = dataset
             nfiles = len(infos['files'])
             latest_version = infos['latest']
-            if "upgrade" in infos.keys(): # Lolo Change
+            if "upgrade" in infos.keys():  # Lolo Change
                 upgrade_version = infos['upgrade']
             else:
-                upgrade_version =""
-            if not self.drs_mode == 'remove': # Lolo Change entire line
+                upgrade_version = ""
+            if not self.drs_mode == 'remove':  # Lolo Change entire line
                 total_size = size(sum([file['src'].stat().st_size for file in infos['files']]))
             body = pub_lvl.ljust(self.d_lengths[0])
             body += latest_version.center(self.d_lengths[1])
@@ -411,6 +425,10 @@ class DRSTree(Tree):
                 leaf.data.migration_granted(self.drs_root)
 
         # Header.
+        print(self.paths)
+        #print("ctx ref", type(self),self.__repr__())
+        #print(" la liste", self.d_lengths.__repr__())
+        #print("COUCOU : ",self.d_lengths)
         print(''.center(self.d_lengths[-1], '='))
         if todo_only:
             print('Unix command-lines (DRY-RUN)'.center(self.d_lengths[-1]))

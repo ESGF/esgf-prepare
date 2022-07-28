@@ -148,14 +148,20 @@ class Process(object):
             #####
             key = str(get_drs_up(source).parent) # Lolo Change file to source
             if key in self.tree.paths:
-                self.tree.paths[key]['files'].append(record) # Lolo Change file to record
+                self.tree.append_path(key, "files", record)
+                #self.tree.paths[key]['files'].append(record) # Lolo Change file to record
                 assert latest_version == self.tree.paths[key]['latest']
                 assert version == self.tree.paths[key]['upgrade']
             else:
-                self.tree.paths[key] = {}
-                self.tree.paths[key]['files'] = [record] # Lolo Change file to record
-                self.tree.paths[key]['latest'] = 'Initial' if len(versions) == 1 else get_version(versions[-1])
-                #self.tree.paths[key]['upgrade'] = version
+                infos = {"files": [record], "latest": 'Initial' if len(versions) == 1 else get_version(versions[-1])}
+                self.tree.add_path(key, infos)
+
+                # Lolo Change into add_path method to set instance variable (pb for shared DRSTree between process)
+
+                #self.tree.paths[key] = {}
+                #self.tree.paths[key]['files'] = [record] # Lolo Change file to record
+                #self.tree.paths[key]['latest'] = 'Initial' if len(versions) == 1 else get_version(versions[-1])
+                ##self.tree.paths[key]['upgrade'] = version
 
             # Print info.
             msg = 'DRS Path = {}'.format(get_drs_up(current_path))
