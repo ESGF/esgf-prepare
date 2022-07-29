@@ -20,9 +20,9 @@ class ReadAccessDenied(Exception):
 
     def __init__(self, user, path):
         self.msg = "Read permission required."
-        self.msg += "\n<user: '{}'>".format(user)
-        self.msg += "\n<path: '{}'>".format(path)
-        self.msg += "\n<permissions: '{}'>".format(oct(os.stat(path).st_mode)[-4:])
+        self.msg += f"\n<user: '{user}'>"
+        self.msg += f"\n<path: '{path}'>"
+        self.msg += f"\n<permissions: '{oct(os.stat(path).st_mode)[-4:]}'>"
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -34,9 +34,9 @@ class WriteAccessDenied(Exception):
 
     def __init__(self, user, path):
         self.msg = "Write permission required."
-        self.msg += "\n<user: '{}'>".format(user)
-        self.msg += "\n<path: '{}'>".format(path)
-        self.msg += "\n<permissions: '{}'>".format(oct(os.stat(path).st_mode)[-4:])
+        self.msg += f"\n<user: '{user}'>"
+        self.msg += f"\n<path: '{path}'>"
+        self.msg += f"\n<permissions: '{oct(os.stat(path).st_mode)[-4:]}'>"
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -48,9 +48,9 @@ class CrossMigrationDenied(Exception):
 
     def __init__(self, src, dst, mode):
         self.msg = "Migration on cross-device disallowed."
-        self.msg += "\n<src: '{}'>".format(src)
-        self.msg += "\n<dst: '{}'>".format(dst)
-        self.msg += "\n<mode: '{}'>".format(mode)
+        self.msg += f"\n<src: '{src}'>"
+        self.msg += f"\n<dst: '{dst}'>"
+        self.msg += f"\n<mode: '{mode}'>"
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -62,8 +62,8 @@ class MigrationDenied(Exception):
 
     def __init__(self, src, dst, mode, reason):
         self.msg = "Migration disallowed."
-        self.msg += "\n<src: '{}'>".format(src)
-        self.msg += "\n<dst: '{}'>".format(dst)
-        self.msg += "\n<mode: '{}'>".format(mode)
-        self.msg += "\n<reason: '{}'>".format(reason)
+        self.msg += f"\n<src: '{src}'>"
+        self.msg += f"\n<dst: '{dst}'>"
+        self.msg += f"\n<mode: '{mode}'>"
+        self.msg += f"\n<reason: '{reason}'>"
         super(self.__class__, self).__init__(self.msg)

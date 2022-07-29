@@ -117,7 +117,7 @@ class ProcessingContext(MultiprocessingContext):
                 elif self.version:
                     # Pick up the specified version only (--version flag) by adding "/v{version}" inclusion
                     # If --latest-symlink, --version is set to "latest"
-                    self.sources.PathFilter.add(name='version_filter', regex='/{}'.format(self.version))
+                    self.sources.PathFilter.add(name='version_filter', regex=f'/{self.version}')
                 else:
                     # Default behavior: pick up the latest version among encountered versions.
                     self.sources.PathFilter.add(name='version_filter', regex='/latest', inclusive=False)
@@ -155,7 +155,7 @@ class ProcessingContext(MultiprocessingContext):
             if self.overwrite_commands_file:
                 os.remove(self.commands_file)
             else:
-                msg = 'Command file "{}" already exists --'.format(self.commands_file)
+                msg = f'Command file "{self.commands_file}" already exists --'
                 msg += ' Please use "--overwrite-commands-file" option.'
                 Print.error(COLORS.FAIL(msg))
                 sys.exit(1)

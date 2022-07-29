@@ -43,7 +43,7 @@ CONTROLLED_ARGS = ['directory',
                    'ignore_from_incoming']
 
 # Tree context file
-TREE_FILE = '/tmp/DRSTree_{}.pkl'.format(environ['USER'])
+TREE_FILE = f"/tmp/DRSTree_{environ['USER']}.pkl"
 
 # PID prefixes
 PID_PREFIXES = {'cmip6': 'hdl:21.14100',

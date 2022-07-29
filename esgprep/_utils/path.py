@@ -34,11 +34,11 @@ def get_project(path):
         return pyessv.load(scopes[project.pop()])
 
     elif len(project) == 0:
-        Print.debug('No project code found: {}'.format(path))
+        Print.debug(f'No project code found: {path}')
         return None
 
     else:
-        Print.debug('Unable to match one project code: {}'.format(path))
+        Print.debug(f'Unable to match one project code: {path}')
         return None
 
 
@@ -218,7 +218,7 @@ def get_terms(path):
 
     # Get DRS part of the path.
     drs = get_drs(path)
-    print("mDRS",drs)
+    #print("mDRS",drs)
 
     # Validate each drs items against CV.
     try:
@@ -227,7 +227,7 @@ def get_terms(path):
     # Catch parsing errors.
     except (TemplateParsingError, TemplateValueError) as error:
         #print("OLAAAAAAA")
-        Print.debug('Invalid DRS path -- {}'.format(error))
+        Print.debug(f'Invalid DRS path -- {error}')
 
     return terms
 
@@ -376,9 +376,9 @@ def with_file_folder(path):
             #drsd = get_drs_down(path)
             if get_drs_down(path).name:
                 # Get all drs parts.
-                target.append('{}_{}'.format(get_variable(path), get_version(path, integer=True))) # LoLo pour CMIP5 je crois ? variable après version
+                target.append(f'{get_variable(path)}_{ get_version(path, integer=True)}') # LoLo pour CMIP5 je crois ? variable après version
             else:
-                target.append('d{}'.format(get_version(path, integer=True)))
+                target.append(f'd{get_version(path, integer=True)}')
 
             # Add filename.
             target.append(path.name)

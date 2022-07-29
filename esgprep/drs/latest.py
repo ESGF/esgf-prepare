@@ -61,7 +61,7 @@ class Process(object):
                 current_path = source
 
             # Validate directory structure.
-            assert get_terms(source), 'Invalid path {}'.format(source)
+            assert get_terms(source), f'Invalid path {source}'
 
             # Get all existing version.
             versions = get_versions(current_path)

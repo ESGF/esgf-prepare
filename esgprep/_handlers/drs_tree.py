@@ -56,7 +56,7 @@ class DRSLeaf(object):
             if not todo_only:
                 try:
                     os.makedirs(os.path.dirname(self.dst))
-                    line = '{} {}'.format('mkdir -p', os.path.dirname(self.dst))
+                    line = f"{'mkdir -p'} {os.path.dirname(self.dst)}"
                     print_cmd(line, quiet, todo_only)
 
                 except OSError:
@@ -64,7 +64,7 @@ class DRSLeaf(object):
 
         # Unlink symbolic link if already exists.
         if self.mode == 'symlink' and os.path.lexists(self.dst):
-            line = '{} {}'.format('rm -f', self.dst)
+            line = f"{'rm -f'} {self.dst}"
             print_cmd(line, quiet, todo_only)
             if not todo_only:
                 os.remove(self.dst)
@@ -365,6 +365,7 @@ class DRSTree(Tree):
             pub_lvl = dataset
             nfiles = len(infos['files'])
             latest_version = infos['latest']
+            total_size=0
             if "upgrade" in infos.keys():  # Lolo Change
                 upgrade_version = infos['upgrade']
             else:
@@ -442,7 +443,7 @@ class DRSTree(Tree):
 
         # Remove duplicates.
         for duplicate in self.duplicates:
-            line = '{} {}'.format('rm -f', duplicate)
+            line = f"{'rm -f'} {duplicate}"
             print_cmd(line, quiet, todo_only)
             if not todo_only:
                 # Check src access.

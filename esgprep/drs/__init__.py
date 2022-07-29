@@ -45,9 +45,10 @@ def do_scanning(ctx):
         # Ensure that processing context is similar to previous run.
         for k in CONTROLLED_ARGS:
             if getattr(ctx, k) != old_args[k]:
-                msg = '"{}" argument has changed: "{}" instead of "{}" -- '.format(k,
-                                                                                   getattr(ctx, k),
-                                                                                   old_args[k])
+                # msg = '"{}" argument has changed: "{}" instead of "{}" -- '.format(k,
+                #                                                                    getattr(ctx, k),
+                #                                                                    old_args[k])
+                msg = f'"{k}" argument has changed: "{getattr(ctx, k)}" instead of "{old_args[k]}" -- '
                 msg += 'Rescanning files.'
                 Print.warning(msg)
                 return True
@@ -80,16 +81,16 @@ def run(args):
             results = r.run(ctx.sources, ctx)
 
             # Final print.
-            msg = '\r{}'.format(' ' * ctx.msg_length.value)
+            msg = f"\r{' ' * ctx.msg_length.value}"
             Print.progress(msg)
-            msg = '\r{} {} {}\n'.format(COLORS.OKBLUE(SPINNER_DESC), FINAL_FRAME, FINAL_STATUS)
+            msg = f"\r{COLORS.OKBLUE(SPINNER_DESC)} {FINAL_FRAME} {FINAL_STATUS}\n"
             Print.progress(msg)
 
         # Load cached DRS tree.
         else:
             reader = load(TREE_FILE)
             msg = 'Skip incoming files scan (use "--rescan" to force it) -- '
-            msg += 'Using cached DRS tree from {}'.format(TREE_FILE)
+            msg += f'Using cached DRS tree from {TREE_FILE}'
             Print.warning(msg)
             _ = next(reader)
             ctx.tree = next(reader)
@@ -111,7 +112,7 @@ def run(args):
         store(TREE_FILE, data=[{key: ctx.__getattribute__(key) for key in CONTROLLED_ARGS},
                                ctx.tree,
                                results])
-        Print.info('DRS tree recorded for next usage onto {}.'.format(TREE_FILE))
+        Print.info(f'DRS tree recorded for next usage onto {TREE_FILE}.')
 
         # Evaluate the list of results triggering action.
         if any(results):
@@ -127,13 +128,12 @@ def run(args):
             #             # faire equivalent rmdir dans dataset_path() pour supprimer les dossiers vides
             #             # assurer qu'il n'y a pas de symlink mort.
 
-            ctx.tree.rmdir() # remove empty folder # seems to work
+            # remove empty folder # seems to work
+            ctx.tree.rmdir()
 
-
-            #ctx.tree.show(line_type='ascii-ex',level=0)
-            #print(json.dumps(json.loads(ctx.tree.to_json()), indent=2))
-            #print()
-
+            # ctx.tree.show(line_type='ascii-ex',level=0)
+            # print(json.dumps(json.loads(ctx.tree.to_json()), indent=2))
+            # print()
 
     # Evaluate errors & exit with corresponding return code.
     if ctx.errors.value > 0:

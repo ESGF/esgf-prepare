@@ -44,7 +44,7 @@ class COLOR:
         assert isinstance(self.color, int)
 
         # Initialized string with selected color.
-        self.colorstr = '\033[{}m'.format(str(self.color))
+        self.colorstr = f'\033[{str(self.color)}m'
 
     def bold(self, msg=None):
 
@@ -203,7 +203,7 @@ class Print(object):
         if not Print.LOG_TO_STDOUT:
 
             # Build logfile name.
-            logname = '{}-{}'.format(Print.CMD, datetime.now().strftime("%Y%m%d-%H%M%S"))
+            logname = f'{Print.CMD}-{datetime.now().strftime("%Y%m%d-%H%M%S")}'
             if Print.LOG:
                 logdir = Print.LOG
 

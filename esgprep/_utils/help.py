@@ -24,14 +24,7 @@ URL = COLOR('gray').italic("""See full documentation and references at http://es
 DEFAULT = COLOR('white').italic("""The default values are displayed next to the corresponding flags.""")
 
 PROGRAM_DESC = {
-    'fetchini': """
-{}
 
-{} Most of other ESGF tool rely on configuration files of different kinds. The "esg.<project_id>.ini" files  declare all the facets and allowed values according to the Data Reference Syntax (DRS) and the controlled vocabularies of the corresponding project. "esgfetchini" allows you to properly download and deploy those configuration files hosted on an official GitHub repository. Keep in mind that the fetched files have to be reviewed to ensure a correct configuration of your side.
-
-{}
-
-{}""".format(TITLE, INTRO, URL, DEFAULT),
     'fetchcv': """
 {}
 
@@ -40,14 +33,7 @@ PROGRAM_DESC = {
 {}
 
 {}""".format(TITLE, INTRO, URL, DEFAULT),
-    'fetchtables': """
-{}
 
-{} Some of ESGF quality control tools rely on tables describing the variables, their coordinates and attributes. Those tables are produced to standardize data for ESGF through the Climate Model Output Rewriter (CMOR). The CMOR tables are available for different projects. "esgfetchtables" allows you to properly download those tables hosted on an official GitHub repository. Keep in mind that the fetched files have to be reviewed to ensure a correct configuration of your side.
-
-{}
-
-{}""".format(TITLE, INTRO, URL, DEFAULT),
     'drs': """
 {}
 
@@ -92,12 +78,6 @@ VERSION_HELP = """Program version.
 
 """
 
-INI_HELP = """Initialization/configuration directory containing "esg.ini" and "esg.<project>.ini" files.
-Default is to use "$ESGINI_DIR" environment variable.
-If not set, the usual ESGF datanode directory is used (i.e., "/esg/config/esgcet/").
-
-"""
-
 CV_HELP = """Initialization directory containing the "pyessv" archive.
 Default is to use "$PYESSV_ARCHIVE_HOME" environment variable.
 If not set, the usual "pyessv" home directory is used (i.e., "$HOME/.esdoc/pyessv-archive/").
@@ -118,10 +98,7 @@ VERBOSE_HELP = """Debug mode. It disables progress bars and print verbose proces
 SUBCOMMANDS = COLOR('red')("""Subcommands""")
 
 PROJECT_HELP = {
-    'fetchini': """One or more lower-cased project name(s).
-If not, all "esg.*.ini" are fetched.
 
-""",
     'fetchcv': """One or more lower-cased project name(s).
 If not, all projects within an authority are fetched.
 

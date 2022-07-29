@@ -36,11 +36,11 @@ def fetch(url, outfile, auth, sha, keep, overwrite, backup_mode, blob=False):
         # Write content into file.
         write_content(outfile, content)
 
-        Print.success('Fetched: {} --> {}'.format(url, outfile))
+        Print.success(f'Fetched: {url} --> {outfile}')
 
     else:
 
-        Print.error('Skipped: {}'.format(url))
+        Print.error(f'Skipped: {url}')
 
 
 def gh_request_content(url, auth=None):
@@ -90,12 +90,12 @@ def backup(f, mode=None):
         if mode == 'one_version':
 
             # Add ".bkp" suffix.
-            dst = '{}.bkp'.format(f)
+            dst = f'{f}.bkp'
 
             # Rename existing file.
             os.rename(f, dst)
 
-            Print.debug('Old "{}" saved under "{}"'.format(f, dst))
+            Print.debug(f'Old "{f}" saved under "{dst}"')
 
         # "keep_versions" mode.
         elif mode == 'keep_versions':
@@ -104,8 +104,7 @@ def backup(f, mode=None):
             bkpdir = os.path.join(os.path.dirname(f), 'bkp')
 
             # Build destination file.
-            dst = os.path.join(bkpdir, '{}.{}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'),
-                                                      os.path.basename(f)))
+            dst = os.path.join(bkpdir, f"{datetime.now().strftime('%Y%m%d-%H%M%S')}.{os.path.basename(f)}")
 
             # Make backup directory.
             try:
@@ -116,7 +115,7 @@ def backup(f, mode=None):
 
                 # Move/overwrite destination file.
                 os.rename(f, dst)
-                Print.debug('Old "{}" saved under "{}"'.format(f, dst))
+                Print.debug(f'Old "{f}" saved under "{dst}"')
 
         else:
 
@@ -166,7 +165,7 @@ def do_fetching(f, remote_checksum, keep, overwrite):
 
             else:
 
-                msg = 'Local "{}" does not match version on GitHub -- '.format((os.path.basename(f)))
+                msg = f'Local "{os.path.basename(f)}" does not match version on GitHub -- '
                 msg += 'The file is either outdated or was modified.'
                 Print.debug(msg)
 
@@ -185,6 +184,6 @@ def githash(outfile):
     with open(outfile) as f:
         data = f.read()
     s = hashlib.sha1()
-    s.update('blob {}\0'.format(len(data)).encode('utf-8'))
+    s.update(f"blob {len(data).encode('utf-8')}\0")
     s.update(data.encode('utf-8'))
     return s.hexdigest()

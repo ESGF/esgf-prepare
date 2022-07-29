@@ -61,7 +61,7 @@ class Process(object):
                 return None
 
             # Print info.
-            msg = 'Scanning {}'.format(source)
+            msg = f'Scanning {source}'
             Print.debug(msg)
 
             # Get current file attributes.
@@ -131,7 +131,7 @@ class Process(object):
                         raise UnchangedTrackingID(latest_path, latest_tracking_id, current_path, current_tracking_id)
 
             # Print info.
-            Print.debug('Processing {}'.format(source))
+            Print.debug('Processing {source}')
 
             # Start DRS tree generation.
             if not is_duplicate:
@@ -143,7 +143,7 @@ class Process(object):
                 src += get_drs_down(with_file_folder(current_path)).parts
                 src.append(current_path.name) #Lolo Test to add filename at the end of the relative path reconstructed
                 self.tree.create_leaf(nodes=current_path.parts,
-                                      label='{}{}{}'.format(current_path.name, LINK_SEPARATOR, os.path.join(*src)),
+                                      label=f'{current_path.name}{LINK_SEPARATOR}{os.path.join(*src)}',
                                       src=os.path.join(*src),
                                       mode='symlink',
                                       force=True)
@@ -152,7 +152,7 @@ class Process(object):
                 nodes = list(dataset_path(current_path).parent.parts)
                 nodes.append('latest')
                 self.tree.create_leaf(nodes=nodes,
-                                      label='{}{}{}'.format('latest', LINK_SEPARATOR, self.version),
+                                      label=f"{'latest'}{LINK_SEPARATOR}{ self.version}",
                                       src=self.version,
                                       mode='symlink')
 
@@ -178,8 +178,7 @@ class Process(object):
                             if latest_name != current_path.name and latest_name not in self.ignore_from_latest:
                                 src = os.path.join(root, latest_name)
                                 self.tree.create_leaf(nodes=current_path.parent.parts.append(latest_name),
-                                                      label='{}{}{}'.format(latest_name, LINK_SEPARATOR,
-                                                                            os.readlink(src)),
+                                                      label=f'{latest_name}{LINK_SEPARATOR}{os.readlink(src)}',
                                                       src=os.readlink(src),
                                                       mode='symlink')
 
@@ -200,7 +199,7 @@ class Process(object):
                 else:
                     src = os.readlink(latest_path)
                     self.tree.create_leaf(nodes=current_path.parts,
-                                          label='{}{}{}'.format(current_path.name, LINK_SEPARATOR, src),
+                                          label=f'{current_path.name}{LINK_SEPARATOR}{src}',
                                           src=src,
                                           mode='symlink')
                     if self.mode == 'move':
@@ -226,7 +225,7 @@ class Process(object):
                 #self.tree.paths[key]['upgrade'] = self.version
 
             # Print info.
-            msg = 'DRS Path = {}'.format(get_drs_up(current_path))
+            msg = f'DRS Path = {get_drs_up(current_path)}'
             msg += ' <-- ' + current_path.name
             Print.success(msg)
 
@@ -269,13 +268,11 @@ class Process(object):
                 self.progress.value += 1
 
                 # Clear previous print.
-                msg = '\r{}'.format(' ' * self.msg_length.value)
+                msg = f"\r{' ' * self.msg_length.value}"
                 Print.progress(msg)
 
                 # Print progress bar.
-                msg = '\r{} {} {}'.format(COLORS.OKBLUE(SPINNER_DESC),
-                                          FRAMES[self.progress.value % len(FRAMES)],
-                                          source)
+                msg = f'\r{COLORS.OKBLUE(SPINNER_DESC)} {FRAMES[self.progress.value % len(FRAMES)]} {source}'
                 Print.progress(msg)
 
                 # Set new message length.

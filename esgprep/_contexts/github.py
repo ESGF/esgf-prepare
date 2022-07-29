@@ -43,7 +43,7 @@ class GitHubBaseContext(BaseContext):
 
         # Interactive prompt if username is set but not the password.
         if self.gh_user and not self.gh_password and sys.stdout.isatty():
-            msg = COLOR().bold('Github password for user {}: '.format(self.gh_user))
+            msg = COLOR().bold(f'Github password for user {self.gh_user}: ')
             self.gh_password = getpass.getpass(msg)
 
         # GitHub authentication.

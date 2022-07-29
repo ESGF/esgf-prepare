@@ -151,7 +151,7 @@ def get_project(attrs):
         return pyessv.load(scopes[project])
 
     except KeyError:
-        Print.debug('No project code found: {}'.format(attrs.keys()))
+        Print.debug(f'No project code found: {attrs.keys()}')
         return None
 
 
@@ -181,7 +181,7 @@ def get_terms(input):
         terms = {term.collection.raw_name: term for term in pyessv.parse_filename(project.name, filename, 4)}
 
     except (TemplateParsingError, TemplateValueError) as error:
-        Print.debug('Invalid filename syntax -- {}'.format(error))
+        Print.debug(f'Invalid filename syntax -- {error}')
 
     return terms
 
@@ -230,7 +230,7 @@ def get_terms_from_attrs(attrs, set_values=None, set_keys=None):
             term = attrs[key].split()[0]
 
         # Build pyessv namespace.
-        namespace = '{}:{}:{}'.format(project.namespace, collection, term)
+        namespace = f'{project.namespace}:{collection}:{term}'
 
         # Validate & store term.
         term = pyessv.parse(namespace, strictness=4)

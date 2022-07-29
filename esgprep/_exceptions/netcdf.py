@@ -18,8 +18,8 @@ class InvalidNetCDFFile(Exception):
 
     def __init__(self, path, error):
         self.msg = "Invalid or corrupted NetCDF file."
-        self.msg += "\n<file: '{}'>".format(path)
-        self.msg += "\n<error: '{}'>".format(error)
+        self.msg += f"\n<file: '{path}'>"
+        self.msg += f"\n<error: '{error}'>"
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -31,11 +31,11 @@ class NoNetCDFAttribute(Exception):
 
     def __init__(self, attribute, path=None, values=None, variable=None):
         self.msg = "Attribute not found"
-        self.msg += "\n<attribute: '{}'>".format(attribute)
+        self.msg += f"\n<attribute: '{attribute}'>"
         if variable:
-            self.msg += "\n<variable: '{}'>".format(variable)
+            self.msg += f"\n<variable: '{variable}'>"
         if path:
-            self.msg += "\n<file: '{}'>".format(path)
+            self.msg += f"\n<file: '{path}'>"
         if values:
-            self.msg += "\n<keys: '{}'>".format(values)
+            self.msg += f"\n<keys: '{values}'>"
         super(self.__class__, self).__init__(self.msg)

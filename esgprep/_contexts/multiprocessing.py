@@ -62,9 +62,6 @@ class MultiprocessingContext(BaseContext):
     def __init__(self, args):
         super(MultiprocessingContext, self).__init__(args)
 
-        # Load configuration from esg.ini file.
-        self.cfg = self.set('i')
-
         # Get sub-command line.
         self.cmd = self.set('cmd')
 
@@ -163,8 +160,8 @@ class MultiprocessingContext(BaseContext):
     def __exit__(self, exc_type, exc_val, exc_tb):
 
         # Build summary message.
-        msg = 'Number of success(es): {}\n'.format(self.success)
-        msg += 'Number of error(s): {}'.format(self.errors.value)
+        msg = f'Number of success(es): {self.success}\n'
+        msg += f'Number of error(s): {self.errors.value}'
 
         # No errors occurred.
         if not self.errors.value:
@@ -212,7 +209,7 @@ class MultiprocessingContext(BaseContext):
 
         """
         try:
-            return self.cfg.get(section='config:{}'.format(self.project), option='pyessv_authority')
+            return self.cfg.get(section=f'config:{self.project}', option='pyessv_authority')  # ODO ???
         except (AttributeError, NoSectionError, NoOptionError):
             return 'wcrp'
 
@@ -236,12 +233,12 @@ class Runner(object):
         os._exit(1)
 
     def run(self, sources, ctx):
-        print("Dans multiproc f run: sources:", sources)
+        #print("Dans multiproc f run: sources:", sources)
         # Instantiate signal handler.
         sig_handler = signal.signal(signal.SIGTERM, self._handle_sigterm)
 
         # Import the appropriate worker.
-        process = getattr(import_module('esgprep.{}.{}'.format(ctx.prog[3:], ctx.cmd)), 'Process')
+        process = getattr(import_module(f'esgprep.{ctx.prog[3:]}.{ctx.cmd}'), 'Process')
 
         # Instantiate pool of processes.
         if self.pool:

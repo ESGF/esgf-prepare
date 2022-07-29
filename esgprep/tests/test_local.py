@@ -36,7 +36,6 @@ def get_args(incoming_folder: str, project: str, root_drs: str,
              mode: str = "symlink",
              rescan: bool = True):
     return Namespace(cmd='make',
-                     i='/esg/config/esgcet',
                      log=None, debug=False,
                      action='upgrade',
                      directory=[incoming_folder],
@@ -79,7 +78,6 @@ def esgdrs_make(incoming_folder: str, project: str, root_drs: str,
 
 def esgdrs_remove(folder, version_name,proc = 1):
     arg = Namespace(cmd='remove',
-                    i='/esg/config/esgcet',
                     log=None, debug=False, action='upgrade',
                     directory=[folder],
                     project='cmip6', ignore_dir=re.compile('^.*/(files|\\.[\\w]*).*$'), include_file=['^.*\\.nc$'],
@@ -92,7 +90,6 @@ def esgdrs_remove(folder, version_name,proc = 1):
 
 def esgdrs_latest(folder):
     arg = Namespace(cmd='latest',
-                    i='/esg/config/esgcet',
                     log=None, debug=False, action='upgrade',
                     directory=[folder],
                     project='cmip6', ignore_dir=re.compile('^.*/(files|\\.[\\w]*).*$'), include_file=['^.*\\.nc$'],

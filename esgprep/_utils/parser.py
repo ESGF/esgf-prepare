@@ -28,7 +28,7 @@ class CustomArgumentParser(argparse.ArgumentParser):
     def error(self, message):
         # Change exist status in case of wrong arguments.
         self.print_usage(sys.stderr)
-        self.exit(-1, gettext('{}: error: {}\n'.format(self.prog, message)))
+        self.exit(-1, gettext(f'{self.prog}: error: {message}\n'))
 
 
 class MultilineFormatter(argparse.RawTextHelpFormatter):
@@ -76,7 +76,7 @@ class DirectoryChecker(argparse.Action):
 
         # Catch no such directory error.
         if not os.path.isdir(path):
-            msg = 'No such directory: {}'.format(path)
+            msg = f'No such directory: {path}'
             raise argparse.ArgumentTypeError(msg)
 
         # Return path.
@@ -104,19 +104,19 @@ class ConfigFileLoader(argparse.Action):
 
         # Catch no such file error.
         if not os.path.isdir(path):
-            msg = 'No such directory: {}'.format(path)
+            msg = f'No such directory: {path}'
             raise argparse.ArgumentTypeError(msg)
 
         # Check existing esg.ini
-        if 'esg.ini' not in os.listdir(path):
-            msg = '"esg.ini not found in {}'.format(path)
-            raise argparse.ArgumentTypeError(msg)
+        # if 'esg.ini' not in os.listdir(path):
+        #   msg = '"esg.ini not found in {}'.format(path)
+        #     raise argparse.ArgumentTypeError(msg)
 
         # Instantiate configuration parser.
         cfg = ConfigParser()
 
         # Load configuration.
-        cfg.read(os.path.join(path, 'esg.ini'))
+        # cfg.read(os.path.join(path, 'esg.ini'))
 
         # Return configuration parser.
         return cfg
@@ -217,15 +217,15 @@ class VersionChecker(argparse.Action):
 
                 # Catch wrong date format.
                 except ValueError:
-                    msg = 'Invalid version date: {}.'.format(str(version))
+                    msg = f'Invalid version date: {str(version)}.'
                     raise argparse.ArgumentTypeError(msg)
 
             # Return version.
-            return 'v{}'.format(version)
+            return f'v{version}'
 
         # Catch wrong version format.
         else:
-            msg = 'Invalid version type: {}.\nAvailable format is YYYYMMDD or an integer.'.format(str(version))
+            msg = f'Invalid version type: {str(version)}.\nAvailable format is YYYYMMDD or an integer.'
             raise argparse.ArgumentTypeError(msg)
 
 
@@ -239,7 +239,7 @@ def keyval_converter(pair):
 
     # Catch wrong format error.
     if not pattern.search(pair):
-        msg = 'Bad argument syntax: {}'.format(pair)
+        msg = f'Bad argument syntax: {pair}'
         raise argparse.ArgumentTypeError(msg)
 
     # Return pair as dictionary {key: value}.
@@ -257,7 +257,7 @@ def regex_validator(string):
 
     # Catch wrong regex syntax.
     except re.error:
-        msg = 'Bad regex syntax: {}'.format(string)
+        msg = f'Bad regex syntax: {string}'
         raise argparse.ArgumentTypeError(msg)
 
 

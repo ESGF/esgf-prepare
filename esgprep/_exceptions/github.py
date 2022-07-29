@@ -23,7 +23,7 @@ class GitHubException(Exception):
     def __init__(self, msg):
         self.uri = GitHubException.URI
         self.msg = msg
-        self.msg += "\n<url: '{}'>".format(self.uri)
+        self.msg += f"\n<url: '{self.uri}'>"
         super(GitHubException, self).__init__(self.msg)
 
 
@@ -51,7 +51,7 @@ class GitHubAPIRateLimit(GitHubException):
         self.msg = "GitHub API rate limit exceeded ; "
         self.msg += "submit GitHub user/password or "
         self.msg += "export GH_USER and GH_PASSWORD variables to release the rate limit."
-        self.msg += "\n<time to reset: {} hour(s) {} minute(s) {} second(s)>".format(hours, minutes, seconds)
+        self.msg += f"\n<time to reset: {hours} hour(s) {minutes} minute(s) {seconds} second(s)>"
         super(self.__class__, self).__init__(self.msg)
 
 
@@ -85,6 +85,6 @@ class GitHubReferenceNotFound(GitHubException):
 
     def __init__(self, ref, refs):
         self.msg = "GitHub reference (tag or branch) not found"
-        self.msg += "\n<ref: {}>".format(ref)
-        self.msg += "\n<available refs: {}>".format(', '.join(refs))
+        self.msg += f"\n<ref: {ref}>"
+        self.msg += f"\n<available refs: {refs}>"
         super(self.__class__, self).__init__(self.msg)

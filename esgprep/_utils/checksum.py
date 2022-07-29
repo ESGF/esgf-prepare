@@ -66,7 +66,7 @@ def get_checksum_pattern(checksum_type):
     checksum_length = len(hash_algo.hexdigest())
 
     # Return corresponding regex.
-    return re.compile('^[0-9a-f]{{{}}}$'.format(checksum_length))
+    return re.compile(f'^[0-9a-f]{{{checksum_length}}}$')
 
 
 def get_checksum(ffp, checksum_type='sha256', checksums=None):

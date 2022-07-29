@@ -37,12 +37,6 @@ def get_args():
         version='%(prog)s ({})'.format(__version__),
         help=VERSION_HELP)
     main.add_argument(
-        '-i',
-        metavar='$ESGINI_DIR',
-        action=ConfigFileLoader,
-        default=os.getenv('ESGINI_DIR', '/esg/config/esgcet'),
-        help=INI_HELP)
-    main.add_argument(
         '-l', '--log',
         metavar='CWD',
         type=str,

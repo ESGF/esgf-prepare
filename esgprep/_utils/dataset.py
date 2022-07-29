@@ -14,6 +14,7 @@ from pyessv._exceptions import TemplateParsingError, TemplateValueError
 from esgprep._utils.print import *
 import pyessv
 
+
 def get_project(dataset):
     """
     Extract project code from a Dataset object.
@@ -32,10 +33,10 @@ def get_project(dataset):
         return pyessv.load(scopes[project.pop()])
 
     elif len(project) == 0:
-        Print.debug('No project code found: {}'.format(dataset.identifier))
+        Print.debug(f'No project code found: {dataset.identifier}')
         return None
     else:
-        Print.debug('Unable to match one project code: {}'.format(dataset.identifier))
+        Print.debug(f'Unable to match one project code: {dataset.identifier}')
         return None
 
 
@@ -65,11 +66,11 @@ def get_terms(dataset):
                                                                                             dataset.identifier)}
 
         except (TemplateParsingError, TemplateValueError) as error:
-            Print.debug('Invalid dataset identifier -- {}'.format(error))
+            Print.debug(f'Invalid dataset identifier -- {error}')
 
     # Catch parsing errors.
     except TemplateValueError as error:
-        Print.debug('Invalid dataset identifier -- {}'.format(error))
+        Print.debug(f'Invalid dataset identifier -- {error}')
 
     return terms
 
@@ -93,6 +94,7 @@ def dataset_id(dataset):
         identifier = pyessv.build_dataset_identifier(project.name, set(terms.values()))
 
     return identifier
+
 
 def directory_structure(dataset):
     """

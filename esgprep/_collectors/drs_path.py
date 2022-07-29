@@ -77,7 +77,7 @@ class DRSPathCollector(Collector):
                     elif len(get_drs(path).parts) > idx and self.dataset_parent:
 
                         # yield the version directory
-                        yield dataset_path(path) # Lolo change to Path(...)
+                        yield dataset_path(path) # Lolo change to Path(...) or not
 
                     # Iterate on discovered sorted filenames.
                     for filename in sorted(filenames):

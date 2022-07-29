@@ -49,12 +49,6 @@ def get_args():
         action='help',
         help=HELP)
     parent.add_argument(
-        '-i',
-        metavar='$ESGINI_DIR',
-        action=ConfigFileLoader,
-        default=os.getenv('ESGINI_DIR', '/esg/config/esgcet'),
-        help=INI_HELP)
-    parent.add_argument(
         '-l', '--log',
         metavar='CWD',
         type=str,
