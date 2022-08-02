@@ -20,7 +20,7 @@ class TestFolder:
                              if re.search('\\d{8}', folder) is not None]
         return len(self.list_version) > 0 or files or latest
 
-    def is_there_same_number_of_files_in_d_and_v(self):
+    def is_there_same_number_of_files_in_d_and_v(self): # ODO ... ça passerra pas en cas de mise à jour partielle !
         files_dir = Path.joinpath(self.folder, "files")
         list_dversion_in_files = list(files_dir.glob("*"))  # each of d******* in files folder
         return len(self.list_version) == len(list_dversion_in_files)

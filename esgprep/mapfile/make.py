@@ -15,6 +15,7 @@ from esgprep.mapfile import build_mapfile_name, build_mapfile_entry, write
 from esgprep.mapfile.constants import SPINNER_DESC
 from esgprep._utils.print import Print, COLORS, TAGS
 
+
 class Process(object):
     """
     Child process.
@@ -70,7 +71,7 @@ class Process(object):
             version = None
 
             if re.search(r'\.latest|\.v[0-9]*$', str(identifier)):
-                version = identifier.split('.')[-1][1:] # remove "v" only for name in mapfile NOT for the mapfile name
+                version = identifier.split('.')[-1][1:]  # remove "v" only for name in mapfile NOT for the mapfile name
                 dataset = '.'.join(identifier.split('.')[:-1])
 
             # Build mapfile name.
