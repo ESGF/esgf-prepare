@@ -71,7 +71,7 @@ class Process(object):
             # Add dataset-version to attributes.
             current_attrs['dataset-version'] = self.version
             # Lo : Add member_id to attributes
-            if current_attrs['sub_experiment_id'] == "none":
+            if current_attrs['sub_experiment_id'] == "none": #ODO virer ça car c'est dépendant du projet .. rien à faire là
                 current_attrs['member_id'] = current_attrs["variant_label"]
             else:
                 current_attrs['member_id'] = current_attrs['sub_experiment_id'] + "-" + current_attrs["variant_label"]

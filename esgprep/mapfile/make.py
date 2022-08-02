@@ -29,7 +29,7 @@ class Process(object):
         """
         self.mapfile_name = ctx.mapfile_name
         self.outdir = ctx.outdir
-        self.cfg = ctx.cfg
+#        self.cfg = ctx.cfg
         self.basename = ctx.basename
         self.no_checksum = ctx.no_checksum
         self.checksums_from = ctx.checksums_from
