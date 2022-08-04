@@ -399,7 +399,7 @@ def dataset_id(path):
 
     # Get pyessv terms.
     terms = get_terms(path)
-    print("GETTERM! ",terms)
+    #print("GETTERM! ",terms)
     if terms:
         # Get project code.
         project = get_project(path)

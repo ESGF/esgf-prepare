@@ -5,5 +5,4 @@ lockfile
 pyessv
 hurry.filesize
 treelib
-esgconfigparser
 python-Levenshtein

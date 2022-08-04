@@ -79,13 +79,13 @@ class Process(object):
 
             # Build mapfile directory.
             outdir = Path(self.outdir).resolve(strict=False)
-            try:
-                outdir = outdir.joinpath(self.cfg.get(section='config:{}'.format(get_project(source)),
-                                                      option='mapfile_drs',
-                                                      vars=get_terms(source)))
-
-            except:
-                pass
+            # try:
+            #     outdir = outdir.joinpath(self.cfg.get(section='config:{}'.format(get_project(source)),
+            #                                           option='mapfile_drs',
+            #                                           vars=get_terms(source)))
+            #
+            # except:
+            #     pass
 
             # Build full mapfile path.
             outpath = outdir.joinpath(outfile)

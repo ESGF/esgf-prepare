@@ -80,7 +80,7 @@ class ProcessingContext(MultiprocessingContext):
             elif self.version:
                 # Pick up the specified version only (--version flag) by adding "/v{version}" inclusion
                 # If --latest-symlink, --version is set to "latest"
-                self.sources.PathFilter.add(name='version_filter', regex='/{}'.format(self.version))
+                self.sources.PathFilter.add(name='version_filter', regex=f'/{self.version}')
             else:
                 # Default behavior: pick up the latest version among encountered versions.
                 self.sources.PathFilter.add(name='version_filter', regex='/latest', inclusive=False)

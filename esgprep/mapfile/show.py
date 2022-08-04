@@ -28,7 +28,7 @@ class Process(object):
         """
         self.mapfile_name = ctx.mapfile_name
         self.outdir = ctx.outdir
-        self.cfg = ctx.cfg
+        #self.cfg = ctx.cfg
         self.basename = ctx.basename
         self.progress = ctx.progress
         self.msg_length = ctx.msg_length
@@ -65,22 +65,23 @@ class Process(object):
             # Identifier does not always end by a version.
             dataset = identifier
             version = None
-            if re.match(r'\.latest|\.v[0-9]*$', identifier):
-                version = identifier.split('.')[-1]
-                dataset = '.'.join(*identifier.split('.')[:-1])
+
+            if re.search(r'\.latest|\.v[0-9]*$', str(identifier)):
+                version = identifier.split('.')[-1][1:] # remove "v" only for name in mapfile NOT for the mapfile name
+                dataset = '.'.join(identifier.split('.')[:-1])
             #print("DATASET : ",dataset," VERSION : ",version)
             # Build mapfile name.
             outfile = build_mapfile_name(self.mapfile_name, dataset, version)
             #print("OutFile = ",outfile)
             # Build mapfile directory.
             outdir = Path(self.outdir).resolve(strict=False)
-            try:
-                outdir = outdir.joinpath(self.cfg.get(section='config:{}'.format(get_project(source)),
-                                                      option='mapfile_drs',
-                                                      vars=get_terms(source)))
-
-            except:
-                pass
+            # try:
+            #     outdir = outdir.joinpath(self.cfg.get(section='config:{}'.format(get_project(source)),
+            #                                           option='mapfile_drs',
+            #                                           vars=get_terms(source)))
+            #
+            # except:
+            #     pass
 
             # Build full mapfile path.
             outpath = outdir.joinpath(outfile)

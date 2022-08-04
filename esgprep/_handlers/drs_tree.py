@@ -17,29 +17,11 @@ from esgprep import _STDOUT
 from esgprep._exceptions import DuplicatedDataset
 from esgprep._exceptions.io import *
 from esgprep._utils.print import *
-#from esgprep.drs.constants import UNIX_COMMAND_LABEL,UNIX_COMMAND, LINK_SEPARATOR
+from esgprep._handlers.constants import UNIX_COMMAND_LABEL,UNIX_COMMAND, LINK_SEPARATOR
 from hurry.filesize import size
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
-# Lolo change : move this import to get rid of circular import error
-from os import link, symlink, environ, remove
-from shutil import copy2 as copy
-from shutil import move
-# Unix command
-UNIX_COMMAND_LABEL = {'symlink': 'ln -s',
-                      'link': 'ln',
-                      'copy': 'cp',
-                      'move': 'mv',
-                      'remove': 'rm'} # Lolo Change add 'remove' : 'rm'
 
-UNIX_COMMAND = {'symlink': symlink,
-                'link': link,
-                'copy': copy,
-                'move': move,
-                'remove': remove}
-
-# Symbolic link separator
-LINK_SEPARATOR = ' --> '
 
 class DRSLeaf(object):
     """

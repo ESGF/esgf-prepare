@@ -15,8 +15,7 @@ from esgprep import _STDOUT
 from esgprep._contexts.multiprocessing import Runner
 from esgprep._utils.print import *
 from esgprep.constants import FINAL_FRAME, FINAL_STATUS
-from esgprep.mapfile.constants import MAPFILE_EXTENSION, SPINNER_DESC
-from esgprep.mapfile.constants import WORKING_EXTENSION, SPINNER_DESC
+from esgprep.mapfile.constants import WORKING_EXTENSION,MAPFILE_EXTENSION, SPINNER_DESC
 from esgprep.mapfile.context import ProcessingContext
 from lockfile import LockFile
 

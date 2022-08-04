@@ -39,7 +39,7 @@ class DRSPathCollector(Collector):
                 #print("SOURCE ",source)
                 # Walk through each source.
                 for root, dirs, filenames in os.walk(str(source), followlinks=True):
-                    print(root,dirs,filenames)
+                    #print(root,dirs,filenames)
                     # Instantiate path object.
                     path = Path(root)
 

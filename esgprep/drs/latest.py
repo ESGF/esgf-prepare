@@ -13,6 +13,7 @@ from esgprep._utils.path import *
 from esgprep._utils.print import *
 from esgprep.constants import FRAMES
 from esgprep.drs.constants import *
+from esgprep._handlers.constants import LINK_SEPARATOR
 from esgprep._handlers.dataset_id import Dataset
 from esgprep._utils.dataset import directory_structure
 from esgprep._utils.path import get_terms, get_root, get_version

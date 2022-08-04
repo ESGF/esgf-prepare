@@ -290,7 +290,7 @@ def main():
 
     # Add program name as argument.
     setattr(args, 'prog', prog)
-    print(args)
+    #print(args)
     # Run program.
     run(args)
 
