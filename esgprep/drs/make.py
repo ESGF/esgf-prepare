@@ -14,7 +14,7 @@ from esgprep._utils.path import *
 from esgprep._utils.print import *
 from esgprep.constants import FRAMES
 from esgprep.drs.constants import *
-
+from esgprep._handlers.constants import LINK_SEPARATOR
 
 class Process(object):
     """
