@@ -114,7 +114,7 @@ def get_args(args=None):
         help=NO_COLOR_HELP)
 
     # Return command-line parser & program name.
-    return main.prog, main.parse_args(args)
+    return main, main.parse_args(args)
 
 
 def main(args=None):
@@ -122,11 +122,15 @@ def main(args=None):
     Run main program
 
     """
-    # Get command-line arguments
-    prog, args = get_args(args)
+    # Get command-line arguments.
+    parser, args = get_args()
+    print(args)
+    if not args.project:
+        parser.print_help()
+        return
 
     # Add program name as argument.
-    setattr(args, 'prog', prog)
+    setattr(args, 'prog', parser.prog)
 
     # Add phony command action triggering worker name.
     setattr(args, 'cmd', 'fetch')
