@@ -274,7 +274,7 @@ def get_args():
         default=False,
         help=RESCAN_HELP)
     # Return command-line parser & program name.
-    return main.prog, main.parse_args()
+    return main, main.parse_args()
 
 
 def main():
@@ -283,13 +283,14 @@ def main():
 
     """
     # Get command-line arguments.
-    prog, args = get_args()
+    parser, args = get_args()
 
-    # Set default sub-command.
-    args.cmd = 'make' if not args.cmd else args.cmd
+    if not args.cmd:
+        parser.print_help()
+        return
 
     # Add program name as argument.
-    setattr(args, 'prog', prog)
+    setattr(args, 'prog', parser.prog)
     #print(args)
     # Run program.
     run(args)
