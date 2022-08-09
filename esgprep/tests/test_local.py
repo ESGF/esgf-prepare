@@ -99,8 +99,8 @@ def esgdrs_latest(folder):
 
 
 def clean():
-    if Path(root_reconstruct + "/cmip6").exists():
-        shutil.rmtree(root_reconstruct + "/cmip6")
+    if Path(root_reconstruct + "/CMIP6").exists():
+        shutil.rmtree(root_reconstruct + "/CMIP6")
 
 
 def is_same_path_and_good_folder_structure(dataset_version_path):
@@ -112,7 +112,7 @@ def is_same_path_and_good_folder_structure(dataset_version_path):
     print("incoming dataset DRS : ", dataset_control_folder_without_root)
 
     # where does it has to be reconstruct :
-    dataset_reconstruct_folder = root_reconstruct + "/cmip6/" + dataset_control_folder_without_root
+    dataset_reconstruct_folder = root_reconstruct + "/CMIP6/" + dataset_control_folder_without_root
     print("reconstruct dataset DRS folder : ", dataset_control_folder_without_root)
     assert Path(dataset_reconstruct_folder).exists()
     print("------ GOT the same DRS path between Control and Reconstruct ---------")
@@ -264,3 +264,13 @@ def test_multiproc_remove_time():
     clean()
 
     print("AU FINAL : ",time1,time2,time3,time4)
+
+def test_latest():
+    clean()
+    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v19800101")
+    esgdrs_make(one_file_dataset_path_v2, "CMIP6", root_reconstruct, "v19810101")
+    esgdrs_remove(root_reconstruct + "/CMIP6/CFMIP/IPSL/IPSL-CM6A-LR/amip-m4K/r1i1p1f1/Amon/n2oglobal/gr", "v19810101")
+    esgdrs_latest(root_reconstruct + "/CMIP6")
+    folder_test = TestFolder(Path(root_reconstruct + "/CMIP6/CFMIP/IPSL/IPSL-CM6A-LR/amip-m4K/r1i1p1f1/Amon/n2oglobal/gr"))
+    folder_test.test()
+    clean()

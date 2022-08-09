@@ -71,14 +71,19 @@ class Process(object):
             # Get latest version.
             latest_version = get_version(versions[-1])
 
+
             # Add the "latest" symlink node.
             nodes = list(current_path.parts[:-1])
             nodes.append('latest')
 
-            self.tree.create_leaf(nodes=nodes,
-                                  label='{}{}{}'.format('latest', LINK_SEPARATOR, latest_version),
-                                  src=latest_version,
-                                  mode='symlink')
+            # Lo Check if link is broken
+            testpath = "/"+"/".join(nodes[1:])
+            print("COUCOU",testpath)
+            if not Path(testpath).exists() and Path(testpath).is_symlink():
+                self.tree.create_leaf(nodes=nodes,
+                                      label='{}{}{}'.format('latest', LINK_SEPARATOR, latest_version),
+                                      src=latest_version,
+                                      mode='symlink')
 
             # Print info.
             msg = 'DRS Path = {}'.format(get_drs_up(current_path))

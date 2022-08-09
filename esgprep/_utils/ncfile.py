@@ -231,7 +231,6 @@ def get_terms_from_attrs(attrs, set_values=None, set_keys=None):
 
         # Build pyessv namespace.
         namespace = f'{project.namespace}:{collection}:{term}'
-
         # Validate & store term.
         term = pyessv.parse(namespace, strictness=4)
         terms[term.collection.name] = term

@@ -291,7 +291,7 @@ def main():
 
     # Add program name as argument.
     setattr(args, 'prog', parser.prog)
-    #print(args)
+    print(args)
     # Run program.
     run(args)
 

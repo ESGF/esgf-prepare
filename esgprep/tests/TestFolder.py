@@ -49,16 +49,16 @@ class TestFolder:
 
         assert self.exists()
         print("--- Exist                                                    -------")
-        assert self.contains_at_least_the_3_folders()
+        assert self.contains_at_least_the_3_folders(), "Has NOT files,latest, and at least one version folder"
         print("--- HAS files,latest, and at least one version folder        -------")
 
-        assert self.is_there_same_number_of_files_in_d_and_v()
+        assert self.is_there_same_number_of_files_in_d_and_v() , "Has NOT same number of files/d******** and v********"
         print("--- HAS same number of files/d******** and v********         -------")
 
-        assert self.is_there_symlink_between_v_and_d()
+        assert self.is_there_symlink_between_v_and_d(), "Has NOT symlink between files/d********/* and v********/*"
         print("--- HAS symlink between files/d********/* and v********/*    -------")
 
-        assert self.is_there_symlink_between_latest_and_latest_version()
+        assert self.is_there_symlink_between_latest_and_latest_version(), "HAS NOT symlink between latest and the latest v******** "
         print("--- HAS symlink between latest and the latest v********      -------")
 
         print("--- EVERYTHING FINE ")

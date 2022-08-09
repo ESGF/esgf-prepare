@@ -303,15 +303,16 @@ class DRSTree(Tree):
         # TEST ça à l'air de marcher ..: au lieu de regarder dans self.path => qu'on a remplit au fur et à mesure .. on va directement checker le Tree
         all_tree_nodes = self.all_nodes()
         for node in all_tree_nodes[::-1]:
-            str_path = node.identifier
-            # c = node.data
-            # d = c.dst
-            # m_path = Path(node["data"]["dst"])
-            #print(str_path)
-            if Path(str_path).is_dir():
-                if len(os.listdir(str(str_path))) == 0:
-                    print("remove empty dir ", str_path)
-                    os.rmdir(str_path)
+            if node.is_root()==False:
+                str_path = node.identifier
+                # c = node.data
+                # d = c.dst
+                # m_path = Path(node["data"]["dst"])
+                #print(str_path)
+                if Path(str_path).is_dir():
+                    if len(os.listdir(str(str_path))) == 0:
+                        print("remove empty dir ", str_path)
+                        os.rmdir(str_path)
         """ manque le latest ? il n'y a pas de noeud latest dans le DRSTree ? """
 
         """
@@ -400,7 +401,7 @@ class DRSTree(Tree):
         else:
             print('Upgrade DRS Tree'.center(self.d_lengths[-1]))
         print(''.center(self.d_lengths[-1], '-'))
-
+        import codecs
         # Body.
         self.show()
 
