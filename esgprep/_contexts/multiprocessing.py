@@ -148,7 +148,8 @@ class MultiprocessingContext(BaseContext):
         # Load project CV.
         Print.info('Loading CV')
         try:
-            pyessv.load_cv(self.get_cv_authority(), self.project)
+            pyessv.load(self.get_cv_authority()) # Lolo change cause pyessv change
+            # pyessv.load_cv(self.get_cv_authority(), self.project)
         except AssertionError:
             raise MissingCVdata(self.get_cv_authority(), self.project)
 
@@ -209,8 +210,9 @@ class MultiprocessingContext(BaseContext):
 
         """
         try:
-            return self.cfg.get(section=f'config:{self.project}', option='pyessv_authority')  # ODO ???
+            return self.cfg.get(section=f'config:{self.project}', option='pyessv_authority')
         except (AttributeError, NoSectionError, NoOptionError):
+            return "compil"
             return 'wcrp'
 
 
@@ -233,7 +235,6 @@ class Runner(object):
         os._exit(1)
 
     def run(self, sources, ctx):
-        #print("Dans multiproc f run: sources:", sources)
         # Instantiate signal handler.
         sig_handler = signal.signal(signal.SIGTERM, self._handle_sigterm)
 

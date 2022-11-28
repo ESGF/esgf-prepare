@@ -187,15 +187,10 @@ class DRSTree(Tree):
         Gets the string lengths for comfort display of "list" action.
 
         """
-        #print("On popule la liste")
         self.d_lengths = [50, 20, 20, 16, 16]
-        #print(" la liste", self.d_lengths.__repr__())
         if self.paths:
             self.d_lengths[0] = max([len(i) for i in self.paths.keys()])
         self.d_lengths.append(sum(self.d_lengths) + 2)
-        #print(repr(self))
-        #print("ctx ref", type(self), self.__repr__())
-        #print(" la liste", self.d_lengths)
 
     def create_leaf(self, nodes, label, src, mode, force=False):
         """
@@ -275,7 +270,7 @@ class DRSTree(Tree):
             if latest_version:
 
                 # Get the list of filenames from the incoming dataset.
-                if "files" in infos.keys():  # Lolo Change entire line cause for remove there is no src ...
+                if "files" in infos.keys():
 
                     filenames = [file['src'].name for file in infos['files'] if
                                  "src" in file.keys()]  # Lolo Change :  if "src" in file.keys()
@@ -287,7 +282,7 @@ class DRSTree(Tree):
                 # Get the list of filenames from the latest existing version.
                 latest_filenames = list()
                 for _, _, filenames in os.walk(Path(self.drs_root or '', dataset,
-                                                    latest_version)):  # Lolo change or '' pour eviter error avec remove
+                                                    latest_version)):  # change or '' to deal with error with remove
                     latest_filenames += filenames
 
                 # An upgrade version is different if it contains at least one file with is_duplicate = False
@@ -308,7 +303,6 @@ class DRSTree(Tree):
                 # c = node.data
                 # d = c.dst
                 # m_path = Path(node["data"]["dst"])
-                #print(str_path)
                 if Path(str_path).is_dir():
                     if len(os.listdir(str(str_path))) == 0:
                         print("remove empty dir ", str_path)
@@ -427,10 +421,7 @@ class DRSTree(Tree):
                 leaf.data.migration_granted(self.drs_root)
 
         # Header.
-        print(self.paths)
-        #print("ctx ref", type(self),self.__repr__())
-        #print(" la liste", self.d_lengths.__repr__())
-        #print("COUCOU : ",self.d_lengths)
+        #print(self.paths)
         print(''.center(self.d_lengths[-1], '='))
         if todo_only:
             print('Unix command-lines (DRY-RUN)'.center(self.d_lengths[-1]))

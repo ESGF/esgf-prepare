@@ -78,7 +78,6 @@ class Process(object):
 
             # Lo Check if link is broken
             testpath = "/"+"/".join(nodes[1:])
-            print("COUCOU",testpath)
             if not Path(testpath).exists() and Path(testpath).is_symlink():
                 self.tree.create_leaf(nodes=nodes,
                                       label='{}{}{}'.format('latest', LINK_SEPARATOR, latest_version),

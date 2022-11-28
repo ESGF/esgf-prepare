@@ -13,8 +13,9 @@ import pyessv
 from esgprep._utils.print import *
 from esgprep._utils.cv import *
 from esgprep.constants import VERSION_PATTERN
-from pyessv._exceptions import TemplateParsingError, TemplateValueError
+from pyessv.exceptions import NamespaceParsingError, ValidationError
 from pathlib import Path
+
 
 def get_project(path):
     """
@@ -22,7 +23,8 @@ def get_project(path):
 
     """
     # Get all scopes within the loaded authority.
-    scopes = {scope.name: scope.namespace for scope in pyessv.all_scopes()}
+    scopes = {scope.name: scope.namespace for scope in
+              pyessv.get_cached()[0]}  # Lolo change all_scope() to get_cached()
 
     # Find intersection between scopes list and path parts.
     project = set(Path(str(path).lower()).parts).intersection(scopes)
@@ -92,7 +94,7 @@ def get_drs(path):
     if idx:
         # Remove root parts.
         # Do on parent if path is a file.
-        if path.is_file() or path.name[-3:]==".nc": # Lo ça ne fonctionne pas si le path correspond à un fichier qui n'est pas encore sur le disque du coup path[:-3]==".nc"
+        if path.is_file() or path.name[-3:] == ".nc":  # Lo ça ne fonctionne pas si le path correspond à un fichier qui n'est pas encore sur le disque du coup path[:-3]==".nc"
             drs = Path(*path.parent.parts[idx:])
         else:
             drs = Path(*path.parts[idx:])
@@ -116,11 +118,11 @@ def get_drs_up(path):
 
     if drs:
         # Retrieve index of the version level in the drs parts.
-        idx = version_idx(project, 'directory_structure')
+        idx = version_idx(project, 'directory_format')
 
         # Get DRS parts until the dataset version.
         if len(drs.parts) >= (idx + 1):
-            d_drs = Path(*drs.parts[:idx+1])
+            d_drs = Path(*drs.parts[:idx + 1])
 
     return d_drs
 
@@ -141,11 +143,11 @@ def get_drs_down(path):
 
     if drs:
         # Retrieve index of the version level in the drs parts.
-        idx = version_idx(project, 'directory_structure')
+        idx = version_idx(project, 'directory_format')
 
         # Get DRS parts until the dataset version.
         if len(drs.parts) >= (idx + 1):
-            f_drs = Path(*drs.parts[idx+1:])
+            f_drs = Path(*drs.parts[idx + 1:])
 
     return f_drs
 
@@ -164,14 +166,13 @@ def get_version(path, integer=False):
 
     # Get DRS part of the path.
     drs = get_drs(path)
-
     if drs:
         # Retrieve index of the version level in the drs parts.
-        idx = version_idx(project, 'directory_structure')
+        idx = version_idx(project, 'directory_format')
 
         # Get version level value.
         if len(drs.parts) >= (idx + 1):
-            v = drs.parts[version_idx(project, 'directory_structure')]
+            v = drs.parts[version_idx(project, 'directory_format')]
 
             # Check version pattern.
             if re.match(VERSION_PATTERN, v):
@@ -200,7 +201,7 @@ def get_variable(path):
     drs = get_drs(path)
 
     if drs:
-        variable = drs.parts[variable_idx(project, 'directory_structure')]
+        variable = drs.parts[variable_idx(project, 'directory_format')]
 
     return variable
 
@@ -218,15 +219,16 @@ def get_terms(path):
 
     # Get DRS part of the path.
     drs = get_drs(path)
-    #print("mDRS",drs)
 
     # Validate each drs items against CV.
     try:
-        terms = {term.collection.name: term for term in pyessv.parse_directory(project.name, str(drs),4)}
+
+        terms = pyessv.parse_identifer(project, identifier_type=pyessv.IDENTIFIER_TYPE_DIRECTORY, identifier=str(drs),
+                                       strictness=4)
+        # terms = {term.collection.name: term for term in pyessv.parse_directory(project.name, str(drs),4)}
 
     # Catch parsing errors.
-    except (TemplateParsingError, TemplateValueError) as error:
-        #print("OLAAAAAAA")
+    except (NamespaceParsingError, ValidationError) as error:
         Print.debug(f'Invalid DRS path -- {error}')
 
     return terms
@@ -239,13 +241,15 @@ def dataset_path(path):
     """
     # Get the version.
     version = get_version(path)
-    #print("from_dataset_path",version)
+    # print("DANS DATASET_PATH LA VERSION : ",path, version)
     # Test current path.
     if path.name == version:
         return path
 
     # Iterate over the path parents.
     for parent in path.parents:
+        # print("DANS DATASET_PATH PARENT : ", parent)
+        # print("DANS DATASET_PATH PARENT.NAME : ", parent.name)
 
         # Verify last parent level is the version.
         if parent.name == version:
@@ -265,24 +269,18 @@ def get_versions(path):
 
     # Test current path.
     if path.exists():
-        #print("COUCOU de get_version", path)
-        #print("COUCOU", [version for version in sorted(path.iterdir())])
         if path.is_dir():
             versions = [version for version in sorted(path.iterdir()) if re.match(r'^v[\d]+$', version.name)]
-        #if not versions:
-        #    versions = [version for version in sorted(path.parent.iterdir()) if re.match(r'v[\d]', version.name)] # pourquoi iterdir (car on est déjà dans la verison) du coup iterdir nous renvoi le fichier ?
 
-    #print("PATH exist:", versions )
     if not versions:
-        #print("pas de version")
         # Get dataset path.
         dataset = dataset_path(path)
-        #print("dataset", dataset)
+        # print("LE PATH DU DATASET : ", dataset, dataset.exists())
         # Check dataset path exists.
-        if dataset and dataset.exists():
+        if dataset and dataset.parent.exists():
             # Sort versions folders.
             versions = [version for version in sorted(dataset.parent.iterdir()) if re.match(r'^v[\d]+$', version.name)]
-            #print("VERSION",versions)
+
     return versions
 
 
@@ -316,7 +314,7 @@ def with_latest_target(path):
             target = list(path.parts)
 
             # Replace version part by targeted version of "latest" symlink.
-            target[version_idx(project, 'directory_structure')] = dataset.resolve().name
+            target[version_idx(project, 'directory_format')] = dataset.resolve().name
 
             # Path object with new target parts.
             target = Path(*target)
@@ -334,10 +332,10 @@ def with_latest_version(path):
 
     # Get dataset version.
     version = get_version(path)
-
+    # print("MA VERSION ACTUELLE : ", version)
     # Get existing versions.
     versions = get_versions(path)
-
+    # print("POUR L INSTANT LES VERSIONS EXISTANTES :", versions)
     if versions:
         # Replace current version item by latest existing version.
         target = list(path.parts)
@@ -345,7 +343,7 @@ def with_latest_version(path):
 
         # Path object with with new target parts.
         target = Path(*target)
-
+    # print("WITH LATEST VERSION RESULT : ", target)
     return target
 
 
@@ -372,11 +370,12 @@ def with_file_folder(path):
 
             # Appends files subdirectories depending on the DRS fashion.
             # CMIP5 like DRS has a file dataset part.
-            a=get_drs_down(path).name
-            #drsd = get_drs_down(path)
+            a = get_drs_down(path).name
+            # drsd = get_drs_down(path)
             if get_drs_down(path).name:
                 # Get all drs parts.
-                target.append(f'{get_variable(path)}_{ get_version(path, integer=True)}') # LoLo pour CMIP5 je crois ? variable après version
+                target.append(
+                    f'{get_variable(path)}_{get_version(path, integer=True)}')  # LoLo pour CMIP5 je crois ? variable après version
             else:
                 target.append(f'd{get_version(path, integer=True)}')
 
@@ -399,7 +398,6 @@ def dataset_id(path):
 
     # Get pyessv terms.
     terms = get_terms(path)
-    #print("GETTERM! ",terms)
     if terms:
         # Get project code.
         project = get_project(path)

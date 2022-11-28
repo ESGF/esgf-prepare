@@ -28,7 +28,7 @@ class Process(object):
         """
         self.mapfile_name = ctx.mapfile_name
         self.outdir = ctx.outdir
-        #self.cfg = ctx.cfg
+        # self.cfg = ctx.cfg
         self.basename = ctx.basename
         self.progress = ctx.progress
         self.msg_length = ctx.msg_length
@@ -50,10 +50,8 @@ class Process(object):
 
             else:
                 from esgprep._utils.dataset import get_terms, dataset_id, get_project
-            #print("COUCOUCOUCOUCCOUCOU")
             # Build dataset identifier.
             # DRS terms are validated during this step.
-            #print("SOURCE:",source)
             identifier = dataset_id(source)
 
             # Check dataset identifier is not None.
@@ -69,10 +67,8 @@ class Process(object):
             if re.search(r'\.latest|\.v[0-9]*$', str(identifier)):
                 version = identifier.split('.')[-1][1:] # remove "v" only for name in mapfile NOT for the mapfile name
                 dataset = '.'.join(identifier.split('.')[:-1])
-            #print("DATASET : ",dataset," VERSION : ",version)
             # Build mapfile name.
             outfile = build_mapfile_name(self.mapfile_name, dataset, version)
-            #print("OutFile = ",outfile)
             # Build mapfile directory.
             outdir = Path(self.outdir).resolve(strict=False)
             # try:

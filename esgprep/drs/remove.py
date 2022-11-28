@@ -54,7 +54,7 @@ class Process(object):
         """
         # Escape in case of error.
         try:
-            print("SOURCE : ",source)
+            # print("SOURCE : ",source)
             # Convert dataset identifier into directory_structure.
             if isinstance(source, Dataset):
                 current_path = directory_structure(source)
@@ -121,24 +121,7 @@ class Process(object):
                                           force=True)
 
                     # Record entry for list() and uniqueness checkup.
-                    # En regardant make :
-                    """
-                    record = {  # s'src': source,
-                        'dst': file,
-                        'is_duplicate': False
-                    }
-                    #####
-                    key = str(get_drs_up(file).parent)  # Lolo Change file to source
-                    if key in self.tree.paths:
-                        self.tree.paths[key]['files'].append(record)  # Lolo Change file to record
-                        assert latest_version == self.tree.paths[key]['latest']
-                        assert version == self.tree.paths[key]['upgrade']
-                    else:
-                        self.tree.paths[key] = {}
-                        self.tree.paths[key]['files'] = [record]  # Lolo Change file to record
-                        self.tree.paths[key]['latest'] = 'Initial' if len(versions) == 1 else get_version(versions[-1])
-                        # self.tree.paths[key]['upgrade'] = version
-                    """
+
 
             # Record entry for list() and uniqueness checkup.
             # En regardant make :

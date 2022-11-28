@@ -30,7 +30,7 @@ import os, re
 from argparse import Namespace
 from esgprep.esgdrs import run
 from pathlib import Path
-from esgprep.tests.TestFolder import TestFolder
+from esgprep.tests.post_test_folder import Post_Test_Folder
 
 @composite
 def random_cmip6_path(draw):
@@ -95,7 +95,7 @@ def aside_test_normal_esgdrs(path: str):
     print(all_presumed_path)
 
     for pp in all_presumed_path:
-        folder_test = TestFolder(Path(pp))
+        folder_test = Post_Test_Folder(Path(pp))
         print("-----------------------------")
         print("--- TESTING : ", pp," -------")
 

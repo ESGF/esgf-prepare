@@ -18,10 +18,11 @@ from esgprep._exceptions.netcdf import NoNetCDFAttribute
 from esgprep._utils.cv import get_collections
 from esgprep._utils.print import *
 from esgprep.drs.constants import PID_PREFIXES
+from esgprep._utils.pyessv_interface import get_authority_node,get_scope_node,get_collection_node
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
 from netCDF4 import Dataset
-from pyessv._exceptions import TemplateParsingError, TemplateValueError
+from pyessv.exceptions import NamespaceParsingError, ValidationError
 
 
 class ncopen(object):
@@ -134,7 +135,7 @@ def get_project(attrs):
 
     """
     # Get all scopes within the loaded authority.
-    scopes = {scope.name: scope.namespace for scope in pyessv.all_scopes()}
+    scopes = {scope.name: scope.namespace for scope in pyessv.get_cached()[0]} # lolo change all_scopes() to get_cached()
 
     # Get attributes.
     if not isinstance(attrs, dict):
@@ -171,16 +172,16 @@ def get_terms(input):
         attrs = input
         filename = attrs['filename']
 
-    # Get project code.
-    project = get_project(attrs)
+    # Get project scope.
+    project_scope = get_project(attrs)
 
     # Validate each drs items against CV.
     try:
-
         # Validate filename syntax.
-        terms = {term.collection.raw_name: term for term in pyessv.parse_filename(project.name, filename, 4)}
+        terms = pyessv.parse_identifer(project_scope, pyessv.IDENTIFIER_TYPE_FILENAME, filename)
+        # terms = {term.collection.raw_name: term for term in pyessv.parse_filename(project.name, filename, 4)}
 
-    except (TemplateParsingError, TemplateValueError) as error:
+    except (NamespaceParsingError, ValidationError) as error:
         Print.debug(f'Invalid filename syntax -- {error}')
 
     return terms
@@ -191,52 +192,72 @@ def get_terms_from_attrs(attrs, set_values=None, set_keys=None):
     Validates global attributes against CV and complete pyessv terms.
 
     """
-    # Instantiate terms.
+    # Instantiate terms. from filename terms decoded by pyessv
     terms = get_terms(attrs)
-
-    # Get project code.
+    #print("TERM from filenmae: ",terms)
+    # Get pyessv project code.
     project = get_project(attrs)
-
     # Iterate over missing collections required to build the DRS path.
-    myCollections = set(get_collections(project, 'directory_structure'))
-    myterms = terms
-    un = myCollections.difference(terms)
-    #deux = terms.difference(myCollections)
-    for collection in set(get_collections(project, 'directory_structure')).difference(terms):
+    myCollections = set(get_collections(project, 'directory_format')) # change directory_structure to directory_format
+    myterms = set([term.collection.namespace for term in terms])
+    diff = myCollections.difference(myterms)
+    #for collection in set(get_collections(project, 'directory_format')).difference([term.collection.namespace for term in terms]): # change directory_structure to directory_format
+    #print("COLLECTIONS we dont have : ", diff)
+    for collection_namespace in diff:
+        collection = collection_namespace.split(":")[-1]
+        alternatives = [collection]+project[collection].alternative_names
+        for collection_alt_name in alternatives:
+            try :
+                # Check input set values.
+                if set_values and collection_alt_name in set_values:
+                    term = set_values[collection_alt_name]
 
-        # Check input set values.
-        if set_values and collection in set_values:
+                # Check input mapping between collections and netCDF attributes.
+                elif set_keys and collection_alt_name in set_keys:
+                    # Get appropriate netCDF attribute.
+                    try:
+                        # In case of space-separated list value, pick up the first item.
+                        term = attrs[set_keys[collection_alt_name]].split()[0]
+                    except AttributeError:
+                        raise NoNetCDFAttribute(set_keys[collection_alt_name], attrs.keys())
 
-            term = set_values[collection]
+                # try to find attrs in netCDF global attributes
+                elif collection_alt_name in attrs.keys():
+                    term = attrs[collection_alt_name]
+                # Otherwise pick up missing collection from netCDF global attributes.
+                else:
+                    # Find closest NetCDF attributes using partial string comparison
+                    key, score = extractOne(collection_alt_name, attrs.keys(), scorer=partial_ratio)
+                    if score < 80:
+                        raise NoNetCDFAttribute(collection_alt_name, attrs.keys())
+                    term = attrs[key].split()[0]
 
-        # Check input mapping between collections and netCDF attributes.
-        elif set_keys and collection in set_keys:
+                # Build pyessv namespace.
+                namespace = f'{project.namespace}:{collection_alt_name}:{term.lower()}'
 
-            # Get appropriate netCDF attribute.
-            try:
-                # In case of space-separated list value, pick up the first item.
-                term = attrs[set_keys[collection]].split()[0]
-            except AttributeError:
-                raise NoNetCDFAttribute(set_keys[collection], attrs.keys())
-        # try to find attrs in netCDF global attributes
-        elif collection in attrs.keys():
-            term = attrs[collection]
-        # Otherwise pick up missing collection from netCDF global attributes.
-        else:
-            # Find closest NetCDF attributes using partial string comparison
-            key, score = extractOne(collection, attrs.keys(), scorer=partial_ratio)
-            if score < 80:
-                raise NoNetCDFAttribute(collection, attrs.keys())
-            term = attrs[key].split()[0]
+                # Validate & store term.
+                py_term = pyessv.get_cached(namespace)
+                if py_term is None:
+                    py_col= get_collection_node(project.namespace.split(":")[0],project.namespace.split(":")[1],collection_alt_name)
+                    py_term = pyessv.matcher.match_term(py_col, term,strictness=4)
 
-        # Build pyessv namespace.
-        namespace = f'{project.namespace}:{collection}:{term}'
-        # Validate & store term.
-        term = pyessv.parse(namespace, strictness=4)
-        terms[term.collection.name] = term
+                if py_term== False:
+                    continue
 
+                #print("OLA ON A TROUVé : ",py_term, " de type : ", type(py_term))
+                if py_term is not None:
+                    terms.add(py_term)
+                    break
+                #terms[namespace.split(":")[:-1]] = term
+            except (NamespaceParsingError ,NoNetCDFAttribute) as e:
+                continue
+            except AssertionError as e:
+                print("AssertionError : ",namespace)
+            else:
+                break
+
+    #return set([pyessv.load(term) for term in terms])
     return terms
-
 
 def drs_path(attrs, set_values=None, set_keys=None):
     """
@@ -245,15 +266,14 @@ def drs_path(attrs, set_values=None, set_keys=None):
     """
     # Instantiate directory string.
     directory = None
-
+    #print("ATTRS : ",attrs)
     # Get pyessv terms.
     terms = get_terms_from_attrs(attrs, set_values, set_keys)
-
     if terms:
         # Get project code.
         project = get_project(attrs)
-
         # Build directory.
-        directory = pyessv.build_directory(project.name, set(terms.values()))
+        directory = pyessv.build_identifier(project,pyessv.IDENTIFIER_TYPE_DIRECTORY,terms)
+        #directory = pyessv.build_directory(project.name, set(terms.values()))
 
     return directory

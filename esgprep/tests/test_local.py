@@ -1,9 +1,12 @@
 import time
 from argparse import Namespace
 import re
+
+import pytest
+from esgprep._exceptions import DuplicatedDataset
 from esgprep.esgdrs import run
 from pathlib import Path
-from esgprep.tests.TestFolder import TestFolder
+from esgprep.tests.post_test_folder import Post_Test_Folder
 from datetime import datetime
 import shutil
 
@@ -118,11 +121,12 @@ def is_same_path_and_good_folder_structure(dataset_version_path):
     print("------ GOT the same DRS path between Control and Reconstruct ---------")
 
     ##### Folder is correctly constructed
-    folder_test = TestFolder(Path(dataset_reconstruct_folder))
+    folder_test = Post_Test_Folder(Path(dataset_reconstruct_folder))
     folder_test.test()
 
 
 def test_default():
+    clean()
     # DRS creation
     esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001")
 
@@ -136,11 +140,12 @@ def test_default():
 
 
 def test_one_version_after_another():
-    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001")
-    is_same_path_and_good_folder_structure(one_file_dataset_path_v1)
-    esgdrs_make(one_file_dataset_path_v2, "CMIP6", root_reconstruct, "v00000002")
-    is_same_path_and_good_folder_structure(one_file_dataset_path_v2)
     clean()
+    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20180912")
+    is_same_path_and_good_folder_structure(one_file_dataset_path_v1)
+    esgdrs_make(one_file_dataset_path_v2, "CMIP6", root_reconstruct, "v20191003")
+    is_same_path_and_good_folder_structure(one_file_dataset_path_v2)
+    #clean()
 
 
 def test_no_version_supply():
@@ -150,9 +155,11 @@ def test_no_version_supply():
 
 
 def test_supply_same_dataset_2_times():
-    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001")
+    clean()
+    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20180912")
     is_same_path_and_good_folder_structure(one_file_dataset_path_v1)
-    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000002")
+    with pytest.raises(DuplicatedDataset) as e_info:
+        esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20180912")
     is_same_path_and_good_folder_structure(one_file_dataset_path_v1)
     # ODO : il devrait y avoir un probleme ... et il y en a pas ... ???
     clean()
@@ -167,15 +174,19 @@ def test_not_rescan():
     clean()
 
 
-def test_multifile():
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 1, "symlink", False)
-    esgdrs_make(multi_file_dataset_path_v2, "CMIP6", root_reconstruct, "v00000002", 1, "symlink", False)
-    esgdrs_make(multi_file_dataset_path_v3, "CMIP6", root_reconstruct, "v00000003", 1, "symlink", False)
 
-    is_same_path_and_good_folder_structure(multi_file_dataset_path_v1)
+
+def test_multifile():
+    clean()
+    esgdrs_make(multi_file_dataset_2_path_v1, "CMIP6", root_reconstruct, "v20190815", 1, "symlink", True)
+    esgdrs_make(multi_file_dataset_2_path_v2, "CMIP6", root_reconstruct, "v20190920", 1, "symlink", True)
+    # esgdrs_make(multi_file_dataset_2_path_v3, "CMIP6", root_reconstruct, "v20210118", 1, "symlink", True)
+
+    is_same_path_and_good_folder_structure(multi_file_dataset_2_path_v1)
     # OK Skip the second one ...
     # but still the folder is correctly formatted
-    clean()
+
+    #clean()
 
 
 # il faut tester l'histoire des liens de fichiers dans le cas où les fichiers sont les mêmes entre les versions
@@ -187,79 +198,80 @@ def test_temp():
 
 
 def test_multiproc():
-    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 2)
+    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v19800101", 2)
     is_same_path_and_good_folder_structure(one_file_dataset_path_v1)
     clean()
 
 
 def test_monoproc_multifile():
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 1)
+    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20190725", 1)
     is_same_path_and_good_folder_structure(multi_file_dataset_path_v1)
     clean()
 
 
 def test_multiproc_multifile():
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 4)
+    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20190725", 4)
     is_same_path_and_good_folder_structure(multi_file_dataset_path_v1)
     clean()
 
 def test_multiproc_multifile_time():
     start = time.time()
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 1)
+    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20190725", 1)
     time1 = time.time() - start
     clean()
 
     start = time.time()
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 2)
+    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20190725", 2)
     time2 = time.time() - start
     clean()
 
     start = time.time()
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 3)
+    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20190725", 3)
     time3 = time.time() - start
     clean()
 
     start = time.time()
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 4)
+    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20190725", 4)
     time4 = time.time() - start
     clean()
     print("AU FINAL : ", time1, time2, time3, time4)
 
 def test_remove():
+    clean()
     esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v19800101")
-    esgdrs_make(one_file_dataset_path_v2, "CMIP6", root_reconstruct, "v19810101")
+    esgdrs_make(one_file_dataset_path_v2, "CMIP6", root_reconstruct, "v20191003")
     esgdrs_remove(root_reconstruct + "/cmip6/CFMIP/IPSL/IPSL-CM6A-LR/amip-m4K/r1i1p1f1/Amon/n2oglobal/gr", "v19800101")
     is_same_path_and_good_folder_structure(one_file_dataset_path_v2)
-    esgdrs_remove(root_reconstruct+"/cmip6/CFMIP/IPSL/IPSL-CM6A-LR/amip-m4K/r1i1p1f1/Amon/n2oglobal/gr", "v19810101")
+    esgdrs_remove(root_reconstruct+"/cmip6/CFMIP/IPSL/IPSL-CM6A-LR/amip-m4K/r1i1p1f1/Amon/n2oglobal/gr", "v20191003")
     clean()
     # pb le latest reste si c'était le dernier à remove => grave docteur ?
 
 def test_multiproc_remove_time():
 
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 4)
+    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20190725", 4)
     start = time.time()
-    esgdrs_remove(root_reconstruct + "/cmip6/CMIP/EC-Earth-Consortium/EC-Earth3/historical/r21i1p1f1/Omon/volo/gn", "v00000001",1)
+    esgdrs_remove(root_reconstruct + "/cmip6/CMIP/EC-Earth-Consortium/EC-Earth3/historical/r21i1p1f1/Omon/volo/gn", "v20190725",1)
     time1 = time.time() - start
     clean()
 
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 4)
+    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20190725", 4)
     start = time.time()
     esgdrs_remove(root_reconstruct + "/cmip6/CMIP/EC-Earth-Consortium/EC-Earth3/historical/r21i1p1f1/Omon/volo/gn",
-                  "v00000001", 2)
+                  "v20190725", 2)
     time2 = time.time() - start
     clean()
 
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 4)
+    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20190725", 4)
     start = time.time()
     esgdrs_remove(root_reconstruct + "/cmip6/CMIP/EC-Earth-Consortium/EC-Earth3/historical/r21i1p1f1/Omon/volo/gn",
-                  "v00000001", 3)
+                  "v20190725", 3)
     time3 = time.time() - start
     clean()
 
-    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001", 4)
+    esgdrs_make(multi_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20190725", 4)
     start = time.time()
     esgdrs_remove(root_reconstruct + "/cmip6/CMIP/EC-Earth-Consortium/EC-Earth3/historical/r21i1p1f1/Omon/volo/gn",
-                  "v00000001", 4)
+                  "v20190725", 4)
     time4 = time.time() - start
     clean()
 
@@ -267,10 +279,10 @@ def test_multiproc_remove_time():
 
 def test_latest():
     clean()
-    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v19800101")
-    esgdrs_make(one_file_dataset_path_v2, "CMIP6", root_reconstruct, "v19810101")
-    esgdrs_remove(root_reconstruct + "/CMIP6/CFMIP/IPSL/IPSL-CM6A-LR/amip-m4K/r1i1p1f1/Amon/n2oglobal/gr", "v19810101")
+    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20180912")
+    esgdrs_make(one_file_dataset_path_v2, "CMIP6", root_reconstruct, "v20191003")
+    esgdrs_remove(root_reconstruct + "/CMIP6/CFMIP/IPSL/IPSL-CM6A-LR/amip-m4K/r1i1p1f1/Amon/n2oglobal/gr", "v20180912")
     esgdrs_latest(root_reconstruct + "/CMIP6")
-    folder_test = TestFolder(Path(root_reconstruct + "/CMIP6/CFMIP/IPSL/IPSL-CM6A-LR/amip-m4K/r1i1p1f1/Amon/n2oglobal/gr"))
+    folder_test = Post_Test_Folder(Path(root_reconstruct + "/CMIP6/CFMIP/IPSL/IPSL-CM6A-LR/amip-m4K/r1i1p1f1/Amon/n2oglobal/gr"))
     folder_test.test()
-    clean()
+    #clean()

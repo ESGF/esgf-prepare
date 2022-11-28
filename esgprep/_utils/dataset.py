@@ -10,7 +10,7 @@
 """
 
 from esgprep._handlers.dataset_id import Dataset
-from pyessv._exceptions import TemplateParsingError, TemplateValueError
+from pyessv.exceptions import NamespaceParsingError, ValidationError #TemplateParsingError, TemplateValueError
 from esgprep._utils.print import *
 import pyessv
 
@@ -57,7 +57,7 @@ def get_terms(dataset):
                                                                                         dataset.identifier)}
 
     # Catch template parsing in case of no ending version.
-    except TemplateParsingError:
+    except NamespaceParsingError:
 
         # Add phony "latest" ending version.
         dataset = Dataset(dataset.identifier + 'latest')
@@ -65,11 +65,11 @@ def get_terms(dataset):
             terms = {term.collection.name: term for term in pyessv.parse_dataset_identifier(project,
                                                                                             dataset.identifier)}
 
-        except (TemplateParsingError, TemplateValueError) as error:
+        except (NamespaceParsingError, ValidationError) as error:
             Print.debug(f'Invalid dataset identifier -- {error}')
 
     # Catch parsing errors.
-    except TemplateValueError as error:
+    except ValidationError as error:
         Print.debug(f'Invalid dataset identifier -- {error}')
 
     return terms

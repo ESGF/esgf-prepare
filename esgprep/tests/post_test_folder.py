@@ -2,7 +2,7 @@ from pathlib import Path
 import re
 
 
-class TestFolder:
+class Post_Test_Folder:
     def __init__(self, folder: Path):
         self.folder = folder
         self.list_dir_base = list(self.folder.glob("*"))
@@ -40,7 +40,11 @@ class TestFolder:
         last_version = sorted_version_list[-1]
         last_version_path = Path.joinpath(self.folder, "v" + last_version)
         latest_path = Path.joinpath(self.folder, "latest")
-
+        # print("last_version_found = ",last_version, last_version_path)
+        # print(latest_path)
+        # print("LE TEST /1 " ,last_version_path, )
+        # print("LE TEST /2 ", latest_path.resolve(), latest_path.resolve().parent )
+        # print(latest_path.exists() , last_version_path.exists() , latest_path.is_symlink() , last_version_path == latest_path.resolve().parent)
         return latest_path.exists() and last_version_path.exists() and latest_path.is_symlink() and last_version_path == latest_path.resolve()
 
     def test(self):

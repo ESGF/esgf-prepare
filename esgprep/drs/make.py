@@ -7,6 +7,8 @@
 """
 import traceback
 
+import pyessv
+
 from esgprep._exceptions import *
 from esgprep._utils.checksum import get_checksum
 from esgprep._utils.ncfile import drs_path, get_tracking_id, get_ncattrs
@@ -52,7 +54,6 @@ class Process(object):
         """
         # Escape in case of error.
         try:
-
             # Ignore files from incoming
             if source.name in self.ignore_from_incoming:
                 msg = TAGS.SKIP + COLORS.HEADER(str(source))
@@ -64,17 +65,14 @@ class Process(object):
             msg = f'Scanning {source}'
             Print.debug(msg)
 
-            # Get current file attributes.
+            # Get current netcdf file attributes.
             current_attrs = get_ncattrs(source)
+
             # Add filename to attributes.
             current_attrs['filename'] = source.name
+
             # Add dataset-version to attributes.
             current_attrs['dataset-version'] = self.version
-            # # Lo : Add member_id to attributes
-            # if current_attrs['sub_experiment_id'] == "none": #ODO virer ça car c'est dépendant du projet .. rien à faire là
-            #     current_attrs['member_id'] = current_attrs["variant_label"]
-            # else:
-            #     current_attrs['member_id'] = current_attrs['sub_experiment_id'] + "-" + current_attrs["variant_label"]
 
             # Instantiate file as no duplicate.
             is_duplicate = False
@@ -82,7 +80,8 @@ class Process(object):
             # Build directory structure.
             # DRS terms are validated during this step.
             try:
-                current_path = Path(self.root, drs_path(current_attrs, self.set_values, self.set_keys), source.name)
+                drspath = drs_path(current_attrs, self.set_values, self.set_keys)
+                current_path = Path(self.root, drspath, source.name)
             except TypeError:
                 Print.debug('Directory structure is None')
                 return False
@@ -95,11 +94,12 @@ class Process(object):
 
             # 1. Check if a latest file version exists (i.e. with the same filename).
             if latest_path and latest_path.exists():
-
                 # 2. Check latest version is older than current version.
+
                 current_version = get_version(current_path)
                 latest_version = get_version(latest_path)
-                if latest_version < current_version:
+
+                if latest_version > current_version:
                     raise OlderUpgrade(current_version, latest_version)
 
                 # Get latest file version attributes.
@@ -111,16 +111,15 @@ class Process(object):
                 if current_tracking_id == latest_tracking_id:
 
                     # 4. Check if file sizes are different.
-                    if current_path.stat().st_size == latest_path.stat().st_size and not self.no_checksum:
+                    if source.stat().st_size == latest_path.stat().st_size and not self.no_checksum:
 
                         # 5. Check if file checksums are different.
-                        current_checksum = get_checksum(current_path, self.checksum_type, self.checksums_from)
+                        current_checksum = get_checksum(source, self.checksum_type, self.checksums_from)
                         latest_checksum = get_checksum(latest_path, self.checksum_type, self.checksums_from)
-                        if current_checksum == latest_checksum:
 
+                        if current_checksum == latest_checksum:
                             # Flags file to duplicate.
                             is_duplicate = True
-
                         # If different checksums, tracking IDs must be different too if exist.
                         elif current_tracking_id and latest_tracking_id:
                             raise UnchangedTrackingID(latest_path, latest_tracking_id, current_path,
@@ -177,7 +176,7 @@ class Process(object):
                             # Leaf is not created if already exists (i.e., force = False).
                             if latest_name != current_path.name and latest_name not in self.ignore_from_latest:
                                 src = os.path.join(root, latest_name)
-                                self.tree.create_leaf(nodes=current_path.parent.parts.append(latest_name),
+                                self.tree.create_leaf(nodes=current_path.parent.parts + latest_name,
                                                       label=f'{latest_name}{LINK_SEPARATOR}{os.readlink(src)}',
                                                       src=os.readlink(src),
                                                       mode='symlink')
@@ -210,19 +209,28 @@ class Process(object):
                       'dst': current_path,
                       'is_duplicate': is_duplicate}
             key = str(get_drs_up(current_path).parent)
+
             if key in self.tree.paths:
+                # mean we already saw this dataset
+                un = self.tree.paths[key]['latest']
+                print("AVANT",un)
                 self.tree.append_path(key, "files", record)
-                #self.tree.paths[key]['files'].append(record)
-                assert latest_version == self.tree.paths[key]['latest']
+                deux = self.tree.paths[key]['latest']
+                print("APRES", deux)
+
+                # self.tree.paths[key]['files'].append(record)
+                un = latest_version
+                deux = self.tree.paths[key]["latest"]
+                print(un,deux)
+                # print("CHECK_4 : ",latest_version, self.tree.paths[key]["latest"] )
+                # if latest_version != self.tree.paths[key]['latest']:
+                 #    print("ERROR : ")
+                    # print(self.tree)
+
+                # assert latest_version == self.tree.paths[key]['latest']
             else:
                 infos = {"files": [record], "latest": latest_version, "upgrade": self.version}
                 self.tree.add_path(key, infos)
-                test = key
-                # Lolo Change into add_path method to set instance variable (pb for shared DRSTree between process)
-                #self.tree.paths[key] = {}
-                #self.tree.paths[key]['files'] = [record]
-                #self.tree.paths[key]['latest'] = latest_version
-                #self.tree.paths[key]['upgrade'] = self.version
 
             # Print info.
             msg = f'DRS Path = {get_drs_up(current_path)}'

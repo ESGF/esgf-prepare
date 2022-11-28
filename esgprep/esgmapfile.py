@@ -228,7 +228,6 @@ def main():
     # Add program name as argument.
     setattr(args, 'prog', parser.prog)
 
-    print("COUCOU", args)
     # Run program.
     run(args)
 
