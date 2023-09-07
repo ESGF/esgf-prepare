@@ -12,8 +12,8 @@ import sys
 from ctypes import c_char_p
 from multiprocessing import Value
 
-from constants import SHELL_COLORS
-from custom_exceptions import *
+from .constants import SHELL_COLORS
+from .custom_exceptions import *
 
 _colors_enabled = [sys.stdout.isatty()]
 

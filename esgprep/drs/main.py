@@ -10,9 +10,9 @@ import itertools
 import traceback
 from multiprocessing import Pool
 
-from constants import *
-from context import ProcessingContext
-from custom_exceptions import *
+from .constants import *
+from .context import ProcessingContext
+from .custom_exceptions import *
 from esgprep.utils.custom_print import *
 from esgprep.utils.misc import load, store, evaluate, ProcessContext, get_tracking_id, get_checksum
 from handler import File, DRSPath, DRSTree

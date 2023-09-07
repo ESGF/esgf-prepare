@@ -1,6 +1,5 @@
 lockfile==0.12.2
 cftime==1.0.3.4
-esgconfigparser==0.1.17
 requests==2.20.0
 fuzzywuzzy==0.16.0
 netCDF4==1.4.0
