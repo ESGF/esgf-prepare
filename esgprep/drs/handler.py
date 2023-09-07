@@ -18,8 +18,8 @@ from hurry.filesize import size
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
 
-from constants import *
-from custom_exceptions import *
+from .constants import *
+from .custom_exceptions import *
 from esgprep.utils.custom_print import *
 from esgprep.utils.misc import ncopen
 

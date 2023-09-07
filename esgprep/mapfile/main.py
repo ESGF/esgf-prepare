@@ -13,9 +13,9 @@ from multiprocessing import Pool
 from ESGConfigParser import interpolate, MissingPatternKey, BadInterpolation, InterpolationDepthError
 from lockfile import LockFile
 
-from constants import *
-from context import ProcessingContext
-from custom_exceptions import *
+from .constants import *
+from .context import ProcessingContext
+from .custom_exceptions import *
 from esgprep.utils.custom_print import *
 from esgprep.utils.misc import evaluate, remove, get_checksum, ProcessContext
 from esgprep.utils.output_control import OutputControl
