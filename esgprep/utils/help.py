@@ -6,7 +6,7 @@
 
 """
 
-from custom_print import *
+from .custom_print import *
 
 # Help
 TITLE = COLOR('yellow').bold(""".___ ___ ___ ___ ___ ___ ___.
