@@ -127,7 +127,7 @@ class MultiprocessingContext(BaseContext):
             self.manager = SyncManager()
             self.manager.start()
             self.progress = self.manager.Value('i', 0)
-            Print.BUFFER = self.manager.Value(c_char_p, '')
+            Print.BUFFER = self.manager.Value(c_char_p, b'')
         else:
             self.progress = Value('i', 0)
         # Stdout lock
@@ -200,8 +200,8 @@ class MultiprocessingContext(BaseContext):
             checksum_type = _cfg.get_options_from_table('checksum')[0][1].lower()
         else:  # Use SHA256 as default because esg.ini not mandatory in configuration directory
             checksum_type = 'sha256'
-        if checksum_type not in checksum_types:
-            raise InvalidChecksumType(checksum_type)
+        #if checksum_type not in checksum_types:
+        #    raise InvalidChecksumType(checksum_type)
         _cfg.reset()
         return checksum_type
 

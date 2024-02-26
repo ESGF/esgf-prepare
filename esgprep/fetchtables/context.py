@@ -6,7 +6,7 @@
 
 """
 
-from constants import *
+from .constants import *
 from esgprep.utils.collectors import FilterCollection
 from esgprep.utils.context import GitHubBaseContext
 from esgprep.utils.custom_print import *

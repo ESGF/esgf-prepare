@@ -15,8 +15,8 @@ from ESGConfigParser.custom_exceptions import ExpressionNotMatch, NoConfigOption
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
 
-from constants import *
-from context import ProcessingContext
+from .constants import *
+from .context import ProcessingContext
 from esgprep.utils.custom_print import *
 from esgprep.utils.misc import ProcessContext, ncopen
 

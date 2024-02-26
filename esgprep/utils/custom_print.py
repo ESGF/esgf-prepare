@@ -12,8 +12,8 @@ import sys
 from ctypes import c_char_p
 from multiprocessing import Value
 
-from constants import SHELL_COLORS
-from custom_exceptions import *
+from .constants import SHELL_COLORS
+from .custom_exceptions import *
 
 _colors_enabled = [sys.stdout.isatty()]
 
@@ -181,7 +181,7 @@ class Print(object):
     DEBUG = False
     CMD = None
     LOG_TO_STDOUT = False
-    BUFFER = Value(c_char_p, '')
+    BUFFER = Value(c_char_p, b'')
     LOGFILE = None
     CARRIAGE_RETURNED = True
 

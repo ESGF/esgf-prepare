@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -8,9 +8,9 @@
 """
 
 from esgprep.fetchtables.main import run
-from utils.constants import *
-from utils.help import *
-from utils.parser import *
+from .utils.constants import *
+from .utils.help import *
+from .utils.parser import *
 
 __version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
 
