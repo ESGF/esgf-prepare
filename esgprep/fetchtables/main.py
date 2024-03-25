@@ -144,7 +144,7 @@ def run(args):
                 Print.debug('GitHub Available reference(s): {}'.format(', '.join(sorted(refs))))
                 Print.info('Selected GitHub reference(s): {}'.format(', '.join(sorted(fetch_refs))))
                 # Get special case for CMIP6_CV.json file
-                special_cases = get_special_case(f='CMIP6_CV.json', url=ctx.url, repo=repo, ref='master', auth=ctx.auth)
+                special_cases = get_special_case(f='CMIP6_CV.json', url=ctx.url, repo=repo, ref='main', auth=ctx.auth)
                 # Fetch each ref
                 for ref in fetch_refs:
                     try:
