@@ -64,5 +64,7 @@ TREE_FILE = '/tmp/DRSTree_{}.pkl'.format(environ['USER'])
 
 # PID prefixes
 PID_PREFIXES = {'cmip6': 'hdl:21.14100',
+                'cmip6plus': 'hdl:21.14100',
+                'primavera': 'hdl:21.14100',
                 'cordex': 'hdl:21.14103',
                 'obs4mips': 'hdl:21.14102'}
