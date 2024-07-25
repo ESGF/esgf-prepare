@@ -7,7 +7,7 @@
 """
 
 from datetime import datetime
-from hashlib import algorithms as checksum_types
+import hashlib
 
 
 ###############################
@@ -70,7 +70,7 @@ class InvalidChecksumType(Exception):
     def __init__(self, client):
         self.msg = "Checksum type not supported or invalid."
         self.msg += "\n<checksum type: '{}'>".format(client)
-        self.msg += "\n<allowed algorithms: '{}'>".format(checksum_types)
+        self.msg += "\n<allowed algorithms: '{}'>".format(algorithms)
         super(self.__class__, self).__init__(self.msg)
 
 

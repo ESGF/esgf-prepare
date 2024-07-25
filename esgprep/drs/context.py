@@ -8,8 +8,8 @@
 
 from uuid import uuid4 as uuid
 
-from constants import *
-from custom_exceptions import *
+from .constants import *
+from .custom_exceptions import *
 from esgprep.utils.collectors import Collector
 from esgprep.utils.context import MultiprocessingContext
 from esgprep.utils.custom_print import *

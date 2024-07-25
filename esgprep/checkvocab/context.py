@@ -6,7 +6,7 @@
 
 """
 
-from constants import *
+from .constants import *
 from esgprep.utils.collectors import PathCollector, DatasetCollector, Collector
 from esgprep.utils.context import MultiprocessingContext
 from esgprep.utils.custom_print import *

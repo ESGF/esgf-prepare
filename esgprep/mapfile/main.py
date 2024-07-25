@@ -13,13 +13,13 @@ from multiprocessing import Pool
 from ESGConfigParser import interpolate, MissingPatternKey, BadInterpolation, InterpolationDepthError
 from lockfile import LockFile
 
-from constants import *
-from context import ProcessingContext
-from custom_exceptions import *
+from .constants import *
+from .context import ProcessingContext
+from .custom_exceptions import *
 from esgprep.utils.custom_print import *
 from esgprep.utils.misc import evaluate, remove, get_checksum, ProcessContext
 from esgprep.utils.output_control import OutputControl
-from handler import File, Dataset
+from .handler import File, Dataset
 
 
 def get_output_mapfile(outdir, attributes, mapfile_name, dataset_id, dataset_version, mapfile_drs=None, basename=False):
@@ -221,7 +221,8 @@ def initializer(keys, values):
     """
     assert len(keys) == len(values)
     global pctx
-    pctx = ProcessContext({key: values[i] for i, key in enumerate(keys)})
+    v = list(values)
+    pctx = ProcessContext({key: v[i] for i, key in enumerate(keys)})
 
 
 def run(args):
@@ -266,11 +267,13 @@ def run(args):
         # Flush buffer
         Print.flush()
         # Get number of files scanned (excluding errors/skipped files)
-        ctx.scan_data = len(filter(None, results))
+        l = list(filter(None, results))
+        ctx.scan_data = len(l)
         # Get number of scan errors
         ctx.scan_errors = results.count(None)
         # Get number of generated mapfiles
-        ctx.nbmap = len(filter(None, set(results)))
+        l = list(filter(None, set(results)))
+        ctx.nbmap = len(l)
         # Evaluates the scan results to finalize mapfiles writing
         if evaluate(results):
             for mapfile in filter(None, set(results)):
@@ -280,7 +283,7 @@ def run(args):
                     result = remove(WORKING_EXTENSION, mapfile)
                     if quiet:
                         output_control.stdout_on()
-                        print result
+                        print (result)
                         output_control.stdout_off()
                     else:
                         Print.result(result)

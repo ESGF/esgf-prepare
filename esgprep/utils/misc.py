@@ -12,7 +12,7 @@ from uuid import UUID
 
 from netCDF4 import Dataset
 
-from custom_print import *
+from .custom_print import *
 from esgprep.drs.constants import PID_PREFIXES
 
 

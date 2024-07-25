@@ -8,8 +8,8 @@
 
 import traceback
 
-from constants import *
-from context import ProcessingContext
+from .constants import *
+from .context import ProcessingContext
 from esgprep.utils.constants import GITHUB_API_PARAMETER
 from esgprep.utils.github import *
 

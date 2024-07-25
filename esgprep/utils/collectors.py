@@ -227,7 +227,7 @@ class FilterCollection(object):
     indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.
 
     """
-    FILTER_TYPES = (str, re._pattern_type)
+    FILTER_TYPES = (str, re.Pattern)
 
     def __init__(self):
         self.filters = dict()
