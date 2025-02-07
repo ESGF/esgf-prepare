@@ -35,6 +35,7 @@ def process(source):
     :param str source: The file full path to process
 
     """
+    skip_datasetid_match_for_projects = ['cordex-cmip6']
     # Get process content from process global env
     assert 'pctx' in globals().keys()
     pctx = globals()['pctx']
@@ -62,7 +63,8 @@ def process(source):
         fh.drs = DRSPath(parts)
         # Ensure that the called project section is ALWAYS part of the DRS path elements (case insensitive)
         if not fh.drs.path().lower().startswith(pctx.project.lower()):
-            raise InconsistentDRSPath(pctx.project, fh.drs.path())
+            if not skip_datasetid_match_for_projects.__contains__(pctx.project.lower()):
+                raise InconsistentDRSPath(pctx.project, fh.drs.path())
         #Get tracking ID (None if not recorded into the file)
         fh.tracking_id = get_tracking_id(fh.ffp, pctx.project)
         # Evaluate if processing file already exists in the latest existing dataset version (i.e., "is duplicated")

@@ -195,11 +195,14 @@ def get_tracking_id(ffp, project):
     :param str project: The project name
     :returns: THe tracking_id string
     """
+    proj_overrides_for_assert_check = {'cordex-cmip6':'cordex'}
     with ncopen(ffp) as f:
         if 'tracking_id' in f.ncattrs():
             id = f.getncattr('tracking_id')
             try:
                 prefix, uid = id.split('/')
+                if proj_overrides_for_assert_check.__contains__(project):
+                    project = proj_overrides_for_assert_check[project]
                 assert prefix == PID_PREFIXES[project]
             except ValueError:
                 uid = id

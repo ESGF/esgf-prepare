@@ -136,6 +136,7 @@ def process(source):
     :rtype: *str*
 
     """
+    skip_datasetid_match_for_projects = ['cordex-cmip6']
     # Get process content from process global env
     assert 'pctx' in globals().keys()
     pctx = globals()['pctx']
@@ -157,7 +158,8 @@ def process(source):
             dataset_id = sh.get_dataset_id(pctx.cfg.get('dataset_id', raw=True))
         # Ensure that the first facet is ALWAYS the same as the called project section (case insensitive)
         if not dataset_id.lower().startswith(pctx.project.lower()):
-            raise InconsistentDatasetID(pctx.project, dataset_id.lower())
+            if not skip_datasetid_match_for_projects.__contains__(pctx.project.lower()):
+                raise InconsistentDatasetID(pctx.project, dataset_id.lower())
         # Deduce dataset_version
         dataset_version = sh.get_dataset_version(pctx.no_version)
         # Build mapfile name depending on the --mapfile flag and appropriate tokens
