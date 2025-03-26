@@ -12,9 +12,9 @@
 import os
 import sys
 
-from esgprep.constants import *
+import esgprep.constants as constants 
 
-__version__ = 'from esgprep v{} {}'.format(VERSION, VERSION_DATE)
+__version__ = 'from esgprep v{} {}'.format(constants.VERSION,constants.VERSION_DATE)
 
 
 class OutputControl:
