@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "esgf-prepare"
 version = "0.1.0"
@@ -5,6 +9,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "esgvoc>=0.3.0",
     "fuzzywuzzy>=0.18.0",
     "hurry-filesize>=0.9",
     "lockfile>=0.12.2",
@@ -13,3 +18,13 @@ dependencies = [
     "requests>=2.32.3",
     "treelib>=1.7.1",
 ]
+
+[tool.hatch.build]
+sources = ["."]
+
+[tool.hatch.build.targets.wheel]
+packages = ["esgprep"]
+
+[tool.hatch.version]
+path = "esgprep/__init__.py"
+
