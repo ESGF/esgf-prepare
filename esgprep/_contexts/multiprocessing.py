@@ -14,20 +14,21 @@ from configparser import NoOptionError, NoSectionError
 from hashlib import algorithms_available as checksum_types
 from importlib import import_module
 from multiprocessing import Lock, Pool
-from multiprocessing.managers import SyncManager, NamespaceProxy
+from multiprocessing.managers import SyncManager, Namespace 
+from multiprocessing.sharedctypes import Value
 
-import pyessv
 from esgprep._contexts import BaseContext
 from esgprep._exceptions import InvalidChecksumType, MissingCVdata
 from esgprep._handlers.drs_tree import DRSTree
-from esgprep._utils.print import *
+from esgprep._utils.print import Print, COLORS
 
+import esgvoc.api as ev
 
 class Manager(SyncManager):
     pass
 
 
-class ManagerProxy(NamespaceProxy):
+class ManagerProxy(Namespace):
     # We need to expose the same __dunder__ methods as NamespaceProxy,
     # in addition to the b method.
     _exposed_ = ('__getattribute__', '__setattr__', '__delattr__', 'get_display_lengths', 'add_path', 'append_path', 'create_leaf')
@@ -148,10 +149,11 @@ class MultiprocessingContext(BaseContext):
         # Load project CV.
         Print.info('Loading CV')
         try:
-            pyessv.load(self.get_cv_authority()) # Lolo change cause pyessv change
+            assert("institution" in ev.get_all_data_descriptors_in_universe())
+            #pyessv.load(self.get_cv_authority()) # Lolo change cause pyessv change
             # pyessv.load_cv(self.get_cv_authority(), self.project)
         except AssertionError:
-            raise MissingCVdata(self.get_cv_authority(), self.project)
+            raise MissingCVdata("esgvoc", "na") # TODO improve error message according to change pyessv into esgvoc
 
         # Get checksum client.
         self.checksum_type = self.get_checksum_type()
