@@ -1,4 +1,3 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 """
@@ -10,9 +9,13 @@
 from argparse import FileType
 
 from esgprep import __version__
-from esgprep._utils.parser import *
+from esgprep._utils.parser import CustomArgumentParser,MultilineFormatter, regex_validator, processes_validator, DirectoryChecker, VersionChecker, keyval_converter, DatasetsReader 
+import os
+import sys
+from datetime import datetime
+import argparse
 from esgprep.drs import run
-import esgvoc._utils.help as help
+import esgprep._utils.help as help
 
 
 def get_args():
@@ -78,23 +81,23 @@ def get_args():
         help=help.PROJECT_HELP['drs'])
     parent.add_argument(
         '--ignore-dir',
-        metavar="'^.*/(files|\.\w*).*$'",
+        metavar="'^.*/(files|\\.\\w*).*$'",
         type=regex_validator,
-        default='^.*/(files|\.[\w]*).*$',
+        default='^.*/(files|\\.[\\w]*).*$',
         help=help.IGNORE_DIR_HELP)
     parent.add_argument(
         '--include-file',
-        metavar="'^.*\.nc$'",
+        metavar="'^.*\\.nc$'",
         type=regex_validator,
         action='append',
-        default=['^.*\.nc$'],
+        default=['^.*\\.nc$'],
         help=help.INCLUDE_FILE_HELP['mapfile'])
     parent.add_argument(
         '--exclude-file',
-        metavar="'^\..*$'",
+        metavar="'^\\..*$'",
         type=regex_validator,
         action='append',
-        default=['^\..*$'],
+        default=['^\\..*$'],
         help=help.EXCLUDE_FILE_HELP)
     group = parent.add_mutually_exclusive_group(required=False)
     group.add_argument(
