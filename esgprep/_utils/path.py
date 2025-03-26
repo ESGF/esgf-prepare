@@ -9,23 +9,20 @@
 
 """
 
-import pyessv
-from esgprep._utils.print import *
-from esgprep._utils.cv import *
+from esgprep._utils.print import Print
 from esgprep.constants import VERSION_PATTERN
-from pyessv.exceptions import NamespaceParsingError, ValidationError
 from pathlib import Path
+import esgvoc.api as ev
+import re
 
-
-def get_project(path):
+def get_project(path) -> str | None:
     """
     Extract project code from a pathlib.Path object.
 
     """
     # Get all scopes within the loaded authority.
-    scopes = {scope.name: scope.namespace for scope in
-              pyessv.get_cached()[0]}  # Lolo change all_scope() to get_cached()
-
+    #scopes = {scope.name: scope.namespace for scope in pyessv.get_cached()[0]}  # Lolo change all_scope() to get_cached()
+    scopes = set(ev.get_all_projects())
     # Find intersection between scopes list and path parts.
     project = set(Path(str(path).lower()).parts).intersection(scopes)
 
@@ -33,8 +30,9 @@ def get_project(path):
     if len(project) == 1:
 
         # Returns pyessv scope object as project.
-        return pyessv.load(scopes[project.pop()])
-
+        # return pyessv.load(scopes[project.pop()])
+        return project.pop()
+        
     elif len(project) == 0:
         Print.debug(f'No project code found: {path}')
         return None
@@ -55,9 +53,9 @@ def project_idx(path):
     # Get project code.
     project = get_project(path)
 
-    if project and project.name in str(path).lower():
+    if project and project in str(path).lower():
         # Retrieve index of the project code in the path parts.
-        idx = Path(str(path).lower()).parts.index(project.name)
+        idx = Path(str(path).lower()).parts.index(project)
 
     return idx
 
