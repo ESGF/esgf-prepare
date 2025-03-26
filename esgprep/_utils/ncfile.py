@@ -11,19 +11,16 @@
 
 from uuid import UUID
 
-import pyessv
 from esgprep._exceptions import NoProjectCodeFound
 from esgprep._exceptions.netcdf import InvalidNetCDFFile
 from esgprep._exceptions.netcdf import NoNetCDFAttribute
-from esgprep._utils.cv import get_collections
-from esgprep._utils.print import *
+from esgprep._utils.print import Print
 from esgprep.drs.constants import PID_PREFIXES
-from esgprep._utils.pyessv_interface import get_authority_node,get_scope_node,get_collection_node
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
 from netCDF4 import Dataset
-from pyessv.exceptions import NamespaceParsingError, ValidationError
 
+import esgvoc.api as ev
 
 class ncopen(object):
     """
@@ -31,21 +28,22 @@ class ncopen(object):
 
     """
 
-    def __init__(self, path, mode='r'):
+    def __init__(self, path : str, mode: str ='r'):
 
         # Set file path.
-        self.path = path
+        self.path : str = path
 
         # Set open mode.
-        self.mode = mode
+        self.mode : str = mode
 
         # Instantiate netCDF object.
-        self.nc = None
+        self.nc : Dataset | None = None
 
     def __enter__(self):
         # Load netCDF Dataset content.
         try:
-            self.nc = Dataset(self.path, self.mode)
+            self.nc = Dataset(self.path, self.mode) # type: ignore
+
 
         # Catch IO error.
         except (IOError, OSError) as error:
@@ -53,13 +51,14 @@ class ncopen(object):
 
         return self.nc
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc): 
 
         # Close netCDF file.
+        assert(self.nc is not None)
         self.nc.close()
 
 
-def get_ncattrs(path):
+def get_ncattrs(path:str)->dict:
     """
     Loads netCDF global attributes from a pathlib.Path as dictionary.
     Ignores attributes with only whitespaces.
@@ -68,10 +67,9 @@ def get_ncattrs(path):
     with ncopen(path) as nc:
         dic = {attr: nc.getncattr(attr) for attr in nc.ncattrs() if (str(nc.getncattr(attr)).split())}
         return dic
-        #return {attr: nc.getncattr(attr)[0] for attr in nc.ncattrs() if (nc.getncattr(attr)).split()} #" Old
 
 
-def get_tracking_id(attrs):
+def get_tracking_id(attrs:dict)->str:
     """
     Get tracking_id/PID string from netCDF global attributes.
 
@@ -80,7 +78,8 @@ def get_tracking_id(attrs):
     project = get_project(attrs)
 
     # Set project code from global attributes.
-    key, score = extractOne('tracking_id', attrs.keys(), scorer=partial_ratio)
+    key, score = extractOne('tracking_id', attrs.keys(), scorer=partial_ratio) # type : # pyright: ignore[]
+
     if score < 80:
         raise NoNetCDFAttribute('tracking_id', values=attrs.keys())
     identifier = attrs[key].lower()
@@ -92,7 +91,7 @@ def get_tracking_id(attrs):
     return identifier
 
 
-def is_valid(identifier, project):
+def is_valid(identifier : str, project: str)->bool:
     """
     Validates a tracking_id/PID string.
 
@@ -129,28 +128,28 @@ def is_uuid(uuid_string, version=4):
         return False
 
 
-def get_project(attrs):
+def get_project(attrs: str | dict)->str | None:
     """
     Extract project code from the file attributes.
 
     """
-    # Get all scopes within the loaded authority.
-    scopes = {scope.name: scope.namespace for scope in pyessv.get_cached()[0]} # lolo change all_scopes() to get_cached()
-
+    
     # Get attributes.
     if not isinstance(attrs, dict):
         attrs = get_ncattrs(attrs)
 
     # Set project code from global attributes.
-    key, score = extractOne('mip_era', attrs.keys(), scorer=partial_ratio)# QUESTION ; mip_era ? ou project ?
+    key, score = extractOne('mip_era', attrs.keys(), scorer=partial_ratio) # type: ignore
+    # QUESTION ; mip_era ? ou project ?
     if score < 80:
         raise NoProjectCodeFound(attrs)
+    
     project = attrs[key].lower()
 
     # Check project code against CV.
     try:
-        return pyessv.load(scopes[project])
-
+        # return pyessv.load(scopes[project])
+        return project
     except KeyError:
         Print.debug(f'No project code found: {attrs.keys()}')
         return None
