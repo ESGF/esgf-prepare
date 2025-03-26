@@ -7,15 +7,15 @@
 """
 import traceback
 
-import pyessv
-
-from esgprep._exceptions import *
+import os
+from pathlib import Path
 from esgprep._utils.checksum import get_checksum
-from esgprep._utils.ncfile import drs_path, get_tracking_id, get_ncattrs
-from esgprep._utils.path import *
-from esgprep._utils.print import *
+from esgprep._exceptions import OlderUpgrade, UnchangedTrackingID, DuplicatedFile
+from esgprep._utils.ncfile import drs_path, get_tracking_id, get_ncattrs 
+from esgprep._utils.path import with_latest_version, get_version, with_file_folder, get_drs_down, get_drs_up
+from esgprep._utils.print import Print, COLORS, TAGS
 from esgprep.constants import FRAMES
-from esgprep.drs.constants import *
+from esgprep.drs.constants import SPINNER_DESC
 from esgprep._handlers.constants import LINK_SEPARATOR
 
 class Process(object):
