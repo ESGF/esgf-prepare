@@ -6,4 +6,5 @@ dist
 .idea
 .DS_Store
 /ops
-\.vscode/*
+\.vscode/*uv.lock
+.python-version
