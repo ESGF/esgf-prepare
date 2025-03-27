@@ -12,6 +12,7 @@
 import os
 import re
 import sys
+from datetime import datetime
 from ctypes import c_wchar_p
 from multiprocessing.sharedctypes import Value
 
@@ -234,11 +235,12 @@ class Print(object):
     @staticmethod
     def print_to_logfile(msg):
         Print.check_carriage_return(msg)
-        msg = re.sub('\\033\[([\d];)?[\d]*m', '', msg)
+        msg = re.sub('\\033\\[([\\d];)?[\\d]*m', '', msg)
         if Print.LOG_TO_STDOUT:
             sys.stdout.write(msg)
             sys.stdout.flush()
         else:
+            assert(Print.LOGFILE is not None)
             with open(Print.LOGFILE, 'a+') as f:
                 f.write(msg)
 
