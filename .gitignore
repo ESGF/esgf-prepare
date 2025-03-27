@@ -8,3 +8,4 @@ dist
 /ops
 \.vscode/*uv.lock
 .python-version
+esgprep/tests/input_files/
