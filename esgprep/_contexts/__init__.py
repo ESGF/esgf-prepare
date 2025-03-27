@@ -9,7 +9,7 @@
 
 """
 
-from esgprep._utils.print import *
+from esgprep._utils.print import Print
 
 
 class BaseContext(object):
