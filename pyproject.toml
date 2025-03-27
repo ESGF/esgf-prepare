@@ -28,3 +28,9 @@ packages = ["esgprep"]
 [tool.hatch.version]
 path = "esgprep/__init__.py"
 
+[dependency-groups]
+dev = [
+    "jupyter-console>=6.6.3",
+    "pytest>=8.3.5",
+]
+
