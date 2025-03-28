@@ -9,3 +9,4 @@ dist
 \.vscode/*uv.lock
 .python-version
 esgprep/tests/input_files/
+output_root/
