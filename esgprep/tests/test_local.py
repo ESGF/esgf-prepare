@@ -30,6 +30,7 @@ multi_file_dataset_2_path_v3 = "/home/ltroussellier/Bureau/dev/bddFromCiclad/bdd
 # on veut tester
 
 ##### make tous les arguments possibles
+#root_reconstruct = "/home/ltroussellier/Bureau/dev/bddFromCiclad/reconstruct_bdd"
 root_reconstruct = "/home/ltroussellier/Bureau/dev/bddFromCiclad/reconstruct_bdd"
 
 
@@ -128,14 +129,13 @@ def is_same_path_and_good_folder_structure(dataset_version_path):
 def test_default():
     clean()
     # DRS creation
-    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v00000001")
+    esgdrs_make(one_file_dataset_path_v1, "CMIP6", root_reconstruct, "v20180912")
 
     # what do we expect :
     # same structure as in root_path_incoming_files but in root_reconstruct
     # thus, we ll look that the path on the reconstruct is the same as the control one
     # and we ll test that the dataset folder is "fine" link d***** v***** etc ..
     is_same_path_and_good_folder_structure(one_file_dataset_path_v1)
-
     clean()
 
 

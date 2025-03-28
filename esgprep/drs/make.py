@@ -9,14 +9,17 @@ import traceback
 
 import os
 from pathlib import Path
+from esgprep._exceptions.netcdf import NoNetCDFAttribute
 from esgprep._utils.checksum import get_checksum
 from esgprep._exceptions import OlderUpgrade, UnchangedTrackingID, DuplicatedFile
 from esgprep._utils.ncfile import drs_path, get_tracking_id, get_ncattrs 
-from esgprep._utils.path import with_latest_version, get_version, with_file_folder, get_drs_down, get_drs_up
+# from esgprep._utils.path import with_latest_version, get_version, with_file_folder, get_drs_down, get_drs_up
+from esgprep._utils.path import extract_version, get_ordered_version_paths, get_path_to_version, get_version_and_subpath
 from esgprep._utils.print import Print, COLORS, TAGS
 from esgprep.constants import FRAMES
 from esgprep.drs.constants import SPINNER_DESC
 from esgprep._handlers.constants import LINK_SEPARATOR
+from esgvoc.apps.drs.generator import DrsGenerator
 
 class Process(object):
     """
@@ -72,16 +75,23 @@ class Process(object):
             current_attrs['filename'] = source.name
 
             # Add dataset-version to attributes.
-            current_attrs['dataset-version'] = self.version
+            current_attrs['version'] = self.version
 
             # Instantiate file as no duplicate.
             is_duplicate = False
 
             # Build directory structure.
             # DRS terms are validated during this step.
+             
             try:
-                drspath = drs_path(current_attrs, self.set_values, self.set_keys)
-                current_path = Path(self.root, drspath, source.name)
+                #drspath = drs_path(current_attrs, self.set_values, self.set_keys)
+                dg = DrsGenerator("cmip6")
+                # print(current_attrs)
+                drs_path = dg.generate_directory_from_mapping({**current_attrs, **{"member_id":current_attrs["variant_label"]}})
+                if len(drs_path.errors)!=0:
+                    raise Exception
+                current_path:Path = Path(self.root) / Path(drs_path.generated_drs_expression) / source.name 
+                # example : CMIP6/CMIP/CCCma/CanESM5/historical/r1i1p2f1/Amon/tas/gn/v20190429
             except TypeError:
                 Print.debug('Directory structure is None')
                 return False
@@ -90,20 +100,24 @@ class Process(object):
             latest_version = 'Initial'
 
             # Get latest existing version of the file.
-            latest_path = with_latest_version(current_path)
+            all_versions = get_ordered_version_paths(current_path.parent)
+
+            # latest_path = with_latest_version(current_path)
+            latest_path = all_versions[-1] if len(all_versions)>1 else None
+
 
             # 1. Check if a latest file version exists (i.e. with the same filename).
             if latest_path and latest_path.exists():
                 # 2. Check latest version is older than current version.
 
-                current_version = get_version(current_path)
-                latest_version = get_version(latest_path)
+                current_version = extract_version(current_path)
+                latest_version = extract_version(latest_path)
 
                 if latest_version > current_version:
                     raise OlderUpgrade(current_version, latest_version)
 
                 # Get latest file version attributes.
-                latest_attrs = get_ncattrs(latest_path)
+                latest_attrs = get_ncattrs(str(latest_path))
 
                 # 3. Check tracking IDs are different.
                 current_tracking_id = get_tracking_id(current_attrs)
@@ -136,30 +150,39 @@ class Process(object):
             if not is_duplicate:
 
                 # Add the current file to the "vYYYYMMDD" folder.
-                src = ['..'] * (1+len(get_drs_down(current_path).parts)) # Lolo ajout [".."] au départ ..
+                parts_from_version = get_version_and_subpath(current_path)
+                src = ['..'] * (len(parts_from_version)-1) 
                 src.append('files')
-                wff = with_file_folder(current_path)
-                src += get_drs_down(with_file_folder(current_path)).parts
+                # src += get_version_and_subpath(with_file_folder(current_path))
+                # src += parts_from_version
                 src.append(current_path.name) #Lolo Test to add filename at the end of the relative path reconstructed
+
                 self.tree.create_leaf(nodes=current_path.parts,
                                       label=f'{current_path.name}{LINK_SEPARATOR}{os.path.join(*src)}',
                                       src=os.path.join(*src),
                                       mode='symlink',
                                       force=True)
+                
 
                 # Add the "latest" symlink node.
-                nodes = list(dataset_path(current_path).parent.parts)
+                # nodes = list(dataset_path(current_path).parent.parts)
+                nodes = list(current_path.parts)[:-len(get_version_and_subpath(current_path))]
                 nodes.append('latest')
                 self.tree.create_leaf(nodes=nodes,
                                       label=f"{'latest'}{LINK_SEPARATOR}{ self.version}",
                                       src=self.version,
                                       mode='symlink')
 
+                nodes = list(current_path.parts)[0:-len(get_version_and_subpath(current_path))]
+
+                nodes.append('files')
+                nodes.append(current_path.name)
                 # Add the current file to the "files" folder.
-                self.tree.create_leaf(nodes=with_file_folder(current_path).parts,
+                self.tree.create_leaf(nodes=nodes,
                                       label=current_path.name,
                                       src=source, # Lolo Change current_path to source
                                       mode=self.mode)
+
 
                 # If latest file version exist and --upgrade-from-latest submitted.
                 if latest_path and latest_path.exists() and self.upgrade_from_latest:
@@ -176,7 +199,7 @@ class Process(object):
                             # Leaf is not created if already exists (i.e., force = False).
                             if latest_name != current_path.name and latest_name not in self.ignore_from_latest:
                                 src = os.path.join(root, latest_name)
-                                self.tree.create_leaf(nodes=current_path.parent.parts + latest_name,
+                                self.tree.create_leaf(nodes=list(current_path.parent.parts).append(latest_name),
                                                       label=f'{latest_name}{LINK_SEPARATOR}{os.readlink(src)}',
                                                       src=os.readlink(src),
                                                       mode='symlink')
@@ -196,6 +219,7 @@ class Process(object):
                 # default (i.e., moving files). In the case of --copy or --link, keep duplicates
                 # in place into the incoming directory.
                 else:
+                    assert(latest_path is not None)
                     src = os.readlink(latest_path)
                     self.tree.create_leaf(nodes=current_path.parts,
                                           label=f'{current_path.name}{LINK_SEPARATOR}{src}',
@@ -208,20 +232,17 @@ class Process(object):
             record = {'src': source,
                       'dst': current_path,
                       'is_duplicate': is_duplicate}
-            key = str(get_drs_up(current_path).parent)
+            key = str(get_path_to_version(current_path.parent))
 
             if key in self.tree.paths:
                 # mean we already saw this dataset
                 un = self.tree.paths[key]['latest']
-                print("AVANT",un)
                 self.tree.append_path(key, "files", record)
                 deux = self.tree.paths[key]['latest']
-                print("APRES", deux)
 
                 # self.tree.paths[key]['files'].append(record)
                 un = latest_version
                 deux = self.tree.paths[key]["latest"]
-                print(un,deux)
                 # print("CHECK_4 : ",latest_version, self.tree.paths[key]["latest"] )
                 # if latest_version != self.tree.paths[key]['latest']:
                  #    print("ERROR : ")
@@ -233,7 +254,7 @@ class Process(object):
                 self.tree.add_path(key, infos)
 
             # Print info.
-            msg = f'DRS Path = {get_drs_up(current_path)}'
+            msg = f'DRS Path = {get_path_to_version(current_path)}'
             msg += ' <-- ' + current_path.name
             Print.success(msg)
 
