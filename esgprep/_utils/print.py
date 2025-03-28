@@ -16,7 +16,6 @@ from datetime import datetime
 from ctypes import c_wchar_p
 from multiprocessing.sharedctypes import Value
 
-from esgprep._exceptions.github import *
 from esgprep.constants import SHELL_COLORS
 
 
@@ -37,8 +36,8 @@ class COLOR:
 
     COLORS = sys.stdout.isatty()
 
-    def __init__(self, color=None):
-        if color in COLOR.PALETTE.keys():
+    def __init__(self, color:str|None=None):
+        if color in COLOR.PALETTE.keys() and color is not None:
             self.color = COLOR.PALETTE[color]
         else:
             self.color = 0

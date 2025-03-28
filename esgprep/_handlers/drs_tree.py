@@ -15,13 +15,12 @@ from tempfile import NamedTemporaryFile
 
 from esgprep import _STDOUT
 from esgprep._exceptions import DuplicatedDataset
-from esgprep._exceptions.io import *
-from esgprep._utils.print import *
+from esgprep._exceptions.io import CrossMigrationDenied, MigrationDenied, WriteAccessDenied, ReadAccessDenied
 from esgprep._handlers.constants import UNIX_COMMAND_LABEL,UNIX_COMMAND, LINK_SEPARATOR
 from hurry.filesize import size
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
-
+import os
 
 class DRSLeaf(object):
     """
@@ -298,7 +297,7 @@ class DRSTree(Tree):
         # TEST ça à l'air de marcher ..: au lieu de regarder dans self.path => qu'on a remplit au fur et à mesure .. on va directement checker le Tree
         all_tree_nodes = self.all_nodes()
         for node in all_tree_nodes[::-1]:
-            if node.is_root()==False:
+            if node.is_root() is False:
                 str_path = node.identifier
                 # c = node.data
                 # d = c.dst

@@ -10,12 +10,14 @@
 """
 
 import signal
+import os 
 from configparser import NoOptionError, NoSectionError
 from hashlib import algorithms_available as checksum_types
 from importlib import import_module
 from multiprocessing import Lock, Pool
-from multiprocessing.managers import SyncManager, Namespace 
+from multiprocessing.managers import SyncManager, NamespaceProxy
 from multiprocessing.sharedctypes import Value
+from ctypes import c_wchar_p
 
 from esgprep._contexts import BaseContext
 from esgprep._exceptions import InvalidChecksumType, MissingCVdata
@@ -28,7 +30,7 @@ class Manager(SyncManager):
     pass
 
 
-class ManagerProxy(Namespace):
+class ManagerProxy(NamespaceProxy):
     # We need to expose the same __dunder__ methods as NamespaceProxy,
     # in addition to the b method.
     _exposed_ = ('__getattribute__', '__setattr__', '__delattr__', 'get_display_lengths', 'add_path', 'append_path', 'create_leaf')

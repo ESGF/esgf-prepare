@@ -78,7 +78,7 @@ def get_tracking_id(attrs:dict)->str:
     project = get_project(attrs)
 
     # Set project code from global attributes.
-    key, score = extractOne('tracking_id', attrs.keys(), scorer=partial_ratio) # type : # pyright: ignore[]
+    key, score = extractOne('tracking_id', attrs.keys(), scorer=partial_ratio) # type: ignore
 
     if score < 80:
         raise NoNetCDFAttribute('tracking_id', values=attrs.keys())
@@ -258,7 +258,7 @@ def get_terms_from_attrs(attrs, set_values=None, set_keys=None):
     #return set([pyessv.load(term) for term in terms])
     return terms
 
-def drs_path(attrs, set_values=None, set_keys=None):
+def drs_path(attrs:dict, set_values:str|None=None, set_keys:str|None=None)->str:
     """
     Returns the corresponding directory structure string.
 
