@@ -85,7 +85,7 @@ def get_tracking_id(attrs:dict)->str:
     identifier = attrs[key].lower()
 
     # Verify valid value.
-    assert is_valid(identifier, project.name)
+    assert is_valid(identifier, project)
 
     # Return value.
     return identifier
