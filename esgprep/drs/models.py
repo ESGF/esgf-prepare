@@ -143,15 +143,16 @@ class Dataset(BaseModel):
         return sorted(self.versions, key=lambda v: v.version_id, reverse=True)[0]
 
 
+
 class DrsOperation(BaseModel):
     """
     Represents an operation to be performed on the DRS tree.
+    Simplified for clarity and usability.
     """
     operation_type: MigrationMode
     source: Optional[Path] = None
     destination: Path
-    is_duplicate: bool = False
-    tracking_id: Optional[str] = None
+    description: Optional[str] = None  # Human-readable description of the operation
     
     @field_validator('source', 'destination', mode='before')
     @classmethod
@@ -160,6 +161,7 @@ class DrsOperation(BaseModel):
         if v is not None:
             return Path(v).absolute().resolve()
         return v
+
 
 
 class DrsResult(BaseModel):

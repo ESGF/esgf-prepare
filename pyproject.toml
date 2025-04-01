@@ -34,3 +34,5 @@ dev = [
     "pytest>=8.3.5",
 ]
 
+[project.scripts]
+esgdrs = "esgprep.esgdrs:main"
