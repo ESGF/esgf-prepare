@@ -11,3 +11,5 @@ dist
 esgprep/tests/input_files/
 output_root/
 ../uv.lock
+esgprep/test_data
+uv.lock
