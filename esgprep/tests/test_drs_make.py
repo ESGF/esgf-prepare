@@ -1,16 +1,13 @@
 import os
-import sys
 import pytest
 import shutil
 import tempfile
-import datetime
 from pathlib import Path
 import netCDF4
 import numpy as np
 
 # Import the refactored DrsProcessor
 from esgprep.drs.make import DrsProcessor
-from esgprep.drs.models import MigrationMode, FileInput, DrsResult
 
 # Configuration
 PROJECT_ID = "cmip6"
@@ -110,7 +107,7 @@ def create_sample_netcdf_files(directory, count=3):
         subfolder.mkdir(exist_ok=True, parents=True)
         
         # Create NetCDF file with DRS-relevant attributes
-        filename = subfolder / f"cmip6_model{i}_var{i}.nc"
+        filename = subfolder / f"{PROJECT_ID}_model{i}_var{i}.nc"
         
         # Create NetCDF file with proper attributes
         ds = netCDF4.Dataset(filename, 'w', format='NETCDF4')
@@ -133,8 +130,12 @@ def create_sample_netcdf_files(directory, count=3):
         temp[:] = np.random.rand(10, 5, 5)
         
         # Add global attributes relevant for DRS with valid values
-        ds.project_id = PROJECT_ID
-        ds.mip_era = PROJECT_ID.upper()
+        temp_dict = {"cmip6":"CMIP6",
+                     "cmip6plus":"CMIP6Plus",
+                     "cmip7":"CMIP7"}
+        ds.project_id = temp_dict[PROJECT_ID]
+
+        ds.mip_era = temp_dict[PROJECT_ID]
         ds.activity_id = "CMIP" # Valid acitivity ID
         ds.institution_id = "IPSL"  # Valid institution ID
         ds.source_id = "IPSL-CM6A-LR"  # Valid source model ID
@@ -236,6 +237,7 @@ def test_drs_processor_execute_operations(test_setup):
     # Create DrsProcessor
     processor = DrsProcessor(
         root_dir=root_dir,
+        project = PROJECT_ID,
         mode="symlink",
         version=VERSION_STR
     )
@@ -272,6 +274,8 @@ def test_drs_processor_upgrade_symlink(test_setup):
     # Create DrsProcessor with symlink mode
     processor = DrsProcessor(
         root_dir=root_dir,
+        project = PROJECT_ID,
+
         mode="symlink",
         version=VERSION_STR
     )
@@ -314,6 +318,8 @@ def test_drs_processor_set_custom_values(test_setup):
     # Create DrsProcessor with custom values
     processor = DrsProcessor(
         root_dir=root_dir,
+        project = PROJECT_ID,
+
         mode="symlink",
         version=VERSION_STR
     )
@@ -361,6 +367,8 @@ def test_drs_processor_copy(test_setup):
     # Create DrsProcessor with copy mode
     processor = DrsProcessor(
         root_dir=root_dir,
+        project = PROJECT_ID,
+
         mode="copy",
         version=VERSION_STR
     )
@@ -401,6 +409,8 @@ def test_drs_processor_link(test_setup):
     # Create DrsProcessor with link mode
     processor = DrsProcessor(
         root_dir=root_dir,
+        project = PROJECT_ID,
+
         mode="link",
         version=VERSION_STR
     )
@@ -442,6 +452,8 @@ def test_drs_processor_version_update(test_setup):
     # Create DrsProcessor for first version
     processor1 = DrsProcessor(
         root_dir=root_dir,
+        project = PROJECT_ID,
+
         mode="copy",
         version=first_version
     )
@@ -465,6 +477,8 @@ def test_drs_processor_version_update(test_setup):
     # Create DrsProcessor for second version
     processor2 = DrsProcessor(
         root_dir=root_dir,
+        project = PROJECT_ID,
+
         mode="copy",
         version=second_version
     )
@@ -502,6 +516,8 @@ def test_drs_processor_with_ignores(test_setup):
     # Create DrsProcessor with ignore_from_incoming
     processor = DrsProcessor(
         root_dir=root_dir,
+        project = PROJECT_ID,
+
         mode="copy",
         version=VERSION_STR,
         ignore_from_incoming=files_to_ignore
@@ -571,6 +587,8 @@ def test_drs_processor_upgrade_from_latest(test_setup):
     # Create DrsProcessor for second version with upgrade_from_latest=True
     processor2 = DrsProcessor(
         root_dir=root_dir,
+        project = PROJECT_ID,
+
         mode="copy",
         version=second_version,
         upgrade_from_latest=True
