@@ -341,21 +341,21 @@ Default is to scan incoming files with "list" action, or if no cached scan resul
 """
 
 COPY_HELP = """Copy incoming files into the DRS tree. 
-Default is moving files.
+Default is link files.
 
 """
 
-LINK_HELP = """Hard link incoming files to the DRS tree.
-Default is moving files.
+LINK_HELP = """Hard link incoming files to the DRS tree (the default).
+Default is link files.
 
 """
 
 SYMLINK_HELP = """Symbolic link incoming files to the DRS tree.
-Default is moving files.
+Default is link files.
 
 """
 
-MOVE_HELP = """Move incoming files to the DRS tree (default)."""
+MOVE_HELP = """Move incoming files to the DRS tree."""
 
 MAX_PROCESSES_HELP = """Number of maximal processes to simultaneously treat several files (useful if checksum calculation is enabled).
 Set to "1" seems sequential processing.
