@@ -84,8 +84,10 @@ class DRSLeaf(object):
         """
         Checks permissions for DRS leaf migration.
         Discards relative paths.
-
         """
+        # Normalize root to string
+        root = str(root) if root else ''
+        
         # Check src access.
         # Define src access depending on the migration mode
         if self.mode == 'move':
@@ -96,13 +98,19 @@ class DRSLeaf(object):
                 raise ReadAccessDenied(getpass.getuser(), self.src)
 
         # Check dst access (always write).
+        # Ensure dst is an absolute path
+        dst = str(self.dst)
+        if not dst.startswith('/'):
+            # If it's a relative path, make it absolute by prepending root path
+            dst = os.path.join('/', dst)
+        
         # Backward the DRS if path does not exist.
-        dst = self.dst
-        while not os.path.exists(dst) and dst != root:
-            dst = os.path.split(dst)[0]
+        while not os.path.exists(dst) and dst != root and dst != '/':
+            dst = os.path.dirname(dst)  # Use dirname instead of split
+        
         if os.path.isabs(dst) and not os.access(dst, os.W_OK):
             raise WriteAccessDenied(getpass.getuser(), dst)
-
+            
     def migration_granted(self, root):
         """
         Check if migration mode is allowed by filesystem.
