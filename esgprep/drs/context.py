@@ -59,7 +59,7 @@ class ProcessingContext(MultiprocessingContext):
             self.ignore_from_incoming = list()
 
         # Set DRS migration mode.
-        self.mode = 'move'
+        self.mode = 'link'
         for mode in ['copy', 'link', 'symlink']:
             if hasattr(args, mode) and getattr(args, mode):
                 self.mode = mode
