@@ -36,3 +36,4 @@ dev = [
 
 [project.scripts]
 esgdrs = "esgprep.esgdrs:main"
+mapfile = "esgprep.esgmapfile:main"

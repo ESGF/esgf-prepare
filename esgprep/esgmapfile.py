@@ -8,9 +8,12 @@
 """
 
 from esgprep import __version__
-from esgprep._utils.help import *
-from esgprep._utils.parser import *
+from esgprep._utils.help import VERSION_HELP, PROGRAM_DESC, EPILOG, HELP, LOG_HELP, VERBOSE_HELP, PROJECT_HELP, MAPFILE_NAME_HELP, OUTDIR_HELP, ALL_VERSIONS_HELP, SET_VERSION_HELP, LATEST_SYMLINK_HELP, IGNORE_DIR_HELP, INCLUDE_FILE_HELP, EXCLUDE_FILE_HELP, MAX_PROCESSES_HELP, COLOR_HELP, NO_COLOR_HELP, MAPFILE_SUBCOMMANDS, MAPFILE_HELPS, DIRECTORY_HELP, NO_CHECKSUM_HELP, CHECKSUMS_FROM_HELP, TECH_NOTES_URL_HELP, TECH_NOTES_TITLE_HELP, NO_CLEANUP_HELP, DATASET_LIST_HELP, DATASET_ID_HELP, QUIET_HELP, BASENAME_HELP, SUBCOMMANDS
+from esgprep._utils.parser import CustomArgumentParser, MultilineFormatter, regex_validator, processes_validator, DirectoryChecker, VersionChecker, keyval_converter, DatasetsReader, ChecksumsReader
 from esgprep.mapfile import run
+import os
+import sys
+import datetime
 
 
 def get_args():
