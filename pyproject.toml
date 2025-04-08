@@ -19,6 +19,11 @@ dependencies = [
     "treelib>=1.7.1",
 ]
 
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+
 [tool.hatch.build]
 sources = ["."]
 
