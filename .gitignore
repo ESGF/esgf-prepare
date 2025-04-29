@@ -13,3 +13,4 @@ output_root/
 ../uv.lock
 esgprep/test_data
 uv.lock
+tests/test_data/
