@@ -426,9 +426,9 @@ def test_drs_processor_copy(test_setup):
     created_files = list(root_dir.glob(f"**/{VERSION_STR}/**/*.nc"))
     assert len(created_files) > 0, "No files were copied to destination"
 
-    # Copied files should not be symlinks
+    # Copied files should now be symlinks in the version directory
     for file in created_files:
-        assert not file.is_symlink(), f"File should be a copy, not a symlink: {file}"
+        assert file.is_symlink(), f"File in version directory should be a symlink now: {file}"
 
     # Use Post_Test_Folder to verify directory structure
     # Find dataset folders (those containing version folders)
@@ -446,10 +446,14 @@ def test_drs_processor_copy(test_setup):
         # Test full directory structure
         test_folder.test()
 
-        # Additionally, verify files in "files" directory are not symlinks
+        # Additionally, verify files in "files/d*" directory are not symlinks
         files_dir = dataset_dir / "files"
-        for file_path in files_dir.glob("**/*.nc"):
-            assert not file_path.is_symlink(), f"File in 'files' dir should be a copy, not a symlink: {file_path}"
+        data_version_dirs = list(files_dir.glob("d*"))
+        assert len(data_version_dirs) > 0, f"No data version directories found in {files_dir}"
+
+        for d_dir in data_version_dirs:
+            for file_path in d_dir.glob("*.nc"):
+                assert not file_path.is_symlink(), f"File in '{d_dir.name}' dir should be a copy, not a symlink: {file_path}"
 
 
 def test_drs_processor_link(test_setup):
@@ -480,9 +484,10 @@ def test_drs_processor_link(test_setup):
         assert len(created_files) > 0, "No files were created"
 
         # Hard links are not symlinks but are linked to the same inode
+        # But now the version folder files should be symlinks to files in files/d* folder
         for file in created_files:
-            assert not file.is_symlink(), (
-                f"File should be a hard link, not a symlink: {file}"
+            assert file.is_symlink(), (
+                f"File in version directory should be a symlink: {file}"
             )
 
         # Use Post_Test_Folder to verify directory structure
@@ -501,18 +506,22 @@ def test_drs_processor_link(test_setup):
             # Test the directory structure
             test_folder.test()
 
-            # Additionally, verify files in "files" directory are hard links, not symlinks
+            # Additionally, verify files in "files/d*" directory are hard links, not symlinks
             files_dir = dataset_dir / "files"
-            for file_path in files_dir.glob("**/*.nc"):
-                # Find the corresponding source file in incoming_dir
-                source_files = list(incoming_dir.glob(f"**/{file_path.name}"))
-                if source_files:
-                    source_file = source_files[0]
-                    # Hard links have the same inode number
-                    source_inode = os.stat(source_file).st_ino
-                    link_inode = os.stat(file_path).st_ino
-                    print(f"Source inode: {source_inode}, Link inode: {link_inode}")
-                    assert not file_path.is_symlink(), "File in 'files' should be a hard link, not a symlink"
+            data_version_dirs = list(files_dir.glob("d*"))
+            assert len(data_version_dirs) > 0, f"No data version directories found in {files_dir}"
+
+            for d_dir in data_version_dirs:
+                for file_path in d_dir.glob("*.nc"):
+                    # Find the corresponding source file in incoming_dir
+                    source_files = list(incoming_dir.glob(f"**/{file_path.name}"))
+                    if source_files:
+                        source_file = source_files[0]
+                        # Hard links have the same inode number
+                        source_inode = os.stat(source_file).st_ino
+                        link_inode = os.stat(file_path).st_ino
+                        print(f"Source inode: {source_inode}, Link inode: {link_inode}")
+                        assert not file_path.is_symlink(), f"File in '{d_dir.name}' should be a hard link, not a symlink"
 
     except OSError as e:
         # Hard links might fail if incoming_dir and root_dir are on different filesystems
@@ -781,11 +790,30 @@ def test_drs_processor_upgrade_from_latest(test_setup):
         assert (dataset_dir / first_version).exists(), f"First version directory {first_version} not found"
         assert (dataset_dir / second_version).exists(), f"Second version directory {second_version} not found"
 
-        # 3. Files directory should contain files from both versions
+        # 3. Files directory should contain data version folders for both versions
         files_dir = dataset_dir / "files"
         assert files_dir.exists(), "Files directory not found"
-        files_count = len(list(files_dir.glob("**/*.nc")))
-        assert files_count >= first_version_count, "Files directory missing some files"
+
+        # Find d* folders for each version
+        first_data_version = first_version[1:]  # Remove 'v' prefix
+        second_data_version = second_version[1:]  # Remove 'v' prefix
+
+        first_data_dir = files_dir / f"d{first_data_version}"
+        second_data_dir = files_dir / f"d{second_data_version}"
+
+        assert first_data_dir.exists(), f"Data directory d{first_data_version} not found"
+        assert second_data_dir.exists(), f"Data directory d{second_data_version} not found"
+
+        # Count files in data version directories
+        first_data_files = list(first_data_dir.glob("*.nc"))
+        second_data_files = list(second_data_dir.glob("*.nc"))
+
+        assert len(first_data_files) > 0, f"No files found in d{first_data_version} directory"
+        assert len(second_data_files) > 0, f"No files found in d{second_data_version} directory"
+
+        # Total count should match or exceed the version directory counts
+        total_data_files = len(first_data_files) + len(second_data_files)
+        assert total_data_files >= first_version_count + second_version_count, "Files directory missing some files"
 
     # Clean up modified directory
     shutil.rmtree(modified_dir, ignore_errors=True)

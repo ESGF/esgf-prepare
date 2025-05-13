@@ -1,0 +1,4094 @@
+[33mcommit 5de1c2a3845c340688d4ccdce03b960881d2f558[m[33m ([m[1;36mHEAD -> [m[1;32mclean[m[33m)[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue May 13 11:31:41 2025 +0200
+
+    refactor: use post_test_folder in test_drs_make tests
+    
+    look in the esgprep/tests/drs. The test_drs_make doesnt use the post_test_folder to check if the process of building the directory structure is correct after a test.
+    refactorize this test__drs_make tests using port_test_folder assertion
+    
+    ```git-revs
+    1304e49  (Base revision)
+    5842d61  Import Post_Test_Folder class for directory structure assertions
+    2093845  Refactor test_drs_processor_execute_operations to use Post_Test_Folder assertions
+    c106917  Refactor test_drs_processor_upgrade_symlink to use Post_Test_Folder assertions
+    02d5d2d  Refactor test_drs_processor_copy to use Post_Test_Folder assertions
+    b241a95  Refactor test_drs_processor_link to use Post_Test_Folder assertions
+    05da24c  Complete the refactoring of test_drs_processor_version_update to use Post_Test_Folder assertions
+    152f112  Refactor test_drs_processor_with_ignores to use Post_Test_Folder assertions
+    HEAD     Refactor test_drs_processor_upgrade_from_latest to use Post_Test_Folder assertions
+    ```
+    
+    codemcp-id: 3-refactor-use-post-test-folder-in-test-drs-make-tes
+
+[33mcommit b36b31b27bcd5e484eca0d79ee9741dbcf489d4d[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue Apr 29 14:48:57 2025 +0200
+
+    test : add codemcp
+
+[33mcommit 3fc0564eb0a09dfccbf82fc8db18cb54198818e9[m[33m ([m[1;31morigin/clean[m[33m)[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue Apr 29 14:06:26 2025 +0200
+
+    fix : add test_data ignored
+
+[33mcommit 7fc30647bb22074d2866a5bab76b26f581572d6f[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue Apr 29 14:04:03 2025 +0200
+
+    fix : add test_data ignored
+
+[33mcommit 6832869205aa594e45537bd2b17dd9edcb70a1cf[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue Apr 29 14:00:11 2025 +0200
+
+    chore : test directory structure changed
+
+[33mcommit fc769f32f60cb6a4056cc37681482b3057431265[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue Apr 29 13:58:05 2025 +0200
+
+    chore : cleaning
+
+[33mcommit 99b8447a85c267f9fb5c0376f9b68d667bd70058[m[33m ([m[1;32mdevel[m[33m)[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue Apr 29 12:25:54 2025 +0200
+
+    chore : formating
+
+[33mcommit f0f4c589628a9a56bb8476d93a7c7391fefe878a[m[33m ([m[1;31morigin/devel[m[33m)[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue Apr 8 09:52:49 2025 +0200
+
+    fix : formatting
+
+[33mcommit 8ce0f773689530ad01faaf6164042acb2a147fdb[m[33m ([m[1;31morigin/devel2[m[33m)[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Fri Apr 4 15:42:36 2025 +0200
+
+    fix : mapfile CLI syntax warning
+
+[33mcommit 5984f47634e5b91bb3665608c67e7d821e9aa64e[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Fri Apr 4 15:30:08 2025 +0200
+
+    feat : mapfile refactoring
+
+[33mcommit de6e01333178048bf9998ba544eca52aa3828a6d[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Thu Apr 3 15:08:06 2025 +0200
+
+    fix : 'link' by default
+
+[33mcommit a64d9c4e580b85b15023d3bb78ab8a5ed1691702[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Thu Apr 3 13:47:53 2025 +0200
+
+    fix : 'link' by default
+
+[33mcommit 345e99daf439c671930b7d51c1d277f51ff673ac[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Thu Apr 3 12:45:12 2025 +0200
+
+    feat : support 'legacy multiprocessor'
+
+[33mcommit da97b790ecb6af6489438699ad4189d64b5e6549[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Apr 2 15:40:00 2025 +0200
+
+    feat : support 'differents' projects
+
+[33mcommit 9abb95ce00e74005f8a344d581f60b504599cdd3[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue Apr 1 15:52:37 2025 +0200
+
+    chore : add readme otherwise uv is not happy
+
+[33mcommit 951ea7f79f96d1d9a697d0a56b3559208dae4120[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue Apr 1 15:50:42 2025 +0200
+
+    chore : clean
+
+[33mcommit 34888872fd5fb738a2f1610da3a572ca149ff68b[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Tue Apr 1 15:43:05 2025 +0200
+
+    feat : refactoring  pydantics models and tests : 11/11
+
+[33mcommit 4e7e4d56db49df43386263409b38d8d1b8fc9ee2[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Mon Mar 31 15:09:52 2025 +0200
+
+    feat : Add pydantics models to ease code reading/maintnability
+
+[33mcommit 2012a537a3833f72b2e5acc94b5610fd49e30093[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Mon Mar 31 15:09:23 2025 +0200
+
+    feat : Add pydantics models to ease code reading/maintnability
+
+[33mcommit b32df030fcf06949440abb1bef839206016cba09[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Fri Mar 28 18:26:50 2025 +0100
+
+    chore : ignore lock
+
+[33mcommit 0e0a14f5675ad1012b1793c85fd8a64806389cc1[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Fri Mar 28 18:25:32 2025 +0100
+
+    chore : gnl improvements
+
+[33mcommit 472d111eaf10d327862fe24c2c067c31a2c5bd2b[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Fri Mar 28 18:23:20 2025 +0100
+
+    partial fix : 4/8 test passed
+
+[33mcommit 2d12126895fcfcd66632b83a87f4557dd953546e[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Fri Mar 28 15:10:36 2025 +0100
+
+    fix : remove obselete feature
+
+[33mcommit eb268540856fd3d71c7848def531e2b5d8a04e34[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Fri Mar 28 13:02:45 2025 +0100
+
+    fix : add output dir for test
+
+[33mcommit b472183c3cf262bc14cd5cf7de1e4fd2e109ea96[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Fri Mar 28 13:02:10 2025 +0100
+
+    fix : remove obselete github stuff
+
+[33mcommit 4480043a54833f6b0342300871b2990546a8e49c[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Fri Mar 28 11:12:45 2025 +0100
+
+    fix : remove obselete processes
+
+[33mcommit b17fc8b4231e0f22a790505ac7410e56a3b65d65[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Thu Mar 27 18:13:57 2025 +0100
+
+    feat : add jupyter-console & pytest dependency for dev
+
+[33mcommit a8d31effea88f44eac9ea8d7c703f96f8099749d[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Thu Mar 27 18:12:56 2025 +0100
+
+    fix : resolve pyright warning
+
+[33mcommit 8da07858bfa6ff56d64817a6e5d07166ec255f3d[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Thu Mar 27 18:11:42 2025 +0100
+
+    feat : add a simple test
+
+[33mcommit 49b7986eb2096fc7ea9d0bd9666d8899ca332b08[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Thu Mar 27 11:52:33 2025 +0100
+
+    fix : remove import *
+
+[33mcommit d60437506043644f2872da93aeaf469a4c9da244[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 15:08:57 2025 +0100
+
+    refactor : remove pyessv + code quality + starting esgvoc replacement
+
+[33mcommit 071db7a9d967da70eface91daad27cf18590fb0a[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 14:18:00 2025 +0100
+
+    fix : remove pyessv stuff
+
+[33mcommit 81bcaba840a5a15aac39683ac83c333596fef9cc[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 14:13:38 2025 +0100
+
+    fix : remove import *
+
+[33mcommit 65199dd45585b61220c415523e32619e3f5d45f2[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 11:37:52 2025 +0100
+
+    fix : remove pyessv reference
+
+[33mcommit 149dda1766fa9a3ca66df9c3e7068355f514ebd4[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 11:36:51 2025 +0100
+
+    fix : remove pyessv reference
+
+[33mcommit 6441452e0cd209ad17b1362296ce69ba2c8c5fba[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 11:36:06 2025 +0100
+
+    fix : use hatch to build package
+
+[33mcommit 41e0267cf4c7ffb93ca8ba74b122abe0b23738db[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 11:35:27 2025 +0100
+
+    fix : remove file since esgvoc will take care of its features
+
+[33mcommit ea661467c9c6553b970a30e881432a07f3c5ed39[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 11:30:37 2025 +0100
+
+    fix : remove import *, correct escape sequence
+
+[33mcommit 898a73eae8bacac16e13f6469695ac8e29a043a3[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 10:15:28 2025 +0100
+
+    fix : remove import *
+
+[33mcommit 03e5dfbc81ecfda8dadb5c5f87260706b09fd994[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 10:10:04 2025 +0100
+
+    feat : uv pyproject.toml
+
+[33mcommit c5b536a3263f34f78428c4b5d9f50c6e089f8c38[m
+Author: TROUSSELLIER Laurent <laurent.troussellier@ipsl.fr>
+Date:   Wed Mar 26 10:03:17 2025 +0100
+
+    fix : change import * into help.
+
+[33mcommit 6dda4588a393a05307433eb970b79535e891e8a7[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Mon Nov 28 09:27:15 2022 +0100
+
+    Change according to new pyessv feature
+
+[33mcommit e0e00b30ceebaee51bc54c1c384fab661ae2f294[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Tue Aug 9 14:48:15 2022 +0200
+
+    Debug :
+    * cmip6 to CMIP6
+    * latest uneccesary operation
+
+[33mcommit 91bb6006ede1394265f24332230c08c034914490[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Mon Aug 8 13:28:54 2022 +0200
+
+    Help by default if none arguments
+
+[33mcommit 6bf291c314785a805752c06ca4a36923de2edb28[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Mon Aug 8 13:22:48 2022 +0200
+
+    Help by default if none arguments
+
+[33mcommit 664f0f6446c00f9d8d492cd5661f401f46fed9ea[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Fri Aug 5 10:49:03 2022 +0200
+
+    hotfix : constant import
+
+[33mcommit f6aa555b9dededb31b49dd4e8c3328ba8ccb136f[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Thu Aug 4 15:21:09 2022 +0200
+
+    bug patches :
+    mapfiles show bug : changes mapfiles regex search
+    circular import bug : move some drs.constants into _handlers.constants
+
+[33mcommit fc0da0e0860a964c8f7bf6fa8065bacdfb7c2e77[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Tue Aug 2 12:24:14 2022 +0200
+
+    modify import to get rid of circular import error
+
+[33mcommit d02d40b2e1ffbcfeaedb365dbfd35e8225d28a3f[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Tue Aug 2 10:09:07 2022 +0200
+
+    remove fetchini and fetchtables from entrey point reference
+
+[33mcommit 6dd657f1adb918a8dbd5eea1e0f7f557bed54e2d[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Fri Jul 29 13:21:53 2022 +0200
+
+    remove ini reference
+    change str.format() to f_string
+
+[33mcommit a5b234e0bbce6f128d4536e2a968366b8108c78d[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Thu Jul 28 16:16:53 2022 +0200
+
+    multiprocessing debug
+    change access to instance variable of DRSTree to method
+    add exposed ManagerProxy method from DRSTtree
+
+[33mcommit 660cb4e69d2ab448db9b24131094746afa36802a[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Fri Jul 22 15:17:24 2022 +0200
+
+    change python_requires to <=3.9
+
+[33mcommit 460cd88567a42cb57fa99cfacd755100abb1852b[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Fri Jul 22 15:07:29 2022 +0200
+
+    Tentative de debug
+    * make
+    * remove
+    * latest
+
+[33mcommit 806210d293a2ae0d21273cf6df8a28e0a1d37f33[m
+Author: ltroussellier <laurent.troussellier@ipsl.fr>
+Date:   Thu Jun 30 14:29:12 2022 +0200
+
+    Debug + test(remote) hypothesis
+
+[33mcommit dfc6f8638adc015f3bf8ae71849b56b624f26a70[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Jan 10 15:49:03 2020 +0100
+
+    Last refactoring update
+
+[33mcommit e6f9b79cb848f204b68a2f83a6cd17ec424df602[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Aug 30 13:18:57 2019 +0200
+
+    Refactoring backup after "esgdrs latest"
+
+[33mcommit 679f0223aaee3166e699c0fadeb711d6c58915b0[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Aug 28 15:15:55 2019 +0200
+
+    refactoring new files
+
+[33mcommit 6fe5078e1cb398a54a4186c68fdcf6cb680d90fd[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Aug 28 15:15:24 2019 +0200
+
+    Refactoring backup before "esgdrs remove"
+
+[33mcommit 45d2d28daa884cd6f61fafa12d0ae8d8790d0648[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Aug 27 18:25:29 2019 +0200
+
+    Refactoring backup
+
+[33mcommit d02cb1052f41cb35d830720c6f2017f4c8f49899[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Aug 27 18:24:55 2019 +0200
+
+    Refactoring backup
+
+[33mcommit 944a893d268c0fee388581f6e8613b0e93356c9b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 1 15:07:57 2019 +0200
+
+    doc update
+
+[33mcommit 1975b596a3a0dad1c1641d85c15614fd552880fc[m[33m ([m[1;33mtag: v2.9.6[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 1 15:04:33 2019 +0200
+
+    update
+
+[33mcommit 35253fc328e969d614708476e97c74c61f26816b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 1 14:25:28 2019 +0200
+
+    version bump
+
+[33mcommit 6705fc82ddd7c563903915100f96fa788194baed[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Mar 26 16:15:06 2019 +0100
+
+    Change uniqueness check to allow a subset of the previous version
+
+[33mcommit 018170b4446e19de180d7b91c166b55320d8784b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Mar 26 13:28:27 2019 +0100
+
+    Review checksumming process for esgdrs + cleanup code
+
+[33mcommit 501ffc59225229d5ff1b551840e84d43a378bbff[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Mar 15 09:14:06 2019 +0100
+
+    Disable cleanup for "esgmapfile show"
+
+[33mcommit 1a0c09f7ff35add4cac663930ccb277c79ff00ee[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Jan 18 19:12:22 2019 +0100
+
+    Change log
+
+[33mcommit 461f7b838568e880a8803169f2bf3d5692944025[m[33m ([m[1;33mtag: v2.9.5[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Jan 18 19:10:49 2019 +0100
+
+    Bump version
+
+[33mcommit 96328376c4aedc175fff02c943ef420d5288e6d3[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Jan 18 19:10:05 2019 +0100
+
+    encoding bugfix
+
+[33mcommit e3a749b4d7f6034e5330258dbcef89a79df689da[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Dec 19 11:51:59 2018 +0100
+
+    Remove sheband from non entry points scripts
+
+[33mcommit 8826fa2c3f055fdab1f492c279027220518fb684[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Dec 18 10:18:22 2018 +0100
+
+    rollback recipe
+
+[33mcommit b5f8bae47dc012357eccc5d5d01b133ad6bea869[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Dec 18 10:15:40 2018 +0100
+
+    log update
+
+[33mcommit cd367ecf450b82c4ee25775ff068e4a6e86aba31[m[33m ([m[1;33mtag: v2.9.4[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Dec 18 10:09:22 2018 +0100
+
+    bump version
+
+[33mcommit bb539907e1d849c6fb12fe58e8db6225c24b1d05[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Dec 11 17:01:19 2018 +0100
+
+    Reformat color call + cleanup
+
+[33mcommit 92193ba7c9ebd93da5d553a59ce77213e7443d13[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Dec 10 18:07:38 2018 +0100
+
+    support multi-activity_id value
+
+[33mcommit 738c5f778582c9d5c64daada2403f23a089fab47[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Dec 10 16:57:59 2018 +0100
+
+    support multi-activity_id value
+
+[33mcommit aa2e22f7f0384decae431c6fdc055623398016f7[m
+Merge: 4d9c281 eaafd24
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Dec 10 16:45:16 2018 +0100
+
+    Merge branch 'master' into devel
+
+[33mcommit eaafd2437b69553165e6d433c13035c3b959398d[m
+Merge: 01baaa0 93c0e0a
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Dec 10 10:42:50 2018 -0500
+
+    Merge pull request #52 from alaniwi/control_colors
+    
+    add --color and --no-color args to commands
+
+[33mcommit 4d9c28184fc24b58b5e603c801c1e82f1cab9120[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Dec 10 16:42:26 2018 +0100
+
+    update
+
+[33mcommit 01baaa04caed8b4458c288581df7c398d8873cf3[m
+Merge: e3e2184 043cb19
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Dec 10 10:42:02 2018 -0500
+
+    Merge pull request #53 from alaniwi/conditional_stty
+    
+    only run stty if input/output are to a tty [#50]
+
+[33mcommit 93c0e0ab68314f71d148bdad5dc906ec93104c99[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Sat Dec 1 14:50:21 2018 +0000
+
+    add --color and --no-color args to commands; defaults to colors enabled if writing to a terminal
+
+[33mcommit 043cb19f17c810b0135c7f50f4014f22fc27ce8c[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Sat Dec 1 12:43:58 2018 +0000
+
+    only run stty if input/output are to a tty [#50]
+
+[33mcommit e3e2184266f93fa9dae55c542fb8a85bd4b9dc90[m
+Merge: b1b8d3a 65d8c5e
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Nov 9 09:52:34 2018 +0100
+
+    Merge remote-tracking branch 'origin/devel' into devel
+
+[33mcommit b1b8d3aed07e3001bbdc5247a19534593a2992a4[m[33m ([m[1;33mtag: v2.9.3[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Nov 9 09:50:54 2018 +0100
+
+    Bump version
+
+[33mcommit 65d8c5ec7ca2912cfa0d6139ac959a6bf98ee3d5[m
+Merge: fed86c3 ac596ca
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Nov 2 09:46:02 2018 +0100
+
+    Merge pull request #48 from sashakames/devel
+    
+    Update requests
+
+[33mcommit ac596ca3bb62ba0924cf4ab9f79a2f85c3dbc2a4[m
+Author: Sasha Ames <sashakames@users.noreply.github.com>
+Date:   Thu Nov 1 09:08:20 2018 -0700
+
+    update requests
+
+[33mcommit 3b7484114db75526a2805f340b8d5683329fd2cf[m
+Merge: f3dce7f fed86c3
+Author: Sasha Ames <sashakames@users.noreply.github.com>
+Date:   Thu Nov 1 09:03:47 2018 -0700
+
+    Merge pull request #2 from ESGF/devel
+    
+    Devel update
+
+[33mcommit fed86c3d0c54ba6ca8fbd7d6583136ef733dff18[m
+Merge: 758c5a4 e09f2e4
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Oct 26 17:22:17 2018 +0200
+
+    conda build
+
+[33mcommit 758c5a46f9d9e644e84a9d13333d1433e8f090c0[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Oct 26 17:21:25 2018 +0200
+
+    clean up
+
+[33mcommit e09f2e44fd5d980d4a0413947a9961cdcc58c91b[m
+Merge: 03c5e2d 5aba98b
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Oct 26 17:20:23 2018 +0200
+
+    Merge pull request #46 from sterlingbaldwin/master
+    
+    Conda build recipe
+
+[33mcommit 5aba98bb53d20e347488a111092a63ae7f94ac03[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 14:20:16 2018 -0700
+
+    Points git_url back at my branch
+
+[33mcommit 407c1389c668ea741fefe1b2727b778492064272[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 14:07:22 2018 -0700
+
+    Adds setup.py argument to allow switching between pip and conda install styles
+
+[33mcommit eecd67910baa9a442534b7da467e8dab479b97d7[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 13:48:11 2018 -0700
+
+    Adds argument to setup.py to build without pip dependencies
+
+[33mcommit c5ab5110d0fb3045e396fe3e1c471be8e8830f53[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 13:34:27 2018 -0700
+
+    Restores initial setup.py with dependency downloads
+
+[33mcommit 9e065e3126209f9cff9cd678c59417e35d349400[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 13:34:14 2018 -0700
+
+    Creates second verion of setup.py without dependency downloads
+
+[33mcommit db41d2c9bb60a28a08af13f06f4a8db9cc47c6e1[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 13:04:28 2018 -0700
+
+    Removes setup.py install step, changes to noarch
+
+[33mcommit 42b21365df0f91940c7d98f6bf7f62ef02161dd7[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 10:57:20 2018 -0700
+
+    Fixes esgf-config-parser name
+
+[33mcommit e022a137fa67370c2974d51586442d12edb2e5c4[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 10:53:54 2018 -0700
+
+    Adds channels during build
+
+[33mcommit 4cf8d56043538bee1d16e3660f7cf4b250285588[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 10:45:36 2018 -0700
+
+    Removes version pins
+
+[33mcommit 1de0f30af95aff7efe3be05917e0a08fa1747168[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 10:42:02 2018 -0700
+
+    Fixes metadata issues
+
+[33mcommit 5bf36fe2ecaf5f8b1d7a062410ed59cd8d421eeb[m
+Author: Sterling Baldwin <baldwin32@llnl.gov>
+Date:   Fri Oct 19 10:38:16 2018 -0700
+
+    Initial attempt to build
+
+[33mcommit 03c5e2d8cc878441fc27c79f430c27d4f46d4219[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Sep 21 10:24:00 2018 +0200
+
+    Bug fix on file discovery
+
+[33mcommit a70f77b6ffc2518b737adf4276d0c8fba958a6cb[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Sep 20 13:00:38 2018 +0200
+
+    doc update
+
+[33mcommit 9922de5846158dcb73e391c9507b13aefe12f066[m[33m ([m[1;33mtag: v2.9.2[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Sep 20 12:58:17 2018 +0200
+
+    Bump version date
+
+[33mcommit 04ff46f968a6a818e9f2e051e6caad7319e402b4[m
+Merge: cefedc3 ee60da3
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Sep 20 12:54:42 2018 +0200
+
+    Merge branch 'devel' of github.com:ESGF/esgf-prepare into devel
+
+[33mcommit cefedc3b02d049d1753651c7696eb6756c65e99f[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Sep 20 12:53:48 2018 +0200
+
+    Bump version date
+
+[33mcommit ee60da3f099315785ce5ed6c6672e174164bee57[m
+Merge: 81a0b73 e854ba0
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Sep 17 09:56:34 2018 +0200
+
+    Merge pull request #43 from nci-vl/nci/fix-key-error
+    
+    Thanks for catching this ! I will cut a new release of esgprep this week including all merged PR.
+
+[33mcommit e854ba03d475a801878444854dcfe584beba1592[m
+Author: Chris Allen <chris.allen@nci.org.au>
+Date:   Mon Sep 17 17:31:51 2018 +1000
+
+    KeyError thrown if project doesn't exist in PID_PREFIXES dictionary
+    
+    When checking the "tracking_id" attribute from a NetCDF file, if the
+    project doesn't exist in "PID_PREFIXES" (eg. CMIP5) then the assert
+    statement causes a KeyError.  If a given project doesn't use prefixes,
+    then presumably it shouldn't appear in the dictionary either so check
+    for that separately.
+
+[33mcommit 81a0b73fadaf118cf79dc2ad9e9213e6bd290539[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Sep 3 16:10:49 2018 +0200
+
+    fix collector bug
+
+[33mcommit 3fee444ed9ff0b6c34160b989c7ca499bcf79f63[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Sep 3 11:53:43 2018 +0200
+
+    remove test code
+
+[33mcommit f405e8e46161ad15753bf926a63485073c916d16[m
+Merge: cb8bdd9 9042ca1
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Sep 3 11:52:01 2018 +0200
+
+    Merge pull request #41 from alaniwi/refactor_quiet
+    
+    fix unwanted characters in `esgmapfile show --quiet` output (again)
+
+[33mcommit 9042ca10b0b66caafed3edde7e34ea61b1c4202f[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Wed Aug 15 17:41:15 2018 +0100
+
+    Remove existing implementation of '--quiet' (which exists only for esgmapfile),
+    and implement it in a new way, where if it is set, all output is directed to
+    /dev/null except when explicitly turned on.  This ensures more robustly that no
+    messages will be printed which contaminate the output of --quiet, even if
+    written from some unexpected place in the code.  (Output on stderr is still
+    permitted, because any calling script which captures the output can easily
+    separate that out.)
+
+[33mcommit cb8bdd9340b12e36ebb5514dc6a176770b81f09a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Aug 10 10:32:44 2018 +0200
+
+    Change log
+
+[33mcommit d9d8a1eeb01807018b5c07aa5d5df6dae4e48c3e[m[33m ([m[1;33mtag: v2.9.1[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Aug 10 10:30:54 2018 +0200
+
+    Doc update
+
+[33mcommit b1c03803e3be9643a22578f456242b53652dd11b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Aug 10 10:29:22 2018 +0200
+
+    Rollback version
+
+[33mcommit 94d47e731ebc06619f9614cd95b1eaa9800cdc13[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Aug 8 18:59:31 2018 +0200
+
+    Bump version
+
+[33mcommit b80711127172767788e59fbdb9e80d93301cbf26[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Aug 8 18:59:07 2018 +0200
+
+    Change ESGINI env var to ESGINI_DIR
+
+[33mcommit 9a18139053b24a18a6e75309da42c3419513fd1c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Aug 2 12:18:34 2018 +0200
+
+    No checksum when initial version + helpformatter exception when no terminal
+
+[33mcommit ba8902a24acc656376381f207405c51615db5114[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jul 26 18:57:17 2018 +0200
+
+    Fix symlinks issue + move checksum compute in multiprocessing + bump version
+
+[33mcommit 761ee2c213b539c044ad8e231dfb92f9b12f6d8e[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jul 25 12:57:25 2018 +0200
+
+    Add first test + improve help message
+
+[33mcommit fa31864044741a24bd531c2aa819709b4069d785[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jul 25 12:57:03 2018 +0200
+
+    Add first test + improve help message
+
+[33mcommit f71d76820017b7f928fed0986fade187e1b9fc12[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 24 14:14:30 2018 +0200
+
+    Bugfix on esgfetchini
+
+[33mcommit b8ea4abbf6073f5ebeee9dea91a01d3e879dde1a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 24 10:57:42 2018 +0200
+
+    Doc fixes
+
+[33mcommit 1893593ac0d1533db1e14a771c5c40dd02cabe73[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 24 10:38:12 2018 +0200
+
+    Doc fixes
+
+[33mcommit 00d2379727a7eff96680652ce03a5cf00780b1c9[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 24 10:35:01 2018 +0200
+
+    Log update
+
+[33mcommit 2f8093dfa7cc14ba1329daecf55a4f277c7fc869[m[33m ([m[1;33mtag: v2.9.0[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 24 10:33:37 2018 +0200
+
+    Update date
+
+[33mcommit 1ae2a638d05df22bfb45aaca82ab7e41656a05b4[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 24 10:32:51 2018 +0200
+
+    Reformat and inspect code
+
+[33mcommit 9b8d17a1ffbc42ec368e7a3c9e14b7b1392bb453[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 24 10:26:43 2018 +0200
+
+    Remove useless code
+
+[33mcommit f3dce7f9c35796e33ae835fe9731d4145389e03f[m
+Merge: 121e3c5 fedaf8d
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jul 23 15:12:23 2018 +0200
+
+    merge from multiprocessing branch
+
+[33mcommit fedaf8d52c4eec2431335eeffe54b6eb24d61682[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jul 23 15:09:42 2018 +0200
+
+    Documentation update
+
+[33mcommit 11360a87c5856f45933f468823c49310c3095dac[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jul 23 14:28:29 2018 +0200
+
+    Bugfixes and typos
+
+[33mcommit ddff1cbee122b3e9515e38bea6c2da2671217755[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jul 23 12:29:38 2018 +0200
+
+    Bugfixes and typos
+
+[33mcommit f1684721e796cb9568579a6237eebe15cfe8645c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jul 23 10:45:20 2018 +0200
+
+    Bugfixes + control tracking ID
+
+[33mcommit 4ed9baaa7516a45f7fafbd3b1c55321e859f4a7b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 17 15:44:53 2018 +0200
+
+    Bugfixes
+
+[33mcommit 75873049f70e77e31b92174568c5d7495570a627[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 17 14:32:26 2018 +0200
+
+    Bugfixes
+
+[33mcommit ed4f043066646f6590351d8a274c5f0d9f9f5daa[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 17 12:29:06 2018 +0200
+
+    Fix check args
+
+[33mcommit 1130774b0d55c7cd3080c8a27cee7430680ae051[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jul 17 11:56:22 2018 +0200
+
+    testing
+
+[33mcommit d67eeec3b21c4974bfddd73709b94ba913522484[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jun 28 11:01:19 2018 +0200
+
+    esgdrs bufixes + rollback branch/tag regex in fetchtables module
+
+[33mcommit cf203973eb4c71a8b0184de892d7640cdddba290[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jun 27 16:58:34 2018 +0200
+
+    Backup before esgdrs refactoring
+
+[33mcommit f98b498d69afc3bd8e882ce319528bb505abfc6a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jun 27 09:03:38 2018 +0200
+
+    Ready for testing
+
+[33mcommit 121e3c5dbbeea14dcf6e7a3de3909466a0e72508[m[33m ([m[1;33mtag: v2.8.3[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jun 25 11:00:59 2018 +0200
+
+    bump version
+
+[33mcommit cae96eca17e304ebd793e2ccd8a2b78b16dbdbbe[m
+Merge: 61690bf 4932ac4
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jun 25 11:00:15 2018 +0200
+
+    backup
+
+[33mcommit 4932ac4a9bea9c7e37ef126a6199577f3c226795[m
+Merge: 2ab2aef 1e14646
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Jun 22 17:33:12 2018 +0200
+
+    Merge pull request #38 from ESGF/ai_devel
+    
+    Various changes re esgfetchtables - details below.
+
+[33mcommit 61690bf0bc59a7ff0696b38b603d11fcd3618d36[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Jun 22 17:31:16 2018 +0200
+
+    backup
+
+[33mcommit 1e146463f4f89ff1f1ac9d54b9714285f63bf90b[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Thu Jun 21 18:06:28 2018 +0100
+
+    create base class for processing context, move shared code between fetchini and fetchtables into base class, and add functionality for interactive prompting of password
+
+[33mcommit a42d7847aee396ca8cd8727038eccb95dbf98be3[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Thu Jun 21 17:20:55 2018 +0100
+
+    Various changes. Note long commit message follows.
+    
+    (1) Add options
+        --tag-regex
+    and
+        --branch-regex
+    
+    to allow multiple tags or multiple branches to be fetched.
+    
+    Example:
+    
+       esgfetchtables --project cmip6 --branch-regex '[0-9\.]+$'
+    
+    (2) Store the checksum and download URL for each file from the initial API
+    response relating to the whole directory (not only the name), avoiding the
+    need for API call for file info for each file individually.  This makes it
+    much faster, and far fewer API calls.  There is also a single API call for
+    the CMIP6_CV.json file done before any looping over branches/tags, because
+    this is always from master.
+    
+    (3) The "ctx.error" property is changed from a Boolean to a string or None,
+    so that the status can be properly displayed in case of an exception.
+
+[33mcommit 3faecb56a6b6754eba49f026018987609a5ccdcd[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jun 20 10:44:07 2018 +0200
+
+    Save current changes
+
+[33mcommit b6d52797b323c71e56fdbd5bd200fda747d0fa26[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jun 11 14:31:16 2018 +0200
+
+    save work
+
+[33mcommit 2ab2aef4dbd0b6b8f8479b0f6462f9263db7fb55[m[33m ([m[1;33mtag: v2.8.2[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jun 6 11:06:12 2018 +0200
+
+    Bump version
+
+[33mcommit 0e68fd090132595f54d7981f94779358359bcf17[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jun 6 11:05:53 2018 +0200
+
+    Fix dependcies and bump version
+
+[33mcommit 419445aa8e1cc674e29637960e226e7fa03d4d9a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jun 6 10:38:32 2018 +0200
+
+    Update multiprocessing in esgdrs
+
+[33mcommit d9c2c74e7e9dda2ae421152e8f0a61d138449f8a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jun 5 20:04:05 2018 +0200
+
+    Remove test implementation for future jenkins scenarios
+
+[33mcommit fa9f58753e3f0a56ec8b6a609bc749066d01628b[m
+Merge: d9c8035 5b6fc3d
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jun 5 14:08:48 2018 +0200
+
+    Merge branch 'devel' into multiprocessing
+
+[33mcommit 5b6fc3d88598bb2c6ada7045eda29da6c4003358[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Jun 1 18:57:53 2018 +0100
+
+    do not write control characters when spinner=False (messes up esgmapfile show --quiet)
+
+[33mcommit 90dcf33b06a93322f4ef273f40ef298f0b87baf2[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Jun 1 18:21:12 2018 +0100
+
+    initialise properties to None which are conditionally assigned
+
+[33mcommit 92d3c5afcc91cb1b08ab6ee841beadd5ced5ae7f[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu May 31 10:25:06 2018 +0200
+
+    Fix dependencies requirements
+
+[33mcommit d9c803504a94ebf694980876575159a091ca2d93[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu May 31 10:23:06 2018 +0200
+
+    rationalize multiprocessing
+
+[33mcommit 0e57c8390aec583a91e538d5fe30b31a092c84b8[m
+Merge: 8529412 f326e00
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu May 31 09:07:15 2018 +0200
+
+    resolve conflicts
+
+[33mcommit f326e002644e7c6ea704eb860e9cb0559b8589fd[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu May 31 09:00:38 2018 +0200
+
+    Shared method between esgfetch* tools
+
+[33mcommit 85294122eae4b6b8f1e01ad938fe7591f211581a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 22:47:56 2018 +0200
+
+    Add multiprocessing to esgdrs
+
+[33mcommit 5d9d27799246c7ba2f2260478219526f69d1557a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 22:45:48 2018 +0200
+
+    Add multiprocessing to esgdrs
+
+[33mcommit 8127946c19afd69f16687f35fbccedaa62a7b29b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 22:28:31 2018 +0200
+
+    Modify Collector class according to multiprocessing
+
+[33mcommit 63c193fa0479bd340096f39ecbb6d818eb4fce21[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 22:18:50 2018 +0200
+
+    Typo
+
+[33mcommit 3640191bf5e1b4f69897a2e6910d7e826a450255[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 22:15:00 2018 +0200
+
+    Disable check uniqueness test when checksumming disable
+
+[33mcommit 21394e08051b304683b7f073449ccbf8aaa4387e[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 22:11:26 2018 +0200
+
+    Add warning prefix + no_checksum flag to esgdrs
+
+[33mcommit ea873e0cb760b677d3c4bf7381462d9b0c1226a0[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 21:59:52 2018 +0200
+
+    Support GH_USER and GH_PASSWORD env variable to release GH API limit
+
+[33mcommit 4762f94d6fea3d4175b3691129bd0c418dd88aa1[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 21:57:17 2018 +0200
+
+    Support GH_USER and GH_PASSWORD env variable to release GH API limit
+
+[33mcommit a44f107c0acf63f298359bf72e58a45ab7a8f7b8[m
+Merge: f9a55bf 3b1e134
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 21:46:38 2018 +0200
+
+    Merge branch 'devel' into multiprocessing
+
+[33mcommit 3b1e1341f713165af9f1dfd45712dd57672d6a01[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 21:45:38 2018 +0200
+
+    fix requirements
+
+[33mcommit f9a55bf031087640a96223f2d6c978ac8131f0e1[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 21:43:02 2018 +0200
+
+    Set dependencies to one version required
+
+[33mcommit 38f5a934b5cf124bc70918a98356e544f5b7210b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 30 21:37:37 2018 +0200
+
+    Add multiprocessing to esgmapfile
+
+[33mcommit 52de0b266093b0b1bf835256093b07b88893622a[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Wed May 30 08:07:12 2018 +0100
+
+    catch another exception type to allow for case where args.ignore_from_latest==None
+
+[33mcommit 08632cac310538c159f57a7c5c74eb4e7a4e88c6[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed May 23 13:07:28 2018 +0200
+
+    save current work on multiprocessing
+
+[33mcommit 98d4f77de418af0bf74e8a9a080d951b285c3efd[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Sat May 19 09:18:11 2018 +0200
+
+    Improve print statement
+
+[33mcommit 701473e0ed62c48ca9fd26b5105ad8b138a1beba[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Sat May 19 09:13:57 2018 +0200
+
+    Fetch CMIP6_CV.json from master branch in any case
+
+[33mcommit 9953d514bf513df57511a108651fb1ddfb8035b6[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Sat May 19 09:11:14 2018 +0200
+
+    Fix checksum recomputing in case of no entry in checksum file
+
+[33mcommit bf19648e0ee2f19528309310be100d3a35d68eb8[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Sat May 19 09:05:10 2018 +0200
+
+    Fix path from checksum file
+
+[33mcommit 8b2c66ebcf9a9f3c4cea850b432d2bac9c685be1[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Sat May 19 08:58:48 2018 +0200
+
+    Retrieve real path from checksum_file
+
+[33mcommit d4965c88918edf097ebc8e9473098b7ea91a2a60[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 23:22:01 2018 +0200
+
+    Typo
+
+[33mcommit 2ea3ea6fa0fd30b553bb4c90517d78f0fa99634c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 23:21:42 2018 +0200
+
+    Typo
+
+[33mcommit 9189931791b9324fda43ee4179c63b1b24a16ac3[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 23:20:10 2018 +0200
+
+    Fix args
+
+[33mcommit c9c09d2a6226ebc9ef36ad606da70bbea75e076b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 23:02:06 2018 +0200
+
+    Bugfix + improve print statement
+
+[33mcommit 6060cec392cee07b496c92128635b20bb755a68b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 20:15:37 2018 +0200
+
+    Bump version
+
+[33mcommit e8927f1a5c0d38f423294167b0bec7ed8e54aaa8[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 17:53:24 2018 +0200
+
+    Doc update
+
+[33mcommit 234df77c9df3aea4b0425722774538e71e95deab[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 16:38:56 2018 +0200
+
+    Reformat code + optimize import and method sharing
+
+[33mcommit 8c61044fcff2a49e3d63e0604a3aba6ac4e2736a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 16:00:33 2018 +0200
+
+    Add esgfetchtables to setup.py
+
+[33mcommit 2d9213a29e5bb55432fa9b9a8cee5435e6251373[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 15:58:30 2018 +0200
+
+    Bugfixes and typo
+
+[33mcommit cf3ce9699503367d3f0b2cbd49c2c181cc968c5f[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 15:29:43 2018 +0200
+
+    Add esgfetchtables tool
+
+[33mcommit d25d5ce983c4c9f8e0af838abac2aad2f90773f3[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri May 18 15:29:17 2018 +0200
+
+    Prepare fetchtables tool
+
+[33mcommit 0014ce307d6f6b3edb3a2487de608c110695950e[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu May 17 17:50:52 2018 +0200
+
+    Add GH API Rate Limit reset time into exception
+
+[33mcommit 302a4f9418e0cb9c726ae2f956d6db897874ce59[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu May 3 15:51:28 2018 +0200
+
+    Modify ASCII program name
+
+[33mcommit 134e5154326a919eea914117a692a0df3e589a5c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu May 3 15:46:17 2018 +0200
+
+    Modify ASCII program name
+
+[33mcommit d6c79c951eee7413bef0cbe7678f987006c7da98[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu May 3 09:43:14 2018 +0200
+
+    update notebook
+
+[33mcommit 0c0a6fae69361b6bf0e8152b410df36838c2a985[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 30 14:21:25 2018 +0200
+
+    Improve checksum file read
+
+[33mcommit 8eff816471481235b28b54072af5b7d8a55d9237[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 30 13:12:41 2018 +0200
+
+    Streamine esgmapfile args
+
+[33mcommit 0b7d5f289610953c769292832856ce6734ca045c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 30 13:05:33 2018 +0200
+
+    Add --checkums-from feature for esgmapfile
+
+[33mcommit 28941a42bb33faf0fc663b9a455a1e38618513f0[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 30 11:48:17 2018 +0200
+
+    Streamline FileType from args
+
+[33mcommit 1219e70f39396ec8dcd2106735ee19f84a90f0cf[m
+Merge: 809e31a 25c5b53
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 30 10:42:32 2018 +0200
+
+    Merge branch 'devel' of ssh://github.com/ESGF/esgf-prepare into devel
+
+[33mcommit 25c5b53602ededabb4a22d80c4ff297f87cf8a24[m
+Merge: 51a7879 c688b1a
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 30 10:41:34 2018 +0200
+
+    Merge pull request #28 from alaniwi/devel
+    
+    exception handling tweaks
+
+[33mcommit 51a7879c899aaaf7cfff9d106e4fd83d4946ef4d[m
+Merge: a0b4d8a 1aa8648
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 30 10:40:31 2018 +0200
+
+    Merge pull request #32 from alaniwi/checksum_stat_fix
+    
+    stat outside iterator in checksum
+
+[33mcommit 809e31a414c2f4efd9aba2ed08c216b81bb85fc7[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 30 10:39:47 2018 +0200
+
+    Doc update
+
+[33mcommit 1aa8648418162c6e86879647edc305048e37e08b[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Sat Apr 28 17:32:54 2018 +0100
+
+    stat outside iterator in checksum
+
+[33mcommit c688b1ad25112e1d1de146ab656af8da773ed28a[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Sat Apr 28 16:56:49 2018 +0100
+
+    remove two general "except:" statements, and reraise KeyboardInterrupt so that ctrl-C aborts esgdrs
+
+[33mcommit a0b4d8ae415150ec3acce7a77e310845ffaad155[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Apr 20 17:56:22 2018 +0200
+
+    Doc update
+
+[33mcommit f41f402e555386b3c3e27d92bb2b18b353e108c9[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Apr 20 17:54:23 2018 +0200
+
+    Log update
+
+[33mcommit 927addf7dd153480f13ebf7894aae6a553d4ccd2[m[33m ([m[1;33mtag: v2.8.1[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Apr 20 17:48:33 2018 +0200
+
+    Bump version
+
+[33mcommit 8402eb2b8546f587c2f063fcee531553b0cfa093[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Apr 20 17:44:54 2018 +0200
+
+    Update ESGConfigParser requirement
+
+[33mcommit f6b12ca4c54ca1206d6e7796e3992e9309f55cbf[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Apr 20 17:36:32 2018 +0200
+
+    Update pattern translation
+
+[33mcommit 8b328509ac801bf919b193d43701f164f8d14fbd[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Apr 20 10:26:52 2018 +0200
+
+    date update
+
+[33mcommit 232d81aedef6ba15c54284d93fbd8a0a9684bb0c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Apr 20 10:26:13 2018 +0200
+
+    fix checkvocab intput
+
+[33mcommit 918c8ae2a81eff4dc1635174ff3c6a755d41a309[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Apr 17 10:19:30 2018 +0200
+
+    Set --basename=False by default
+
+[33mcommit b7d5bd6db61bd80e0f6b93cef121aaf3668f157b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Apr 17 10:16:52 2018 +0200
+
+    Reformatting and bugfix on --quiet
+
+[33mcommit 763ccad9b6039d048741a2c60cadc41361d58631[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Apr 17 10:00:30 2018 +0200
+
+    Reformatting
+
+[33mcommit 69466f21c35b2fa4fc84c3001a534a648647f716[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Apr 17 10:00:04 2018 +0200
+
+    Fix dataset id input
+
+[33mcommit 4f768a117642bdd71f2db5d987f63013c9c63314[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Apr 17 09:48:42 2018 +0200
+
+    Add esgprep ascii art to README
+
+[33mcommit 6efd17d60fdd4890cfc612ac0d5a606b51b807fa[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Apr 17 09:44:58 2018 +0200
+
+    Add --basename option for mapfile show
+
+[33mcommit f13002bcff60b3b81c2908062ac63e793b6a3d37[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Apr 17 09:27:46 2018 +0200
+
+    Update Readme
+
+[33mcommit 3f59bbdae9f7c05962c52229ad3cac0e9eb33e1c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 16 17:00:42 2018 +0200
+
+    Bugfixes and reformatting
+
+[33mcommit 0e733f2231b630078e8aa5e0ec2e22192c0381f1[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 16 16:03:00 2018 +0200
+
+    Input bugfix + quiet mode
+
+[33mcommit 03ade59f90bd4976eeaaa6f2f8075a45c8f10155[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Apr 16 15:24:49 2018 +0200
+
+    Input bugfix
+
+[33mcommit 96aba08f975d7b6e9199c1eee913bcdc13949e13[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 12 15:33:10 2018 +0200
+
+    Cleanup
+
+[33mcommit 9fdf885c3450ef28717a76dcad84b9a9477a50de[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 12 12:22:19 2018 +0200
+
+    Bugfix
+
+[33mcommit bffc09329ba51de6259e3684c9923f5277b53bd0[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Apr 6 12:39:32 2018 +0200
+
+    Fix collector filters when /latest is in the submitted directory
+
+[33mcommit 15628d2890bdeee823cf1ae22c48259770d570ac[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 5 16:06:47 2018 +0200
+
+    update changelog
+
+[33mcommit d15574c4a039c776535f3ad27c7e45c7a203f525[m[33m ([m[1;33mtag: v2.8.0[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 5 16:00:53 2018 +0200
+
+    docs update
+
+[33mcommit 1ef9bc7d6a46c480d2d4b1c2a60a088b36688f46[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 5 14:47:36 2018 +0200
+
+    Improve helps
+
+[33mcommit 86efc47400786d0f2e5e2f988a8349319309fd60[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 5 14:13:40 2018 +0200
+
+    Add default subparser selection
+
+[33mcommit 15173b323dcb8adf10d747dd041a7ea9eeaca540[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 5 12:41:48 2018 +0200
+
+    Fix setup.py
+
+[33mcommit 55852173b7593543cd65e8bb94750520e5b43d08[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 5 12:39:51 2018 +0200
+
+    Rename .py to command line name
+
+[33mcommit 01de27355a137106fe77c95b17b325c81714515d[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 5 12:32:58 2018 +0200
+
+    Modify setup.py
+
+[33mcommit 9f642f98310a736bba035966df023e3921414e2a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 5 12:00:44 2018 +0200
+
+    Change config parser version requirement
+
+[33mcommit 41b82f139ac97adf6cd14a898daf45b446e24ebd[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 5 11:52:47 2018 +0200
+
+    Doc update + esgmapfile show + bugfixes
+
+[33mcommit ee6eadfbfa9d41682a58cb20aca1b90f3d8884b3[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Apr 5 11:13:53 2018 +0200
+
+    Doc update + bugfixes
+
+[33mcommit a25df33ffcb83cc5662345720e7eaf7221a089c4[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Apr 4 15:07:54 2018 +0200
+
+    bump version
+
+[33mcommit ed6e3cad442fe459689d223cc823eb73ba02d0b7[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Apr 4 15:06:06 2018 +0200
+
+    Support hard-coded facets in directory format
+
+[33mcommit d864372a2e34245adcf84fe2467063b3d2e5758e[m
+Merge: 5b8b90a 4fca16a
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Apr 4 14:16:37 2018 +0200
+
+    Merge branch 'devel' into multicommands
+
+[33mcommit 5b8b90aa785a0701d42b3c84ca6a795bdc392787[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Apr 4 14:16:30 2018 +0200
+
+    create separate parsers
+
+[33mcommit 4fca16a60713dcc7d3b05e1c922c4357d8d5c301[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Apr 4 11:01:10 2018 +0200
+
+    Add lock on version pattern + start hard-coded facet support
+
+[33mcommit 091043772691719259de1a5cb37a259bde0c09e6[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Mar 28 16:19:52 2018 +0200
+
+    Release project lock and add assertion to ensure DRS and dataset ID consistency
+
+[33mcommit fd6b35c572600151011ac3e86ee7efda69938b54[m
+Merge: f6de84d 32a1d5c
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Mar 27 17:47:01 2018 +0200
+
+    resolve conflict
+
+[33mcommit 32a1d5c185cd23b1ccf0397822cd547723038c91[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Mar 21 09:42:57 2018 +0100
+
+    Replace IS-ENES-DATA by ESGF org name in doc
+
+[33mcommit e4e0f9439ed46bac5f713a7301ad8ba4dce431b0[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Mar 20 19:17:23 2018 +0100
+
+    Bump version
+
+[33mcommit c748a188b6d7a9a97d7ff79849a981d40533b5f1[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Mar 20 19:16:47 2018 +0100
+
+    Fix `--latest-symlink`
+
+[33mcommit a5d61d414f3dee609d46f5e5edba73239aab6b33[m[33m ([m[1;33mtag: v2.7.40[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Mar 14 09:30:50 2018 +0100
+
+    Minor bugfix + bump version
+
+[33mcommit f6de84dd37f95d47bb75d609106a2e577f9cfea4[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Mar 14 09:29:59 2018 +0100
+
+    Minor bugfix + bump version
+
+[33mcommit 604307b81034333754e9709bb327b549139049f2[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Mar 12 11:20:42 2018 +0100
+
+    update log
+
+[33mcommit 70b5b7a088863836f8d369f64e0122378ab4efac[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Mar 9 15:02:29 2018 +0100
+
+    bump version
+
+[33mcommit 9f27fa75a7595dac2e68360f3f16c3755bf7004d[m[33m ([m[1;33mtag: v2.7.39[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Mar 9 12:09:08 2018 +0100
+
+    bump version
+
+[33mcommit 80f1091d044399175257c043fa53fab1a0c8e371[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Mar 9 12:07:27 2018 +0100
+
+    doc update
+
+[33mcommit 6ef74e2be7b2255e81061ef82f5a47f126b78bea[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Mar 9 12:04:51 2018 +0100
+
+    Prepare code for "esgprep mapfile show" action
+
+[33mcommit 3d522639c75f7132a93232a9f11a27fe08de8e4f[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Mar 7 11:09:44 2018 +0100
+
+    bugfixes on new features
+
+[33mcommit e66693f2f2cf81a415c4ff311f20f4d410f230df[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Mar 5 16:34:19 2018 +0100
+
+    typo
+
+[33mcommit 465263044dc30bfe4e0941f9d6af4e330e5b78cd[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Mar 5 16:18:45 2018 +0100
+
+    Add "show" action to return mapfile names to be generated only
+
+[33mcommit 798d33068cf21c71f96d869f7517ffb2c27a445e[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Mar 5 15:46:28 2018 +0100
+
+    Add default drs action to "list"
+
+[33mcommit ded07e18538167d1508689ac98eba91056ca0293[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Mar 5 15:42:57 2018 +0100
+
+    List of files to ignore from latest during upgrade can be submitted
+
+[33mcommit 39a944a27559ede797d5a940dd2be9c4f37783f2[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Mar 5 15:09:15 2018 +0100
+
+    typo
+
+[33mcommit 89cda63fa5c4e4d175e4746967aade5d275c3591[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Mar 5 15:06:04 2018 +0100
+
+    Bugfixes on collector filters and todo print statement when removing latest symlink
+
+[33mcommit 7a42b3f04994e36d2aaddc70fce2fd8afbdf334d[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Feb 26 14:38:21 2018 +0100
+
+    Update change log
+
+[33mcommit 4141a896b18fe9ce2d605c0f6f58c720f6c5159d[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Feb 22 15:41:09 2018 +0100
+
+    Update change log
+
+[33mcommit 34614722ab3127861fd04411f8b36b7ee3682187[m[33m ([m[1;33mtag: v2.7.38[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Feb 22 12:37:38 2018 +0100
+
+    Rollback mip_era from ignored keys + bump version
+
+[33mcommit cfc67f03d0dc5e85e128d0b5ed839a036f679a26[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Feb 20 14:50:01 2018 +0100
+
+    Don't print progress bar if no files found remotely
+
+[33mcommit 65e3736072643bddb88cdd20874d95a85630483a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Feb 20 14:47:00 2018 +0100
+
+    Don't print progress bar if no files found
+
+[33mcommit b7cf9602b02c56a5c571b8451d4f0bf78ac2a341[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Feb 15 10:15:18 2018 +0100
+
+    Bug fix on congif:<project> section parsing when doesn't exist
+
+[33mcommit 3107d4c6e69cdf82b7ebb4866dd02b281b574400[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Feb 14 11:37:01 2018 +0100
+
+    Update changelog
+
+[33mcommit 899f00e967e7342882864770b186115688ffb5c7[m[33m ([m[1;33mtag: v2.7.37[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Feb 14 11:23:32 2018 +0100
+
+    Rollback "mapfile show" parser
+
+[33mcommit 0cb6756bd6cc80af301a647eedabebe5bd21d10c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Feb 14 11:17:08 2018 +0100
+
+    Print statement bugfix
+
+[33mcommit 79e2abc287edfd9eb1f5b616f03a801f275c3037[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Feb 14 10:58:08 2018 +0100
+
+    Fix print statement
+
+[33mcommit 8dbe8dea96eb5dc8b6e9be1b5e9a5d46cb79b080[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Feb 14 10:51:41 2018 +0100
+
+    update requirements + bumpd version
+
+[33mcommit 59b8e14e98e27d6327a765b1401fd029d263beef[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Feb 12 15:01:23 2018 +0100
+
+    Expect mapfile_drs from config:<project> section + prepare "show" action
+
+[33mcommit 88fd612b576358b3e5db1a61775635aa1a9df9bb[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Feb 12 12:28:48 2018 +0100
+
+    Update changelog
+
+[33mcommit 34d81a5b845410988295c8d2c0727a90e930fe78[m[33m ([m[1;33mtag: v2.7.36[m[33m)[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Feb 6 12:03:27 2018 +0100
+
+    Change GitHub urls in documentation
+
+[33mcommit e5f8c3c418bd1473371d1b50fb71f4ca7d3a7d50[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Feb 6 11:45:44 2018 +0100
+
+    Update changelog
+
+[33mcommit 4f338480a4e517e15e56ee9e8e2a08c3de5d0098[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Feb 5 12:07:58 2018 +0100
+
+    Bump version
+
+[33mcommit 571379802f6db56bc3e8a337ab5e81f2543139ae[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Feb 5 12:07:21 2018 +0100
+
+    Homogeneise progress bar among modules
+
+[33mcommit ef2eb0fc216317f4b013d7fb47f2adc03ab1c389[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Feb 5 09:57:03 2018 +0100
+
+    Bugfix on pbar with --debug
+
+[33mcommit bd37c5274bf78cd139f20aabbe218f6db1dec1be[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Feb 2 12:41:52 2018 +0100
+
+    fix steup.py python requirement
+
+[33mcommit aa7644268645acc2c0a93d34907dd07444093e2e[m[33m ([m[1;33mtag: v2.7.35[m[33m)[m
+Merge: 47f385c 2161c09
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Feb 2 12:39:54 2018 +0100
+
+    resolve README conflict
+
+[33mcommit 47f385c499099ea1a8bfb76737eaeb579bc0cc9f[m
+Merge: 95a1fbe ffb139f
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Feb 2 12:38:48 2018 +0100
+
+    resolve README conflict
+
+[33mcommit ffb139f065bdb2310db515e24742a9e15282bf18[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Feb 2 12:35:41 2018 +0100
+
+    Cleanup code and imports
+
+[33mcommit 4779d370dfe2b154d4da3d978f38fa3913c4febf[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Feb 2 12:34:24 2018 +0100
+
+    Bump version
+
+[33mcommit 5e0a2d02e33e7603d679b4879b1c2f70edafe780[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Feb 2 12:33:57 2018 +0100
+
+    Close progress bar before any further print statement
+
+[33mcommit 45571e418f7fc83f1fb3c0e31badb00299e4ec86[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jan 29 11:27:10 2018 +0100
+
+    Cleanup code
+
+[33mcommit 15dd045b6379a99322442be812e1e25036ba55fc[m
+Author: glevava <glipsl@ipsl.fr>
+Date:   Mon Jan 22 10:10:35 2018 +0100
+
+    optimize imports
+
+[33mcommit c194016b640d13924b6fe0b4f9d42c54a6441a03[m
+Author: glevava <glipsl@ipsl.fr>
+Date:   Mon Jan 22 09:53:21 2018 +0100
+
+    Cleanup code
+
+[33mcommit 5700c6c47df582de40a6da9508cf2348cb517ad5[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Jan 19 13:05:29 2018 +0100
+
+    Rollback --commands_file value to command-line argument in any case. Fix issue #17
+
+[33mcommit 96edf025c8f45fa6707676f4a15e137038b35bb9[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 18 16:46:01 2018 +0100
+
+    update doc link
+
+[33mcommit ee5662a61dcdf7971321d5c314272f5d643d529a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 18 16:42:41 2018 +0100
+
+    update readme + setup.py
+
+[33mcommit 2161c09e8281269c485df5209975d82a3b46cef9[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 18 16:41:36 2018 +0100
+
+    Update README.rst
+
+[33mcommit dad5b1deb9660aa3c2a439caa00f066231690c24[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 18 12:42:05 2018 +0100
+
+    bump version
+
+[33mcommit f2e06e03783bfd21ff01ea309d50edd32103d329[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 18 12:41:44 2018 +0100
+
+    reformat code
+
+[33mcommit 9fcd09db5bb45ab6ca5d56c38c62019a7b73b15d[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 18 12:40:42 2018 +0100
+
+    optimize imports
+
+[33mcommit 721d39eb0b0dbda87aa54d5feacb019088c126e1[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 18 12:27:29 2018 +0100
+
+    fix progress bar
+
+[33mcommit c5b9bdaabeb2abb8387365ca1a6ab7de732f2a36[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 18 11:57:16 2018 +0100
+
+    pbar behavior update
+
+[33mcommit 3d3225b02e5f183721cd6b5c214684d532240a29[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 18 08:56:42 2018 +0100
+
+    Update esgprep-and-cmip6.ipynb
+
+[33mcommit 7e583b675fd478a6c3e1cd9d61dbf747890af964[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 18 08:56:25 2018 +0100
+
+    Update esgprep-and-cmip6.ipynb
+
+[33mcommit 95a1fbef727387d5dd41faf07063b33ec81eeb7a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jan 16 15:41:52 2018 +0100
+
+    readme update
+
+[33mcommit 1aa2f7e7cc4cf822e44cd50a816c4f68969bb03d[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jan 16 15:37:31 2018 +0100
+
+    update notebook
+
+[33mcommit 1b2c72573ace56ac024eb53d0893f8c3dd3bb9b6[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jan 16 15:19:07 2018 +0100
+
+    doc update and bump version
+
+[33mcommit c8b53fca776a5ce3be92dc6cf2082fcce3f8bf76[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jan 16 15:16:29 2018 +0100
+
+    add notebooks for CMIP6
+
+[33mcommit 0571f7dd0b0b41e59637d1d0f916756286324ba1[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jan 16 14:10:09 2018 +0100
+
+    replace -V with -v and --version
+
+[33mcommit f4e1c616ce60c0e98199e2c9de3cac067d27e214[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jan 16 10:29:15 2018 +0100
+
+    bump version
+
+[33mcommit 1b6e96def010963dc2a21fe2e6385be842cbc679[m
+Merge: 5a39123 1990736
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jan 16 09:13:27 2018 +0100
+
+    Merge branch 'devel' of ssh://github.com/IS-ENES-Data/esgf-prepare into devel
+
+[33mcommit 19907368d9ade0cdeaa00c9ebfe0c241b1f39018[m
+Merge: e1085f9 4aed3fa
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jan 15 09:10:15 2018 +0100
+
+    Merge pull request #16 from alaniwi/devel
+    
+    when max_threads=1, do not create a thread pool
+
+[33mcommit 4aed3faf3de9390e20a6bf0f2fd0c24f40a3f898[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Sun Jan 14 17:35:05 2018 +0000
+
+    when max_threads=1, do not use threading library
+
+[33mcommit 5a39123b3c7656565385d71fcfa5f4f2843cdbe4[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Jan 12 09:25:03 2018 +0100
+
+    bump version
+
+[33mcommit e37fa5939d9d89570cfa2b66b0a6659b47600f6d[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Jan 12 09:23:05 2018 +0100
+
+    rollback hurry.filesize requirement
+
+[33mcommit e1085f9fff90e4487f6a51ac15f242fd800549a4[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jan 11 13:46:22 2018 +0100
+
+    docsting update + bump version
+
+[33mcommit ab60755be41c06f0338796247c91f948054f7260[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Jan 8 15:18:54 2018 +0100
+
+    Checksum handled by Python/hashlib instead of shell fork
+
+[33mcommit e7bcb70aee4080b1548a4c41bd32ab89d4775a1a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jan 3 13:24:25 2018 +0100
+
+    Add full control between latest and upgrade version avoiding duplicates + bugfixes
+
+[33mcommit c29d8e55d64f90c155d864d69ddd1a7ce3af0e50[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jan 2 14:41:54 2018 +0100
+
+    Bump version
+
+[33mcommit a256c806752cd7308a681eee92ea6beaa6586f81[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jan 2 14:40:58 2018 +0100
+
+    Bugfixes and "rm -f" instead of "unlink" for symlink deletion
+
+[33mcommit c20079075170046f744b0ea76aec12ecbd6b28a5[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Jan 2 10:56:34 2018 +0100
+
+    Add --upgrade-from-latest flag to allow different migration methods depending what is expected in the incoming
+
+[33mcommit 6e58e2236133096bc3534f441653004e1a01170a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Dec 21 12:56:41 2017 +0100
+
+    Apply duplicated file removal only with default migration (i.e., moving file)
+
+[33mcommit ace725a665b77aa9a325bf8deb2eab142ae890cf[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Dec 21 12:52:17 2017 +0100
+
+    Apply duplicated file removal
+
+[33mcommit ab948102bc15fb4f13d4c8920c976083a6dd6a01[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Dec 21 12:42:50 2017 +0100
+
+    Rename verbose mode in to debug mode
+
+[33mcommit 482eb4d9a47896b11e59e2f23b6dfa9426d230b3[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Dec 21 12:40:35 2017 +0100
+
+    Catch DuplicatedFile error for particular treatment + bump version
+
+[33mcommit 32efc190dcccd26852377e81c32f7112d056f2b3[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Dec 20 18:35:51 2017 +0100
+
+    Remove --error-on-duplicates first implementation
+
+[33mcommit 4a644e60f1fef053ebaadbd2981f56a44a09a0e1[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Dec 20 18:32:54 2017 +0100
+
+    Remove --no-checksum option as files should be strictly compare
+
+[33mcommit ae552335c570c9da133d5a854a9e59823d874c1d[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Dec 18 12:18:15 2017 +0100
+
+    update doc
+
+[33mcommit 0c0cf1e7205cfabb20ec09402c630e678cbe02c8[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Dec 18 09:22:49 2017 +0100
+
+    Fix ascii issue by older treelib version and complete some docstrings
+
+[33mcommit 6812e4d10eff7014c5f3186cacb0e67e45737962[m
+Merge: 55cd8c3 b5e2de1
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Dec 18 08:54:59 2017 +0100
+
+    Merge branch 'devel' of ssh://github.com/IS-ENES-Data/esgf-prepare into devel
+
+[33mcommit b5e2de1eb8cd14b8266231cff5a5376680e4d7db[m
+Merge: 7632e0c 0b5d9f9
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Dec 18 08:54:10 2017 +0100
+
+    Merge pull request #13 from alaniwi/devel
+    
+    Changes related to --commands-file
+
+[33mcommit 0b5d9f98a8bdd7e9a7ac8a27ece6414410ee231f[m
+Author: Alan Iwi <iwi@moon.badc.rl.ac.uk>
+Date:   Fri Dec 15 19:39:39 2017 +0000
+
+    Changes related to --commands-file
+    
+    * Changed all calls to print_cmd to use mode append (removed positional 'mode'
+      argument, and added keyword argument with a default value of 'a', which is
+      never overridden).  This is because "upgrade" is called once per data file,
+      so the commands file was being overwritten each time (in the call with the
+      mode="w"), so it only contained the commands for the last data file.
+    
+    * As a consequence of the change described above, it is necessary to deal with
+      the case of an already existing commands file.  So support for another
+      command-line option, "--overwrite-commands-file", is added.  If the file
+      exists and this option is set, delete the file.  If the file exists and this
+      is not set, exit with an error (and return status 1).
+    
+    * Renamed internal variable "printf" to "commands_file". The name "printf"
+      suggests that it relates to the "printf" string formatting in the C library
+      (see "man 3 printf"), which is confusing.
+    
+    * In ProcessingContext.__init__ , changed logging.warning to print (I can't
+      see any messages produced by logging.warning - is the logger initialised
+      yet?)
+
+[33mcommit 55cd8c36dacea88ed1ec760663022474aafd77a8[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Dec 15 19:08:59 2017 +0100
+
+    Bump version
+
+[33mcommit 7632e0c5a0e7af80503219f34276b6988ba90a98[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Dec 15 19:00:00 2017 +0100
+
+    Add file output option for command-lines statements
+
+[33mcommit 26479c86b080e6816cbf17211d0bc922b89bde4e[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Dec 15 18:26:59 2017 +0100
+
+    Improve stdout display
+
+[33mcommit c45e21bcd778d7995320ba29f578156753a19f58[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Dec 15 17:49:30 2017 +0100
+
+    doc update
+
+[33mcommit 264bd249b9a6943a0d545e41f3192efe12396932[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Dec 15 17:02:14 2017 +0100
+
+    Catch argument parsing error to set exit status to 99 and update the doc
+
+[33mcommit 93548676e0008888ff497ddb4702ee6beb4cc379[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Dec 15 16:32:53 2017 +0100
+
+    Add comment to avoid changes in "todo" print statements
+
+[33mcommit 7fc289cc4ce62a6e8f662f733ef71c9f3eec2e88[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Dec 15 15:46:55 2017 +0100
+
+    Improve warning messages
+
+[33mcommit 563244613ac378c113c331507fb34e0c35a20ef2[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Dec 15 11:24:28 2017 +0100
+
+    Add root in the controlled args for rescan
+
+[33mcommit b32f71604bf44724b02c52623d3a900eacd3c5cf[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Dec 6 11:35:24 2017 -0800
+
+    Add check if migration with hardlinks is allowed by filesystem
+
+[33mcommit 4d71b5ac35a38d489d99c32f1d706766e0439fed[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Nov 30 17:51:55 2017 +0100
+
+    Add no files found message + prepare check on partition
+
+[33mcommit 32603737896aec72cc992ac9c6b8a0758d11448c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Nov 30 15:49:22 2017 +0100
+
+    Collecting data before running processes
+
+[33mcommit 5014031983a763efbfafb4651dad25382f8009d1[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Nov 28 11:23:55 2017 +0100
+
+    Collecting data before running processes
+
+[33mcommit 9964e4ceaf730504858115160f90dd2db52ca9d9[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Nov 28 11:23:10 2017 +0100
+
+    Collecting data before running processes
+
+[33mcommit 9b43195a42e54faa6480059e0e6b0297391cced6[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Nov 15 12:45:27 2017 +0100
+
+    remove venv installation
+
+[33mcommit 809847ce70d0b581732c1e0d8a7b6af006ab476b[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Nov 14 11:16:08 2017 +0100
+
+    bump version
+
+[33mcommit a50f19162f6cb1158d7ac1a8bd650a57ccbb23ba[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Nov 14 11:14:03 2017 +0100
+
+    fix checksum client to consider + error msg understanding
+
+[33mcommit f3c8cb3f49fca31f2c3bb358a460f0fd445ca93c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Oct 24 16:21:28 2017 +0200
+
+    add venv installation
+
+[33mcommit c18fd8a01396ea2d55285f9c95280c2895ce12f3[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Oct 24 10:15:22 2017 +0200
+
+    doc update
+
+[33mcommit 515b53fd43b0bbf40acd2da9e3ac681279a7c4bb[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Oct 23 18:13:39 2017 +0200
+
+    collector filters bugfix
+
+[33mcommit dc379a6bd1312eac2b4ab6d682bdebd96ad14d87[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Oct 20 10:46:55 2017 +0200
+
+    doc update + bump version
+
+[33mcommit 6833fc07c2f614498a64ba05664b8a6ef4a0f965[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Oct 20 09:29:48 2017 +0200
+
+    doc update
+
+[33mcommit 5854f6a4d136f50da6789311a51c40610d0a0a84[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Oct 19 10:34:14 2017 +0200
+
+    update collector
+
+[33mcommit 87b8d2e6f88bd2c92e21217169543bd9604d7005[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Oct 19 09:34:32 2017 +0200
+
+    fix FileFilter for collector
+
+[33mcommit 37932c53c56244d46eb6e2a509c011ecdfd20aed[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Oct 19 09:08:31 2017 +0200
+
+    test netCDF4 1.3 + improve collector
+
+[33mcommit 37c117656ffe588206b6b1aa6c6d91632f77bed2[m
+Author: Mark A. Greenslade <momipsl@ipsl.jussieu.fr>
+Date:   Tue Oct 10 10:54:58 2017 +0200
+
+    Added sh folder to encapsulate shell interaction.  Added install / update commands.
+
+[33mcommit f5f186321f7d324d95f3933f9e91bd14453bdd8d[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Oct 6 11:50:59 2017 +0200
+
+    bump version
+
+[33mcommit bb75eed2f613a60e9471607b72bf10556513c0ef[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Oct 6 11:50:08 2017 +0200
+
+    fix type error on parser + partial mapfile renaming + print statement removal
+
+[33mcommit d7b55689e6e65df6d16a1adabc02d17ef027ddf8[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Sep 18 16:34:12 2017 +0200
+
+    bump version
+
+[33mcommit f632dcd2de39de65185c96da384533a2de1429c6[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Sep 18 16:24:47 2017 +0200
+
+    rollback permissions
+
+[33mcommit 1d181b5195f47736138c60342d459083736b63ae[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Sep 18 16:23:50 2017 +0200
+
+    rollback permissions
+
+[33mcommit 9ecdb7fb53753bf139679bf14ee2ae7263343abb[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Mon Sep 18 16:13:54 2017 +0200
+
+    bugfix
+
+[33mcommit 34dbf15fdd9011fef041e4b35946927f77cfa852[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Sep 1 15:11:04 2017 +0200
+
+    fix mip_era lower-case for dataset_id
+
+[33mcommit d8bcbf0d11e2a1a57204d1b00ce544a35faa78ba[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Sep 1 14:30:59 2017 +0200
+
+    docs typo
+
+[33mcommit bf2135f0d9625a6172c93eeee471b36750377d5f[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Sep 1 14:27:03 2017 +0200
+
+    docstings and docs review
+
+[33mcommit 6229dfcffb5e16fa58344d0bc99ff15f5493a727[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Sep 1 11:58:06 2017 +0200
+
+    add spinner when collecting a lot of files
+
+[33mcommit 8db63cea7ff68d6f8932ed7ae2cf1febc4f6421e[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Sep 1 10:46:23 2017 +0200
+
+    bugfix on collectors
+
+[33mcommit 5b8819be050f3fe3192e738018c9cbdb33a80fea[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Aug 31 17:57:17 2017 +0200
+
+    rm mapfiles
+
+[33mcommit a300fa4908a99ced22487bd3daa139b33281c7e7[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Aug 31 17:56:48 2017 +0200
+
+    fix typo
+
+[33mcommit d47ccc4413ba7cc828000cfaafd4ca8e3318da5c[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Aug 31 15:56:30 2017 +0200
+
+    fix for esg.cmip6.ini
+
+[33mcommit 676db73856c110fadb9e18973de67ab7ac908f18[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Aug 31 15:31:57 2017 +0200
+
+    context bug fix
+
+[33mcommit ea217b9c06bb65ec82298287d44136f8e67ef033[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Aug 31 09:14:04 2017 +0200
+
+    deprecated --not-ignored
+
+[33mcommit 9846ec0a48c42b29c0383b588dead8ef5c649776[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Aug 31 09:10:26 2017 +0200
+
+    version bump
+
+[33mcommit 7d7f016b5174c946b08891676488ba44bf285dad[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Aug 31 09:10:03 2017 +0200
+
+    add permission check before upgrade
+
+[33mcommit f5253e57cc42f6fbf50e1f74c938bd8e7d159663[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Aug 30 09:29:17 2017 +0200
+
+    fix not_ignored att in ctx
+
+[33mcommit 57d6d48fa2f5dda50465085e963d00ba5446b765[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Fri Aug 25 18:08:05 2017 +0200
+
+    ESGConfigParser usage + bump version
+
+[33mcommit 3976997ba87098001daa3b5aac2d982df2c3cf45[m
+Merge: 448dca1 2ed680c
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Aug 23 12:07:32 2017 +0200
+
+    Merge branch 'devel'
+
+[33mcommit 2ed680c553709423f381a5e17199ef2d34c397b3[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Aug 23 12:07:19 2017 +0200
+
+    bump version
+
+[33mcommit 30e70606a970e3fc557f43cfc14410fde880354a[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Aug 23 12:06:05 2017 +0200
+
+    review fix issue 6
+
+[33mcommit 4220d057847e4d54d9ae3686dc10a8475858f47a[m
+Author: Katharina <berger@dkrz.de>
+Date:   Tue Aug 8 14:45:43 2017 +0200
+
+    fix issue #6
+
+[33mcommit 880af48d00835947bb6465d800bbf712747763bd[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Tue Aug 1 18:32:03 2017 +0200
+
+    refactoring ending
+
+[33mcommit 448dca1a5aa2dbda2ee7e0d59ae28650cf456a6d[m
+Merge: 79f54b9 ad3ff12
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jul 13 13:49:44 2017 +0200
+
+    devel merge conflict
+
+[33mcommit 79f54b9af718c3607626a75d38d265278da7d1d9[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jul 13 12:48:06 2017 +0200
+
+    bugfixes
+
+[33mcommit 62621eabcd80107a2cd46b65a28e1e2efc7b7e76[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jul 13 11:23:30 2017 +0200
+
+    Exception bugfix
+
+[33mcommit b4767ccb5b6ba179dba051be689d16040574e919[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Thu Jul 13 11:12:43 2017 +0200
+
+    Exception refactoring
+
+[33mcommit eb984e1b128818e127b06956904d607d73b2a2a3[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jul 12 17:33:02 2017 +0200
+
+    rm .egg-info
+
+[33mcommit 88de17042b59e5a96971bc8b05fafcbf8bec91c2[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jul 12 17:32:01 2017 +0200
+
+    rm .DS_Store
+
+[33mcommit 7891cafeeec4da5c9c75a9ba43b56fb68fdb23f7[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jul 12 17:30:36 2017 +0200
+
+    General refactoring step 2
+
+[33mcommit b71df19b10ca4d401bedf4a717a3bcad13dc0108[m
+Author: Guillaume <glipsl@ipsl.fr>
+Date:   Wed Jul 12 11:37:06 2017 +0200
+
+    General refactoring with less dependices
+
+[33mcommit ad3ff1290ccd4082b67ad622a891733f07d30903[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jul 7 10:11:11 2017 +0200
+
+    force file scan with list action
+
+[33mcommit bac2e53dd1e9160acd77405576a443ec583d0b8d[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jul 6 14:30:49 2017 +0200
+
+    fix drs processing context
+
+[33mcommit df37060d62559d5c90dbef8a8782362847a22d92[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jul 4 16:39:53 2017 +0200
+
+    silent rescan for drs
+
+[33mcommit 2ea961ebde1c4f2f88e748855881f3ddfdb4d1c3[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 30 09:13:07 2017 +0200
+
+    bump version
+
+[33mcommit 08f8a958dbafce83616838d19c99f9b1d77bbe2d[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 30 09:12:24 2017 +0200
+
+    fix versioning bug
+
+[33mcommit 440db8cecb2e9a3cc6d59b790f78f1a6fe0d8a61[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 22 09:50:48 2017 +0200
+
+    change classifier
+
+[33mcommit 709d45facefc80783b2a8dba64a3837daff1d6bf[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 22 09:46:05 2017 +0200
+
+    bug fixes
+
+[33mcommit db0a0fa16ab26102c536c2f078e3572b3bfd44e5[m
+Merge: 287abe5 25a6b5d
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 22 09:32:10 2017 +0200
+
+    Merge branch 'devel' of ssh://github.com/IS-ENES-Data/esgf-prepare into devel
+
+[33mcommit 287abe520e716523952ba4914f0c9dc36989c7fe[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 22 09:31:54 2017 +0200
+
+    add tests
+
+[33mcommit 25a6b5d3c574f83fda3c617e06331bc577c92c78[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Mon Jun 19 10:41:34 2017 +0100
+
+    modify help text, per https://is-enes-data.slack.com/archives/C13QM42Q5/p1497865268644358
+
+[33mcommit 9819feb5b64d912f5394f58bed4d32edb26c7443[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 19 10:27:34 2017 +0200
+
+    doc update
+
+[33mcommit 3837de554b1542ada8c5136dacd7fbba6f8dc0cd[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 19 09:37:28 2017 +0200
+
+    bug fix of file discovery
+
+[33mcommit 47e7f494bf3cebc101bd572a552ebe3986d66d77[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 19 09:19:31 2017 +0200
+
+    improve output
+
+[33mcommit e42d28b952224761d4d148da8e10311d161cd412[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 16 17:33:14 2017 +0200
+
+    bump version
+
+[33mcommit bf2488cd87603b886d72810360e3bcc8dbe09125[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 16 17:30:00 2017 +0200
+
+    remove logs
+
+[33mcommit d1b866227d7e1ccfadde5ae3aed132b0e3ebb553[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 16 17:29:32 2017 +0200
+
+    change exit status according to errors log
+
+[33mcommit 14d63ae06da9779e00cd60d3781b99f701a32d06[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 16 16:34:36 2017 +0200
+
+    log errors instead of raising directory format exceptions
+
+[33mcommit 9f771d107a0a8db54e1c20b3cf9f5ba6ea5981b4[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 16 16:08:17 2017 +0200
+
+    remove --filter flag
+
+[33mcommit b6f88bd46d9a55f166d3c88dbc7e97e23407a69f[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 16 15:59:19 2017 +0200
+
+    add --ignore-dir-filter and --include-file-filter
+
+[33mcommit 06ceb74f071379aee80c5673f293d658ba2fa78c[m
+Merge: 59e9226 06c96da
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 15 14:06:27 2017 +0200
+
+    Merge branch 'devel' of ssh://github.com/IS-ENES-Data/esgf-prepare into devel
+
+[33mcommit 59e9226e1c2a932bf62cfaa11aea0320d0266e37[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 15 14:06:24 2017 +0200
+
+    change language programming
+
+[33mcommit 06c96da99d1292c57c69f765bde28edcccf49fd6[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Thu Jun 15 12:33:59 2017 +0100
+
+    do not use realpath when raising DirectoryNotMatch, because it makes it harder to understand where the error is coming from
+
+[33mcommit eab308ada379fc39c2f6399c8cf7c1fc9ad14194[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Thu Jun 15 12:21:16 2017 +0100
+
+    change all version dependencies to >= because == causes package management problems when dependencies go out of date and other packages in the same python environment require later versions
+
+[33mcommit 7cba4e9b0439e92f881807314941c2ae6d1796ae[m
+Merge: b052779 bc545b3
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Thu Jun 15 12:16:46 2017 +0100
+
+    Merge branch 'devel' of https://github.com/IS-ENES-Data/esgf-prepare into devel
+
+[33mcommit b052779c1f3320190996c7b6cda41f6ba88256fb[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Thu Jun 15 12:16:02 2017 +0100
+
+    fix missing import
+
+[33mcommit bc545b3b858ad3973f30aaa7be4c4d570dce2c73[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 15 09:33:37 2017 +0200
+
+    set netCDF4 version to 1.2.8
+
+[33mcommit 1f8a3e2810000c68ec7c7f7997b92605f45793d2[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 9 11:06:33 2017 +0200
+
+    doc update
+
+[33mcommit 6dfa0fc31f8107098471b3b597c80b3215acb5e9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 8 17:39:21 2017 +0200
+
+    fix version and packages version
+
+[33mcommit 0d3ea0a8d818a091e1db1751b012c69813aa7862[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jun 7 14:10:58 2017 +0200
+
+    doc update
+
+[33mcommit 05aeffd113e014a164c3e8abfd19c28e284bde6c[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jun 6 13:23:12 2017 +0200
+
+    add --symlink flag for drs subcommand
+
+[33mcommit cf450289cad67385086d2f8109626522ca95a7ea[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 2 19:03:49 2017 +0200
+
+    bumpo version
+
+[33mcommit 5564a83a7f3b22491bc5dd99fa2a4a2b1bd63cbc[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 2 09:38:02 2017 +0200
+
+    bugfix
+
+[33mcommit 31d439514fd47881c71dec9be693d82b10d26a75[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 2 09:37:11 2017 +0200
+
+    bugfix
+
+[33mcommit 0f0d5547f6b167122b10a1d15f581186e6703411[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 2 09:35:59 2017 +0200
+
+    bugfix
+
+[33mcommit 37f97f9c90e983987153ed5e05cdc93a04cb791e[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 2 09:33:59 2017 +0200
+
+    bugfix
+
+[33mcommit 5c7d4b9e6b29040faa6d415e0c2a76f10a2b2498[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 2 09:21:44 2017 +0200
+
+    bugfix
+
+[33mcommit d2558475951d3b206d1f984b5b405124b1cc879b[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 2 09:15:16 2017 +0200
+
+    bugfix
+
+[33mcommit 89fed995119044e55afd12936e74d9ae4a935264[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 2 09:10:17 2017 +0200
+
+    bugfix
+
+[33mcommit 0edaddebcc8a6dfa24101d1a6e80ce0fa1e262e3[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 12:46:14 2017 +0200
+
+    bugfix
+
+[33mcommit 24688aaff4ab6fba8df8742d330c62b5db9704a1[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 12:38:59 2017 +0200
+
+    bugfix
+
+[33mcommit ad7f82b46ffb383b66b8612b0394420c78cec0f7[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 12:38:14 2017 +0200
+
+    bugfix
+
+[33mcommit c68e7c6aae165edef8c5e223f9a13563692ff660[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 12:34:54 2017 +0200
+
+    bugfix
+
+[33mcommit 1d00c3dc17c997117e53293e644f8dc0618bf7ed[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 12:34:23 2017 +0200
+
+    bugfix
+
+[33mcommit 83aed79cc8ff839982b0335780b6a7b3da57a248[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 12:32:23 2017 +0200
+
+    bugfix
+
+[33mcommit 7d020b807c06b4b27d4b0e7c081597f547cd5478[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 12:28:34 2017 +0200
+
+    bugfix
+
+[33mcommit 6573ec744566d149a2c27e9ece9d79e8fbdb082d[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 12:23:38 2017 +0200
+
+    bugfix
+
+[33mcommit 31e1b18e85cfd86d1fe3ba55d803e250985adf62[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 12:22:01 2017 +0200
+
+    bugfix
+
+[33mcommit bb929944545ff5d6680ec4dde07b93534e215b1e[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 11:56:51 2017 +0200
+
+    bugfix
+
+[33mcommit 7effc58591671492f3fd04db04e6e22234857ba3[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 11:55:50 2017 +0200
+
+    bugfix
+
+[33mcommit e78ad398a5f3768de4b71bc42ce0e52756f73114[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 11:52:11 2017 +0200
+
+    bugfix
+
+[33mcommit 9440c61415669d6af8d576084d39108c267a4945[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 1 11:49:15 2017 +0200
+
+    bugfixes
+
+[33mcommit 1370834a879e29f48edf0fa10fd0c24470ccab14[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu May 11 16:11:00 2017 +0200
+
+    bugfix on config path
+
+[33mcommit f3d2ae995e0ce1953720ded9477b263f8118ea8a[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed May 10 09:21:31 2017 +0200
+
+    bump version
+
+[33mcommit e05a53cb31a08c0e7ac328faff8352dab44e10c7[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed May 10 09:20:20 2017 +0200
+
+    doc update
+
+[33mcommit ea9c6f8273b8c69d58dcec78ea8eea157822554c[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue May 9 17:47:07 2017 +0200
+
+    bugfixes
+
+[33mcommit 6d544d7947b498d2fd6e9d423cb5d1eae1e9c0e9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue May 9 17:42:17 2017 +0200
+
+    bugfixes
+
+[33mcommit 3c7b75dad619b5bcee65039724154e83ba333377[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue May 9 17:41:12 2017 +0200
+
+    bugfixes
+
+[33mcommit 044575b555b4f725c205133f5460fb8e4a7732b8[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue May 9 17:39:25 2017 +0200
+
+    bugfixes
+
+[33mcommit e4a9c3704d498a5c9fe2798c2b5e59b77850a35e[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue May 9 17:30:07 2017 +0200
+
+    bugfixes
+
+[33mcommit 97416cebc82b1771b40502e3083bc55e90ddfcd6[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue May 9 09:39:56 2017 +0200
+
+    2.7 release
+
+[33mcommit 2bf9dad74dae0453cd2b50cc0ab2e5841e6fdb45[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Apr 19 14:52:15 2017 +0200
+
+    homogenise python headers
+
+[33mcommit 719a6ede9aea140a09d254b5c28c7c9fe0f6e66c[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Apr 19 14:38:19 2017 +0200
+
+    fix out of scope files skipping
+
+[33mcommit b022378d9dbf8c84674f2cb21adb8aa79f4abe35[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Apr 18 15:38:59 2017 +0200
+
+    fix unlink latest symlink before upgrade
+
+[33mcommit 81f3300aafada4e482aeacd854eafbb71ab7798a[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Apr 18 14:37:52 2017 +0200
+
+    fix missing imports
+
+[33mcommit 3051c711a0f9a240f7c6270b0916d42292e555d3[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Apr 14 16:16:04 2017 +0200
+
+    2.7 devel release
+
+[33mcommit ccc970557b89c7f9691e67e9a222862ccfc61dd9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Mar 30 14:03:33 2017 +0200
+
+    docs update
+
+[33mcommit 92c033130bc5d6c1ad216a8bbb86f38c6a1dfebc[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Mar 30 12:51:41 2017 +0200
+
+    add progress bar + output improvements + no cleanup for mapfile outdir + backup tree for drs subcommand
+
+[33mcommit d57fed3bbbee35c70cc88caca1fc02872ce095aa[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Mar 14 15:28:28 2017 +0100
+
+    fix typo + default mapfile output dir
+
+[33mcommit 910da27ebbcc69be8c88fcce4403b66e5321aef3[m
+Merge: 969f455 a41677a
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Mar 14 11:01:01 2017 +0100
+
+    Merge pull request #2 from IS-ENES-Data/ai_dev
+    
+    updated pull request to include new commit
+
+[33mcommit a41677a9b51914ab1962a20d535afdb81aafe2ac[m
+Merge: c0d790f 969f455
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Mar 14 11:00:50 2017 +0100
+
+    Merge branch 'devel' into ai_dev
+
+[33mcommit c0d790f976bf93a0326db839fbd9bc6d8e2385cf[m
+Author: root <root@esgf-data-fedcheck.ceda.ac.uk>
+Date:   Mon Mar 13 14:28:26 2017 +0000
+
+    add diagnosis of where regexps are failing to the various ...NotMatch exception messages
+
+[33mcommit 969f4552ac814cbbea739b7016e39cf55a25ca4e[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Mar 10 17:05:00 2017 +0100
+
+    doc update
+
+[33mcommit b63697887f84f5c43f901acdb92b7065ebfba5d3[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Mar 10 17:03:00 2017 +0100
+
+    doc update
+
+[33mcommit 790bc6fa4350986d97b62d77313470e4255ae6ef[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Mar 6 17:34:18 2017 +0100
+
+    bugfix to prepend root path
+
+[33mcommit a8318fd722907278bd0a415e4001d48bedefcfe0[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Feb 20 14:11:03 2017 +0100
+
+    deprecated arg
+
+[33mcommit 285754b3427e6f2a3283fba152f5ecbe02120f99[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Mon Feb 20 12:59:56 2017 +0000
+
+    in mapfiles suppress checking / lookups for facets that are not of type enum; also try to unify how lists of facets are generated in the different programs, removing get_facets method
+
+[33mcommit 7e121140c7196e3263ed31f347c462dac04664f6[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Sat Feb 18 00:18:05 2017 +0000
+
+    Add option to do check-vocab from a list of dataset IDs instead of scanning the filesystem. The syntax for scanning from the filesystem is changed to use --directory instead of positional argument.
+
+[33mcommit 5a59653327df9fdefd4e3a43a00c112387916be7[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Feb 17 22:32:37 2017 +0000
+
+    change BADC to CEDA in credits, and tweaks to help strings
+
+[33mcommit abab044cee755b8df0e960641f35fd17c0217366[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Feb 17 22:18:04 2017 +0000
+
+    fix a doc string related to previous commit
+
+[33mcommit 0523ea160f7c894293abf72d66ed6961ae939f84[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Feb 17 22:13:11 2017 +0000
+
+    in check-vocab, only check facets that are of type enum
+
+[33mcommit b39d8fc7ccf9aea1d6afb0eccf1a9267423e2ba4[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Feb 17 21:45:47 2017 +0000
+
+    fix DirectoryCheckerAction to handle lists
+
+[33mcommit 61cc304b3849af6bfc6c9e0fe13fd7ae8c2c09bc[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Feb 17 21:45:03 2017 +0000
+
+    tweak some messages
+
+[33mcommit a62c85d9c37140bf08c25a0497d4993eacfb780c[m
+Merge: 33c3b56 6a74287
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Feb 17 19:03:05 2017 +0000
+
+    Merge branch 'ai_dev' of https://github.com/IS-ENES-Data/esgf-prepare into ai_dev
+
+[33mcommit 33c3b5684f10c58ef46752593cad44176ef38d25[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Feb 17 19:02:39 2017 +0000
+
+    add a .gitignore with "*.pyc"
+
+[33mcommit 13c4e4b00e77b049eb038317a5d6af8e5cfec3d2[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Feb 17 19:01:28 2017 +0000
+
+    correct a typo and a false statement in the docs
+
+[33mcommit 6a742879efc1318c4d7a159b348a23a4908d6a0c[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Fri Feb 17 18:44:59 2017 +0000
+
+    comment out --get-config while it does not seem to do anything
+
+[33mcommit 902fdda9d9fe715945a7a045e6afdbe7981489db[m
+Merge: da4616c 7fdf878
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Thu Feb 16 15:57:21 2017 +0000
+
+    Merge branch 'docs' into ai_dev
+
+[33mcommit 7fdf878fa064bbf428ccfe173311002c303f097a[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Thu Feb 16 15:55:33 2017 +0000
+
+    some doc tweaks
+
+[33mcommit da4616c3fedaf5e7b561620c77c5bd18833d7f5f[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Thu Feb 16 10:47:37 2017 +0000
+
+    resolve another merge conflict diff region that I overlooked
+
+[33mcommit cd760b4213cc99c061d7cd9525e7d1b8b5c37bc4[m
+Merge: 8cd995e 643f9b3
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Tue Feb 14 10:51:29 2017 +0000
+
+    branched from master, so now merging dev and resolve conflicts
+
+[33mcommit 8cd995e803d3100c5f9a1cccd5236968121030dc[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Tue Feb 14 10:47:43 2017 +0000
+
+    user action instead of type for directory argument checking; in particular ensure that checking of default config directory happens only when relevant
+
+[33mcommit 42f69b97ef19087f0e77c7955fd6cd1d9b310546[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Wed Feb 8 12:05:58 2017 +0000
+
+    layout of help text
+
+[33mcommit 643f9b372066dbb5b4e80ae22c37a89163833eb2[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Feb 1 14:09:50 2017 +0100
+
+    drs alpha release
+
+[33mcommit a21e59020b3a744ac7597f2ac94dada408549e26[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Dec 14 17:39:12 2016 +0100
+
+    add checksum comparison
+
+[33mcommit 55c48b855a3c96371d2e54c89732e92c56728290[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Nov 18 15:58:31 2016 +0100
+
+    existing logfile support
+
+[33mcommit a0baed4038d3c1b41c62a39cf73f3cda5804a0e0[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Nov 7 16:42:12 2016 +0100
+
+    improve messaging
+
+[33mcommit 0e31363e0a93032de79ca11b150a3f87cae0ec70[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 3 12:05:08 2016 +0100
+
+    typo
+
+[33mcommit 4f4e0b92cf9d8f83913dff474a0c6e251e929ace[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 3 12:03:51 2016 +0100
+
+    bugfix
+
+[33mcommit f3f137aecefd24df0b103c6c81e37477672701b8[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 3 12:02:20 2016 +0100
+
+    control data_root_path depending on project len
+
+[33mcommit f46fd686ade3d09bbb65f6b2b2afe8c6a055b911[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 3 11:45:22 2016 +0100
+
+    bugfix
+
+[33mcommit 79f8e6bd5be7cbf6dcf4055f05d472c72bbe7fe6[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 3 11:43:55 2016 +0100
+
+    fix esg.ini configuration behavior
+
+[33mcommit 9aa9ee73ac931643e2296d35ab64da8d6985271b[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 3 11:35:28 2016 +0100
+
+    bug fix
+
+[33mcommit 18e20e020089adb1a50f019090e8892908e10e8a[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 3 11:26:13 2016 +0100
+
+    support direcotry data path for data_root_path and revised info logs
+
+[33mcommit 3601987707dd29b2304911987537cec90c899a0f[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Oct 31 21:49:38 2016 +0100
+
+    fix default behavior
+
+[33mcommit f78fcb3215a31736fcd261b682c741521ac471ed[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Oct 31 12:08:05 2016 +0100
+
+    fix default behavior
+
+[33mcommit 45063aa022174ab6d197ba179e731a272f1668c1[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Oct 31 09:57:25 2016 +0100
+
+    Add -c flag for independent esg.ini configuration
+
+[33mcommit 95baae0ae6b41aebafc82114880ce3d7e4da29f0[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Oct 11 09:29:28 2016 +0200
+
+    python 2.5+ compatibility update
+
+[33mcommit 3974b545fa857d10f24be4498275e7892b5e2b1a[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Oct 5 11:51:45 2016 +0200
+
+    bugfix
+
+[33mcommit 4d95c408151c5a24337a56ec1043b5cb7300bcc8[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Oct 5 10:20:43 2016 +0200
+
+    bugfix
+
+[33mcommit b59f6df924c6b987b151bb71f444bac23dd7be2a[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Oct 3 14:15:27 2016 +0200
+
+    bump version
+
+[33mcommit 5e076d4e757ab5a979b692a8d4016956df9e035f[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Oct 3 12:31:16 2016 +0200
+
+    bugfixes
+
+[33mcommit 13bf7b047a94cfe3e01205051270ce990732ed3c[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Sep 27 10:45:08 2016 +0200
+
+    fetch-ini improvements
+
+[33mcommit ecda659e77ff0ecce848f15964fb1d087b00c77f[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Sep 23 12:09:01 2016 +0200
+
+    fix handler dir
+
+[33mcommit 65cd8e891041b3803209a3b3e00509046f7fa21b[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Sep 23 10:09:24 2016 +0200
+
+    fix name esgcet_models_table.txt
+
+[33mcommit c85855596dd0293d69c8052b2be9f90cac23b52e[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Sep 23 09:44:15 2016 +0200
+
+    bugfix
+
+[33mcommit 4b8b288543668cddeef87045ef337752cb1d4ad8[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Sep 22 16:09:21 2016 +0200
+
+    bump version + requirements fix
+
+[33mcommit e91444b958e4a33d570ce96646e50b70c8a50a0f[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Sep 22 15:45:46 2016 +0200
+
+    change requirements
+
+[33mcommit 3dc1f7a57dccbc5a9af00023f12ceb615e508361[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Sep 22 15:27:09 2016 +0200
+
+    update requirements.txt
+
+[33mcommit bedf36dcae060112670593501ef4af5fb9db1289[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Sep 22 15:13:40 2016 +0200
+
+    fetch-ini improvements to deploy all configuration files
+
+[33mcommit b56f2108b9f370a7949aa7e95aedbbc9d57d752f[m
+Merge: 6ec79ba 8da9397
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Sep 21 09:51:46 2016 +0200
+
+    Merge branch 'master' of ssh://github.com/IS-ENES-Data/esgf-prepare into devel
+
+[33mcommit 8da93970c87efc403ebc8ee350c47c5d7eb9ee2e[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Sep 21 09:50:51 2016 +0200
+
+    Bump version
+
+[33mcommit 458fc6eb861551c24df12e5074815a9aaf8129f7[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Sep 21 09:50:03 2016 +0200
+
+    Bugfix
+
+[33mcommit 6ec79ba6e1f6c8968ba450a0259b1d67ad50179d[m
+Merge: 416edda 96bcb63
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Sep 20 11:15:36 2016 +0200
+
+    pull master
+
+[33mcommit 96bcb6378deb4d4fe04bdc6fa539d654daf1bafd[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Sep 20 11:12:09 2016 +0200
+
+    mapfile fix: boolean remaining in outfiles
+
+[33mcommit 416eddabf2a1b78de1caa45fb987688ada74fdff[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Sep 20 11:08:52 2016 +0200
+
+    fetch-ini improvement + mapfile fix
+
+[33mcommit f22e43a08583c75cadb34e779fa0a4ca93e64140[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Sep 14 15:00:58 2016 +0200
+
+    bump
+
+[33mcommit 1d5b6e52cf6b9bee0acb62d0e1788854947bd130[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Sep 14 10:45:50 2016 +0200
+
+    README update
+
+[33mcommit 38f56fccc637c45bcb9b0495340ee7b7870690f2[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Sep 14 10:15:53 2016 +0200
+
+    conf.py update
+
+[33mcommit 25e23e88d4a1ee6be048c72c147ac793e0fea69f[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Sep 14 10:09:23 2016 +0200
+
+    Makefile update for docs
+
+[33mcommit 94f03d603f04ecf8b0966bf1be9af423723dba53[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Aug 4 12:18:44 2016 +0200
+
+    Docs update
+
+[33mcommit 13a83d6413654579b5183519d79f9d71233805ee[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Aug 4 09:18:03 2016 +0200
+
+    Minor doc update
+
+[33mcommit 87b1b9cd6f371b9f3a318230d657674199c8b4bf[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Aug 3 14:41:38 2016 +0200
+
+    Doc url update
+
+[33mcommit f4057688648c9cddeed01925f1e31d7fb69b0350[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Aug 2 16:14:05 2016 +0200
+
+    Update conf.py
+
+[33mcommit 11e9793255f7d03c014ee104d1232afac5c45a04[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Aug 2 15:50:39 2016 +0200
+
+    Fix exception typo
+
+[33mcommit 0f3ae1862f93febc5b91427192e17661c982a4b2[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Aug 2 15:38:35 2016 +0200
+
+    esgprep fix regarding drs parsing and file yielding
+
+[33mcommit 2be1335cc05368af401c33e8cbc998f80427b0e4[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jul 27 08:52:24 2016 +0200
+
+    Rewriting exception handling
+
+[33mcommit 24c766b441eb6e32fc292d05f9d7728ed3e741ac[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jul 22 13:36:30 2016 +0200
+
+    2.4.7 Release
+
+[33mcommit a51cfa487bd68b19b71ebfeaf496e322e5092a99[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jul 22 13:27:24 2016 +0200
+
+    Clean up
+
+[33mcommit f88b8abf27033ee30a13576b165e2c8b9047705a[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jul 22 13:18:51 2016 +0200
+
+    Improve check-vocab to support _map and _pattern attribute
+
+[33mcommit edc29f7ead619d0905d1ca06960ad864a444bac9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jul 21 16:39:13 2016 +0200
+
+    2.4.5 release with check-vocab disabled
+
+[33mcommit f928df0afe86f1cd4e59b1f8ee8362d3357c66e8[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jul 18 14:33:04 2016 +0200
+
+    Bug fix
+
+[33mcommit 388b5475fa9be33a5ed375e8a937a3e1b0556a67[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jul 18 13:49:31 2016 +0200
+
+    Add facet_pattern feature
+
+[33mcommit 4d026097155b1cca1e72a253b4d155d70d5692bc[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jul 12 10:36:19 2016 +0200
+
+    Upgrade version release
+
+[33mcommit abae69852952dc96fd4c02d720452151bee461f2[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jul 12 10:35:45 2016 +0200
+
+    Doc update on dependencies
+
+[33mcommit f095647624224f7661db4dfee047fcdb615f1baf[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jul 12 10:26:51 2016 +0200
+
+    Upgrade version release
+
+[33mcommit 0e58a95463f4e6a2945fbe38e4d590bdc20b36be[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jul 12 10:26:17 2016 +0200
+
+    Split summary display
+
+[33mcommit 64cf71514c67d9d980ba920a9f514c7c2d8d4029[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jul 11 16:50:28 2016 +0200
+
+    Upgrade version
+
+[33mcommit 6d0db5c3a8bf1874da704b5e38f3470ffd19a6a3[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jul 11 16:49:54 2016 +0200
+
+    Fix remaining .part files
+
+[33mcommit 7962c509dc6d562f7d9dd042d8411bae3aea4f79[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jul 11 09:32:43 2016 +0200
+
+    Change devel to master branch on fetch-ini
+
+[33mcommit 5ef8f20e81f91ed74720b2ee3c23af88b8829c46[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jul 8 15:48:21 2016 +0200
+
+    2.4 finale release
+
+[33mcommit c3fbb9c4aea6e177401a437b670162b7d17ed7f4[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jul 8 13:41:39 2016 +0200
+
+    Fix constant
+
+[33mcommit 84f52858a0d3591b791fb2e09b68b5ead9751a69[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jul 8 13:22:25 2016 +0200
+
+    Fix regex patterns root and project
+
+[33mcommit 4afe6f53e6eae0a7966909e39f4c00daa3bfc423[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jul 7 15:24:19 2016 +0200
+
+    Fix scan directory regarding version facet
+
+[33mcommit fda3d07fcb6862c32a235a7db629ccabdfa8e66d[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jul 6 14:00:30 2016 +0200
+
+    esg.ini not mandatory to get checksum client, default is sha256sum
+
+[33mcommit 55f734aecd6e14cc8d6ffc3f015bcce1e2a24d3a[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jul 5 14:18:00 2016 +0200
+
+    Fix issue on lock release from K.B
+
+[33mcommit ca4b07d6c8a93c5e41dd1c9ae9ba81ae8c78780b[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jul 5 10:06:08 2016 +0200
+
+    2.1 release
+
+[33mcommit 50efa00766e934f593b2a1143ade2bdd4e87c318[m
+Merge: 7a47f9f 6c0feca
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jul 5 10:03:58 2016 +0200
+
+    Merge branch 'devel'
+
+[33mcommit 6c0feca47b591e9cdcb0f4d29003556c09691cef[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jul 5 09:54:42 2016 +0200
+
+    Add -k option to keep existing file
+
+[33mcommit 7a47f9fa81665ab4ba29211ccf39a0422712e5da[m
+Merge: 8a86b0d 1605682
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jul 4 09:26:07 2016 +0200
+
+    Merge branch 'devel'
+
+[33mcommit 1605682e769bb413956a4e8d361d04122de3abea[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jul 1 22:25:05 2016 +0200
+
+    Modify README
+
+[33mcommit 43f0d9870fcbfca95161f2dd2425f4d34ef945c9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jul 1 22:14:39 2016 +0200
+
+    Improve docs + bugfix esgprep fetch-ini when no project_options
+
+[33mcommit 577930c54b9858dd14c66bd6933dbe4ab5536f2b[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Jun 24 11:07:39 2016 +0200
+
+    Some progresse
+
+[33mcommit 1f3a1bffc222f870bf41c2f5237d25e5df604160[m
+Author: Katharina <berger@dkrz.de>
+Date:   Mon May 23 15:53:42 2016 +0200
+
+    fix typos
+
+[33mcommit 6d35077ad2c6577fe843c94e7cb12d77d939471d[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon May 23 14:16:23 2016 +0200
+
+    Append project id to project_options of esg.ini
+
+[33mcommit add844c4fd650f2e63a69f31c1bc6dd37bb8a04e[m
+Author: Katharina <berger@dkrz.de>
+Date:   Fri May 20 08:17:27 2016 +0200
+
+    Fix issue for DRS without version directory
+
+[33mcommit 5b70da2ad7edb76357ab6b0536328fb27643a3b1[m
+Merge: cfa7431 26fe5cb
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu May 19 17:03:54 2016 +0200
+
+    Merge branch 'devel' of github.com:IS-ENES-Data/esgf-mapfiles into devel
+
+[33mcommit cfa74316278313ecf2e9b866f29e4e31a0cec228[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu May 19 17:01:42 2016 +0200
+
+    zip_safe=False
+
+[33mcommit 970ef6c84410777c2240f5f7e6e3364a59af748c[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu May 19 17:00:23 2016 +0200
+
+    Fix directory scan regarding version number format
+
+[33mcommit 26fe5cbd05aa7957f3a28f542c73d4b5b7c3364d[m
+Author: Katharina <berger@dkrz.de>
+Date:   Thu May 19 15:50:05 2016 +0200
+
+    added zip_safe=False
+
+[33mcommit 13773e4286d83dcc9cec393de50c5c12a4c89d1f[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu May 19 15:25:03 2016 +0200
+
+    Delete version format enforcement
+
+[33mcommit ea256336bed4ad51c3c30946226302587f5a35a5[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu May 19 14:26:42 2016 +0200
+
+    Fix lib import
+
+[33mcommit 56c138f99d87feeeee542d2c35df29c292cc8c5a[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu May 19 12:02:21 2016 +0200
+
+    esgprep parser update
+
+[33mcommit 27e390184cb94f40bad629598e2ee84682341dfd[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu May 19 11:59:28 2016 +0200
+
+    Some cleanup and setup.py update
+
+[33mcommit 58df216aff85a21ad513941896814868f40f9a5a[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu May 19 11:48:37 2016 +0200
+
+    Add check-vocab sub-command + fetch-ini all files if no specified --project
+
+[33mcommit bee6d3932a2bbf424dfda5952c89f80c1cdbebb8[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue May 17 15:46:58 2016 +0200
+
+    Add esgprep fetch-ini
+
+[33mcommit 2e7ed7374240fa44192f737b63cfa890f62c118a[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue May 17 12:40:32 2016 +0200
+
+    esgprep mapfile refactoring
+
+[33mcommit 722b2666d2e109ae1f1172639675eed6dc9d85a9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Apr 27 14:58:41 2016 +0200
+
+    cleaning
+
+[33mcommit c9b81ec19df313dda11b514659eefdf27d92acd6[m
+Merge: 0de5bf6 8d4654d
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Apr 27 14:57:22 2016 +0200
+
+    v1.2
+
+[33mcommit 0de5bf69821cb0cbf39ff26f3e005f408643f7ba[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Apr 27 14:51:47 2016 +0200
+
+    v0.8
+
+[33mcommit 8d4654dcd5a3a764a7c3e313e1cc5e1325524aea[m
+Author: Katharina <berger@dkrz.de>
+Date:   Fri Apr 22 14:38:58 2016 +0200
+
+    Fix issue for DRS without version directory
+
+[33mcommit 4f37ddcf5e38bb823279946acf07400c0914106d[m
+Merge: 65db42c c33bd08
+Author: Katharina <berger@dkrz.de>
+Date:   Fri Apr 22 14:30:53 2016 +0200
+
+    Merge branch 'devel' of https://github.com/IS-ENES-Data/esgf-mapfiles into devel
+
+[33mcommit 8a86b0d864c4838b72aa04655d41d4ee1a407844[m
+Merge: 65db42c c33bd08
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Apr 13 15:39:32 2016 +0200
+
+    Merge branch 'devel'
+
+[33mcommit c33bd08947aa04d741a273a05431c62d881229f8[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Apr 13 15:38:21 2016 +0200
+
+    Fix typo
+
+[33mcommit 65db42cb4974bf67b8471d0f827bfbd03821de23[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Feb 19 15:26:03 2016 +0100
+
+    Bug fix to float format of file size
+
+[33mcommit 13fdf81d55f60cc78cc278e3b5f4fd5f004fba82[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Feb 19 15:03:20 2016 +0100
+
+    Fix to parse DRS tree with latest symlink
+
+[33mcommit 5b1f6008888aa7da3afa78988a998a610e9aee4f[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Feb 19 14:39:48 2016 +0100
+
+    Bug fixes to parse CORDEX tree
+
+[33mcommit 3e3df88393f339b7f9f7f5893cacae6ff28c7411[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Feb 19 12:50:19 2016 +0100
+
+    checkvocab.py fix to parse ini file
+
+[33mcommit b1419a44b5497383cceabbeb80fecb03e14523d0[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Feb 4 11:16:13 2016 +0100
+
+    version update for PIP
+
+[33mcommit dd973b1a1e92f97b605de65c2aa78d3538d82b35[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Feb 4 10:52:19 2016 +0100
+
+    setup.py update
+
+[33mcommit 37be641818d928b2921bd1fb6b2e787827c33cf3[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Feb 4 10:46:13 2016 +0100
+
+    conf.py update
+
+[33mcommit 94bca68aa8204f4de0c73e2651fb2cdc721f987e[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Feb 4 10:40:30 2016 +0100
+
+    Version update
+
+[33mcommit ed52f221d92bd95b1b87c5b18680fd82ec04cec3[m[33m ([m[1;31morigin/kb_dev[m[33m)[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Feb 4 10:33:36 2016 +0100
+
+    Docs update
+
+[33mcommit 74a40dd94517da5338b468a9537bd2e36dc302ac[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Feb 4 10:24:27 2016 +0100
+
+    Rewriting according to kb_dev
+
+[33mcommit c03aa4ef15ef057816ce478cc5e86bb7a53372b7[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Feb 4 10:23:27 2016 +0100
+
+    Test
+
+[33mcommit 4de1b3011dd7f6c01a9318c93574722f082a7063[m
+Author: Katharina <berger@dkrz.de>
+Date:   Wed Feb 3 10:46:56 2016 +0100
+
+    support list and esgf default for experiment_options
+
+[33mcommit dbc1703078dd856c16275758b36d63271f9d237c[m
+Author: Katharina <berger@dkrz.de>
+Date:   Tue Feb 2 15:35:55 2016 +0100
+
+    support one esg.ini for all projects
+
+[33mcommit d5e60114179ef6bbbfe6f242774baa79d0989fbc[m
+Author: Katharina <berger@dkrz.de>
+Date:   Tue Feb 2 15:20:46 2016 +0100
+
+    be more verbose and support no version directory in drs
+
+[33mcommit 47e27322f479a744e545cf0eefbaa6b4ba41e85d[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jan 6 15:34:58 2016 +0100
+
+    Minor corrections + doc update + PEP008 rewriting + checkvoab adaptation to esg.ini files
+
+[33mcommit 4b384037cc663fd66e02bd8f211ec64e896ecc7c[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jan 5 11:54:09 2016 +0100
+
+    Documentation update
+
+[33mcommit eaffeb8c8117eac19972ef05ed0071427d8bfe1f[m
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Fri Nov 6 08:54:25 2015 +0100
+
+    re-enable %(root)s
+
+[33mcommit 57160eb8b46490dc816493365cba7c08e3b2bf56[m
+Merge: 307b3e2 503b9ef
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Fri Nov 6 07:56:04 2015 +0100
+
+    Merge branch 'devel' into kb_dev
+    
+    Conflicts:
+            esgmapfiles/esgmapfiles.py
+
+[33mcommit 503b9ef5ba5445f7f3082da39e1e139b500f5667[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 5 19:27:39 2015 +0100
+
+    Merge fix
+
+[33mcommit bd9c975ba00305601f0e49fb4c9306522e22b716[m
+Merge: 991cae3 6c672ff
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 5 19:21:48 2015 +0100
+
+    Merge branch 'gl_dev' into devel
+
+[33mcommit 6c672ff3a797d0d57c9de868d8c45120dafdd112[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 5 19:21:27 2015 +0100
+
+    Modify synopsis
+
+[33mcommit 991cae3fbcc7c60d834f9a4425b614cc75f78db5[m
+Merge: bf15469 9e80560
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 5 16:38:32 2015 +0100
+
+    Merge branch 'devel' of github.com:IS-ENES-Data/esgf-mapfiles into devel
+    
+    Conflicts:
+            esgmapfiles/esgmapfiles.py
+            esgmapfiles/esgmapfilesutils.py
+
+[33mcommit 307b3e2bf21eda503051412f1de093f4d23cc8c5[m
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Thu Nov 5 15:40:38 2015 +0100
+
+    allow %(root)s in dataset_format
+
+[33mcommit bf15469ea5cd86367a63925fce67fdc2ef6e484e[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 5 12:49:57 2015 +0100
+
+    Docstring fix
+
+[33mcommit dd31f3a01ef9fb52ae41c4bf757824aea826bbb9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Nov 5 12:36:18 2015 +0100
+
+    Merge with Katharina's mods on devel
+
+[33mcommit 9e80560972d454df8b1aa3a567c736a28d5ec27d[m
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Mon Nov 2 10:54:42 2015 +0100
+
+    check only dataset_id facets
+
+[33mcommit e01ea0fab680eb6c1c0ef2f2538a43cecb17c464[m
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Thu Oct 29 09:29:45 2015 +0100
+
+    re-added size to mapfile lines
+
+[33mcommit 9514f29057f3e80dbbc41924f403a8b83cf57586[m
+Merge: f69fbee 9da91a6
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Wed Oct 28 15:09:04 2015 +0100
+
+    Merge branch 'gl_dev' into kb_dev
+    
+    Conflicts:
+            esgmapfiles/esgmapfiles.py
+
+[33mcommit f69fbeed401d9a1178dde8ccbf2d3f44c45c0243[m
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Wed Oct 28 14:42:56 2015 +0100
+
+    manual merge with gl_dev
+
+[33mcommit 9da91a6ba68fd7b8a7c68ce740a3206f1741c213[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Oct 28 13:17:13 2015 +0100
+
+    Add docs/Makefile
+
+[33mcommit c7f6b373f3401713bc051c0a782d02d8c91f856c[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Oct 28 13:15:52 2015 +0100
+
+    Fix
+
+[33mcommit 2d669514dbac9fbe4fb8db832db6fec41338ade6[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Oct 28 13:11:16 2015 +0100
+
+    Fix
+
+[33mcommit fb164d231f1303d43e4f8cdbf3cca35e0d2438c7[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Oct 28 13:08:56 2015 +0100
+
+    Remove docs/_build
+
+[33mcommit d6b277ce76aa5b3e88b04e3c0b89fe3811648819[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Oct 28 13:06:38 2015 +0100
+
+    Disable --no-version when --all-versions is True
+
+[33mcommit 9def28de7f5c4d49896ede1592e1ccb5252ee059[m
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Wed Oct 28 11:33:17 2015 +0100
+
+    process configuration file's maptables only if reqired; fixed get_master_ID()
+
+[33mcommit 7da1de59058cacc39d63e0216894220ffb8a9d87[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Oct 28 11:07:07 2015 +0100
+
+    Add, replace or modify following flags --all-versions, --version <version>, --no-version, --latest-symlink, --mapfile, --dataset-tech-notes, --dataset-tech-notes-title, --no-checksum and --filter
+
+[33mcommit 3985b9420f0dd54fab78bf153f6cab457f32f85f[m
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Fri Oct 23 16:03:05 2015 +0200
+
+    fixed typo (once again ...)
+
+[33mcommit 4df1deda32088733c7d907d070a58b2c664a79cc[m
+Merge: 6655051 c9fdc8f
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Fri Oct 23 14:51:47 2015 +0200
+
+    Merge branch 'gl_dev' into kb_dev
+    
+    Conflicts:
+            setup.py
+
+[33mcommit 665505181d14b492ba006fee7f04474f2e805f05[m
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Fri Oct 23 13:24:14 2015 +0200
+
+    fixed typo
+
+[33mcommit c9fdc8fad159383db9b5037cf4ecb85da853d5b5[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Oct 23 12:00:41 2015 +0200
+
+    Initial commit renaming esg_mapfiles to esgscan command lines
+
+[33mcommit 34382a5876965ead361a8b5efcf78b098726dafc[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Oct 23 11:40:56 2015 +0200
+
+    First documentation changes related to esgscan merging
+
+[33mcommit 30d54ecf7871579fb42f22bee66a97b69dcf15f1[m
+Author: Katharina Berger <berger@dkrz.de>
+Date:   Fri Oct 23 09:07:49 2015 +0200
+
+    Work with ESGF esg.ini files, rename esg_mapfiles to esgscan_directory
+
+[33mcommit e2e3a3f1aad418e976af9fbacb255af7105a1496[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Oct 5 16:01:06 2015 +0200
+
+    Release 0.6
+
+[33mcommit 0d8dd5def4d16ae5d0270cd98fd43087d0577392[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Oct 5 15:50:50 2015 +0200
+
+    Release 6.0
+
+[33mcommit c5d1c57cbbcfea38024706197fd1187bf7dfd828[m
+Merge: d1580c8 9d4751e
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Oct 5 14:47:10 2015 +0200
+
+    Merge branch 'alan' into devel
+
+[33mcommit 9d4751ed8f811c30c9981ed16128dc8b6558d9d8[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Mon Oct 5 12:22:12 2015 +0100
+
+    remove a reference to now removed "-k" option in the doc
+
+[33mcommit b003a24103c02e7e2021e4abba4e52241ef0b2e2[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Mon Oct 5 12:21:34 2015 +0100
+
+    move description of exit status values in previous commit, in order to be visible to user
+
+[33mcommit 9cb6a2059b77ded10a91459acae078068c615242[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Mon Oct 5 12:10:39 2015 +0100
+
+    exit status 2 from esgf_mapfiles when some files skipped
+
+[33mcommit abb9cdabdebdbbca7b78515c9549ae81801f38c8[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Mon Oct 5 11:46:37 2015 +0100
+
+    exit value from esg_mapfiles_check_vocab
+
+[33mcommit 3e4455bfbade20f6c1f9eccbef5219f585c6f7ec[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Mon Oct 5 10:58:36 2015 +0100
+
+    disable enforcement of lower-case project in output file
+
+[33mcommit d1580c87f8b4000edc39c12bee1850dde785658c[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Sep 25 16:37:07 2015 +0200
+
+    Processing context cleaning
+
+[33mcommit afbc9ab3fcb17fa74373ec2ed52d3d532e384409[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Fri Sep 25 16:01:31 2015 +0200
+
+    Doc update
+
+[33mcommit 62ea48c9c04e29d5d26e850ba74a34342b9c9fc9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Sep 2 16:59:00 2015 +0200
+
+    Cleaning
+
+[33mcommit 159c683222d2017e1a65ff6ba1152c490bba345c[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Sep 2 16:57:41 2015 +0200
+
+    Pull request adaptation
+
+[33mcommit 93e8e1ec752b011004d3cc1fbbb1fe18c943c481[m
+Author: Alan Iwi <alan.iwi@stfc.ac.uk>
+Date:   Mon Aug 10 21:23:05 2015 +0100
+
+    a bunch of updates to config.ini: sections for other projects, and a couple of additional facet values for cmip5
+
+[33mcommit 7effed9def45eba98380dc34620cc7f16f4d1bbb[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Sep 2 10:45:30 2015 +0200
+
+    Developper entry point correction
+
+[33mcommit 390d19d0041b6c5985c8915a9bb3e0a7f0e16424[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Aug 31 14:42:00 2015 +0200
+
+    Documentation and code cleaning
+
+[33mcommit 92417fa8565dd71c8e73359036961a5a5982385c[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Aug 24 10:04:14 2015 +0200
+
+    Improve traceback management
+
+[33mcommit 154c98630ca46944e49d9104fd414ca2a3ba72a9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jul 13 11:02:47 2015 +0200
+
+    add --with-version
+
+[33mcommit d8b12f7cb3a0ff28f3a28749d1d7fe93930ab0f4[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jul 9 11:23:42 2015 +0200
+
+    add --with-version option
+
+[33mcommit 54ce7906853e94da18dc0839c05b5f8c197d1eec[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jul 6 12:28:50 2015 +0200
+
+    Add version within master ID
+
+[33mcommit c4a95d2311b98f072910bab210031f9693309247[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 25 12:45:32 2015 +0200
+
+    Version update
+
+[33mcommit dede2257a3c3c112a9ea93cc5f2975f09215f6a7[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Thu Jun 25 12:40:36 2015 +0200
+
+    Checksum type support
+
+[33mcommit 09d36db3ab27d0f6e433cdc69c3cc632f62c6038[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jun 16 11:59:59 2015 +0200
+
+    rm mapfile example
+
+[33mcommit accf9912483a01a52d36807d17350fcdf1a09c97[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jun 16 11:43:33 2015 +0200
+
+    Final PyPi dist 0.5
+
+[33mcommit db4d52728a7262d74b4326296112a357106bfa10[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 15 16:31:10 2015 +0200
+
+    pip registering
+
+[33mcommit 98802abeec6aaee318fbd44235a9b57ba2585e08[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 15 16:10:48 2015 +0200
+
+    v.0.5 with Sphinx documentation correctif
+
+[33mcommit 4b77e9c28523bddbc5f740fb955abd731ba529a3[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 15 16:01:40 2015 +0200
+
+    v.0.5 with Sphinx documentation
+
+[33mcommit 2325a5d43182b828631b73463e03c32243ba15bc[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 8 17:44:18 2015 +0200
+
+    test sphinx
+
+[33mcommit 6d510fc1cb1674888adc23010c0a6139021f50ab[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 8 17:39:44 2015 +0200
+
+    add requirements.txt
+
+[33mcommit 764c978ef4a424e222d8ccf17641454bc8198007[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 8 17:28:12 2015 +0200
+
+    command-line call
+
+[33mcommit f05aa197c4161eb3437d7eab6464a2cccab3a85d[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 8 16:47:46 2015 +0200
+
+    esgmapfile package
+
+[33mcommit 2f81d7d282262cd944569e8415367d54896e4001[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 8 16:47:26 2015 +0200
+
+    esgmapfile package
+
+[33mcommit 92499a891ce75d8e802c749348e3357eb2b02876[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 8 16:35:53 2015 +0200
+
+    delete name with underscore
+
+[33mcommit 0b405c82a215225d573c83e60b8088933b6fc3ab[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 8 16:34:34 2015 +0200
+
+    delete name with underscore
+
+[33mcommit ac016b224096d03adc2017e6ecb92fec4f3684ef[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 8 16:22:52 2015 +0200
+
+    __init__.py
+
+[33mcommit 15765b18f68464d8289777ea401ca1f6d8b921f9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 8 15:55:09 2015 +0200
+
+    setup.py
+
+[33mcommit 9af234f6732ef3c381268be4745826e630e705b9[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Mon Jun 8 15:12:57 2015 +0200
+
+    test sphinx
+
+[33mcommit 6d6800c845a2ed6b712393678b38af3a357558b6[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jun 3 12:49:53 2015 +0200
+
+    test Sphinx
+
+[33mcommit 29e91334cb181ec37651edecbe0afd9349f8a927[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jun 3 12:48:55 2015 +0200
+
+    test Sphinx
+
+[33mcommit 91cb7e66702907c27f4e53f20c62445f31f4752b[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jun 3 12:45:34 2015 +0200
+
+    test Sphinx
+
+[33mcommit c80ddaab3232eab4b881f4ee427f6faf2732efb2[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jun 3 09:56:59 2015 +0200
+
+    modify README.md
+
+[33mcommit eb38a639a043ae02fb679563d52253c801e2cde3[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jun 3 09:53:58 2015 +0200
+
+    add README.md
+
+[33mcommit 5308d623ffd882afad9d01d2f59857f9faedbfd5[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jun 3 09:20:49 2015 +0200
+
+    .nojekill rm
+
+[33mcommit 66b9f34987f130f86c2950fb67b17635aae47010[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jun 3 09:20:11 2015 +0200
+
+    .nojekyll add
+
+[33mcommit f9bc9d3fd809287381791ec463b7d836ea990dec[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Jun 3 09:18:06 2015 +0200
+
+    test html page
+
+[33mcommit c2091557a0ebde133d9efb8a0129576ff585d92f[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jun 2 18:14:03 2015 +0200
+
+    README deletion
+
+[33mcommit 7ad75f9ef75c30fea4d012dbdbd1d197d4c76527[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Jun 2 18:10:38 2015 +0200
+
+    Try Sphinx
+
+[33mcommit 7b08d3b0cb01981bd21b69ca1f39a6d49e189149[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Tue Apr 28 15:33:18 2015 +0200
+
+    PEP8 syntax
+
+[33mcommit 9fc394245d28f42f3b7cd6dd71ec2fb1baf779c2[m
+Author: Guillaume <glipsl@ipsl.jussieu.fr>
+Date:   Wed Apr 1 18:08:25 2015 +0200
+
+    Initial commit

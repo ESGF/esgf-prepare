@@ -6,13 +6,17 @@ class Post_Test_Folder:
     def __init__(self, folder: Path):
         self.folder = folder
         self.list_dir_base = list(self.folder.glob("*"))
-        match = re.search("\\d{8}", str(folder))
-        assert match is not None
-        self.list_version = [
-            match.group()
-            for folder in [dir.name for dir in self.list_dir_base]
-            if re.search("\\d{8}", folder) is not None
-        ]
+
+        # Extract version numbers from directory names (v12345678)
+        self.list_version = []
+        for dir_path in self.list_dir_base:
+            dir_name = dir_path.name
+            match = re.search("\\d{8}", dir_name)
+            if match and dir_name.startswith('v'):
+                self.list_version.append(match.group())
+
+        # Ensure we found at least one version directory
+        assert len(self.list_version) > 0, f"No version directories (v followed by 8 digits) found in {folder}"
 
     def exists(self):
         return self.folder.exists()
@@ -80,4 +84,3 @@ class Post_Test_Folder:
         print("--- HAS symlink between latest and the latest v********      -------")
 
         print("--- EVERYTHING FINE ")
-
