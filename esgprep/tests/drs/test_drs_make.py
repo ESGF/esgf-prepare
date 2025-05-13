@@ -9,6 +9,8 @@ import pytest
 
 # Import the refactored DrsProcessor
 from esgprep.drs.make import DrsProcessor
+# Import Post_Test_Folder for directory structure assertions
+from esgprep.tests.drs.post_test_folder import Post_Test_Folder
 
 # Configuration
 PROJECT_ID = "cmip6"
@@ -236,7 +238,7 @@ def test_drs_processor_tree(test_setup):
 
 
 def test_drs_processor_execute_operations(test_setup):
-    """Test DrsProcessor execution of operations (todo/upgrade)."""
+    """Test DrsProcessor execution of operations using post_test_folder assertions."""
     incoming_dir = test_setup["incoming_dir"]
     root_dir = test_setup["root_dir"]
 
@@ -269,9 +271,23 @@ def test_drs_processor_execute_operations(test_setup):
 
     assert len(created_files) > 0, "No files were created"
 
+    # Use Post_Test_Folder to verify directory structure
+    # Find dataset folders (those containing version folders)
+    dataset_dirs = []
+    for path in root_dir.glob(f"**/{VERSION_STR[1:]}"):
+        if path.is_dir() and path.name.isdigit():
+            # The parent directory is a dataset directory
+            dataset_dirs.append(path.parent)
+
+    # Test each dataset directory structure
+    for dataset_dir in dataset_dirs:
+        print(f"Testing dataset directory structure: {dataset_dir}")
+        test_folder = Post_Test_Folder(dataset_dir)
+        test_folder.test()  # This will assert the correct structure
+
 
 def test_drs_processor_upgrade_symlink(test_setup):
-    """Test DrsProcessor with symlink mode."""
+    """Test DrsProcessor with symlink mode and verify with Post_Test_Folder."""
     incoming_dir = test_setup["incoming_dir"]
     root_dir = test_setup["root_dir"]
 
@@ -305,6 +321,25 @@ def test_drs_processor_upgrade_symlink(test_setup):
         print(f"  {symlink} -> {symlink.resolve()}")
 
     assert len(symlinks) > 0, "No symlinks were created"
+
+    # Use Post_Test_Folder to verify directory structure
+    # Find dataset folders (those containing version folders)
+    dataset_dirs = []
+    for path in root_dir.glob(f"**/{VERSION_STR[1:]}"):
+        if path.is_dir() and path.name.isdigit():
+            # The parent directory is a dataset directory
+            dataset_dirs.append(path.parent)
+
+    # Test each dataset directory structure
+    for dataset_dir in dataset_dirs:
+        print(f"Testing dataset directory structure: {dataset_dir}")
+        test_folder = Post_Test_Folder(dataset_dir)
+
+        # Verify specific symlink-related assertions
+        assert test_folder.exists(), "Dataset directory does not exist"
+        assert test_folder.contains_at_least_the_3_folders(), "Missing required folders"
+        assert test_folder.is_there_symlink_between_v_and_d(), "Symlink from version to files is missing"
+        assert test_folder.is_there_symlink_between_latest_and_latest_version(), "Latest symlink is incorrect"
 
 
 def test_drs_processor_set_custom_values(test_setup):
@@ -358,7 +393,7 @@ def test_drs_processor_set_custom_values(test_setup):
 
 
 def test_drs_processor_copy(test_setup):
-    """Test DrsProcessor with copy mode."""
+    """Test DrsProcessor with copy mode and verify with Post_Test_Folder."""
     incoming_dir = test_setup["incoming_dir"]
     root_dir = test_setup["root_dir"]
 
@@ -374,7 +409,7 @@ def test_drs_processor_copy(test_setup):
     operations = []
     for result in results:
         operations.extend(result.operations)
-    print("TEST_OPERATIONS:", operations)
+
     # Execute operations
     success = processor.execute_operations(operations)
     assert success, "Execution of operations failed"
@@ -395,9 +430,30 @@ def test_drs_processor_copy(test_setup):
     for file in created_files:
         assert not file.is_symlink(), f"File should be a copy, not a symlink: {file}"
 
+    # Use Post_Test_Folder to verify directory structure
+    # Find dataset folders (those containing version folders)
+    dataset_dirs = []
+    for path in root_dir.glob(f"**/{VERSION_STR[1:]}"):
+        if path.is_dir() and path.name.isdigit():
+            # The parent directory is a dataset directory
+            dataset_dirs.append(path.parent)
+
+    # Test each dataset directory structure
+    for dataset_dir in dataset_dirs:
+        print(f"Testing dataset directory structure: {dataset_dir}")
+        test_folder = Post_Test_Folder(dataset_dir)
+
+        # Test full directory structure
+        test_folder.test()
+
+        # Additionally, verify files in "files" directory are not symlinks
+        files_dir = dataset_dir / "files"
+        for file_path in files_dir.glob("**/*.nc"):
+            assert not file_path.is_symlink(), f"File in 'files' dir should be a copy, not a symlink: {file_path}"
+
 
 def test_drs_processor_link(test_setup):
-    """Test DrsProcessor with link (hard link) mode."""
+    """Test DrsProcessor with link (hard link) mode and verify with Post_Test_Folder."""
     incoming_dir = test_setup["incoming_dir"]
     root_dir = test_setup["root_dir"]
 
@@ -417,6 +473,7 @@ def test_drs_processor_link(test_setup):
     # Execute operations
     try:
         success = processor.execute_operations(operations)
+        assert success, "Execution of operations failed"
 
         # Check that files were hard-linked
         created_files = list(root_dir.glob(f"**/{VERSION_STR}/**/*.nc"))
@@ -428,6 +485,35 @@ def test_drs_processor_link(test_setup):
                 f"File should be a hard link, not a symlink: {file}"
             )
 
+        # Use Post_Test_Folder to verify directory structure
+        # Find dataset folders (those containing version folders)
+        dataset_dirs = []
+        for path in root_dir.glob(f"**/{VERSION_STR[1:]}"):
+            if path.is_dir() and path.name.isdigit():
+                # The parent directory is a dataset directory
+                dataset_dirs.append(path.parent)
+
+        # Test each dataset directory structure
+        for dataset_dir in dataset_dirs:
+            print(f"Testing dataset directory structure: {dataset_dir}")
+            test_folder = Post_Test_Folder(dataset_dir)
+
+            # Test the directory structure
+            test_folder.test()
+
+            # Additionally, verify files in "files" directory are hard links, not symlinks
+            files_dir = dataset_dir / "files"
+            for file_path in files_dir.glob("**/*.nc"):
+                # Find the corresponding source file in incoming_dir
+                source_files = list(incoming_dir.glob(f"**/{file_path.name}"))
+                if source_files:
+                    source_file = source_files[0]
+                    # Hard links have the same inode number
+                    source_inode = os.stat(source_file).st_ino
+                    link_inode = os.stat(file_path).st_ino
+                    print(f"Source inode: {source_inode}, Link inode: {link_inode}")
+                    assert not file_path.is_symlink(), "File in 'files' should be a hard link, not a symlink"
+
     except OSError as e:
         # Hard links might fail if incoming_dir and root_dir are on different filesystems
         # In this case, we'll skip the test but print a warning
@@ -438,7 +524,7 @@ def test_drs_processor_link(test_setup):
 
 
 def test_drs_processor_version_update(test_setup):
-    """Test DrsProcessor with version update."""
+    """Test DrsProcessor with version update and verify with Post_Test_Folder."""
     incoming_dir = test_setup["incoming_dir"]
     root_dir = test_setup["root_dir"]
 
@@ -490,12 +576,35 @@ def test_drs_processor_version_update(test_setup):
         "Second version should have more files"
     )
 
+    # Use Post_Test_Folder to verify directory structure after update
+    # Find dataset folders (those containing version folders)
+    dataset_dirs = []
+    for path in root_dir.glob(f"**/{second_version[1:]}"):
+        if path.is_dir() and path.name.isdigit():
+            # The parent directory is a dataset directory
+            dataset_dirs.append(path.parent)
+
+    # Test each dataset directory structure
+    for dataset_dir in dataset_dirs:
+        print(f"Testing dataset directory structure after version update: {dataset_dir}")
+        test_folder = Post_Test_Folder(dataset_dir)
+
+        # Test the directory structure using Post_Test_Folder
+        test_folder.test()
+
+        # Verify specifically that both versions exist in the folder
+        version_dirs = list(dataset_dir.glob("v*"))
+        version_names = [d.name for d in version_dirs]
+        print(f"Found version directories: {version_names}")
+        assert first_version in version_names, f"First version {first_version} not found in {version_names}"
+        assert second_version in version_names, f"Second version {second_version} not found in {version_names}"
+
     # Clean up modified directory
     shutil.rmtree(modified_dir, ignore_errors=True)
 
 
 def test_drs_processor_with_ignores(test_setup):
-    """Test DrsProcessor with ignore_from_incoming."""
+    """Test DrsProcessor with ignore_from_incoming and verify with Post_Test_Folder."""
     incoming_dir = test_setup["incoming_dir"]
     root_dir = test_setup["root_dir"]
 
@@ -535,9 +644,42 @@ def test_drs_processor_with_ignores(test_setup):
             f"Ignored file {ignored_file} found in destination"
         )
 
+    # Use Post_Test_Folder to verify directory structure
+    # Find dataset folders (those containing version folders)
+    dataset_dirs = []
+    for path in root_dir.glob(f"**/{VERSION_STR[1:]}"):
+        if path.is_dir() and path.name.isdigit():
+            # The parent directory is a dataset directory
+            dataset_dirs.append(path.parent)
+
+    # Test each dataset directory structure
+    for dataset_dir in dataset_dirs:
+        print(f"Testing dataset directory structure: {dataset_dir}")
+        test_folder = Post_Test_Folder(dataset_dir)
+
+        # Test the directory structure
+        test_folder.test()
+
+        # Verify ignored files are not in any directory
+        for ignored_file in files_to_ignore:
+            # Check files directory
+            files_dir = dataset_dir / "files"
+            ignored_in_files = list(files_dir.glob(f"**/{ignored_file}"))
+            assert len(ignored_in_files) == 0, f"Ignored file {ignored_file} found in files directory"
+
+            # Check version directory
+            version_dir = dataset_dir / VERSION_STR
+            ignored_in_version = list(version_dir.glob(f"**/{ignored_file}"))
+            assert len(ignored_in_version) == 0, f"Ignored file {ignored_file} found in version directory"
+
+            # Check latest directory
+            latest_dir = dataset_dir / "latest"
+            ignored_in_latest = list(latest_dir.glob(f"**/{ignored_file}"))
+            assert len(ignored_in_latest) == 0, f"Ignored file {ignored_file} found in latest directory"
+
 
 def test_drs_processor_upgrade_from_latest(test_setup):
-    """Test DrsProcessor with upgrade from latest."""
+    """Test DrsProcessor with upgrade from latest and verify with Post_Test_Folder."""
     incoming_dir = test_setup["incoming_dir"]
     root_dir = test_setup["root_dir"]
 
@@ -610,6 +752,40 @@ def test_drs_processor_upgrade_from_latest(test_setup):
     # Assert that both versions have files
     assert first_version_count > 0, "First version files not found"
     assert second_version_count > 0, "Second version files not found"
+
+    # Use Post_Test_Folder to verify directory structure
+    # Find dataset folders (those containing version folders)
+    dataset_dirs = []
+    for path in root_dir.glob("**"):
+        # Look for directories that contain both versions
+        if path.is_dir() and (path / first_version).exists() and (path / second_version).exists():
+            dataset_dirs.append(path)
+
+    # Test each dataset directory structure
+    for dataset_dir in dataset_dirs:
+        print(f"Testing dataset directory structure with multiple versions: {dataset_dir}")
+        test_folder = Post_Test_Folder(dataset_dir)
+
+        # Test the directory structure
+        test_folder.test()
+
+        # Additional assertions specific to upgrade_from_latest
+        # 1. Latest directory should be a symlink to the second version
+        latest_dir = dataset_dir / "latest"
+        assert latest_dir.exists() and latest_dir.is_symlink(), "Latest dir should be a symlink"
+        latest_target = latest_dir.resolve()
+        expected_target = dataset_dir / second_version
+        assert expected_target.samefile(latest_target), f"Latest symlink points to {latest_target}, expected {expected_target}"
+
+        # 2. Both version directories should exist
+        assert (dataset_dir / first_version).exists(), f"First version directory {first_version} not found"
+        assert (dataset_dir / second_version).exists(), f"Second version directory {second_version} not found"
+
+        # 3. Files directory should contain files from both versions
+        files_dir = dataset_dir / "files"
+        assert files_dir.exists(), "Files directory not found"
+        files_count = len(list(files_dir.glob("**/*.nc")))
+        assert files_count >= first_version_count, "Files directory missing some files"
 
     # Clean up modified directory
     shutil.rmtree(modified_dir, ignore_errors=True)
