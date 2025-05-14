@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Union
 from pydantic import ValidationError
 
-from esgprep.drs.models import Dataset, DatasetVersion, DrsOperation, DrsResult, FileInput, MigrationMode
+from esgprep.drs.model import Dataset, DatasetVersion, DrsOperation, DrsResult, FileInput, MigrationMode
 
 class DrsProcessor:
     """
@@ -397,39 +397,69 @@ class DrsProcessor:
         latest_dir = dataset_dir / "latest"
         latest_file = latest_dir / destination_path.name
 
-        # Find all version directories to determine which is latest
-        # Existing version directories
-        version_dirs = [d for d in dataset_dir.glob("v*") if d.is_dir() and re.match(r"v\d{8}", d.name)]
+        # CRITICAL CHECK: Ensure latest_file is actually in the latest directory
+        # This ensures we never try to create a symlink in the wrong directory
+        if not str(latest_file).startswith(str(latest_dir)):
+            print(f"ERROR: latest_file path is wrong! Expected in {latest_dir} but got {latest_file}")
+            # Explicitly correct the path
+            latest_file = latest_dir / destination_path.name
 
-        # Add current version to the list if not already there
-        current_version_dir_exists = False
-        for d in version_dirs:
-            if d.name == version_dir.name:
-                current_version_dir_exists = True
-                break
+        # Create latest directory operation (will be needed regardless of symlink creation)
+        operations.append(DrsOperation(
+            operation_type=MigrationMode.MOVE,  # Placeholder, just to create directory
+            destination=latest_dir,
+            description="Create latest directory"
+        ))
 
-        if not current_version_dir_exists:
-            version_dirs.append(version_dir)
+        # Different handling for upgrade_from_latest mode vs regular mode
+        if self.upgrade_from_latest:
+            # When in upgrade_from_latest mode, any file we're processing should become the latest
+            # Get the file in the version directory (v20250402) not the data directory (files/dXXXXXXXX)
+            version_file_path = version_dir / destination_path.name
 
-        # Sort by version string (descending) - this ensures proper comparison
-        version_dirs.sort(key=lambda d: d.name, reverse=True)
+            # Ensure latest_file is correctly pointing to the latest directory
+            if "latest" not in str(latest_file):
+                print(f"WARNING: latest_file does not contain 'latest': {latest_file}")
+                latest_file = latest_dir / destination_path.name
 
-        # Only create/update latest symlink if this version is the latest
-        if version_dirs and version_dirs[0].name == version_dir.name:
-            # Operation to create latest directory
-            operations.append(DrsOperation(
-                operation_type=MigrationMode.MOVE,  # Placeholder, just to create directory
-                destination=latest_dir,
-                description="Create latest directory"
-            ))
+            # Double-check that our paths make sense
+            print(f"DEBUG: Creating latest symlink: {latest_file} -> {version_file_path}")
+            print(f"DEBUG: Latest dir: {latest_dir}")
+            print(f"DEBUG: Version dir: {version_dir}")
 
-            # Operation to link from latest directory to version directory file
+            # Create the operation with carefully validated paths
             operations.append(DrsOperation(
                 operation_type=MigrationMode.SYMLINK,
-                source=destination_path,  # Link to the version file
-                destination=latest_file,
-                description="Create symlink from latest directory to version file"
+                source=version_file_path,  # Link to the version symlink, not the original data file
+                destination=latest_file,  # Must be in the latest directory
+                description=f"Create symlink from latest to newest version ({version_dir.name})"
             ))
+        else:
+            # For non-upgrade_from_latest mode, determine if this version is the latest overall
+            # Find all version directories
+            version_dirs = [d for d in dataset_dir.glob("v*") if d.is_dir() and re.match(r"v\d{8}", d.name)]
+
+            # Add current version to the list if not already there
+            current_version_dir_exists = False
+            for d in version_dirs:
+                if d.name == version_dir.name:
+                    current_version_dir_exists = True
+                    break
+
+            if not current_version_dir_exists:
+                version_dirs.append(version_dir)
+
+            # Sort by version string (descending)
+            version_dirs.sort(key=lambda d: d.name, reverse=True)
+
+            # Only create/update latest symlink if this version is the latest overall
+            if version_dirs and version_dirs[0].name == version_dir.name:
+                operations.append(DrsOperation(
+                    operation_type=MigrationMode.SYMLINK,
+                    source=destination_path,  # Link to the version file
+                    destination=latest_file,
+                    description="Create symlink from latest directory to version file"
+                ))
 
         return operations
 
@@ -449,6 +479,8 @@ class DrsProcessor:
         for i, operation in enumerate(operations):
             try:
                 print(f"Executing operation {i+1}: {operation.description or operation.operation_type}")
+                print(f"DEBUG - Source: {operation.source}")
+                print(f"DEBUG - Destination: {operation.destination}")
 
                 # Always ensure parent directories exist for any destination
                 if operation.destination:
@@ -488,19 +520,54 @@ class DrsProcessor:
                 elif operation.operation_type == MigrationMode.SYMLINK:
                     if operation.source:
                         # Create symlink
+
+                        # STRICT PATH VALIDATION - ensures we're creating a symlink exactly where intended
+                        if str(operation.description).startswith("Create symlink from latest"):
+                            # This is a latest symlink operation - check directory structure
+                            if "/latest/" not in str(operation.destination):
+                                print(f"ERROR: Latest symlink destination doesn't have /latest/ in path: {operation.destination}")
+                                # Get base directory and filename
+                                try:
+                                    base_dir = Path(str(operation.destination).split("/files/")[0])
+                                    filename = operation.destination.name
+                                    correct_dest = base_dir / "latest" / filename
+                                    print(f"Correcting destination to: {correct_dest}")
+                                    operation.destination = correct_dest
+                                except Exception as e:
+                                    print(f"ERROR: Failed to correct destination path: {e}")
+                                    continue
+
                         if operation.destination.exists():
                             if operation.destination.is_symlink():
                                 operation.destination.unlink()
                             else:
-                                print(f"Cannot create symlink, destination exists and is not a symlink: {operation.destination}")
+                                print(f"ERROR: Cannot create symlink, destination exists and is not a symlink: {operation.destination}")
+                                # Print additional debug info
+                                print(f"DEBUG - Operation being executed: {operation.description}")
+                                print(f"DEBUG - Source path: {operation.source}")
+                                print(f"DEBUG - Destination path: {operation.destination}")
                                 continue
 
                         try:
                             # Get the relative path from destination to source
-                            rel_path = os.path.relpath(str(operation.source), str(operation.destination.parent))
+                            # Make sure both paths are absolute and resolved
+                            source_path = operation.source.resolve() if hasattr(operation.source, 'resolve') else Path(operation.source).resolve()
+                            dest_parent = operation.destination.parent.resolve() if hasattr(operation.destination, 'parent') else Path(operation.destination).parent.resolve()
+
+                            rel_path = os.path.relpath(str(source_path), str(dest_parent))
+                            print(f"DEBUG - Creating symlink with relative path: {rel_path}")
                             os.symlink(rel_path, str(operation.destination))
                         except OSError as e:
                             print(f"Error creating symlink: {e}")
+                            print(f"DEBUG - Source: {operation.source}")
+                            print(f"DEBUG - Destination: {operation.destination}")
+                            # Fall back to copy if symlink fails
+                            try:
+                                if operation.source.exists():
+                                    print("Falling back to copy since symlink failed")
+                                    shutil.copy2(str(operation.source), str(operation.destination))
+                            except Exception as copy_err:
+                                print(f"Fallback copy also failed: {copy_err}")
 
                 elif operation.operation_type == MigrationMode.REMOVE:
                     if operation.source and operation.source.exists():

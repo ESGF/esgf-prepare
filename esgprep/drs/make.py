@@ -21,18 +21,18 @@ def determine_migration_mode(args) -> str:
         Migration mode string ('move', 'copy', 'link', 'symlink')
     """
     # Default is 'move'
-    mode = 'move'
+    mode = "move"
 
     # Check for explicit mode flags
-    if getattr(args, 'copy', False):
-        mode = 'copy'
-    elif getattr(args, 'link', False):
-        mode = 'link'
-    elif getattr(args, 'symlink', False):
-        mode = 'symlink'
+    if getattr(args, "copy", False):
+        mode = "copy"
+    elif getattr(args, "link", False):
+        mode = "link"
+    elif getattr(args, "symlink", False):
+        mode = "symlink"
 
     # If cmd is set and not 'make', use that (for 'remove', etc.)
-    if hasattr(args, 'cmd') and args.cmd != 'make':
+    if hasattr(args, "cmd") and args.cmd != "make":
         mode = args.cmd
 
     return mode
@@ -56,13 +56,17 @@ def process_esgdrs_command(args) -> int:
             root_dir=Path(args.root),
             project=args.project,
             mode=determine_migration_mode(args),
-            checksum_type=None if getattr(args, 'no_checksum', False) else "sha256",
-            upgrade_from_latest=getattr(args, 'upgrade_from_latest', False),
-            ignore_from_latest=[line.strip() for line in getattr(args, 'ignore_from_latest', []) or []],
-            ignore_from_incoming=[line.strip() for line in getattr(args, 'ignore_from_incoming', []) or []],
-            version=getattr(args, 'version', None),
-            set_values=dict(args.set_value) if getattr(args, 'set_value', None) else {},
-            set_keys=dict(args.set_key) if getattr(args, 'set_key', None) else {}
+            checksum_type=None if getattr(args, "no_checksum", False) else "sha256",
+            upgrade_from_latest=getattr(args, "upgrade_from_latest", False),
+            ignore_from_latest=[
+                line.strip() for line in getattr(args, "ignore_from_latest", []) or []
+            ],
+            ignore_from_incoming=[
+                line.strip() for line in getattr(args, "ignore_from_incoming", []) or []
+            ],
+            version=getattr(args, "version", None),
+            set_values=dict(args.set_value) if getattr(args, "set_value", None) else {},
+            set_keys=dict(args.set_key) if getattr(args, "set_key", None) else {},
         )
 
         # Process files from directory
@@ -72,10 +76,12 @@ def process_esgdrs_command(args) -> int:
 
         # Report results
         success_count = sum(1 for r in results if r.success)
-        print(f"Processed {len(results)} files: {success_count} succeeded, {len(results) - success_count} failed")
+        print(
+            f"Processed {len(results)} files: {success_count} succeeded, {len(results) - success_count} failed"
+        )
 
         # If action is 'upgrade', execute operations
-        if getattr(args, 'action', '') == 'upgrade':
+        if getattr(args, "action", "") == "upgrade":
             operations = []
             for result in results:
                 if result.success:
@@ -95,10 +101,11 @@ def process_esgdrs_command(args) -> int:
         print(f"Error processing command: {e}")
         return 1
 
-# Re-export imported classes and functions to maintain backward compatibility
-__all__ = [
-    'Process',
-    'DrsProcessor',
-    'determine_migration_mode',
-    'process_esgdrs_command'
-]
+
+# # Re-export imported classes and functions to maintain backward compatibility
+# __all__ = [
+#     'Process',
+#     'DrsProcessor',
+#     'determine_migration_mode',
+#     'process_esgdrs_command'
+# ]
