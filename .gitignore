@@ -14,3 +14,4 @@ output_root/
 esgprep/test_data
 uv.lock
 esgprep/tests/test_data/
+esgprep/tests/real_data_test/
