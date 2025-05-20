@@ -9,10 +9,10 @@
 
 """
 
+import esgvoc.api as ev
+
 from esgprep._handlers.dataset_id import Dataset
-from pyessv.exceptions import NamespaceParsingError, ValidationError #TemplateParsingError, TemplateValueError
-from esgprep._utils.print import *
-import pyessv
+from esgprep._utils.print import Print
 
 
 def get_project(dataset):
@@ -20,23 +20,22 @@ def get_project(dataset):
     Extract project code from a Dataset object.
 
     """
-    # Get all scopes within the loaded authority.
-    scopes = {scope.name: scope.namespace for scope in pyessv.all_scopes()}
+    # Get all project within the CV.
+    projects = ev.get_all_projects()
 
     # Find intersection between scopes list and first dataset item.
-    project = set(dataset.parts[0]).intersection(scopes)
+    project = set(dataset.parts[0]).intersection(projects)
 
     # Ensure only one project code matched.
     if len(project) == 1:
-
-        # Returns pyessv scope object as project.
-        return pyessv.load(scopes[project.pop()])
+        # Returns project code.
+        return next(iter(project))
 
     elif len(project) == 0:
-        Print.debug(f'No project code found: {dataset.identifier}')
+        Print.debug(f"No project code found: {dataset.identifier}")
         return None
     else:
-        Print.debug(f'Unable to match one project code: {dataset.identifier}')
+        Print.debug(f"Unable to match one project code: {dataset.identifier}")
         return None
 
 
@@ -53,24 +52,27 @@ def get_terms(dataset):
 
     # Validate each drs items against CV.
     try:
-        terms = {term.collection.name: term for term in pyessv.parse_dataset_identifier(project,
-                                                                                        dataset.identifier)}
+        terms = {
+            term.collection.name: term
+            for term in pyessv.parse_dataset_identifier(project, dataset.identifier)
+        }
 
     # Catch template parsing in case of no ending version.
     except NamespaceParsingError:
-
         # Add phony "latest" ending version.
-        dataset = Dataset(dataset.identifier + 'latest')
+        dataset = Dataset(dataset.identifier + "latest")
         try:
-            terms = {term.collection.name: term for term in pyessv.parse_dataset_identifier(project,
-                                                                                            dataset.identifier)}
+            terms = {
+                term.collection.name: term
+                for term in pyessv.parse_dataset_identifier(project, dataset.identifier)
+            }
 
         except (NamespaceParsingError, ValidationError) as error:
-            Print.debug(f'Invalid dataset identifier -- {error}')
+            Print.debug(f"Invalid dataset identifier -- {error}")
 
     # Catch parsing errors.
     except ValidationError as error:
-        Print.debug(f'Invalid dataset identifier -- {error}')
+        Print.debug(f"Invalid dataset identifier -- {error}")
 
     return terms
 

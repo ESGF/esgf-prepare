@@ -9,13 +9,13 @@
 
 """
 
+import os
 from pathlib import Path
 from typing import Pattern
 from uuid import uuid4 as uuid
 
 from esgprep._exceptions import NoFileFound
 from esgprep._utils import match
-from esgprep._utils.print import *
 
 
 class Collector(object):
@@ -25,7 +25,6 @@ class Collector(object):
     """
 
     def __init__(self, sources):
-
         # Get input sources.
         self.sources = sources
         assert isinstance(self.sources, list)
@@ -37,23 +36,17 @@ class Collector(object):
         self.PathFilter = FilterCollection()
 
     def __iter__(self):
-
         # StopIteration error means no files found in all input sources.
         try:
-
             # Iterate on input sources.
             for source in self.sources:
-
                 # Walk through each source.
                 for root, _, filenames in os.walk(source, followlinks=True):
-
                     # Source path can include hidden directories:
                     # So apply path filters on downstream tree only.
-                    if self.PathFilter(root.split(source)[1]):
-
+                    if self.PathFilter(root.split(str(source))[1]):
                         # Iterate on discovered sorted filenames.
                         for filename in sorted(filenames):
-
                             # Rebuild file full path aas pathlib.Path object.
                             path = Path(root, filename)
 
@@ -73,13 +66,14 @@ class FilterCollection(object):
     indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.
 
     """
+
     FILTER_TYPES = (str, Pattern)
 
     def __init__(self):
         # Instantiate filters dictionary.
         self.filters = dict()
 
-    def add(self, name=None, regex='*', inclusive=True):
+    def add(self, name=None, regex="*", inclusive=True):
         # Add new filter.
         if not name:
             name = str(uuid())
@@ -88,4 +82,9 @@ class FilterCollection(object):
         self.filters[name] = (regex, inclusive)
 
     def __call__(self, string):
-        return all([match(regex, string, inclusive=inclusive) for regex, inclusive in self.filters.values()])
+        return all(
+            [
+                match(regex, string, inclusive=inclusive)
+                for regex, inclusive in self.filters.values()
+            ]
+        )

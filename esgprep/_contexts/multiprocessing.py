@@ -14,15 +14,16 @@ from configparser import NoOptionError, NoSectionError
 from hashlib import algorithms_available as checksum_types
 from importlib import import_module
 from multiprocessing import Lock, Pool
-from multiprocessing.managers import SyncManager, Namespace 
+from multiprocessing.managers import Namespace, SyncManager
 from multiprocessing.sharedctypes import Value
+
+import esgvoc.api as ev
 
 from esgprep._contexts import BaseContext
 from esgprep._exceptions import InvalidChecksumType, MissingCVdata
 from esgprep._handlers.drs_tree import DRSTree
-from esgprep._utils.print import Print, COLORS
+from esgprep._utils.print import COLORS, Print
 
-import esgvoc.api as ev
 
 class Manager(SyncManager):
     pass
@@ -31,27 +32,56 @@ class Manager(SyncManager):
 class ManagerProxy(Namespace):
     # We need to expose the same __dunder__ methods as NamespaceProxy,
     # in addition to the b method.
-    _exposed_ = ('__getattribute__', '__setattr__', '__delattr__', 'get_display_lengths', 'add_path', 'append_path', 'create_leaf')
+    _exposed_ = (
+        "__getattribute__",
+        "__setattr__",
+        "__delattr__",
+        "get_display_lengths",
+        "add_path",
+        "append_path",
+        "create_leaf",
+    )
 
     def get_display_lengths(self):
-        callmethod = object.__getattribute__(self, '_callmethod')
-        return callmethod('get_display_lengths')
+        callmethod = object.__getattribute__(self, "_callmethod")
+        return callmethod("get_display_lengths")
 
     def add_path(self, key, value):
-        callmethod = object.__getattribute__(self, '_callmethod')
-        return callmethod('add_path', args=(key, value,))
+        callmethod = object.__getattribute__(self, "_callmethod")
+        return callmethod(
+            "add_path",
+            args=(
+                key,
+                value,
+            ),
+        )
 
     def append_path(self, key, what, value):
-        callmethod = object.__getattribute__(self, '_callmethod')
-        return callmethod('append_path', args=(key, what, value,))
+        callmethod = object.__getattribute__(self, "_callmethod")
+        return callmethod(
+            "append_path",
+            args=(
+                key,
+                what,
+                value,
+            ),
+        )
 
     def create_leaf(self, nodes, label, src, mode, force=False):
-        callmethod = object.__getattribute__(self, '_callmethod')
-        return callmethod('create_leaf', args=(nodes, label, src, mode, force,))
+        callmethod = object.__getattribute__(self, "_callmethod")
+        return callmethod(
+            "create_leaf",
+            args=(
+                nodes,
+                label,
+                src,
+                mode,
+                force,
+            ),
+        )
 
 
-
-Manager.register('DRSTree', DRSTree, ManagerProxy)
+Manager.register("DRSTree", DRSTree, ManagerProxy)
 
 
 class MultiprocessingContext(BaseContext):
@@ -64,28 +94,28 @@ class MultiprocessingContext(BaseContext):
         super(MultiprocessingContext, self).__init__(args)
 
         # Get sub-command line.
-        self.cmd = self.set('cmd')
+        self.cmd = self.set("cmd")
 
         # Set input action.
-        self.action = self.set('action')
+        self.action = self.set("action")
 
         # Set input DRS directory.
-        self.directory = self.set('directory')
+        self.directory = self.set("directory")
 
         # Set input dataset list.
-        self.dataset = self.set('dataset_list')
+        self.dataset = self.set("dataset_list")
 
         # Set input dataset ID.
-        self.dataset = self.set('dataset_id')
+        self.dataset = self.set("dataset_id")
 
         # Set input free directory.
-        self.incoming = self.set('incoming')
+        self.incoming = self.set("incoming")
 
         # Enable/disable checksumming process.
-        self.no_checksum = self.set('no_checksum')
+        self.no_checksum = self.set("no_checksum")
 
         # Read pre-computed checksums.
-        self.checksums_from = self.set('checksums_from')
+        self.checksums_from = self.set("checksums_from")
 
         # Checksums file takes priority on checksumming behavior setting.
         if self.checksums_from:
@@ -93,10 +123,10 @@ class MultiprocessingContext(BaseContext):
             Print.warning('"--checksums-from" ignores "--no-checksum".')
 
         # Set multiprocessing configuration. Processes number is caped by cpu_count().
-        self.processes = self.set('max_processes')
+        self.processes = self.set("max_processes")
 
         # Sequential processing disables multiprocessing pool usage.
-        self.use_pool = (self.processes != 1)
+        self.use_pool = self.processes != 1
 
         # Instantiate data counter.
         self.nbsources = 0
@@ -111,49 +141,47 @@ class MultiprocessingContext(BaseContext):
             self.manager.start()
 
             # Instantiate print buffer.
-            Print.BUFFER = self.manager.Value(c_wchar_p, '')
+            Print.BUFFER = self.manager.Value(c_wchar_p, "")
 
             # Instantiate progress counter.
-            self.progress = self.manager.Value('i', 0)
+            self.progress = self.manager.Value("i", 0)
 
             # Instantiate error counter.
-            self.errors = self.manager.Value('i', 0)
+            self.errors = self.manager.Value("i", 0)
 
             # Instantiate spinner message length.
-            self.msg_length = self.manager.Value('i', 0)
+            self.msg_length = self.manager.Value("i", 0)
 
             # Instantiate stdout lock.
             self.lock = self.manager.Lock()
         else:
-            self.errors = Value('i', 0)
-            self.progress = Value('i', 0)
-            self.msg_length = Value('i', 0)
+            self.errors = Value("i", 0)
+            self.progress = Value("i", 0)
+            self.msg_length = Value("i", 0)
             self.lock = Lock()
 
         # Discover a specified DRS version number.
-        self.version = self.set('version')
+        self.version = self.set("version")
 
         # Set directory filter.
-        self.dir_filter = self.set('ignore_dir')
+        self.dir_filter = self.set("ignore_dir")
 
         # Set file filters.
         self.file_filter = list()
-        if hasattr(args, 'include_files'):
+        if hasattr(args, "include_files"):
             self.file_filter += [(f, True) for f in args.include_file]
-        if hasattr(args, 'exclude_file'):
+        if hasattr(args, "exclude_file"):
             self.file_filter += [(f, False) for f in args.exclude_file]
 
     def __enter__(self):
         super(MultiprocessingContext, self).__enter__()
 
         # Load project CV.
-        Print.info('Loading CV')
+        Print.info("Loading CV")
         try:
-            assert("institution" in ev.get_all_data_descriptors_in_universe())
-            #pyessv.load(self.get_cv_authority()) # Lolo change cause pyessv change
-            # pyessv.load_cv(self.get_cv_authority(), self.project)
+            assert "institution" in ev.get_all_data_descriptors_in_universe()
         except AssertionError:
-            raise MissingCVdata("esgvoc", "na") # TODO improve error message according to change pyessv into esgvoc
+            raise MissingCVdata("esgvoc", "na")  # TODO improve error message
 
         # Get checksum client.
         self.checksum_type = self.get_checksum_type()
@@ -161,10 +189,9 @@ class MultiprocessingContext(BaseContext):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-
         # Build summary message.
-        msg = f'Number of success(es): {self.success}\n'
-        msg += f'Number of error(s): {self.errors.value}'
+        msg = f"Number of success(es): {self.success}\n"
+        msg += f"Number of error(s): {self.errors.value}"
 
         # No errors occurred.
         if not self.errors.value:
@@ -193,7 +220,7 @@ class MultiprocessingContext(BaseContext):
             return None
 
         # Default set to sha256 checksum client.
-        checksum_type = 'sha256'
+        checksum_type = "sha256"
 
         # Get checksum type from configuration.
         # if 'checksum' in self.cfg.defaults():
@@ -205,23 +232,9 @@ class MultiprocessingContext(BaseContext):
 
         return checksum_type
 
-    def get_cv_authority(self):
-        """
-        Returns the CV authority to call pyessv.
-        Default uses 'WCRP' CV.
-
-        """
-        try:
-            return self.cfg.get(section=f'config:{self.project}', option='pyessv_authority')
-        except (AttributeError, NoSectionError, NoOptionError):
-            return "compil"
-            return 'wcrp'
-
 
 class Runner(object):
-
     def __init__(self, processes):
-
         # Initialize the pool.
         self.pool = None
 
@@ -229,7 +242,6 @@ class Runner(object):
             self.pool = Pool(processes=processes)
 
     def _handle_sigterm(self, signum, frame):
-
         # Properly kill the pool in case of SIGTERM.
         if self.pool:
             self.pool.terminate()
@@ -241,17 +253,15 @@ class Runner(object):
         sig_handler = signal.signal(signal.SIGTERM, self._handle_sigterm)
 
         # Import the appropriate worker.
-        process = getattr(import_module(f'esgprep.{ctx.prog[3:]}.{ctx.cmd}'), 'Process')
+        process = getattr(import_module(f"esgprep.{ctx.prog[3:]}.{ctx.cmd}"), "Process")
 
         # Instantiate pool of processes.
         if self.pool:
-
             # Instantiate pool iterator.
             processes = self.pool.imap(process(ctx), sources)
 
         # Sequential processing use basic map function.
         else:
-
             # Instantiate processes iterator.
             processes = map(process(ctx), sources)
 
