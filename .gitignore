@@ -10,4 +10,4 @@ dist
 .python-version
 esgprep/tests/input_files/
 output_root/
-../uv.lock
+uv.lock
