@@ -12,17 +12,14 @@ from pathlib import Path
 
 from esgvoc.apps.drs.generator import DrsGenerator
 
-from esgprep._exceptions import DuplicatedFile, OlderUpgrade, UnchangedTrackingID
+from esgprep._exceptions import (DuplicatedFile, OlderUpgrade,
+                                 UnchangedTrackingID)
 from esgprep._exceptions.netcdf import NoNetCDFAttribute
 from esgprep._handlers.constants import LINK_SEPARATOR
 from esgprep._utils.checksum import get_checksum
 from esgprep._utils.ncfile import drs_path, get_ncattrs, get_tracking_id
-from esgprep._utils.path import (
-    extract_version,
-    get_ordered_version_paths,
-    get_path_to_version,
-    get_version_and_subpath,
-)
+from esgprep._utils.path import (extract_version, get_ordered_version_paths,
+                                 get_path_to_version, get_version_and_subpath)
 from esgprep._utils.print import COLORS, TAGS, Print
 from esgprep.constants import FRAMES
 from esgprep.drs.constants import SPINNER_DESC
@@ -178,6 +175,9 @@ class Process(object):
                 parts_from_version = get_version_and_subpath(current_path)
                 src = [".."] * (len(parts_from_version) - 1)
                 src.append("files")
+                version_nb = parts_from_version[0][1:]
+                src.append("d" + version_nb)
+
                 # src += get_version_and_subpath(with_file_folder(current_path))
                 # src += parts_from_version
                 src.append(
@@ -210,6 +210,8 @@ class Process(object):
                 ]
 
                 nodes.append("files")
+                version_nb = parts_from_version[0][1:]
+                nodes.append("d" + version_nb)
                 nodes.append(current_path.name)
                 # Add the current file to the "files" folder.
                 self.tree.create_leaf(

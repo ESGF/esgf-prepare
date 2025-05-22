@@ -94,99 +94,41 @@ class Post_Test_Folder:
             ver_dir = Path.joinpath(self.folder, "v" + ver)
             list_files_in_version = list(ver_dir.glob("*.*"))
             for f in list_files_in_version:
-                pointed_file = f.resolve()
-                if not pointed_file.exists():
+                if not f.is_symlink():
+                    print(f"File {f.name} in {ver_dir.name} is not a symlink")
+                    return False
+
+                # Get the target path without resolving all the way to the file
+                target_path = str(f.readlink())
+
+                # Check if the symlink points to a file in the files/d* directory
+                expected_prefix = f"../files/d{ver}"
+                if not target_path.startswith(expected_prefix):
+                    print(
+                        f"File {f.name} in {ver_dir.name} doesn't point to {expected_prefix}, points to {target_path}"
+                    )
                     return False
         return True
 
-    def is_there_symlink_between_latest_and_latest_version(
-        self, upgrade_from_latest=True
-    ):
+    def is_there_symlink_between_latest_and_latest_version(self):
         """
-        Check that files in latest directory point to their newest version.
-
-        With upgrade_from_latest=True (the default), each file in latest should point
-        to the newest version that contains that specific file.
-
-        With upgrade_from_latest=False, the latest directory itself should be a symlink
-        to the newest version directory (legacy behavior).
+        Check that the latest directory is a symlink to the version with the highest number.
         """
-        if not upgrade_from_latest:
-            # Original behavior: check if latest is a symlink to the latest version directory
-            sorted_version_list = sorted(self.list_version, key=lambda x: int(x))
-            last_version = sorted_version_list[-1]
-            last_version_path = Path.joinpath(self.folder, "v" + last_version)
-            latest_path = Path.joinpath(self.folder, "latest")
-
-            # Check if latest directory exists, is a symlink, and points to the latest version directory
-            if not (
-                latest_path.exists()
-                and latest_path.is_symlink()
-                and last_version_path.exists()
-            ):
-                return False
-
-            # Check that latest is a symlink to the latest version directory
-            return latest_path.resolve() == last_version_path
-
-        # New behavior for upgrade_from_latest: check each file individually
+        # Sort versions to find the newest one
+        sorted_version_list = sorted(self.list_version, key=lambda x: int(x))
+        last_version = sorted_version_list[-1]
+        last_version_path = Path.joinpath(self.folder, "v" + last_version)
         latest_path = Path.joinpath(self.folder, "latest")
-        if not latest_path.exists():
+        # Check if latest directory exists, is a symlink, and points to the latest version directory
+        if not (
+            latest_path.exists()
+            and latest_path.is_symlink()
+            and last_version_path.exists()
+        ):
             return False
 
-        # Get all files in the latest directory
-        latest_files = list(latest_path.glob("*.*"))
-        if not latest_files:
-            return False
-
-        # Sort versions from newest to oldest
-        sorted_version_list = sorted(
-            self.list_version, key=lambda x: int(x), reverse=True
-        )
-
-        # Check each file in latest directory
-        for latest_file in latest_files:
-            if not latest_file.is_symlink():
-                print(f"File {latest_file.name} in latest is not a symlink")
-                return False
-
-            # Get the target of the symlink (resolves to actual file in d* directory)
-            target_path = latest_file.resolve()
-
-            # Extract the filename
-            filename = latest_file.name
-
-            # Find the newest version that contains this file
-            newest_version_with_file = None
-            for version in sorted_version_list:
-                version_path = Path.joinpath(self.folder, "v" + version)
-                version_file = version_path / filename
-
-                if version_file.exists():
-                    newest_version_with_file = version
-                    break
-
-            if not newest_version_with_file:
-                print(f"Could not find any version containing {filename}")
-                return False
-
-            # Now check if latest symlink points to the file in the newest version that has it
-            # We need to check the file's version directory from its path
-            file_version_pattern = r"/files/d(\d+)/"
-            match = re.search(file_version_pattern, str(target_path))
-            if not match:
-                print(f"Could not extract version number from {target_path}")
-                return False
-
-            file_version = match.group(1)
-            if file_version != newest_version_with_file:
-                print(
-                    f"File {filename} points to version {file_version} but newest is {newest_version_with_file}"
-                )
-                return False
-
-        # All files point to their newest version
-        return True
+        # Check that latest is a symlink to the latest version directory
+        return latest_path.resolve() == last_version_path.absolute()
 
     def test(self, upgrade_from_latest=True):
         """
@@ -219,11 +161,11 @@ class Post_Test_Folder:
         )
         print("--- HAS symlink between files/d********/* and v********/*    -------")
 
-        assert self.is_there_symlink_between_latest_and_latest_version(
-            upgrade_from_latest
-        ), "HAS NOT valid symlinks between latest and appropriate version files"
+        assert self.is_there_symlink_between_latest_and_latest_version(), (
+            "HAS NOT valid symlinks between latest and latest version diretory"
+        )
         print(
-            "--- HAS valid symlinks between latest and appropriate version files  -------"
+            "--- HAS valid symlinks between latest and latest version directory  -------"
         )
 
         print("--- EVERYTHING FINE ")
