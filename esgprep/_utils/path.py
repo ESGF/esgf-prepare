@@ -52,13 +52,14 @@ def get_path_to_version(path: Path) -> list[str]:
 
 def get_ordered_version_paths(base_path: Path) -> list[Path]:
     """
-    Returns a list of all paths in the base_path directory, ordered by version,
+    Returns a list of all "version directory" paths in the base_path directory, ordered by version,
     excluding the 'latest' symlink.
     """
+    print("get_ordered_version_paths", str(base_path))
     if base_path.exists() is False:
         return []
     paths = list(base_path.iterdir())
-
+    print("paths:", paths)
     # Extract versions and filter valid ones, excluding 'latest'
     versioned_paths = [
         (p, extract_version(p))
@@ -70,6 +71,16 @@ def get_ordered_version_paths(base_path: Path) -> list[Path]:
     versioned_paths.sort(key=lambda x: int(x[1][1:]))
 
     return [p[0] for p in versioned_paths]
+
+
+def get_ordered_file_version_paths(base_path: Path, file_name: str):
+    res = []
+    version_paths = get_ordered_version_paths(base_path)
+    for version_path in version_paths:
+        file_version_path = version_path / file_name
+        if file_version_path.is_file():
+            res.append(file_version_path)
+    return res
 
 
 def get_project(path) -> str | None:

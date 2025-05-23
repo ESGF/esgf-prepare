@@ -102,7 +102,7 @@ class Post_Test_Folder:
                 target_path = str(f.readlink())
 
                 # Check if the symlink points to a file in the files/d* directory
-                expected_prefix = f"../files/d{ver}"
+                expected_prefix = f"../files/d"  # no version here cause if upgrade_from_latest d{ver} is different from v{ver}
                 if not target_path.startswith(expected_prefix):
                     print(
                         f"File {f.name} in {ver_dir.name} doesn't point to {expected_prefix}, points to {target_path}"

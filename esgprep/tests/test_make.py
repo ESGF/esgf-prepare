@@ -8,13 +8,11 @@ from esgprep.tests.test_utils import clean_directory
 
 
 def make_input_files():
-    from tests.test_utils import (
-        create_files_different_members,
-        create_files_different_models,
-        create_files_different_times,
-        create_files_different_variables,
-        create_files_different_versions,
-    )
+    from esgprep.tests.test_utils import (create_files_different_members,
+                                          create_files_different_models,
+                                          create_files_different_times,
+                                          create_files_different_variables,
+                                          create_files_different_versions)
 
     base_dir = Path("tests/test_data/incoming")
     create_files_different_variables(base_dir / "incoming1")
@@ -22,6 +20,15 @@ def make_input_files():
     create_files_different_members(base_dir / "incoming3")
     create_files_different_versions(base_dir / "incoming4")
     create_files_different_models(base_dir / "incoming5")
+    create_files_different_times(base_dir / "incoming2_1", count=6)
+    files_to_delete = [
+        "cmip6_IPSL-CM6A-LR_tas_0-10.nc",
+        "cmip6_IPSL-CM6A-LR_tas_10-20.nc",
+        "cmip6_IPSL-CM6A-LR_tas_20-30.nc",
+    ]
+    for filename in files_to_delete:
+        file_path = base_dir / "incoming2_1" / filename
+        file_path.unlink()
 
 
 def get_default_arg() -> Namespace:
@@ -57,6 +64,13 @@ def get_default_arg() -> Namespace:
         prog="esgdrs",
     )
     return arg
+
+
+##################################################################################################
+####### TEST : Upgrade cmd ######################################################################
+##################################################################################################
+def test_create_input():
+    make_input_files()
 
 
 def test_diff_variable():
@@ -124,5 +138,46 @@ def test_diff_source():
     Post_Test_Folder(
         Path(
             "tests/test_data/root/CMIP6/CMIP/IPSL/NESM3/historical/r1i1p1f1/day/tas/gn"
+        )
+    ).test()
+
+
+##################################################################################################
+####### TEST : upgrade_from_latest ###############################################################
+##################################################################################################
+
+
+def test_diff_variable_base():
+    # test basic structure from a model simulation output with multiple variable, one in each file
+    dir_source = Path("tests/test_data/incoming/incoming2")
+    root_path_drs = Path("tests/test_data/root")
+    clean_directory(root_path_drs)
+
+    arg = get_default_arg()
+    arg.directory = [dir_source]
+    arg.root = root_path_drs
+
+    run(arg)
+    Post_Test_Folder(
+        Path(
+            "tests/test_data/root/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/day/tas/gn"
+        )
+    ).test()
+
+
+def test_new_version_diff_file_upgrade_from_latest():
+    # test to add a new version for a specific var "tas" with multiple new file new time-range
+    dir_source = Path("tests/test_data/incoming/incoming2_1")
+    root_path_drs = Path("tests/test_data/root")
+    arg = get_default_arg()
+    arg.directory = [dir_source]
+    arg.root = root_path_drs
+    arg.version = "v19810102"
+    arg.upgrade_from_latest = True
+
+    run(arg)
+    Post_Test_Folder(
+        Path(
+            "tests/test_data/root/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/day/tas/gn"
         )
     ).test()

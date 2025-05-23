@@ -9,17 +9,22 @@
 import os
 import traceback
 from pathlib import Path
+from pprint import pprint
 
 from esgvoc.apps.drs.generator import DrsGenerator
 
-from esgprep._exceptions import (DuplicatedFile, OlderUpgrade,
-                                 UnchangedTrackingID)
+from esgprep._exceptions import DuplicatedFile, OlderUpgrade, UnchangedTrackingID
 from esgprep._exceptions.netcdf import NoNetCDFAttribute
 from esgprep._handlers.constants import LINK_SEPARATOR
 from esgprep._utils.checksum import get_checksum
 from esgprep._utils.ncfile import drs_path, get_ncattrs, get_tracking_id
-from esgprep._utils.path import (extract_version, get_ordered_version_paths,
-                                 get_path_to_version, get_version_and_subpath)
+from esgprep._utils.path import (
+    extract_version,
+    get_ordered_file_version_paths,
+    get_ordered_version_paths,
+    get_path_to_version,
+    get_version_and_subpath,
+)
 from esgprep._utils.print import COLORS, TAGS, Print
 from esgprep.constants import FRAMES
 from esgprep.drs.constants import SPINNER_DESC
@@ -86,7 +91,7 @@ class Process(object):
 
             # Build directory structure.
             # DRS terms are validated during this step.
-
+            pprint(current_attrs)
             try:
                 # drspath = drs_path(current_attrs, self.set_values, self.set_keys)
                 dg = DrsGenerator("cmip6")
@@ -96,11 +101,13 @@ class Process(object):
                 )
                 if len(drs_path.errors) != 0:
                     raise Exception
+                print("-----------------------", source.name)
                 current_path: Path = (
                     Path(self.root)
                     / Path(drs_path.generated_drs_expression)
                     / source.name
                 )
+
                 # example : CMIP6/CMIP/CCCma/CanESM5/historical/r1i1p2f1/Amon/tas/gn/v20190429
             except TypeError:
                 Print.debug("Directory structure is None")
@@ -108,19 +115,33 @@ class Process(object):
 
             # Instantiate latest version to "Initial"
             latest_version = "Initial"
-
+            print("current_path=", current_path)
+            print("current_path.parent", current_path.parent)
             # Get latest existing version of the file.
-            all_versions = get_ordered_version_paths(current_path.parent)
-
+            all_versions = get_ordered_version_paths(current_path.parent.parent)
+            print("all_versions", all_versions)
+            dataset_dir = current_path.parent.parent
+            latest_dir = dataset_dir / "latest"
+            latest_path = latest_dir / source.name
             # latest_path = with_latest_version(current_path)
-            latest_path = all_versions[-1] if len(all_versions) > 1 else None
+            # latest_path = all_versions[-1] if len(all_versions) >= 1 else None
+            print("LA :")
+            print("latest_path", latest_path)
+            print("latest_path.exists()", latest_path.exists())
 
+            print(
+                "list with same filename",
+                get_ordered_file_version_paths(current_path.parent.parent, source.name),
+            )
             # 1. Check if a latest file version exists (i.e. with the same filename).
             if latest_path and latest_path.exists():
                 # 2. Check latest version is older than current version.
-
+                print("current_path:", current_path)
+                print("latest_path:", latest_path)
                 current_version = extract_version(current_path)
                 latest_version = extract_version(latest_path)
+                print("current_version:", current_version)
+                print("latest_version:", latest_version)
 
                 if latest_version > current_version:
                     raise OlderUpgrade(current_version, latest_version)
@@ -220,13 +241,17 @@ class Process(object):
                     src=source,  # Lolo Change current_path to source
                     mode=self.mode,
                 )
+                print("ICI")
+                latest_path = all_versions[-1] if len(all_versions) >= 1 else None
 
                 # If latest file version exist and --upgrade-from-latest submitted.
                 if latest_path and latest_path.exists() and self.upgrade_from_latest:
+                    print("ON EST LA")
                     # Walk through the latest dataset version.
                     # Create a symlink for each file with a different filename than the current one
                     for root, _, filenames in os.walk(latest_path):
                         for latest_name in filenames:
+                            print("OY ::::::::", latest_name)
                             # Add latest files as tree leaves with version to upgrade instead of latest version
                             # i.e., copy latest dataset leaves to the current tree.
                             # Except if file has be ignored from latest version (i.e., with known issue)
@@ -237,10 +262,10 @@ class Process(object):
                                 and latest_name not in self.ignore_from_latest
                             ):
                                 src = os.path.join(root, latest_name)
+                                node_list = list(current_path.parent.parts)
+                                node_list.append(latest_name)
                                 self.tree.create_leaf(
-                                    nodes=list(current_path.parent.parts).append(
-                                        latest_name
-                                    ),
+                                    nodes=node_list,
                                     label=f"{latest_name}{LINK_SEPARATOR}{os.readlink(src)}",
                                     src=os.readlink(src),
                                     mode="symlink",
