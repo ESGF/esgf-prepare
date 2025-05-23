@@ -10,5 +10,5 @@ dist
 .python-version
 output_root/
 uv.lock
-esgprep/tests/test_data/
-tests/test_data/
+esgprep/tests/test_data
+tests/test_data
