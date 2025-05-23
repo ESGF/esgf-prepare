@@ -11,3 +11,4 @@ dist
 output_root/
 uv.lock
 esgprep/tests/test_data/
+tests/test_data/root/
