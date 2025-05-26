@@ -299,7 +299,7 @@ class Process(object):
             # Record entry for list() and uniqueness checkup.
             record = {"src": source, "dst": current_path, "is_duplicate": is_duplicate}
             key = str(get_path_to_version(current_path.parent))
-
+            print("key:", key)
             if key in self.tree.paths:
                 # mean we already saw this dataset
                 un = self.tree.paths[key]["latest"]

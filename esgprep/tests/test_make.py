@@ -181,3 +181,12 @@ def test_new_version_diff_file_upgrade_from_latest():
             "tests/test_data/root/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/day/tas/gn"
         )
     ).test()
+
+
+########################################################################################################
+# HOW to test only CLI print output ? in case of list, tree, todo ?
+def test_list():
+    root_path_drs = Path("tests/test_data/root")
+
+    clean_directory(root_path_drs)
+    test_diff_variable_base()  # just to get the basic structure with 3 files inside v19810101

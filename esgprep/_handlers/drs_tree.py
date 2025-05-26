@@ -13,14 +13,15 @@ import getpass
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from esgprep import _STDOUT
-from esgprep._exceptions import DuplicatedDataset
-from esgprep._exceptions.io import *
-from esgprep._utils.print import *
-from esgprep._handlers.constants import UNIX_COMMAND_LABEL,UNIX_COMMAND, LINK_SEPARATOR
 from hurry.filesize import size
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
+
+from esgprep import _STDOUT
+from esgprep._exceptions import DuplicatedDataset
+from esgprep._exceptions.io import *
+from esgprep._handlers.constants import LINK_SEPARATOR, UNIX_COMMAND, UNIX_COMMAND_LABEL
+from esgprep._utils.print import *
 
 
 class DRSLeaf(object):
@@ -30,7 +31,6 @@ class DRSLeaf(object):
     """
 
     def __init__(self, dst, mode, src=None):
-
         # Source data path.
         self.src = src
 
@@ -63,7 +63,7 @@ class DRSLeaf(object):
                     pass
 
         # Unlink symbolic link if already exists.
-        if self.mode == 'symlink' and os.path.lexists(self.dst):
+        if self.mode == "symlink" and os.path.lexists(self.dst):
             line = f"{'rm -f'} {self.dst}"
             print_cmd(line, quiet, todo_only)
             if not todo_only:
@@ -72,8 +72,8 @@ class DRSLeaf(object):
         # Make upgrade depending on the migration mode.
         line = UNIX_COMMAND_LABEL[self.mode]
         if self.src:
-            line += ' ' + str(self.src)  # Lolo change add str(Posix)
-        line += ' ' + str(self.dst)  # Lolo change str(Posix)
+            line += " " + str(self.src)  # Lolo change add str(Posix)
+        line += " " + str(self.dst)  # Lolo change str(Posix)
         print_cmd(line, quiet, todo_only)
         if not todo_only:
             if self.src:
@@ -89,10 +89,10 @@ class DRSLeaf(object):
         """
         # Check src access.
         # Define src access depending on the migration mode
-        if self.mode == 'move':
+        if self.mode == "move":
             if os.path.isabs(self.src) and not os.access(self.src, os.W_OK):
                 raise WriteAccessDenied(getpass.getuser(), self.src)
-        elif self.mode != 'remove':
+        elif self.mode != "remove":
             if os.path.isabs(self.src) and not os.access(self.src, os.R_OK):
                 raise ReadAccessDenied(getpass.getuser(), self.src)
 
@@ -112,11 +112,9 @@ class DRSLeaf(object):
 
         """
         # Apply test for "--link" migration only.
-        if self.mode == 'link':
-
+        if self.mode == "link":
             # Create a temporary file in the source directory.
             with NamedTemporaryFile(dir=os.path.dirname(self.src)) as f:
-
                 # Pickup the first existing parent if the destination folder does not exist.
                 dst = os.path.dirname(self.dst)
                 while not os.path.exists(dst) and dst != root:
@@ -129,7 +127,6 @@ class DRSLeaf(object):
 
                 # Catch OS errors.
                 except OSError as e:
-
                     # Invalid corss-device link.
                     if e.errno == 18:
                         raise CrossMigrationDenied(self.src, self.src, self.mode)
@@ -150,8 +147,9 @@ class DRSTree(Tree):
 
     """
 
-    def __init__(self, root=None, mode=None, outfile=None):  # Lolo Change version=Node en 2eme argument remove
-
+    def __init__(
+        self, root=None, mode=None, outfile=None
+    ):  # Lolo Change version=Node en 2eme argument remove
         # Retrieve original class init
         Tree.__init__(self)
 
@@ -199,21 +197,17 @@ class DRSTree(Tree):
         """
         # Iterate over DRS levels..
         for i in range(len(nodes)):
-
             # Node id = node "path"
-            node_id = os.path.join(*nodes[:i + 1])
+            node_id = os.path.join(*nodes[: i + 1])
 
             # Escape in case of duplicated node.
             try:
-
                 # Create first DRS node.
                 if i == 0:
-                    self.create_node(tag=nodes[i],
-                                     identifier=node_id)
+                    self.create_node(tag=nodes[i], identifier=node_id)
 
                 # Create DRS leaf nodes.
                 elif i == len(nodes) - 1:
-
                     # Force DRS node removal if exists.
                     if self.contains(node_id) and force:
                         self.remove_node(node_id)
@@ -222,19 +216,21 @@ class DRSTree(Tree):
                     parent_node_id = os.path.join(*nodes[:i])
 
                     # Create DRS node embedding DRSLeaf object.
-                    self.create_node(tag=label,
-                                     identifier=node_id,
-                                     parent=parent_node_id,
-                                     data=DRSLeaf(src=src,
-                                                  dst=node_id.split(LINK_SEPARATOR)[0],
-                                                  mode=mode))
+                    self.create_node(
+                        tag=label,
+                        identifier=node_id,
+                        parent=parent_node_id,
+                        data=DRSLeaf(
+                            src=src, dst=node_id.split(LINK_SEPARATOR)[0], mode=mode
+                        ),
+                    )
 
                 # Create DRS nodes between DRS root and DRS leaf.
                 else:
                     parent_node_id = os.path.join(*nodes[:i])
-                    self.create_node(tag=nodes[i],
-                                     identifier=node_id,
-                                     parent=parent_node_id)
+                    self.create_node(
+                        tag=nodes[i], identifier=node_id, parent=parent_node_id
+                    )
 
             # Pass duplicated node error to recursively generated the tree
             except DuplicatedNodeIdError:
@@ -262,27 +258,28 @@ class DRSTree(Tree):
 
         """
         for dataset, infos in self.paths.items():
-
             # Retrieve the latest existing version.
-            latest_version = infos['latest']
+            latest_version = infos["latest"]
 
             # Check dataset uniqueness only if a latest version exists.
             if latest_version:
-
                 # Get the list of filenames from the incoming dataset.
                 if "files" in infos.keys():
-
-                    filenames = [file['src'].name for file in infos['files'] if
-                                 "src" in file.keys()]  # Lolo Change :  if "src" in file.keys()
+                    filenames = [
+                        file["src"].name
+                        for file in infos["files"]
+                        if "src" in file.keys()
+                    ]  # Lolo Change :  if "src" in file.keys()
                     # filenames = [file for file in infos['files']  ]  # Lolo Change :  if "src" in file.keys()
 
                 # Get the list of duplicate status from the incoming dataset.
-                duplicates = [file['is_duplicate'] for file in infos['files']]
+                duplicates = [file["is_duplicate"] for file in infos["files"]]
 
                 # Get the list of filenames from the latest existing version.
                 latest_filenames = list()
-                for _, _, filenames in os.walk(Path(self.drs_root or '', dataset,
-                                                    latest_version)):  # change or '' to deal with error with remove
+                for _, _, filenames in os.walk(
+                    Path(self.drs_root or "", dataset, latest_version)
+                ):  # change or '' to deal with error with remove
                     latest_filenames += filenames
 
                 # An upgrade version is different if it contains at least one file with is_duplicate = False
@@ -298,7 +295,7 @@ class DRSTree(Tree):
         # TEST ça à l'air de marcher ..: au lieu de regarder dans self.path => qu'on a remplit au fur et à mesure .. on va directement checker le Tree
         all_tree_nodes = self.all_nodes()
         for node in all_tree_nodes[::-1]:
-            if node.is_root()==False:
+            if node.is_root() == False:
                 str_path = node.identifier
                 # c = node.data
                 # d = c.dst
@@ -339,49 +336,52 @@ class DRSTree(Tree):
         Lists and summaries upgrade information at the publication level.
 
         """
+        print("TOTO")
+        print(self)
         # Header.
-        print(''.center(self.d_lengths[-1], '='))
-        header = 'Publication level'.center(self.d_lengths[0])
-        header += 'Latest version'.center(self.d_lengths[1])
-        if self.drs_mode == 'remove':
-            header += '<-'
-            header += 'Remove version'.center(self.d_lengths[2])
-            header += 'Files to remove'.rjust(self.d_lengths[3])
+        print("".center(self.d_lengths[-1], "="))
+        header = "Publication level".center(self.d_lengths[0])
+        header += "Latest version".center(self.d_lengths[1])
+        if self.drs_mode == "remove":
+            header += "<-"
+            header += "Remove version".center(self.d_lengths[2])
+            header += "Files to remove".rjust(self.d_lengths[3])
         else:
-            header += '->'
-            header += 'Upgrade version'.center(self.d_lengths[2])
-            header += 'Files to upgrade'.rjust(self.d_lengths[3])
-        header += 'Total size'.rjust(self.d_lengths[4])
+            header += "->"
+            header += "Upgrade version".center(self.d_lengths[2])
+            header += "Files to upgrade".rjust(self.d_lengths[3])
+        header += "Total size".rjust(self.d_lengths[4])
         print(header)
-        print(''.center(self.d_lengths[-1], '-'))
+        print("".center(self.d_lengths[-1], "-"))
 
         # Body.
         for dataset, infos in self.paths.items():
             pub_lvl = dataset
-            nfiles = len(infos['files'])
-            latest_version = infos['latest']
-            total_size=0
+            nfiles = len(infos["files"])
+            latest_version = infos["latest"]
+            total_size = 0
             if "upgrade" in infos.keys():  # Lolo Change
-                upgrade_version = infos['upgrade']
+                upgrade_version = infos["upgrade"]
             else:
                 upgrade_version = ""
-            if not self.drs_mode == 'remove':  # Lolo Change entire line
-                total_size = size(sum([file['src'].stat().st_size for file in infos['files']]))
+            if not self.drs_mode == "remove":  # Lolo Change entire line
+                total_size = size(
+                    sum([file["src"].stat().st_size for file in infos["files"]])
+                )
             body = pub_lvl.ljust(self.d_lengths[0])
             body += latest_version.center(self.d_lengths[1])
-            if self.drs_mode == 'remove':
-                body += '<-'
+            if self.drs_mode == "remove":
+                body += "<-"
             else:
-                body += '->'
+                body += "->"
             body += upgrade_version.center(self.d_lengths[2])
             body += str(nfiles).rjust(self.d_lengths[3])
-            if not self.drs_mode == 'remove':  # Lolo Change entire line
-
+            if not self.drs_mode == "remove":  # Lolo Change entire line
                 body += total_size.rjust(self.d_lengths[4])
             print(body)
 
         # Footer.
-        print(''.center(self.d_lengths[-1], '='))
+        print("".center(self.d_lengths[-1], "="))
 
     def tree(self, **kwargs):
         """
@@ -389,18 +389,19 @@ class DRSTree(Tree):
 
         """
         # Header.
-        print(''.center(self.d_lengths[-1], '='))
-        if self.drs_mode == 'remove':
-            print('Remove DRS Tree'.center(self.d_lengths[-1]))
+        print("".center(self.d_lengths[-1], "="))
+        if self.drs_mode == "remove":
+            print("Remove DRS Tree".center(self.d_lengths[-1]))
         else:
-            print('Upgrade DRS Tree'.center(self.d_lengths[-1]))
-        print(''.center(self.d_lengths[-1], '-'))
+            print("Upgrade DRS Tree".center(self.d_lengths[-1]))
+        print("".center(self.d_lengths[-1], "-"))
         import codecs
+
         # Body.
         self.show()
 
         # Footer.
-        print(''.center(self.d_lengths[-1], '='))
+        print("".center(self.d_lengths[-1], "="))
 
     def todo(self, **kwargs):
         """
@@ -421,13 +422,13 @@ class DRSTree(Tree):
                 leaf.data.migration_granted(self.drs_root)
 
         # Header.
-        #print(self.paths)
-        print(''.center(self.d_lengths[-1], '='))
+        # print(self.paths)
+        print("".center(self.d_lengths[-1], "="))
         if todo_only:
-            print('Unix command-lines (DRY-RUN)'.center(self.d_lengths[-1]))
+            print("Unix command-lines (DRY-RUN)".center(self.d_lengths[-1]))
         else:
-            print('Unix command-lines'.center(self.d_lengths[-1]))
-        print(''.center(self.d_lengths[-1], '-'))
+            print("Unix command-lines".center(self.d_lengths[-1]))
+        print("".center(self.d_lengths[-1], "-"))
 
         # Apply DRSLeaf action/migration.
         for leaf in self.leaves():
@@ -446,10 +447,14 @@ class DRSTree(Tree):
 
         # Print info in case of commands file output.
         if todo_only and self.commands_file:
-            print('Command-lines to apply have been exported to {}'.format(self.commands_file))
+            print(
+                "Command-lines to apply have been exported to {}".format(
+                    self.commands_file
+                )
+            )
 
         # Footer.
-        print(''.center(self.d_lengths[-1], '='))
+        print("".center(self.d_lengths[-1], "="))
 
 
 def print_cmd(line, quiet=False, todo_only=False):
@@ -463,6 +468,7 @@ def print_cmd(line, quiet=False, todo_only=False):
         _STDOUT.stdout_off()
     else:
         print(line)
+
 
 #    if commands_file and todo_only:
 #       with open(commands_file, mode) as f:
