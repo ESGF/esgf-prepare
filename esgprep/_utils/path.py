@@ -55,11 +55,9 @@ def get_ordered_version_paths(base_path: Path) -> list[Path]:
     Returns a list of all "version directory" paths in the base_path directory, ordered by version,
     excluding the 'latest' symlink.
     """
-    print("get_ordered_version_paths", str(base_path))
     if base_path.exists() is False:
         return []
     paths = list(base_path.iterdir())
-    print("paths:", paths)
     # Extract versions and filter valid ones, excluding 'latest'
     versioned_paths = [
         (p, extract_version(p))

@@ -77,11 +77,9 @@ def get_tracking_id(attrs: dict) -> str:
     """
     # Get project code.
     project = get_project(attrs)
-    print("project:", project)
     assert isinstance(project, str)
     # Set project code from global attributes.
     key, score = extractOne("tracking_id", attrs.keys(), scorer=partial_ratio)  # type: ignore
-    print("key, score : ", (key, score))
     if score < 80:
         raise NoNetCDFAttribute("tracking_id", values=attrs.keys())
     identifier = attrs[key].lower()

@@ -335,8 +335,6 @@ class DRSTree(Tree):
         Lists and summaries upgrade information at the publication level.
 
         """
-        print("TOTO")
-        print(self)
         # Header.
         print("".center(self.d_lengths[-1], "="))
         header = "Publication level".center(self.d_lengths[0])
