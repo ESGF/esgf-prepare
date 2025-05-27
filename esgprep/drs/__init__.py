@@ -8,14 +8,16 @@
 .. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.fr>
 
 """
-import json
+
+import os
+import sys
+
 from esgprep import _STDOUT
 from esgprep._contexts.multiprocessing import Runner
 from esgprep._utils import load, store
-from esgprep._utils.print import *
+from esgprep._utils.print import COLORS, Print
 from esgprep.constants import FINAL_FRAME, FINAL_STATUS
-from esgprep.drs.constants import *
-from esgprep.drs.context import ProcessingContext
+from esgprep.drs.constants import CONTROLLED_ARGS, SPINNER_DESC, TREE_FILE
 from esgprep.drs.context import ProcessingContext
 
 
@@ -29,12 +31,11 @@ def do_scanning(ctx):
         return True
 
     # Rescan forced if "list" action.
-    elif ctx.action == 'list':
+    elif ctx.action == "list":
         return True
 
     # Rescan forced if other action & different flags value.
     elif os.path.isfile(TREE_FILE):
-
         # Load results from previous run.
         reader = load(TREE_FILE)
 
@@ -48,7 +49,7 @@ def do_scanning(ctx):
                 #                                                                    getattr(ctx, k),
                 #                                                                    old_args[k])
                 msg = f'"{k}" argument has changed: "{getattr(ctx, k)}" instead of "{old_args[k]}" -- '
-                msg += 'Rescanning files.'
+                msg += "Rescanning files."
                 Print.warning(msg)
                 return True
 
@@ -63,17 +64,15 @@ def run(args):
     Main process.
 
     """
-    #print("OYYY : ",args)
-    quiet = args.quiet if hasattr(args, 'quiet') else False
+    # print("OYYY : ",args)
+    quiet = args.quiet if hasattr(args, "quiet") else False
     if quiet:
         _STDOUT.stdout_off()
 
     # Instantiate processing context.
     with ProcessingContext(args) as ctx:
-
         # Disable file scan if a previous DRS tree have generated using same context and no "list" action.
         if do_scanning(ctx):
-
             # Instantiate the runner.
             r = Runner(ctx.processes)
 
@@ -90,7 +89,7 @@ def run(args):
         else:
             reader = load(TREE_FILE)
             msg = 'Skip incoming files scan (use "--rescan" to force it) -- '
-            msg += f'Using cached DRS tree from {TREE_FILE}'
+            msg += f"Using cached DRS tree from {TREE_FILE}"
             Print.warning(msg)
             _ = next(reader)
             ctx.tree = next(reader)
@@ -109,10 +108,15 @@ def run(args):
         ctx.tree.commands_file = ctx.commands_file
 
         # Backup DRS tree and context for later usage.
-        store(TREE_FILE, data=[{key: ctx.__getattribute__(key) for key in CONTROLLED_ARGS},
-                               ctx.tree,
-                               results])
-        Print.info(f'DRS tree recorded for next usage onto {TREE_FILE}.')
+        store(
+            TREE_FILE,
+            data=[
+                {key: ctx.__getattribute__(key) for key in CONTROLLED_ARGS},
+                ctx.tree,
+                results,
+            ],
+        )
+        Print.info(f"DRS tree recorded for next usage onto {TREE_FILE}.")
 
         # Evaluate the list of results triggering action.
         if any(results):

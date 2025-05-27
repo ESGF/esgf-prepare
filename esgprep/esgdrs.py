@@ -1,21 +1,31 @@
 # -*- coding: utf-8 -*-
 
 """
-    :platform: Unix
-    :synopsis: Toolbox to prepare ESGF data for publication.
+:platform: Unix
+:synopsis: Toolbox to prepare ESGF data for publication.
 
 """
 
-from argparse import FileType
-
-from esgprep import __version__
-from esgprep._utils.parser import CustomArgumentParser,MultilineFormatter, regex_validator, processes_validator, DirectoryChecker, VersionChecker, keyval_converter, DatasetsReader 
+import argparse
 import os
 import sys
+from argparse import FileType
 from datetime import datetime
-import argparse
-from esgprep.drs import run
+from typing import Sequence, cast
+
 import esgprep._utils.help as help
+from esgprep import __version__
+from esgprep._utils.parser import (
+    CustomArgumentParser,
+    DatasetsReader,
+    DirectoryChecker,
+    MultilineFormatter,
+    VersionChecker,
+    keyval_converter,
+    processes_validator,
+    regex_validator,
+)
+from esgprep.drs import run
 
 
 def get_args():
@@ -25,257 +35,251 @@ def get_args():
     """
     # Instantiate argument parser.
     main = CustomArgumentParser(
-        prog='esgdrs',
-        description=help.PROGRAM_DESC['drs'],
+        prog="esgdrs",
+        description=help.PROGRAM_DESC["drs"],
         formatter_class=MultilineFormatter,
         add_help=False,
-        epilog=help.EPILOG)
+        epilog=help.EPILOG,
+    )
+    main.add_argument("-h", "--help", action="help", help=help.HELP)
     main.add_argument(
-        '-h', '--help',
-        action='help',
-        help=help.HELP)
-    main.add_argument(
-        '-v', '--version',
-        action='version',
-        version='%(prog)s ({})'.format(__version__),
-        help=help.VERSION_HELP)
+        "-v",
+        "--version",
+        action="version",
+        version="%(prog)s ({})".format(__version__),
+        help=help.VERSION_HELP,
+    )
     subparsers = main.add_subparsers(
-        title=help.SUBCOMMANDS,
-        dest='cmd',
-        metavar='',
-        help='')
+        title=help.SUBCOMMANDS, dest="cmd", metavar="", help=""
+    )
 
     # Add parent parser with common arguments.
     parent = argparse.ArgumentParser(add_help=False)
+    parent.add_argument("-h", "--help", action="help", help=help.HELP)
     parent.add_argument(
-        '-h', '--help',
-        action='help',
-        help=help.HELP)
-    parent.add_argument(
-        '-l', '--log',
-        metavar='CWD',
+        "-l",
+        "--log",
+        metavar="CWD",
         type=str,
-        const='{}/logs'.format(os.getcwd()),
-        nargs='?',
-        help=help.LOG_HELP)
+        const="{}/logs".format(os.getcwd()),
+        nargs="?",
+        help=help.LOG_HELP,
+    )
     parent.add_argument(
-        '-d', '--debug',
-        action='store_true',
-        default=False,
-        help=help.VERBOSE_HELP)
+        "-d", "--debug", action="store_true", default=False, help=help.VERBOSE_HELP
+    )
     parent.add_argument(
-        'action',
-        choices=['list', 'tree', 'todo', 'upgrade'],
-        default='list',
-        help=help.ACTION_HELP)
+        "action",
+        choices=["list", "tree", "todo", "upgrade"],
+        default="list",
+        help=help.ACTION_HELP,
+    )
+
     parent.add_argument(
-        'directory',
-        action=DirectoryChecker,
-        nargs='+',
-        help=help.DIRECTORY_HELP['drs'])
-    parent.add_argument(
-        '-p', '--project',
-        metavar='NAME',
+        "-p",
+        "--project",
+        metavar="NAME",
         type=str,
         required=True,
-        help=help.PROJECT_HELP['drs'])
+        help=help.PROJECT_HELP["drs"],
+    )
     parent.add_argument(
-        '--ignore-dir',
+        "--ignore-dir",
         metavar="'^.*/(files|\\.\\w*).*$'",
         type=regex_validator,
-        default='^.*/(files|\\.[\\w]*).*$',
-        help=help.IGNORE_DIR_HELP)
+        default="^.*/(files|\\.[\\w]*).*$",
+        help=help.IGNORE_DIR_HELP,
+    )
     parent.add_argument(
-        '--include-file',
+        "--include-file",
         metavar="'^.*\\.nc$'",
         type=regex_validator,
-        action='append',
-        default=['^.*\\.nc$'],
-        help=help.INCLUDE_FILE_HELP['mapfile'])
+        action="append",
+        default=["^.*\\.nc$"],
+        help=help.INCLUDE_FILE_HELP["mapfile"],
+    )
     parent.add_argument(
-        '--exclude-file',
+        "--exclude-file",
         metavar="'^\\..*$'",
         type=regex_validator,
-        action='append',
-        default=['^\\..*$'],
-        help=help.EXCLUDE_FILE_HELP)
+        action="append",
+        default=["^\\..*$"],
+        help=help.EXCLUDE_FILE_HELP,
+    )
     group = parent.add_mutually_exclusive_group(required=False)
-    group.add_argument(
-        '--color',
-        action='store_true',
-        help=help.COLOR_HELP)
-    group.add_argument(
-        '--no-color',
-        action='store_true',
-        help=help.NO_COLOR_HELP)
+    group.add_argument("--color", action="store_true", help=help.COLOR_HELP)
+    group.add_argument("--no-color", action="store_true", help=help.NO_COLOR_HELP)
     parent.add_argument(
-        '--max-processes',
-        metavar='4',
+        "--max-processes",
+        metavar="4",
         type=processes_validator,
         default=4,
-        help=help.MAX_PROCESSES_HELP)
+        help=help.MAX_PROCESSES_HELP,
+    )
 
     # Add subparser.
     make = subparsers.add_parser(
-        'make',
-        prog='esgdrs make',
-        description=help.DRS_SUBCOMMANDS['make'],
+        "make",
+        prog="esgdrs make",
+        description=help.DRS_SUBCOMMANDS["make"],
         formatter_class=MultilineFormatter,
-        help=help.DRS_HELPS['make'],
+        help=help.DRS_HELPS["make"],
         add_help=False,
-        parents=[parent])
-
+        parents=[parent],
+    )
     make.add_argument(
-        '--root',
-        metavar='CWD',
+        "directory", action=DirectoryChecker, nargs="+", help=help.DIRECTORY_HELP["drs"]
+    )
+    make.add_argument(
+        "--root",
+        metavar="CWD",
         action=DirectoryChecker,
         default=os.getcwd(),
-        help=help.ROOT_HELP)
+        help=help.ROOT_HELP,
+    )
     make.add_argument(
-        '--version',
+        "--version",
         metavar=datetime.now().strftime("%Y%m%d"),
         action=VersionChecker,
-        default='v{}'.format(datetime.now().strftime('%Y%m%d')),
-        help=help.SET_VERSION_HELP['drs'])
+        default="v{}".format(datetime.now().strftime("%Y%m%d")),
+        help=help.SET_VERSION_HELP["drs"],
+    )
     make.add_argument(
-        '--set-value',
-        metavar='FACET_KEY=VALUE',
+        "--set-value",
+        metavar="FACET_KEY=VALUE",
         type=keyval_converter,
-        action='append',
-        help=help.SET_VALUE_HELP)
+        action="append",
+        help=help.SET_VALUE_HELP,
+    )
     make.add_argument(
-        '--set-key',
-        metavar='FACET_KEY=ATTRIBUTE',
+        "--set-key",
+        metavar="FACET_KEY=ATTRIBUTE",
         type=keyval_converter,
-        action='append',
-        help=help.SET_KEY_HELP)
+        action="append",
+        help=help.SET_KEY_HELP,
+    )
     make.add_argument(
-        '--rescan',
-        action='store_true',
+        "--rescan", action="store_true", default=False, help=help.RESCAN_HELP
+    )
+    make.add_argument(
+        "--commands-file", metavar="TXT_FILE", type=str, help=help.COMMANDS_FILE_HELP
+    )
+    make.add_argument(
+        "--overwrite-commands-file",
+        action="store_true",
         default=False,
-        help=help.RESCAN_HELP)
+        help=help.OVERWRITE_COMMANDS_FILE_HELP,
+    )
     make.add_argument(
-        '--commands-file',
-        metavar='TXT_FILE',
-        type=str,
-        help=help.COMMANDS_FILE_HELP)
-    make.add_argument(
-        '--overwrite-commands-file',
-        action='store_true',
+        "--upgrade-from-latest",
+        action="store_true",
         default=False,
-        help=help.OVERWRITE_COMMANDS_FILE_HELP)
+        help=help.UPGRADE_FROM_LATEST_HELP,
+    )
     make.add_argument(
-        '--upgrade-from-latest',
-        action='store_true',
-        default=False,
-        help=help.UPGRADE_FROM_LATEST_HELP)
+        "--ignore-from-latest",
+        metavar="TXT_FILE",
+        type=FileType("r"),
+        help=help.IGNORE_FROM_LATEST_HELP,
+    )
     make.add_argument(
-        '--ignore-from-latest',
-        metavar='TXT_FILE',
-        type=FileType('r'),
-        help=help.IGNORE_FROM_LATEST_HELP)
-    make.add_argument(
-        '--ignore-from-incoming',
-        metavar='TXT_FILE',
-        type=FileType('r'),
-        help=help.IGNORE_FROM_INCOMING_HELP)
+        "--ignore-from-incoming",
+        metavar="TXT_FILE",
+        type=FileType("r"),
+        help=help.IGNORE_FROM_INCOMING_HELP,
+    )
     group = make.add_mutually_exclusive_group(required=False)
     group.add_argument(
-        '--copy',
-        action='store_true',
-        default=False,
-        help=help.COPY_HELP)
+        "--copy", action="store_true", default=False, help=help.COPY_HELP
+    )
     group.add_argument(
-        '--link',
-        action='store_true',
-        default=False,
-        help=help.LINK_HELP)
+        "--link", action="store_true", default=False, help=help.LINK_HELP
+    )
     group.add_argument(
-        '--symlink',
-        action='store_true',
-        default=False,
-        help=help.SYMLINK_HELP)
+        "--symlink", action="store_true", default=False, help=help.SYMLINK_HELP
+    )
     make.add_argument(
-        '--no-checksum',
-        action='store_true',
+        "--no-checksum",
+        action="store_true",
         default=False,
-        help=help.NO_CHECKSUM_HELP['drs'])
+        help=help.NO_CHECKSUM_HELP["drs"],
+    )
     make.add_argument(
-        '--checksums-from',
-        metavar='CHECKSUM_FILE',
-        type=FileType('r'),
-        help=help.CHECKSUMS_FROM_HELP)
+        "--checksums-from",
+        metavar="CHECKSUM_FILE",
+        type=FileType("r"),
+        help=help.CHECKSUMS_FROM_HELP,
+    )
     make.add_argument(
-        '--quiet',
-        action='store_true',
-        default=False,
-        help=help.QUIET_HELP)
+        "--quiet", action="store_true", default=False, help=help.QUIET_HELP
+    )
 
     # Add subparser.
     remove = subparsers.add_parser(
-        'remove',
-        prog='esgdrs remove',
-        description=help.DRS_SUBCOMMANDS['remove'],
+        "remove",
+        prog="esgdrs remove",
+        description=help.DRS_SUBCOMMANDS["remove"],
         formatter_class=MultilineFormatter,
-        help=help.DRS_HELPS['remove'],
+        help=help.DRS_HELPS["remove"],
         add_help=False,
-        parents=[parent])
-    remove.add_argument(  # Lolo change temporary add to be able to skip the use of pickle tree
-        '--rescan',
-        action='store_true',
-        default=False,
-        help=help.RESCAN_HELP)
+        parents=cast(Sequence, [parent]),
+    )
+    # remove.add_argument(  # Lolo change temporary add to be able to skip the use of pickle tree
+    #     "--rescan", action="store_true", default=False, help=help.RESCAN_HELP
+    # )
     group = remove.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        '--directory',
-        metavar='PATH',
+        "--directory",
+        metavar="PATH",
         action=DirectoryChecker,
-        nargs='+',
-        help=help.DIRECTORY_HELP['mapfile'])
+        nargs="+",
+        help=help.DIRECTORY_HELP["mapfile"],
+    )
     group.add_argument(
-        '--dataset-list',
-        metavar='TXT_FILE',
+        "--dataset-list",
+        metavar="TXT_FILE",
         type=DatasetsReader,
-        nargs='?',
+        nargs="?",
         const=sys.stdin,
-        help=help.DATASET_LIST_HELP)
+        help=help.DATASET_LIST_HELP,
+    )
     group.add_argument(
-        '--dataset-id',
-        metavar='DATASET_ID',
-        action='append',
-        help=help.DATASET_ID_HELP)
+        "--dataset-id", metavar="DATASET_ID", action="append", help=help.DATASET_ID_HELP
+    )
 
     group = remove.add_mutually_exclusive_group(required=False)
     group.add_argument(
-        '--version',
+        "--version",
         metavar=datetime.now().strftime("%Y%m%d"),
         action=VersionChecker,
-        help=help.SET_VERSION_HELP['drs'])
+        help=help.SET_VERSION_HELP["drs"],
+    )
     group.add_argument(
-        '--all-versions',
-        action='store_true',
+        "--all-versions",
+        action="store_true",
         default=False,
-        help=help.ALL_VERSIONS_HELP)
+        help=help.ALL_VERSIONS_HELP,
+    )
 
     # Add subparser.
     latest = subparsers.add_parser(
-        'latest',
-        prog='esgdrs latest',
-        description=help.DRS_SUBCOMMANDS['latest'],
+        "latest",
+        prog="esgdrs latest",
+        description=help.DRS_SUBCOMMANDS["latest"],
         formatter_class=MultilineFormatter,
-        help=help.DRS_HELPS['make'],
+        help=help.DRS_HELPS["make"],
         add_help=False,
-        parents=[parent])
+        parents=cast(Sequence, [parent]),
+    )
     latest.add_argument(
-        '--directory',
+        "--directory",
         action=DirectoryChecker,
-        nargs='+',
-        help=help.DIRECTORY_HELP['mapfile'])
+        nargs="+",
+        help=help.DIRECTORY_HELP["mapfile"],
+    )
     latest.add_argument(
-        '--rescan',
-        action='store_true',
-        default=False,
-        help=help.RESCAN_HELP)
+        "--rescan", action="store_true", default=False, help=help.RESCAN_HELP
+    )
     # Return command-line parser & program name.
     return main, main.parse_args()
 
@@ -293,7 +297,8 @@ def main():
         return
 
     # Add program name as argument.
-    setattr(args, 'prog', parser.prog)
+    setattr(args, "prog", parser.prog)
+    print("args: ", args)
     # Run program.
     run(args)
 

@@ -3,6 +3,7 @@ Common utilities for DRS testing.
 """
 
 import shutil
+import uuid
 
 import netCDF4
 import numpy as np
@@ -118,11 +119,18 @@ def _create_base_netcdf_file(
     ds.table_id = "day"
     ds.variable_id = variable_id  # Use the valid variable ID
     ds.grid_label = "gn"
+    ds.tracking_id = generate_fake_tracking_id()
 
     # Close the file
     ds.close()
 
     return file_path
+
+
+def generate_fake_tracking_id():
+    random_uuid = uuid.uuid4()
+    tracking_id = f"hdl:21.14100/{random_uuid}"
+    return tracking_id
 
 
 def create_files_different_models(

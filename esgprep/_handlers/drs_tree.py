@@ -152,7 +152,6 @@ class DRSTree(Tree):
     ):  # Lolo Change version=Node en 2eme argument remove
         # Retrieve original class init
         Tree.__init__(self)
-
         # Dataset and files record.
         self.paths = dict()
 

@@ -11,16 +11,16 @@
 
 from uuid import UUID
 
-from esgprep._exceptions import NoProjectCodeFound
-from esgprep._exceptions.netcdf import InvalidNetCDFFile
-from esgprep._exceptions.netcdf import NoNetCDFAttribute
-from esgprep._utils.print import Print
-from esgprep.drs.constants import PID_PREFIXES
+import esgvoc.api as ev
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
 from netCDF4 import Dataset
 
-import esgvoc.api as ev
+from esgprep._exceptions import NoProjectCodeFound
+from esgprep._exceptions.netcdf import InvalidNetCDFFile, NoNetCDFAttribute
+from esgprep._utils.print import Print
+from esgprep.drs.constants import PID_PREFIXES
+
 
 class ncopen(object):
     """
@@ -28,22 +28,20 @@ class ncopen(object):
 
     """
 
-    def __init__(self, path : str, mode: str ='r'):
-
+    def __init__(self, path: str, mode: str = "r"):
         # Set file path.
-        self.path : str = path
+        self.path: str = path
 
         # Set open mode.
-        self.mode : str = mode
+        self.mode: str = mode
 
         # Instantiate netCDF object.
-        self.nc : Dataset | None = None
+        self.nc: Dataset | None = None
 
     def __enter__(self):
         # Load netCDF Dataset content.
         try:
-            self.nc = Dataset(self.path, self.mode) # type: ignore
-
+            self.nc = Dataset(self.path, self.mode)  # type: ignore
 
         # Catch IO error.
         except (IOError, OSError) as error:
@@ -51,61 +49,63 @@ class ncopen(object):
 
         return self.nc
 
-    def __exit__(self, *exc): 
-
+    def __exit__(self, *exc):
         # Close netCDF file.
-        assert(self.nc is not None)
+        assert self.nc is not None
         self.nc.close()
 
 
-def get_ncattrs(path:str)->dict:
+def get_ncattrs(path: str) -> dict:
     """
     Loads netCDF global attributes from a pathlib.Path as dictionary.
     Ignores attributes with only whitespaces.
 
     """
     with ncopen(path) as nc:
-        dic = {attr: nc.getncattr(attr) for attr in nc.ncattrs() if (str(nc.getncattr(attr)).split())}
+        dic = {
+            attr: nc.getncattr(attr)
+            for attr in nc.ncattrs()
+            if (str(nc.getncattr(attr)).split())
+        }
         return dic
 
 
-def get_tracking_id(attrs:dict)->str:
+def get_tracking_id(attrs: dict) -> str:
     """
     Get tracking_id/PID string from netCDF global attributes.
 
     """
     # Get project code.
     project = get_project(attrs)
-
+    print("project:", project)
+    assert isinstance(project, str)
     # Set project code from global attributes.
-    key, score = extractOne('tracking_id', attrs.keys(), scorer=partial_ratio) # type : # pyright: ignore[]
-
+    key, score = extractOne("tracking_id", attrs.keys(), scorer=partial_ratio)  # type: ignore
+    print("key, score : ", (key, score))
     if score < 80:
-        raise NoNetCDFAttribute('tracking_id', values=attrs.keys())
+        raise NoNetCDFAttribute("tracking_id", values=attrs.keys())
     identifier = attrs[key].lower()
 
     # Verify valid value.
-    assert is_valid(identifier, project.name)
+    assert is_valid(identifier, project)
 
     # Return value.
     return identifier
 
 
-def is_valid(identifier : str, project: str)->bool:
+def is_valid(identifier: str, project: str) -> bool:
     """
     Validates a tracking_id/PID string.
 
     """
     try:
-
         # Split PID
-        prefix, uid = identifier.split('/')
+        prefix, uid = identifier.split("/")
 
         # Verify PID prefix.
         assert prefix == PID_PREFIXES[project]
 
     except ValueError:
-
         # Verify project unknown of PID prefixes in case of simple tracking ID.
         uid = identifier
         assert project not in PID_PREFIXES.keys()
@@ -123,27 +123,27 @@ def is_uuid(uuid_string, version=4):
     """
     try:
         uid = UUID(uuid_string, version=version)
-        return uid.hex == uuid_string.replace('-', '')
+        return uid.hex == uuid_string.replace("-", "")
     except ValueError:
         return False
 
 
-def get_project(attrs: str | dict)->str | None:
+def get_project(attrs: str | dict) -> str | None:
     """
     Extract project code from the file attributes.
 
     """
-    
+
     # Get attributes.
     if not isinstance(attrs, dict):
         attrs = get_ncattrs(attrs)
 
     # Set project code from global attributes.
-    key, score = extractOne('mip_era', attrs.keys(), scorer=partial_ratio) # type: ignore
+    key, score = extractOne("mip_era", attrs.keys(), scorer=partial_ratio)  # type: ignore
     # QUESTION ; mip_era ? ou project ?
     if score < 80:
         raise NoProjectCodeFound(attrs)
-    
+
     project = attrs[key].lower()
 
     # Check project code against CV.
@@ -151,7 +151,7 @@ def get_project(attrs: str | dict)->str | None:
         # return pyessv.load(scopes[project])
         return project
     except KeyError:
-        Print.debug(f'No project code found: {attrs.keys()}')
+        Print.debug(f"No project code found: {attrs.keys()}")
         return None
 
 
@@ -169,7 +169,7 @@ def get_terms(input):
         filename = input.name
     else:
         attrs = input
-        filename = attrs['filename']
+        filename = attrs["filename"]
 
     # Get project scope.
     project_scope = get_project(attrs)
@@ -177,11 +177,13 @@ def get_terms(input):
     # Validate each drs items against CV.
     try:
         # Validate filename syntax.
-        terms = pyessv.parse_identifer(project_scope, pyessv.IDENTIFIER_TYPE_FILENAME, filename)
+        terms = pyessv.parse_identifer(
+            project_scope, pyessv.IDENTIFIER_TYPE_FILENAME, filename
+        )
         # terms = {term.collection.raw_name: term for term in pyessv.parse_filename(project.name, filename, 4)}
 
     except (NamespaceParsingError, ValidationError) as error:
-        Print.debug(f'Invalid filename syntax -- {error}')
+        Print.debug(f"Invalid filename syntax -- {error}")
 
     return terms
 
@@ -193,20 +195,22 @@ def get_terms_from_attrs(attrs, set_values=None, set_keys=None):
     """
     # Instantiate terms. from filename terms decoded by pyessv
     terms = get_terms(attrs)
-    #print("TERM from filenmae: ",terms)
+    # print("TERM from filenmae: ",terms)
     # Get pyessv project code.
     project = get_project(attrs)
     # Iterate over missing collections required to build the DRS path.
-    myCollections = set(get_collections(project, 'directory_format')) # change directory_structure to directory_format
+    myCollections = set(
+        get_collections(project, "directory_format")
+    )  # change directory_structure to directory_format
     myterms = set([term.collection.namespace for term in terms])
     diff = myCollections.difference(myterms)
-    #for collection in set(get_collections(project, 'directory_format')).difference([term.collection.namespace for term in terms]): # change directory_structure to directory_format
-    #print("COLLECTIONS we dont have : ", diff)
+    # for collection in set(get_collections(project, 'directory_format')).difference([term.collection.namespace for term in terms]): # change directory_structure to directory_format
+    # print("COLLECTIONS we dont have : ", diff)
     for collection_namespace in diff:
         collection = collection_namespace.split(":")[-1]
-        alternatives = [collection]+project[collection].alternative_names
+        alternatives = [collection] + project[collection].alternative_names
         for collection_alt_name in alternatives:
-            try :
+            try:
                 # Check input set values.
                 if set_values and collection_alt_name in set_values:
                     term = set_values[collection_alt_name]
@@ -218,7 +222,9 @@ def get_terms_from_attrs(attrs, set_values=None, set_keys=None):
                         # In case of space-separated list value, pick up the first item.
                         term = attrs[set_keys[collection_alt_name]].split()[0]
                     except AttributeError:
-                        raise NoNetCDFAttribute(set_keys[collection_alt_name], attrs.keys())
+                        raise NoNetCDFAttribute(
+                            set_keys[collection_alt_name], attrs.keys()
+                        )
 
                 # try to find attrs in netCDF global attributes
                 elif collection_alt_name in attrs.keys():
@@ -226,37 +232,44 @@ def get_terms_from_attrs(attrs, set_values=None, set_keys=None):
                 # Otherwise pick up missing collection from netCDF global attributes.
                 else:
                     # Find closest NetCDF attributes using partial string comparison
-                    key, score = extractOne(collection_alt_name, attrs.keys(), scorer=partial_ratio)
+                    key, score = extractOne(
+                        collection_alt_name, attrs.keys(), scorer=partial_ratio
+                    )
                     if score < 80:
                         raise NoNetCDFAttribute(collection_alt_name, attrs.keys())
                     term = attrs[key].split()[0]
 
                 # Build pyessv namespace.
-                namespace = f'{project.namespace}:{collection_alt_name}:{term.lower()}'
+                namespace = f"{project.namespace}:{collection_alt_name}:{term.lower()}"
 
                 # Validate & store term.
                 py_term = pyessv.get_cached(namespace)
                 if py_term is None:
-                    py_col= get_collection_node(project.namespace.split(":")[0],project.namespace.split(":")[1],collection_alt_name)
-                    py_term = pyessv.matcher.match_term(py_col, term,strictness=4)
+                    py_col = get_collection_node(
+                        project.namespace.split(":")[0],
+                        project.namespace.split(":")[1],
+                        collection_alt_name,
+                    )
+                    py_term = pyessv.matcher.match_term(py_col, term, strictness=4)
 
-                if py_term== False:
+                if py_term == False:
                     continue
 
-                #print("OLA ON A TROUVé : ",py_term, " de type : ", type(py_term))
+                # print("OLA ON A TROUVé : ",py_term, " de type : ", type(py_term))
                 if py_term is not None:
                     terms.add(py_term)
                     break
-                #terms[namespace.split(":")[:-1]] = term
-            except (NamespaceParsingError ,NoNetCDFAttribute) as e:
+                # terms[namespace.split(":")[:-1]] = term
+            except (NamespaceParsingError, NoNetCDFAttribute) as e:
                 continue
             except AssertionError as e:
-                print("AssertionError : ",namespace)
+                print("AssertionError : ", namespace)
             else:
                 break
 
-    #return set([pyessv.load(term) for term in terms])
+    # return set([pyessv.load(term) for term in terms])
     return terms
+
 
 def drs_path(attrs, set_values=None, set_keys=None):
     """
@@ -265,14 +278,16 @@ def drs_path(attrs, set_values=None, set_keys=None):
     """
     # Instantiate directory string.
     directory = None
-    #print("ATTRS : ",attrs)
+    # print("ATTRS : ",attrs)
     # Get pyessv terms.
     terms = get_terms_from_attrs(attrs, set_values, set_keys)
     if terms:
         # Get project code.
         project = get_project(attrs)
         # Build directory.
-        directory = pyessv.build_identifier(project,pyessv.IDENTIFIER_TYPE_DIRECTORY,terms)
-        #directory = pyessv.build_directory(project.name, set(terms.values()))
+        directory = pyessv.build_identifier(
+            project, pyessv.IDENTIFIER_TYPE_DIRECTORY, terms
+        )
+        # directory = pyessv.build_directory(project.name, set(terms.values()))
 
     return directory

@@ -57,6 +57,7 @@ class Process(object):
         self.upgrade_from_latest = ctx.upgrade_from_latest
         self.ignore_from_latest = ctx.ignore_from_latest
         self.ignore_from_incoming = ctx.ignore_from_incoming
+        print("ctx:", ctx.__dict__)
 
     def __call__(self, source):
         """
@@ -64,6 +65,7 @@ class Process(object):
         It does not stop the main process at all.
 
         """
+        print("self.tree at start :", self.tree.show())
         # Escape in case of error.
         try:
             # Ignore files from incoming
@@ -107,8 +109,8 @@ class Process(object):
                     / Path(drs_path.generated_drs_expression)
                     / source.name
                 )
-
-                # example : CMIP6/CMIP/CCCma/CanESM5/historical/r1i1p2f1/Amon/tas/gn/v20190429
+                print("Current_path:", current_path)
+                # example : CMIP6/CMIP/CCCma/CanESM5/historical/r1i1p2f1/Amon/tas/gn/v20190429/cmip6_IPSL-CM6A-LR_tas_50-60.nc
             except TypeError:
                 Print.debug("Directory structure is None")
                 return False
@@ -119,6 +121,10 @@ class Process(object):
             print("current_path.parent", current_path.parent)
             # Get latest existing version of the file.
             all_versions = get_ordered_version_paths(current_path.parent.parent)
+            if len(all_versions) > 0:
+                latest_version = extract_version(all_versions[-1])
+                print("TYPEEEEEEE:", type(latest_version))
+                print("LATEST_VERSION:", latest_version)
             print("all_versions", all_versions)
             dataset_dir = current_path.parent.parent
             latest_dir = dataset_dir / "latest"
@@ -134,7 +140,7 @@ class Process(object):
                 get_ordered_file_version_paths(current_path.parent.parent, source.name),
             )
             # 1. Check if a latest file version exists (i.e. with the same filename).
-            if latest_path and latest_path.exists():
+            if latest_path and (latest_path.exists()):
                 # 2. Check latest version is older than current version.
                 print("current_path:", current_path)
                 print("latest_path:", latest_path)
@@ -204,7 +210,7 @@ class Process(object):
                 src.append(
                     current_path.name
                 )  # Lolo Test to add filename at the end of the relative path reconstructed
-
+                print("COUCOU src:", src)
                 self.tree.create_leaf(
                     nodes=current_path.parts,
                     label=f"{current_path.name}{LINK_SEPARATOR}{os.path.join(*src)}",
@@ -218,14 +224,16 @@ class Process(object):
                 nodes = list(current_path.parts)[
                     : -len(get_version_and_subpath(current_path))
                 ]
+                print("append('latest'):", nodes)
                 nodes.append("latest")
+                print("COUCOU nodes", nodes)
                 self.tree.create_leaf(
                     nodes=nodes,
                     label=f"{'latest'}{LINK_SEPARATOR}{self.version}",
                     src=self.version,
                     mode="symlink",
                 )
-
+                self.tree.show()
                 nodes = list(current_path.parts)[
                     0 : -len(get_version_and_subpath(current_path))
                 ]
@@ -300,14 +308,19 @@ class Process(object):
             record = {"src": source, "dst": current_path, "is_duplicate": is_duplicate}
             key = str(get_path_to_version(current_path.parent))
             print("key:", key)
+            print("self.tree.paths:", self.tree.paths)
+            pprint(self.__dict__)
             if key in self.tree.paths:
                 # mean we already saw this dataset
                 un = self.tree.paths[key]["latest"]
+                print("un:", un)
+
                 self.tree.append_path(key, "files", record)
                 deux = self.tree.paths[key]["latest"]
-
+                print("deux:", deux)
                 # self.tree.paths[key]['files'].append(record)
                 un = latest_version
+                print("un2:", un)
                 deux = self.tree.paths[key]["latest"]
                 # print("CHECK_4 : ",latest_version, self.tree.paths[key]["latest"] )
                 # if latest_version != self.tree.paths[key]['latest']:

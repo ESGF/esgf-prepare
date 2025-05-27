@@ -8,11 +8,13 @@ from esgprep.tests.test_utils import clean_directory
 
 
 def make_input_files():
-    from esgprep.tests.test_utils import (create_files_different_members,
-                                          create_files_different_models,
-                                          create_files_different_times,
-                                          create_files_different_variables,
-                                          create_files_different_versions)
+    from esgprep.tests.test_utils import (
+        create_files_different_members,
+        create_files_different_models,
+        create_files_different_times,
+        create_files_different_variables,
+        create_files_different_versions,
+    )
 
     base_dir = Path("tests/test_data/incoming")
     create_files_different_variables(base_dir / "incoming1")
@@ -55,9 +57,9 @@ def get_default_arg() -> Namespace:
         upgrade_from_latest=False,
         ignore_from_latest=None,
         ignore_from_incoming=None,
-        copy=False,
+        copy=True,
         link=False,
-        symlink=True,
+        symlink=False,
         no_checksum=False,
         checksums_from=None,
         quiet=False,
