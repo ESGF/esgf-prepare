@@ -54,6 +54,7 @@ class Process(object):
         self.upgrade_from_latest = ctx.upgrade_from_latest
         self.ignore_from_latest = ctx.ignore_from_latest
         self.ignore_from_incoming = ctx.ignore_from_incoming
+        self.project = ctx.project
 
     def __call__(self, source):
         """
@@ -90,11 +91,20 @@ class Process(object):
             # DRS terms are validated during this step.
             try:
                 # drspath = drs_path(current_attrs, self.set_values, self.set_keys)
-                dg = DrsGenerator("cmip6")
+                dg = DrsGenerator(self.project)
                 # print(current_attrs)
-                drs_path = dg.generate_directory_from_mapping(
-                    {**current_attrs, **{"member_id": current_attrs["variant_label"]}}
-                )
+                if self.project == "cmip6":
+                    drs_path = dg.generate_directory_from_mapping(
+                        {
+                            **current_attrs,
+                            **{"member_id": current_attrs["variant_label"]},
+                        }
+                    )
+                else:
+                    drs_path = dg.generate_directory_from_mapping({**current_attrs})
+                # print("")
+                # print(drs_path.generated_drs_expression)
+
                 if len(drs_path.errors) != 0:
                     raise Exception
                 current_path: Path = (
@@ -275,7 +285,9 @@ class Process(object):
 
             # Record entry for list() and uniqueness checkup.
             record = {"src": source, "dst": current_path, "is_duplicate": is_duplicate}
-            key = str(get_path_to_version(current_path.parent))
+            # print(Path(drs_path.generated_drs_expression).parent)
+            # key = str(get_path_to_version(current_path.parent))
+            key = str(Path(drs_path.generated_drs_expression).parent)
             if key in self.tree.paths:
                 # mean we already saw this dataset
                 self.tree.append_path(key, "files", record)
