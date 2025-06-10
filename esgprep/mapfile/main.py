@@ -280,7 +280,7 @@ def run(args):
                     result = remove(WORKING_EXTENSION, mapfile)
                     if quiet:
                         output_control.stdout_on()
-                        print result
+                        print(result)
                         output_control.stdout_off()
                     else:
                         Print.result(result)
