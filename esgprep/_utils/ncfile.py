@@ -116,7 +116,7 @@ def is_valid(identifier : str, project: str)->bool:
     return True
 
 
-def is_uuid(uuid_string, version=4):
+def is_uuid(uuid_string, version=None):
     """
     Validates an UUID.
 
