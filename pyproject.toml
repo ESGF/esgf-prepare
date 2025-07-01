@@ -37,4 +37,6 @@ dev = [
     "jupyter-console>=6.6.3",
     "pytest>=8.3.5",
 ]
-
+[project.scripts]
+esgdrs = "esgprep.esgdrs:main"
+esgmapfile = "esgprep.esgmapfile:main"
