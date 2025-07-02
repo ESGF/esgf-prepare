@@ -11,10 +11,11 @@
 
 import signal
 from configparser import NoOptionError, NoSectionError
+from ctypes import c_wchar_p
 from hashlib import algorithms_available as checksum_types
 from importlib import import_module
 from multiprocessing import Lock, Pool
-from multiprocessing.managers import Namespace, SyncManager
+from multiprocessing.managers import BaseProxy, Namespace, SyncManager
 from multiprocessing.sharedctypes import Value
 
 import esgvoc.api as ev
@@ -29,59 +30,28 @@ class Manager(SyncManager):
     pass
 
 
-class ManagerProxy(Namespace):
-    # We need to expose the same __dunder__ methods as NamespaceProxy,
-    # in addition to the b method.
+class DRSTreeProxy(BaseProxy):
     _exposed_ = (
-        "__getattribute__",
-        "__setattr__",
-        "__delattr__",
         "get_display_lengths",
-        "add_path",
+        "add_path", 
         "append_path",
         "create_leaf",
     )
 
     def get_display_lengths(self):
-        callmethod = object.__getattribute__(self, "_callmethod")
-        return callmethod("get_display_lengths")
+        return self._callmethod("get_display_lengths")
 
     def add_path(self, key, value):
-        callmethod = object.__getattribute__(self, "_callmethod")
-        return callmethod(
-            "add_path",
-            args=(
-                key,
-                value,
-            ),
-        )
+        return self._callmethod("add_path", (key, value))
 
     def append_path(self, key, what, value):
-        callmethod = object.__getattribute__(self, "_callmethod")
-        return callmethod(
-            "append_path",
-            args=(
-                key,
-                what,
-                value,
-            ),
-        )
+        return self._callmethod("append_path", (key, what, value))
 
     def create_leaf(self, nodes, label, src, mode, force=False):
-        callmethod = object.__getattribute__(self, "_callmethod")
-        return callmethod(
-            "create_leaf",
-            args=(
-                nodes,
-                label,
-                src,
-                mode,
-                force,
-            ),
-        )
+        return self._callmethod("create_leaf", (nodes, label, src, mode, force))
 
 
-Manager.register("DRSTree", DRSTree, ManagerProxy)
+Manager.register("DRSTree", DRSTree, DRSTreeProxy)
 
 
 class MultiprocessingContext(BaseContext):
