@@ -36,6 +36,12 @@ class DRSTreeProxy(BaseProxy):
         "add_path", 
         "append_path",
         "create_leaf",
+        "has_path",
+        "get_path",
+        "get_path_value",
+        "check_uniqueness",
+        "list",
+        "rmdir",
     )
 
     def get_display_lengths(self):
@@ -49,6 +55,24 @@ class DRSTreeProxy(BaseProxy):
 
     def create_leaf(self, nodes, label, src, mode, force=False):
         return self._callmethod("create_leaf", (nodes, label, src, mode, force))
+
+    def has_path(self, key):
+        return self._callmethod("has_path", (key,))
+
+    def get_path(self, key):
+        return self._callmethod("get_path", (key,))
+
+    def get_path_value(self, key, field):
+        return self._callmethod("get_path_value", (key, field))
+
+    def check_uniqueness(self):
+        return self._callmethod("check_uniqueness")
+
+    def list(self, **kwargs):
+        return self._callmethod("list", (), kwargs)
+
+    def rmdir(self):
+        return self._callmethod("rmdir")
 
 
 Manager.register("DRSTree", DRSTree, DRSTreeProxy)

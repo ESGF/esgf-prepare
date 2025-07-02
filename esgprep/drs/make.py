@@ -293,11 +293,11 @@ class Process(object):
             # print(Path(drs_path.generated_drs_expression).parent)
             # key = str(get_path_to_version(current_path.parent))
             key = str(Path(drs_path.generated_drs_expression).parent)
-            if key in self.tree.paths:
+            if self.tree.has_path(key):
                 # mean we already saw this dataset
                 self.tree.append_path(key, "files", record)
                 # self.tree.paths[key]['files'].append(record)
-                deux = self.tree.paths[key]["latest"]
+                deux = self.tree.get_path_value(key, "latest")
                 # print("CHECK_4 : ",latest_version, self.tree.paths[key]["latest"] )
                 # if latest_version != self.tree.paths[key]['latest']:
                 #    print("ERROR : ")

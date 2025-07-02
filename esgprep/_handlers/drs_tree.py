@@ -179,6 +179,17 @@ class DRSTree(Tree):
     def append_path(self, key: str, what: str, value: dict):
         self.paths[key][what].append(value)
 
+    def has_path(self, key: str) -> bool:
+        return key in self.paths
+
+    def get_path(self, key: str):
+        return self.paths.get(key)
+
+    def get_path_value(self, key: str, field: str):
+        if key in self.paths:
+            return self.paths[key].get(field)
+        return None
+
     def get_display_lengths(self):
         """
         Gets the string lengths for comfort display of "list" action.

@@ -9,7 +9,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "esgvoc",
+    "esgvoc>=1.0.1",
     "fuzzywuzzy>=0.18.0",
     "hurry-filesize>=0.9",
     "lockfile>=0.12.2",
@@ -28,9 +28,6 @@ packages = ["esgprep"]
 
 [tool.hatch.version]
 path = "esgprep/__init__.py"
-
-[tool.uv.sources]
-esgvoc = { git = "https://github.com/ESGF/esgf-vocab.git", branch = "integration" }
 
 [dependency-groups]
 dev = [
