@@ -12,16 +12,13 @@ from pathlib import Path
 
 from esgvoc.apps.drs.generator import DrsGenerator
 
-from esgprep._exceptions import DuplicatedFile, OlderUpgrade, UnchangedTrackingID
+from esgprep._exceptions import (DuplicatedFile, OlderUpgrade,
+                                 UnchangedTrackingID)
 from esgprep._handlers.constants import LINK_SEPARATOR
 from esgprep._utils.checksum import get_checksum
 from esgprep._utils.ncfile import get_ncattrs, get_tracking_id
-from esgprep._utils.path import (
-    extract_version,
-    get_ordered_version_paths,
-    get_path_to_version,
-    get_version_and_subpath,
-)
+from esgprep._utils.path import (extract_version, get_ordered_version_paths,
+                                 get_path_to_version, get_version_and_subpath)
 from esgprep._utils.print import COLORS, TAGS, Print
 from esgprep.constants import FRAMES
 from esgprep.drs.constants import SPINNER_DESC
@@ -77,6 +74,9 @@ class Process(object):
 
             # Get current netcdf file attributes.
             current_attrs = get_ncattrs(source)
+            # # If attribute value is a separated list, pick up the first item as facet value
+            for k, v in current_attrs.items():
+                current_attrs[k] = str(v).split()[0]  # mainly for activity_id
 
             # Add filename to attributes.
             current_attrs["filename"] = source.name
@@ -106,7 +106,12 @@ class Process(object):
                 # print(drs_path.generated_drs_expression)
 
                 if len(drs_path.errors) != 0:
-                    raise Exception
+                    # Print the actual errors for debugging
+                    for error in drs_path.errors:
+                        Print.debug(f"DRS generation error: {error}")
+                    raise Exception(
+                        f"DRS generation failed with {len(drs_path.errors)} errors: {drs_path.errors}"
+                    )
                 current_path: Path = (
                     Path(self.root)
                     / Path(drs_path.generated_drs_expression)
