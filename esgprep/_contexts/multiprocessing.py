@@ -42,6 +42,9 @@ class DRSTreeProxy(BaseProxy):
         "check_uniqueness",
         "list",
         "rmdir",
+        "todo",
+        "get_serializable_data",
+        "restore_from_data",
     )
 
     def get_display_lengths(self):
@@ -73,6 +76,15 @@ class DRSTreeProxy(BaseProxy):
 
     def rmdir(self):
         return self._callmethod("rmdir")
+
+    def todo(self, **kwargs):
+        return self._callmethod("todo", (), kwargs)
+
+    def get_serializable_data(self):
+        return self._callmethod("get_serializable_data")
+
+    def restore_from_data(self, data):
+        return self._callmethod("restore_from_data", (data,))
 
 
 Manager.register("DRSTree", DRSTree, DRSTreeProxy)
