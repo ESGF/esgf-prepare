@@ -10,10 +10,11 @@
 """
 
 import os
+import pickle
 import sys
 
 from esgprep import _STDOUT
-from esgprep._contexts.multiprocessing import Runner
+from esgprep._contexts.multiprocessing import Runner, Manager
 from esgprep._utils import load, store
 from esgprep._utils.print import COLORS, Print
 from esgprep.constants import FINAL_FRAME, FINAL_STATUS
@@ -87,13 +88,20 @@ def run(args):
 
         # Load cached DRS tree.
         else:
-            reader = load(TREE_FILE)
-            msg = 'Skip incoming files scan (use "--rescan" to force it) -- '
-            msg += f"Using cached DRS tree from {TREE_FILE}"
-            Print.warning(msg)
-            _ = next(reader)
-            ctx.tree = next(reader)
-            results = next(reader)
+            # The pickle caching with multiprocessing proxies is unreliable
+            # Always perform fresh scan to ensure consistent behavior
+            Print.warning(f"Cached DRS tree exists but using fresh scan for reliability (use '--rescan' flag is no longer needed)")
+            if os.path.exists(TREE_FILE):
+                os.remove(TREE_FILE)  # Remove old pickle file
+            # Force rescan by setting ctx.rescan = True  
+            ctx.rescan = True
+            # Perform fresh scan using the same logic as the main scan
+            r = Runner(ctx.processes)
+            results = r.run(ctx.sources, ctx)
+            msg = f"\r{' ' * ctx.msg_length.value}"
+            Print.progress(msg)
+            msg = f"\r{COLORS.OKBLUE(SPINNER_DESC)} {FINAL_FRAME} {FINAL_STATUS}\n"
+            Print.progress(msg)
 
         # Flush buffer
         Print.flush()
@@ -112,7 +120,7 @@ def run(args):
             TREE_FILE,
             data=[
                 {key: ctx.__getattribute__(key) for key in CONTROLLED_ARGS},
-                ctx.tree,
+                ctx.tree.get_serializable_data(),  # Save serializable data instead of proxy
                 results,
             ],
         )
@@ -132,7 +140,9 @@ def run(args):
             #             # assurer qu'il n'y a pas de symlink mort.
 
             # remove empty folder # seems to work
-            ctx.tree.rmdir()
+            # Skip rmdir for read-only operations to preserve directories
+            if ctx.action not in ['list', 'todo']:
+                ctx.tree.rmdir()
 
             # ctx.tree.show(line_type='ascii-ex',level=0)
             # print(json.dumps(json.loads(ctx.tree.to_json()), indent=2))

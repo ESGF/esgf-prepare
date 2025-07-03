@@ -190,6 +190,28 @@ class DRSTree(Tree):
             return self.paths[key].get(field)
         return None
 
+    def get_serializable_data(self):
+        """Extract serializable data from DRSTree for caching."""
+        return {
+            'paths': self.paths,
+            'drs_root': self.drs_root,
+            'drs_mode': self.drs_mode,
+            'd_lengths': self.d_lengths,
+            'commands_file': self.commands_file,
+            'duplicates': self.duplicates,
+            'hash': self.hash
+        }
+
+    def restore_from_data(self, data):
+        """Restore DRSTree state from serializable data."""
+        self.paths = data.get('paths', {})
+        self.drs_root = data.get('drs_root')
+        self.drs_mode = data.get('drs_mode')
+        self.d_lengths = data.get('d_lengths', [])
+        self.commands_file = data.get('commands_file')
+        self.duplicates = data.get('duplicates', [])
+        self.hash = data.get('hash', {})
+
     def get_display_lengths(self):
         """
         Gets the string lengths for comfort display of "list" action.
