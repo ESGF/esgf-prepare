@@ -141,7 +141,7 @@ def run(args):
 
             # remove empty folder # seems to work
             # Skip rmdir for read-only operations to preserve directories
-            if ctx.action not in ['list', 'todo']:
+            if ctx.action not in ['list', 'todo', 'tree']:
                 ctx.tree.rmdir()
 
             # ctx.tree.show(line_type='ascii-ex',level=0)
