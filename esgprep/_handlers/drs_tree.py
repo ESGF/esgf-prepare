@@ -428,60 +428,67 @@ class DRSTree(Tree):
         print("".center(self.d_lengths[-1], "-"))
 
         # Body.
-        if self.drs_root:
+        if self.drs_root and self.size() > 0:
             # Show root path on single line for better readability
             print(self.drs_root)
             
-            # Create a temporary tree with relative paths for cleaner display
+            # Create a new tree with only the DRS structure (relative to root)
             from treelib import Tree
             display_tree = Tree()
             
-            # Build tree with relative paths
+            # Find all nodes that are under the DRS root
+            drs_nodes = []
             for node in self.all_nodes():
-                if node.is_root():
-                    continue
+                if node.identifier.startswith(self.drs_root):
+                    # Get relative path from DRS root
+                    if node.identifier == self.drs_root:
+                        continue  # Skip the root itself
+                    rel_path = os.path.relpath(node.identifier, self.drs_root)
+                    if rel_path and rel_path != '.':
+                        drs_nodes.append((rel_path, node))
+            
+            # Build the display tree with relative paths
+            for rel_path, original_node in sorted(drs_nodes):
+                path_parts = rel_path.split(os.sep)
+                
+                # Create all parent nodes if they don't exist
+                for i in range(len(path_parts)):
+                    current_rel_path = os.sep.join(path_parts[:i+1])
                     
-                # Get path relative to root
-                full_path = node.identifier
-                if full_path.startswith(self.drs_root):
-                    rel_path = os.path.relpath(full_path, self.drs_root)
-                    path_parts = rel_path.split(os.sep)
-                    
-                    # Build tree structure
-                    for i, part in enumerate(path_parts):
-                        current_path = os.sep.join(path_parts[:i+1])
+                    if not display_tree.contains(current_rel_path):
+                        parent_path = None if i == 0 else os.sep.join(path_parts[:i])
                         
-                        # Skip if already exists
-                        if display_tree.contains(current_path):
-                            continue
-                            
-                        # Determine parent
-                        if i == 0:
-                            parent = None
-                        else:
-                            parent = os.sep.join(path_parts[:i])
-                            
-                        # Create node
+                        # Use the actual directory/file name as tag
+                        tag = path_parts[i]
+                        
+                        # For leaf nodes with data, indicate it's a link to source
+                        if (i == len(path_parts) - 1 and original_node.data and 
+                            hasattr(original_node.data, 'src') and original_node.data.src and
+                            hasattr(original_node.data, 'mode')):
+                            if original_node.data.mode == 'symlink':
+                                tag = f"{tag} -> {os.path.basename(str(original_node.data.src))}"
+                            elif original_node.data.mode == 'move':
+                                tag = f"{tag} (moved from {os.path.basename(str(original_node.data.src))})"
+                            elif original_node.data.mode == 'copy':
+                                tag = f"{tag} (copied from {os.path.basename(str(original_node.data.src))})"
+                        
                         try:
-                            tag = part
-                            if node.data and i == len(path_parts) - 1:
-                                # This is a leaf with data, add some info
-                                if hasattr(node.data, 'src') and node.data.src:
-                                    tag = f"{part} -> {os.path.basename(str(node.data.src))}"
-                            
-                            display_tree.create_node(tag=tag, identifier=current_path, parent=parent)
+                            display_tree.create_node(
+                                tag=tag, 
+                                identifier=current_rel_path, 
+                                parent=parent_path
+                            )
                         except:
-                            # Node might already exist, continue
+                            # Node might already exist
                             pass
             
-            # Show the cleaned tree
+            # Show the display tree if it has content
             if display_tree.size() > 0:
                 display_tree.show()
             else:
-                # Fallback to original display if tree building fails
-                self.show()
+                print("└── (no DRS structure to display)")
         else:
-            # No root specified, use original display
+            # No root specified or empty tree, use original display
             self.show()
 
         # Footer.
