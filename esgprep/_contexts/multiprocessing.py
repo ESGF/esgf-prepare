@@ -44,6 +44,7 @@ class DRSTreeProxy(BaseProxy):
         "rmdir",
         "todo",
         "tree",
+        "upgrade",
         "get_serializable_data",
         "restore_from_data",
     )
@@ -83,6 +84,9 @@ class DRSTreeProxy(BaseProxy):
 
     def tree(self, **kwargs):
         return self._callmethod("tree", (), kwargs)
+
+    def upgrade(self, **kwargs):
+        return self._callmethod("upgrade", (), kwargs)
 
     def get_serializable_data(self):
         return self._callmethod("get_serializable_data")
