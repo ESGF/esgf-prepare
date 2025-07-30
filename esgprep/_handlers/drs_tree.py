@@ -53,12 +53,13 @@ class DRSLeaf(object):
 
         # Make directory for destination path if not exist.
         if not Path(self.dst).exists():
+            # Print mkdir command for both todo and actual execution
+            line = f"{'mkdir -p'} {os.path.dirname(self.dst)}"
+            print_cmd(line, quiet, todo_only)
+            
             if not todo_only:
                 try:
                     os.makedirs(os.path.dirname(self.dst))
-                    line = f"{'mkdir -p'} {os.path.dirname(self.dst)}"
-                    print_cmd(line, quiet, todo_only)
-
                 except OSError:
                     pass
 
@@ -425,10 +426,63 @@ class DRSTree(Tree):
         else:
             print("Upgrade DRS Tree".center(self.d_lengths[-1]))
         print("".center(self.d_lengths[-1], "-"))
-        import codecs
 
         # Body.
-        self.show()
+        if self.drs_root:
+            # Show root path on single line for better readability
+            print(self.drs_root)
+            
+            # Create a temporary tree with relative paths for cleaner display
+            from treelib import Tree
+            display_tree = Tree()
+            
+            # Build tree with relative paths
+            for node in self.all_nodes():
+                if node.is_root():
+                    continue
+                    
+                # Get path relative to root
+                full_path = node.identifier
+                if full_path.startswith(self.drs_root):
+                    rel_path = os.path.relpath(full_path, self.drs_root)
+                    path_parts = rel_path.split(os.sep)
+                    
+                    # Build tree structure
+                    for i, part in enumerate(path_parts):
+                        current_path = os.sep.join(path_parts[:i+1])
+                        
+                        # Skip if already exists
+                        if display_tree.contains(current_path):
+                            continue
+                            
+                        # Determine parent
+                        if i == 0:
+                            parent = None
+                        else:
+                            parent = os.sep.join(path_parts[:i])
+                            
+                        # Create node
+                        try:
+                            tag = part
+                            if node.data and i == len(path_parts) - 1:
+                                # This is a leaf with data, add some info
+                                if hasattr(node.data, 'src') and node.data.src:
+                                    tag = f"{part} -> {os.path.basename(str(node.data.src))}"
+                            
+                            display_tree.create_node(tag=tag, identifier=current_path, parent=parent)
+                        except:
+                            # Node might already exist, continue
+                            pass
+            
+            # Show the cleaned tree
+            if display_tree.size() > 0:
+                display_tree.show()
+            else:
+                # Fallback to original display if tree building fails
+                self.show()
+        else:
+            # No root specified, use original display
+            self.show()
 
         # Footer.
         print("".center(self.d_lengths[-1], "="))
