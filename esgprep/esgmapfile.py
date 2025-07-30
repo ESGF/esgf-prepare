@@ -149,6 +149,12 @@ def get_args():
         default=False,
         help=NO_CHECKSUM_HELP['mapfile'])
     make.add_argument(
+        '--checksum-type',
+        metavar='TYPE',
+        type=str,
+        default='sha256',
+        help=CHECKSUM_TYPE_HELP)
+    make.add_argument(
         '--checksums-from',
         metavar='CHECKSUM_FILE',
         type=ChecksumsReader,

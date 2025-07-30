@@ -128,6 +128,9 @@ class MultiprocessingContext(BaseContext):
         # Enable/disable checksumming process.
         self.no_checksum = self.set("no_checksum")
 
+        # Set checksum type.
+        self.checksum_type_arg = self.set("checksum_type")
+
         # Read pre-computed checksums.
         self.checksums_from = self.set("checksums_from")
 
@@ -233,16 +236,23 @@ class MultiprocessingContext(BaseContext):
         if self.no_checksum:
             return None
 
-        # Default set to sha256 checksum client.
-        checksum_type = "sha256"
+        # Get checksum type from command line argument or use default
+        checksum_type = self.checksum_type_arg if hasattr(self, 'checksum_type_arg') and self.checksum_type_arg else "sha256"
 
         # Get checksum type from configuration.
         # if 'checksum' in self.cfg.defaults():
         #    checksum_type = self.cfg.defaults()['checksum'].split('|')[1].strip().lower()
 
         # Verify checksum type is valid.
-        if checksum_type not in checksum_types:
-            raise InvalidChecksumType(checksum_type)
+        # Import multihash support here to avoid circular imports
+        try:
+            from esgprep._utils.checksum import is_multihash_algo
+            if checksum_type not in checksum_types and not is_multihash_algo(checksum_type):
+                raise InvalidChecksumType(checksum_type)
+        except ImportError:
+            # Fallback to original validation if multihash not available
+            if checksum_type not in checksum_types:
+                raise InvalidChecksumType(checksum_type)
 
         return checksum_type
 

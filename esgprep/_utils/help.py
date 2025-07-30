@@ -298,6 +298,12 @@ This overwrites facet auto-detection.
 
 """
 
+CHECKSUM_TYPE_HELP = """Specify the checksum algorithm to use.
+Supports standard hashlib algorithms (sha256, sha1, md5, etc.) and multihash algorithms (sha2-256, sha2-512, sha3-256, sha3-512).
+Default: sha256
+
+"""
+
 NO_CHECKSUM_HELP = {
     'mapfile': """Does not include files checksums into the mapfile(s).
     

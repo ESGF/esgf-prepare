@@ -9,6 +9,8 @@
 
 """
 
+import os
+
 from esgprep._collectors import Collector
 from esgprep._exceptions import NoFileFound
 from esgprep._utils.path import *
@@ -43,10 +45,14 @@ class DRSPathCollector(Collector):
 
                     # Get project from path.
                     project = get_project(path)
-                    # Get version index.
-                    idx = version_idx(project, 'directory_format')
+                    # Get version index using the smart algorithm from path utils.
+                    try:
+                        idx = get_version_index(path)
+                    except ValueError:
+                        # If no version found in path, skip this path
+                        continue
+                        
                     # When DRS version depth/level is reached, it takes priority.
-
                     if len(get_drs(path).parts) == idx: # on en est à la version
                         # Apply default behavior.
                         if self.default:
