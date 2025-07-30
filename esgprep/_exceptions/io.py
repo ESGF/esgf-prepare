@@ -19,11 +19,16 @@ class ReadAccessDenied(Exception):
     """
 
     def __init__(self, user, path):
+        self.user = user
+        self.path = path
         self.msg = "Read permission required."
         self.msg += f"\n<user: '{user}'>"
         self.msg += f"\n<path: '{path}'>"
         self.msg += f"\n<permissions: '{oct(os.stat(path).st_mode)[-4:]}'>"
         super(self.__class__, self).__init__(self.msg)
+
+    def __reduce__(self):
+        return (self.__class__, (self.user, self.path))
 
 
 class WriteAccessDenied(Exception):
@@ -33,11 +38,16 @@ class WriteAccessDenied(Exception):
     """
 
     def __init__(self, user, path):
+        self.user = user
+        self.path = path
         self.msg = "Write permission required."
         self.msg += f"\n<user: '{user}'>"
         self.msg += f"\n<path: '{path}'>"
         self.msg += f"\n<permissions: '{oct(os.stat(path).st_mode)[-4:]}'>"
         super(self.__class__, self).__init__(self.msg)
+
+    def __reduce__(self):
+        return (self.__class__, (self.user, self.path))
 
 
 class CrossMigrationDenied(Exception):
