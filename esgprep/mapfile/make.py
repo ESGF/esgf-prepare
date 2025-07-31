@@ -71,13 +71,23 @@ class Process(object):
                 return False
 
             # Split identifier into name & version.
-            # Identifier does not always end by a version.
+            # For DRS structure, version is in the path, not the identifier.
             dataset = identifier
             version = None
 
+            # First check if version is in the identifier (legacy support)
             if re.search(r'\.latest|\.v[0-9]*$', str(identifier)):
                 version = identifier.split('.')[-1][1:]  # remove "v" only for name in mapfile NOT for the mapfile name
                 dataset = '.'.join(identifier.split('.')[:-1])
+            else:
+                # Extract version from file path (DRS structure)
+                for part in source.parts:
+                    if part.startswith('v') and part[1:].isdigit():
+                        version = part[1:]  # remove "v" prefix
+                        break
+                    elif part == 'latest':
+                        version = 'latest'
+                        break
 
             # Build mapfile name.
             outfile = build_mapfile_name(self.mapfile_name, dataset, version)
