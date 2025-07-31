@@ -16,6 +16,7 @@ from uuid import uuid4 as uuid
 
 from esgprep._exceptions import NoFileFound
 from esgprep._utils import match
+from esgprep._utils.print import Print
 
 
 class Collector(object):
@@ -82,9 +83,13 @@ class FilterCollection(object):
         self.filters[name] = (regex, inclusive)
 
     def __call__(self, string):
-        return all(
-            [
-                match(regex, string, inclusive=inclusive)
-                for regex, inclusive in self.filters.values()
-            ]
-        )
+        Print.debug(f"FilterCollection.__call__: Evaluating string='{string}' against {len(self.filters)} filters")
+        results = []
+        for name, (regex, inclusive) in self.filters.items():
+            result = match(regex, string, inclusive=inclusive)
+            results.append(result)
+            Print.debug(f"FilterCollection: Filter '{name}' (regex='{regex}', inclusive={inclusive}) -> {result}")
+        
+        final_result = all(results)
+        Print.debug(f"FilterCollection: Final result for '{string}': {final_result}")
+        return final_result

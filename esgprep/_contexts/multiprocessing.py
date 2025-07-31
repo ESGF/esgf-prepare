@@ -279,18 +279,25 @@ class Runner(object):
         # Import the appropriate worker.
         process = getattr(import_module(f"esgprep.{ctx.prog[3:]}.{ctx.cmd}"), "Process")
 
+        # Convert sources to list for debugging
+        sources_list = list(sources)
+        Print.debug(f"Runner: Processing {len(sources_list)} sources")
+        for i, source in enumerate(sources_list):
+            Print.debug(f"Runner: Source {i}: {source}")
+
         # Instantiate pool of processes.
         if self.pool:
             # Instantiate pool iterator.
-            processes = self.pool.imap(process(ctx), sources)
+            processes = self.pool.imap(process(ctx), sources_list)
 
         # Sequential processing use basic map function.
         else:
             # Instantiate processes iterator.
-            processes = map(process(ctx), sources)
+            processes = map(process(ctx), sources_list)
 
         # Run processes & get the list of results.
         results = [x for x in processes]
+        Print.debug(f"Runner: Got {len(results)} results: {results}")
 
         # Terminate pool in case of SIGTERM signal.
         signal.signal(signal.SIGTERM, sig_handler)

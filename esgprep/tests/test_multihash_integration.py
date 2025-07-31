@@ -152,7 +152,6 @@ class TestMultihashIntegration:
         optional_attrs = {
             'mod_time': 1640995200,  # 2022-01-01 00:00:00 UTC
             'checksum': multihash_checksum,
-            'checksum_type': 'SHA2-256',  # Uppercase in mapfile
             'dataset_tech_notes': 'http://example.com/notes',
             'dataset_tech_notes_title': 'Test Notes'
         }
@@ -172,7 +171,6 @@ class TestMultihashIntegration:
             str(file_size),
             f"mod_time={optional_attrs['mod_time']}",
             f"checksum={multihash_checksum}",
-            "checksum_type=SHA2-256",
             f"dataset_tech_notes={optional_attrs['dataset_tech_notes']}",
             f"dataset_tech_notes_title={optional_attrs['dataset_tech_notes_title']}"
         ]
@@ -180,4 +178,3 @@ class TestMultihashIntegration:
         
         assert result == expected
         assert multihash_checksum in result
-        assert "SHA2-256" in result

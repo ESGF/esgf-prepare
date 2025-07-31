@@ -47,22 +47,27 @@ class Process(object):
         It does not stop the main process at all.
 
         """
+        Print.debug(f"Process.__call__: Processing source: {source} (type: {type(source)})")
         # Escape in case of error.
         try:
 
             # Import utilities depending on the source type.
             if isinstance(source, Path):
                 from esgprep._utils.path import get_terms, dataset_id, get_project
+                Print.debug(f"Process.__call__: Using path utilities for source: {source}")
             else:
                 from esgprep._utils.dataset import get_terms, dataset_id, get_project
+                Print.debug(f"Process.__call__: Using dataset utilities for source: {source}")
 
             # Build dataset identifier.
             # DRS terms are validated during this step.
+            Print.debug(f"Process.__call__: Building dataset identifier for: {source}")
             identifier = dataset_id(source)
+            Print.debug(f"Process.__call__: Dataset identifier: {identifier}")
 
             # Check dataset identifier is not None.
             if not identifier:
-                Print.debug('Dataset identifier is None')
+                Print.debug(f'Process.__call__: Dataset identifier is None for source: {source}')
                 return False
 
             # Split identifier into name & version.
@@ -101,7 +106,6 @@ class Process(object):
             optional_attrs['mod_time'] = source.stat().st_mtime
             if not self.no_checksum:
                 optional_attrs['checksum'] = get_checksum(str(source), self.checksum_type, self.checksums_from)
-                optional_attrs['checksum_type'] = self.checksum_type.upper()
             optional_attrs['dataset_tech_notes'] = self.notes_url
             optional_attrs['dataset_tech_notes_title'] = self.notes_title
 
