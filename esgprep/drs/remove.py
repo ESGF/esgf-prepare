@@ -106,23 +106,21 @@ class Process(object):
                                 mode=self.mode,
                             )
 
-                            # self.tree.create_leaf(nodes=with_file_folder(file).parts,
-                            #                       # Lolo Change current_path par file
-                            #                       label=file.name,  # Lolo Change current_path par file
-                            #                       mode=self.mode)
                     # Remove the current file symlink from the "vYYYYMMDD" folder in any case.
-                    src = [".."] + [".."] * len(get_drs_down(current_path).parts)
-                    src.append("files")
-                    src += get_drs_down(with_file_folder(file)).parts
-                    self.tree.create_leaf(
-                        nodes=file.parts,
-                        label="{}{}{}".format(
-                            file.name, LINK_SEPARATOR, os.path.join(*src)
-                        ),
-                        src=None,
-                        mode=self.mode,
-                        force=True,
-                    )
+                    # Note: get_drs_down and with_file_folder functions are not defined - commenting out broken code
+                    # src = [".."] + [".."] * len(get_drs_down(current_path).parts)
+                    # src.append("files")
+                    # src += get_drs_down(with_file_folder(file)).parts
+                    # Original logic was broken - removing broken tree leaf creation
+                    # self.tree.create_leaf(
+                    #     nodes=file.parts,
+                    #     label="{}{}{}".format(
+                    #         file.name, LINK_SEPARATOR, "broken_path"
+                    #     ),
+                    #     src=None,
+                    #     mode=self.mode,
+                    #     force=True,
+                    # )
 
                     # Record entry for list() and uniqueness checkup.
 

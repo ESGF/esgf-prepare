@@ -28,7 +28,7 @@ PROGRAM_DESC = {
     'fetchcv': """
 {}
 
-{} "esgprep" relies on the "pyessv" library to deal with Controlled Vocabularies. "esgfetchcv" allows you to properly download the "pyessv-archive" required to follow the Data Reference Syntax of the corresponding project. The "pyessv-archive" is composed by a set of manisfests and JSON files hosted on an official GitHub repository.
+{} "esgprep" uses the "esgvoc" library to deal with Controlled Vocabularies and Data Reference Syntax validation for the corresponding project.
 
 {}
 
@@ -78,9 +78,7 @@ VERSION_HELP = """Program version.
 
 """
 
-CV_HELP = """Initialization directory containing the "pyessv" archive.
-Default is to use "$PYESSV_ARCHIVE_HOME" environment variable.
-If not set, the usual "pyessv" home directory is used (i.e., "$HOME/.esdoc/pyessv-archive/").
+CV_HELP = """This option is deprecated. Controlled vocabularies are now handled by the esgvoc library.
 
 
 """

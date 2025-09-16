@@ -196,7 +196,6 @@ class Process(object):
                 version_nb = parts_from_version[0][1:]
                 src.append("d" + version_nb)
 
-                # src += get_version_and_subpath(with_file_folder(current_path))
                 # src += parts_from_version
                 src.append(
                     current_path.name
