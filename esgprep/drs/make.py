@@ -85,6 +85,22 @@ class Process(object):
             version_for_drs = self.version if self.version.startswith('v') else f'v{self.version}'
             current_attrs["version"] = version_for_drs
 
+            # Validate project compatibility before DRS generation
+            try:
+                from esgprep._utils.ncfile import get_project
+                file_project = get_project(current_attrs)
+                if file_project and file_project.lower() != self.project.lower():
+                    raise Exception(
+                        f"Project mismatch: CLI specified '{self.project}' but file contains '{file_project}' "
+                        f"(detected from file attributes). Please use '--project {file_project}' or verify the correct project."
+                    )
+            except Exception as e:
+                if "Project mismatch" in str(e):
+                    raise e
+                # If project detection fails for other reasons, continue with DRS generation
+                # to get the original error messages
+                Print.debug(f"Project detection failed: {e}")
+
             # Instantiate file as no duplicate.
             is_duplicate = False
 

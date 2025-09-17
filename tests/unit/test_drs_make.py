@@ -221,3 +221,55 @@ class TestDRSMake:
         assert len(version_files) > 0
         for f in version_files:
             assert f.is_symlink(), f"File {f} should be a symlink"
+
+    def test_make_project_mismatch_error(self, drs_test_structure, capfd):
+        """Test that DRS make provides clear error message when project mismatches file attributes."""
+        incoming_dir = drs_test_structure["incoming"]
+        drs_root = drs_test_structure["root"]
+
+        # Create test files with CMIP6 attributes
+        create_files_different_variables(incoming_dir, count=1)
+
+        # Try to process with wrong project (cmip7 instead of cmip6)
+        args = get_default_make_args(incoming_dir, drs_root)
+        args.project = "cmip7"  # Wrong project
+
+        # Should raise a SystemExit exception due to errors
+        with pytest.raises(SystemExit) as exc_info:
+            run(args)
+
+        # The error message is captured in stdout, so we need to check that the process failed
+        assert exc_info.value.code == 1  # Should exit with error code 1
+
+        # Capture the output and verify error message content
+        captured = capfd.readouterr()
+        output = captured.out + captured.err
+
+        # Verify the error message contains expected information
+        assert "Project mismatch" in output
+        assert "CLI specified 'cmip7'" in output
+        assert "file contains 'cmip6'" in output
+        assert "Please use '--project cmip6'" in output
+
+    def test_make_project_match_succeeds(self, drs_test_structure):
+        """Test that DRS make succeeds when project matches file attributes."""
+        incoming_dir = drs_test_structure["incoming"]
+        drs_root = drs_test_structure["root"]
+
+        # Create test files with CMIP6 attributes
+        create_files_different_variables(incoming_dir, count=1)
+
+        # Process with correct project (cmip6)
+        args = get_default_make_args(incoming_dir, drs_root)
+        args.project = "cmip6"  # Correct project
+
+        # Should succeed without raising exception
+        run(args)
+
+        # Verify DRS structure was created
+        cmip6_dir = drs_root / "CMIP6"
+        assert cmip6_dir.exists()
+
+        # Check that some files were processed
+        nc_files = list(cmip6_dir.rglob("*.nc"))
+        assert len(nc_files) > 0
