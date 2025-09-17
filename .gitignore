@@ -16,6 +16,7 @@ tests/test_data/root
 # New test structure temporary directories
 tests/tmp/
 tests/fixtures/sample_data/generated/
+tests/fixtures/real_data/manual_output/
 **/test_output/
 **/*test_temp*/
 # Ignore mapfiles directory created by test runs
