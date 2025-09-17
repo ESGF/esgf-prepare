@@ -13,3 +13,10 @@ uv.lock
 esgprep/tests/test_data
 tests/test_data
 tests/test_data/root
+# New test structure temporary directories
+tests/tmp/
+tests/fixtures/sample_data/generated/
+**/test_output/
+**/*test_temp*/
+# Ignore mapfiles directory created by test runs
+mapfiles/

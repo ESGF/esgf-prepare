@@ -81,8 +81,9 @@ class Process(object):
             # Add filename to attributes.
             current_attrs["filename"] = source.name
 
-            # Add dataset-version to attributes.
-            current_attrs["version"] = self.version
+            # Add dataset-version to attributes with 'v' prefix for DRS generator.
+            version_for_drs = self.version if self.version.startswith('v') else f'v{self.version}'
+            current_attrs["version"] = version_for_drs
 
             # Instantiate file as no duplicate.
             is_duplicate = False

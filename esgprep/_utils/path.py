@@ -58,11 +58,11 @@ def get_ordered_version_paths(base_path: Path) -> list[Path]:
     if base_path.exists() is False:
         return []
     paths = list(base_path.iterdir())
-    # Extract versions and filter valid ones, excluding 'latest'
+    # Extract versions and filter valid ones, excluding 'latest' and 'files'
     versioned_paths = [
         (p, extract_version(p))
         for p in paths
-        if "latest" not in str(p) and "files" not in str(p)
+        if p.name != "latest" and p.name != "files" and p.is_dir()
     ]
 
     # Sort by version (numeric sorting for vXXXXXXXX)
