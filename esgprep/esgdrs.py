@@ -72,6 +72,7 @@ def get_args():
         "action",
         choices=["list", "tree", "todo", "upgrade"],
         default="list",
+        metavar="action",
         help=help.ACTION_HELP,
     )
 
