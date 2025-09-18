@@ -51,6 +51,58 @@ class MultilineFormatter(argparse.RawTextHelpFormatter):
             columns = default_columns
         super(MultilineFormatter, self).__init__(prog, max_help_position=100, width=int(columns))
 
+    def add_arguments(self, actions):
+        """Sort optional arguments alphabetically while keeping positional arguments first."""
+        # Helper function to get sort key for any action
+        def get_sort_key(action):
+            if not action.option_strings:
+                return ''
+            # Sort by shortest option string, removing leading dashes for comparison
+            shortest = min(action.option_strings, key=len)
+            return shortest.lstrip('-').lower()
+
+        # Separate positional and optional arguments
+        positional_actions = []
+        optional_actions = []
+
+        for action in actions:
+            if action.option_strings:
+                optional_actions.append(action)
+            else:
+                positional_actions.append(action)
+
+        # Sort optional arguments alphabetically by their shortest option string
+        # but keep -h/--help first
+        help_actions = [a for a in optional_actions if '-h' in a.option_strings or '--help' in a.option_strings]
+        other_actions = [a for a in optional_actions if '-h' not in a.option_strings and '--help' not in a.option_strings]
+
+        other_actions.sort(key=get_sort_key)
+
+        # Combine: positional first, then help, then sorted optional
+        sorted_actions = positional_actions + help_actions + other_actions
+
+        # Use parent method with sorted actions
+        super().add_arguments(sorted_actions)
+
+    def _format_actions_usage(self, actions, groups):
+        """Sort actions in usage line as well."""
+        # Helper function to get sort key for any action
+        def get_sort_key(action):
+            if not action.option_strings:
+                return ''
+            shortest = min(action.option_strings, key=len)
+            return shortest.lstrip('-').lower()
+
+        # Sort actions within each group by temporarily modifying the group
+        for group in groups:
+            if hasattr(group, '_group_actions'):
+                group._group_actions = sorted(group._group_actions, key=get_sort_key)
+
+        # Sort non-grouped actions
+        sorted_actions = sorted(actions, key=get_sort_key)
+
+        return super()._format_actions_usage(sorted_actions, groups)
+
 
 class DirectoryChecker(argparse.Action):
     """
