@@ -274,9 +274,11 @@ def get_args():
     )
     latest.add_argument(
         "--directory",
+        metavar="CWD",
         action=DirectoryChecker,
         nargs="+",
-        help=help.DIRECTORY_HELP["mapfile"],
+        default=[os.getcwd()],
+        help=help.DIRECTORY_HELP["latest"],
     )
     latest.add_argument(
         "--rescan", action="store_true", default=False, help=help.RESCAN_HELP
