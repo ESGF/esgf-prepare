@@ -152,6 +152,8 @@ class NoProjectCodeFound(Exception):
     def __init__(self, val):
         self.msg = "Unable to find/extract project code."
         self.msg += f"\n<keys: '{val}'>"
+        self.msg += "\n"
+        self.msg += "\nTo see available projects, run: esgvoc status"
         super(self.__class__, self).__init__(self.msg)
 
 

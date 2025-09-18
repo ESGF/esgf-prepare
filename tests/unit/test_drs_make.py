@@ -250,6 +250,7 @@ class TestDRSMake:
         assert "CLI specified 'cmip7'" in output
         assert "file contains 'cmip6'" in output
         assert "Please use '--project cmip6'" in output
+        assert "esgvoc status" in output
 
     def test_make_project_match_succeeds(self, drs_test_structure):
         """Test that DRS make succeeds when project matches file attributes."""

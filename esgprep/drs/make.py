@@ -92,7 +92,8 @@ class Process(object):
                 if file_project and file_project.lower() != self.project.lower():
                     raise Exception(
                         f"Project mismatch: CLI specified '{self.project}' but file contains '{file_project}' "
-                        f"(detected from file attributes). Please use '--project {file_project}' or verify the correct project."
+                        f"(detected from file attributes). Please use '--project {file_project}' or verify the correct project.\n"
+                        f"\nTo see all available projects, run: esgvoc status"
                     )
             except Exception as e:
                 if "Project mismatch" in str(e):
