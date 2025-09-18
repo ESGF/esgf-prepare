@@ -179,7 +179,12 @@ DIRECTORY_HELP = {
 """,
 
     'mapfile': """One or more directories to recursively scan. Unix wildcards are allowed.
-    
+
+""",
+
+    'latest': """One or more directories to recursively scan. Unix wildcards are allowed.
+If not specified, the current working directory is used.
+
 """
 }
 
@@ -223,6 +228,11 @@ DRS_SUBCOMMANDS = {
 
 The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs make" subcommand allows you to generate the appropriate directory structure from incoming netCDF files following several modes of migration.
 
+Usage examples:
+  esgdrs make list -p cmip6 /path/to/incoming/data
+  esgdrs make upgrade -p cmip6 --symlink /path/to/incoming/data
+  esgdrs make tree -p cordex --root /drs/output /path/to/incoming/data
+
 {}
 
 {}
@@ -233,6 +243,11 @@ The Data Reference Syntax (DRS) defines the way your data have to follow on your
 
 The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs remove" subcommand allows you to remove one or several dataset versions from you local directory structure preserving the symlink skeleton of remaining versions.
 
+Usage examples:
+  esgdrs remove list -p cmip6 --directory /drs/structure
+  esgdrs remove upgrade -p cordex --dataset-id project.model.experiment.frequency.variable.grid
+  esgdrs remove todo -p cmip6 --version v20220101 --directory /drs/structure
+
 {}
 
 {}
@@ -242,6 +257,11 @@ The Data Reference Syntax (DRS) defines the way your data have to follow on your
 {}
 
 The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs latest" subcommand allows you to generate create the "latest" symlink on a generated directory structure, if they do not already exist.
+
+Usage examples:
+  esgdrs latest list -p cmip6
+  esgdrs latest upgrade -p cmip6 --directory /drs/structure
+  esgdrs latest tree -p cordex --directory /drs/structure
 
 {}
 
