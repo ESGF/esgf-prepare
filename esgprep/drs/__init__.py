@@ -149,5 +149,5 @@ def run(args):
             # print()
 
     # Evaluate errors & exit with corresponding return code.
-    if ctx.errors.value > 0:
-        sys.exit(ctx.errors.value)
+    if ctx.final_error_count > 0:
+        sys.exit(ctx.final_error_count)

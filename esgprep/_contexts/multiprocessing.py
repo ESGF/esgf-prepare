@@ -206,16 +206,19 @@ class MultiprocessingContext(BaseContext):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        # Save error count before shutting down manager (needed for access after context exit)
+        error_count = self.errors.value
+
         # Build summary message.
         msg = f"Number of success(es): {self.success}\n"
-        msg += f"Number of error(s): {self.errors.value}"
+        msg += f"Number of error(s): {error_count}"
 
         # No errors occurred.
-        if not self.errors.value:
+        if not error_count:
             msg = COLORS.SUCCESS(msg)
 
         # All files skipped.
-        elif self.nbsources == self.errors.value:
+        elif self.nbsources == error_count:
             msg = COLORS.FAIL(msg)
 
         # Partial success with at least one error.
@@ -224,6 +227,13 @@ class MultiprocessingContext(BaseContext):
 
         # Print summary.
         Print.summary(msg)
+
+        # Properly shutdown the multiprocessing manager to avoid resource leaks
+        if self.use_pool and hasattr(self, 'manager'):
+            self.manager.shutdown()
+
+        # Store final error count as a regular attribute for post-context access
+        self.final_error_count = error_count
 
         super(MultiprocessingContext, self).__exit__(exc_type, exc_val, exc_tb)
 

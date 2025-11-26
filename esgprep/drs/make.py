@@ -124,11 +124,10 @@ class Process(object):
                 # print(drs_path.generated_drs_expression)
 
                 if len(drs_path.errors) != 0:
-                    # Print the actual errors for debugging
-                    for error in drs_path.errors:
-                        Print.debug(f"DRS generation error: {error}")
+                    # Build detailed error message with all DRS errors
+                    error_details = "\n".join([f"  - {error}" for error in drs_path.errors])
                     raise Exception(
-                        f"DRS generation failed with {len(drs_path.errors)} errors: {drs_path.errors}"
+                        f"DRS generation failed with {len(drs_path.errors)} error(s):\n{error_details}"
                     )
                 current_path: Path = (
                     Path(self.root)
