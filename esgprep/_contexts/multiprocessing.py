@@ -197,8 +197,27 @@ class MultiprocessingContext(BaseContext):
         Print.info("Loading CV")
         try:
             assert "institution" in ev.get_all_data_descriptors_in_universe()
-        except AssertionError:
-            raise MissingCVdata("esgvoc", "na")  # TODO improve error message
+        except RuntimeError as e:
+            if "universe connection is not initialized" in str(e):
+                Print.error("Controlled vocabularies are not initialized.")
+                Print.error("Please run: esgvoc install")
+                Print.error("This command downloads ESGF project vocabularies and builds local databases.")
+                raise SystemExit(1)
+            else:
+                raise
+        except Exception as e:
+            # Catch database errors (OperationalError, etc.)
+            error_msg = str(e)
+            if "no such table" in error_msg or "OperationalError" in str(type(e).__name__):
+                Print.error("Controlled vocabulary databases are incomplete or corrupted.")
+                Print.error("Please run: esgvoc install")
+                Print.error("This will rebuild the databases from the latest vocabularies.")
+                raise SystemExit(1)
+            elif "institution" not in str(e):
+                # Original AssertionError case
+                raise MissingCVdata("esgvoc", "na")
+            else:
+                raise
 
         # Get checksum client.
         self.checksum_type = self.get_checksum_type()
