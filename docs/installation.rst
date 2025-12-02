@@ -4,19 +4,32 @@
 Installation
 ============
 
-Usual PIP installation 
+.. note:: ``esgprep`` version 3.0+ requires Python 3.12 or higher.
+
+Installation from PyPI
 **********************
 
 .. code-block:: bash
 
    pip install esgprep
 
-PIP installation from GitHub
-****************************
+.. important:: **REQUIRED:** After installing ``esgprep``, you must initialize the controlled vocabularies:
 
-.. code-block:: bash
+   .. code-block:: bash
 
-   pip install -e git://github.com/ESGF/esgf-prepare.git@master#egg=esgprep
+      esgvoc install
+
+   This command downloads ESGF project vocabularies from GitHub and builds local databases.
+   Without this step, ``esgdrs`` and ``esgmapfile`` commands will fail with an error.
+
+   The installation downloads approximately 100MB of data and may take a few minutes depending on your connection.
+
+   **IMPORTANT:** Run ``esgvoc install`` periodically to update your local vocabularies with the latest
+   controlled vocabulary changes from ESGF projects. Outdated vocabularies may cause validation errors
+   or prevent recognition of newly added facets, experiments, or models.
+
+   For more information about controlled vocabularies management, see the
+   `esgvoc documentation <https://esgf.github.io/esgf-vocab/index.html>`_.
 
 Installation from GitHub
 ************************
@@ -25,55 +38,61 @@ Installation from GitHub
 
 .. code-block:: bash
 
-   git clone git://github.com/ESGF/esgf-prepare.git
+   git clone https://github.com/ESGF/esgf-prepare.git
+   cd esgf-prepare
 
-2. Run the ``setup.py``:
+2. Install using pip:
 
 .. code-block:: bash
 
-   cd esgf-prepare
-   python setup.py install
+   pip install -e .
 
-3. The ``esgprep`` command-line is ready.
+3. Initialize the controlled vocabularies:
 
-.. warning:: To run ``esgprep`` you have to be logged into a machine which mounts the filesystem hosting the data to
-   publish.
+.. code-block:: bash
+
+   esgvoc install
+
+4. The ``esgdrs`` and ``esgmapfile`` command-lines are now available.
+
+Using uv (recommended for development)
+*************************************
+
+For a faster and more modern Python package manager, you can use `uv <https://github.com/astral-sh/uv>`_:
+
+.. code-block:: bash
+
+   # Install uv if not already installed
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+
+   # Create a virtual environment and install esgprep
+   uv sync
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+   # Initialize controlled vocabularies
+   esgvoc install
+
+.. warning:: To run ``esgprep`` tools you have to be logged into a machine which mounts the filesystem hosting the data to publish.
 
 Dependencies and requirements
 *****************************
 
-Linux distribution with Python 2.6+ is required. ``esgprep`` uses the following basic Python libraries. Ensure that
-your Python environment includes:
+**System requirements:**
+ * Linux distribution
+ * Python 3.12 or higher
 
- * `argparse <https://docs.python.org/2/library/argparse.html>`_
- * `collections <https://docs.python.org/2/library/collections.html>`_
- * `datetime <https://docs.python.org/2/library/datetime.html>`_
- * `ESGConfigParser <https://pypi.python.org/pypi/ESGConfigParser>`_
- * `fnmatch <https://docs.python.org/2/library/fnmatch.html>`_
- * `getpass <https://docs.python.org/2/library/getpass.html>`_
- * `hashlib <https://docs.python.org/2/library/hashlib.html>`_
- * `importlib <https://docs.python.org/2/library/importlib.html>`_
- * `logging <https://docs.python.org/2/library/logging.html>`_
- * `multiprocessing <https://docs.python.org/2/library/multiprocessing.html>`_
- * `os <https://docs.python.org/2/library/os.html>`_
- * `pickle <https://docs.python.org/2/library/pickle.html>`_
- * `re <https://docs.python.org/2/library/re.html>`_
- * `shutil <https://docs.python.org/2/library/shutil.html>`_
- * `sys <https://docs.python.org/2/library/sys.html>`_
- * `textwrap <https://docs.python.org/2/library/textwrap.html>`_
- * `unittest <https://docs.python.org/2/library/unittest.html>`_
- * `gettext <https://docs.python.org/2/library/gettext.html>`_
+**Python dependencies:**
 
-Some required libraries are not included in most Python distributions. Please install them using the usual PIP command:
+``esgprep`` uses standard Python libraries and the following external packages:
 
- * `fuzzywuzzy <https://pypi.python.org/pypi/fuzzywuzzy>`_
- * `hurry.filesize <https://pypi.python.org/pypi/hurry.filesize>`_
- * `lockfile <https://pypi.python.org/pypi/lockfile/0.12.2>`_
- * `netCDF4 <http://unidata.github.io/netcdf4-python/>`_
- * `requests <http://docs.python-requests.org/en/master/>`_
- * `tqdm <https://pypi.python.org/pypi/tqdm>`_
- * `treelib <https://pypi.python.org/pypi/treelib>`_
+ * `esgvoc <https://pypi.org/project/esgvoc/>`_ >= 1.2.1 - ESGF controlled vocabulary and configuration handler (replaces ESGConfigParser)
+ * `fuzzywuzzy <https://pypi.org/project/fuzzywuzzy/>`_ >= 0.18.0 - Fuzzy string matching
+ * `hurry.filesize <https://pypi.org/project/hurry.filesize/>`_ >= 0.9 - Human-readable file sizes
+ * `lockfile <https://pypi.org/project/lockfile/>`_ >= 0.12.2 - File locking
+ * `netCDF4 <https://unidata.github.io/netcdf4-python/>`_ >= 1.7.2 - NetCDF file handling
+ * `numpy <https://numpy.org/>`_ >= 2.2.6 - Numerical computing
+ * `python-levenshtein <https://pypi.org/project/python-Levenshtein/>`_ >= 0.27.1 - Fast string matching
+ * `requests <https://requests.readthedocs.io/>`_ >= 2.32.3 - HTTP library
+ * `treelib <https://pypi.org/project/treelib/>`_ >= 1.7.1 - Tree data structure
 
-.. code-block:: bash
-
-   pip install <pkg_name>
+All dependencies are automatically installed when installing ``esgprep`` via pip.

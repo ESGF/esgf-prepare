@@ -24,17 +24,18 @@ the *Data Reference Syntax* on local filesystems and/or generate mapfiles for ES
 ``esgprep`` gathers Python command-lines covering several steps of `ESGF publication workflow <https://drive.google
 .com/open?id=0B7Kis5A3U5SKTUdFbjYwRnFhQ0E>`_.
 
+.. note:: **New to esgprep?** Start with the :ref:`getting_started` guide for a hands-on walkthrough.
+
 .. toctree::
    :maxdepth: 1
 
    installation
+   getting_started
    configuration
    usage
-   fetchini
-   fetchtables
    drs
-   checkvocab
    mapfiles
+   migration
    faq
    credits
    log

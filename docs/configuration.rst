@@ -4,70 +4,79 @@
 Configuration
 =============
 
-``esgprep`` works according to
-`the configuration INI file(s) of the ESGF nodes <https://acme-climate.atlassian.net/wiki/x/JADm>`_.
+``esgprep`` version 3.0+ uses the ``esgvoc`` library for configuration and controlled vocabulary management.
+This approach replaces the previous INI file-based configuration system with a more modern and maintainable solution.
 
-Location
-********
+Using esgvoc
+************
 
-On an ESGF node, the configuration directory containing those INI files is ``/esg/config/esgcet``, that is the default
-for ``esgprep``. In the case you are running ``esgprep`` outside of an ESGF node, the directory gathering all ``.ini``
-files has to be submitted using the ``-i`` option (see :ref:`usage`).
+The ``esgvoc`` library automatically manages:
+ * Controlled vocabularies for ESGF projects
+ * Project-specific Data Reference Syntax (DRS) definitions
+ * Facet validation and mapping
+ * Vocabulary caching and updates
 
-``esg.ini``
-***********
+No manual configuration file management is required. The library handles fetching and caching of project definitions
+automatically.
 
-This INI file gathers all required information to configure the datanode regarding to data publication (e.g.,
-PostgreSQL access, THREDDS configuration, etc.).
+Supported Projects
+******************
 
-The only configuration in this section is to define the checksum client and checksum
-type under the ``[default]`` section. Edit the file to set the Shell command line to use (default is ``sha256sum``).
-
-.. code-block:: ini
-
-    [default]
-    checksum = sha256sum | SHA256
-
-.. note:: If ``esg.ini`` is unfound, the default is SHA256.
-
-``esg.<project_id>.ini``
-************************
-
-Those INI files declare all facets and allowed values according to the Data Reference Syntax (DRS) and the controlled
-vocabularies of the corresponding project. Preset ``esg.<project_id>.ini`` files have been properly built by
-ESGF community for the following projects:
+``esgvoc`` provides built-in support for major ESGF projects, including:
 
  * CMIP6
  * CMIP5
  * CORDEX
- * CORDEX-Adjust
- * EUCLIPSE
- * GeoMIP
  * input4MIPs
  * obs4MIPs
- * PMIP3
- * LUCID
- * PRIMAVERA
- * TAMIP
- * ISIMIP-FT
+ * And other ESGF-approved projects
 
-They can be downloaded from `the GitHub repository <https://github.com/ESGF/config/tree/devel/publisher-configs/ini>`_
-or using ``esgfetchini``.
-If no ``esg.<project_id>.ini`` corresponds to your project you can made your own following `the ESGF Best Practices
-document <https://acme-climate.atlassian.net/wiki/x/JADm>`_:
+Project vocabularies are maintained in the `esgvoc repository <https://github.com/ESGF/esgvoc>`_ and automatically
+synchronized when using ``esgprep``.
 
- * Please follow the structure detailed `here <https://acme-climate.atlassian.net/wiki/x/loDRAw>`_.
- * Add your project into the ``project_options`` list of your ``esg.ini``.
- * The ``--project`` argument of ``esgprep`` directly refers to the ``project_id`` (i.e., requires lowercase).
- * The ``directory_format`` attribute is required for auto-detection and uses a regular expression to match with the full path of the files.
- * All facets of the ``dataset_id`` are not necessarily found in the ``directory_format``.
- * All common facets to the ``dataset_id`` and the ``directory_format`` must have the same name.
- * If a facet is missing in ``directory_format`` to allow the ``dataset_id`` filling, declare the appropriate ``facet_map``. The maptable uses the value of a declared facet to map the value of another missing facet in the ``directory_format``.
- * The missing facet has to be declared as a "destination" key (i.e., on the right of the colon).
- * Duplicated lines cannot occur in a maptable.
- * A facet has to have at least one options list or maptable.
- * A ``mapfile_drs`` attribute can be added to your project section to organize related mapfiles.
- * Make sure the ``dataset_id`` and the ``directory_format`` options reflect your directory structure accordingly.
+Checksum Configuration
+**********************
 
-.. note:: Feel free to submit your own ``esg.<project_id>.ini`` in order to add it to the GitHub repository and make
-    it available trough ``esgfetchini`` command-line.
+By default, ``esgprep`` uses SHA256 for file checksums. This is the recommended checksum algorithm for ESGF
+data publication and is used automatically unless otherwise specified.
+
+``esgprep`` version 3.0+ supports both standard hashlib algorithms and multihash algorithms. Multihash is a
+self-describing hash format that includes the algorithm identifier and hash length, making it more robust for
+long-term data integrity verification.
+
+For ``esgmapfile``, you can specify the checksum algorithm using the ``--checksum-type`` option:
+
+.. code-block:: bash
+
+    # Standard algorithm (default)
+    $> esgmapfile make --project PROJECT_ID --checksum-type sha256 /PATH/TO/SCAN/
+
+    # Multihash algorithm (recommended for ESGF)
+    $> esgmapfile make --project PROJECT_ID --checksum-type sha2-256 /PATH/TO/SCAN/
+
+Supported algorithms include:
+ * **Standard**: sha256, sha1, md5, and other hashlib algorithms
+ * **Multihash**: sha2-256, sha2-512, sha3-256, sha3-512, sha1
+
+See :ref:`mapfiles` for more details on checksum options.
+
+Advanced Configuration
+**********************
+
+For advanced use cases or custom project definitions, please refer to the `esgvoc documentation
+<https://esgvoc.readthedocs.io/>`_ for information on:
+
+ * Adding custom project definitions
+ * Modifying vocabulary mappings
+ * Configuring vocabulary sources
+ * Managing local vocabulary caches
+
+Migration from INI files
+*************************
+
+If you were previously using ``esg.<project_id>.ini`` configuration files:
+
+ * The ``esgvoc`` library replaces the functionality of ``ESGConfigParser``
+ * Project definitions are now managed centrally through ``esgvoc``
+ * No manual INI file management is required
+ * See the :ref:`migration` guide for details on transitioning from the old system

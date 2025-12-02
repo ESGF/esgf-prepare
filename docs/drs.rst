@@ -9,20 +9,37 @@ publication on the ESGF node. ``esgdrs`` is designed to help ESGF data node mana
 publication, placing files in the DRS directory structure, and to manage multiple versions of publication-level datasets
 in a way that minimises disk usage.
 
+.. important:: **PREREQUISITE:** Before using ``esgdrs``, you must install the controlled vocabularies:
+
+   .. code-block:: bash
+
+      esgvoc install
+      # OR if using uv:
+      uv run esgvoc install
+
+   Without this step, ``esgdrs`` commands will fail with: ``RuntimeError: universe connection is not initialized``
+
+   **Keep vocabularies updated:** Run ``esgvoc install`` periodically to get the latest controlled vocabulary
+   updates from ESGF projects, ensuring compatibility with new experiments, models, and facet values.
+
+   See :ref:`installation` for more details, or visit the
+   `esgvoc documentation <https://esgf.github.io/esgf-vocab/index.html>`_ for advanced vocabulary management.
+
 .. warning:: Only CMORized netCDF files are supported as incoming files.
 
 Several ``esgdrs`` actions are available to manage your local archive:
- - ``list`` lists publication-level datasets,
- - ``tree`` displays the final DRS tree,
- - ``todo`` shows file operations pending for the next version,
- - ``upgrade`` makes the changes to upgrade datasets to the next version.
 
-``esgdrs`` deduces the excepted DRS by scanning the incoming files and checking the facets against the
-corresponding ``esg.<project>.ini`` file. The DRS facets values are deduced from:
+- ``list`` lists publication-level datasets,
+- ``tree`` displays the final DRS tree,
+- ``todo`` shows file operations pending for the next version,
+- ``upgrade`` makes the changes to upgrade datasets to the next version.
 
- 1. The command-line using ``--set facet=value``. This flag can be used several times to set several facets values.
- 2. The filename pattern using the ``filename_format`` from the ``esg.<project>.ini``.
- 3. The NetCDF global attributes by picking the attribute with the nearest name of the facet key.
+``esgdrs`` deduces the expected DRS by scanning the incoming files and checking the facets against the
+project vocabularies managed by ``esgvoc``. The DRS facets values are deduced from:
+
+1. The command-line using ``--set-value facet=value``. This flag can be used several times to set several facets values.
+2. The filename pattern using the ``filename_format`` from the project vocabulary definitions.
+3. The NetCDF global attributes by picking the attribute with the nearest name of the facet key.
 
 .. warning:: The incoming files are supposed to be produced by `CMOR <https://cmor.llnl.gov/>`_ (or at least be
     CMOR-compliant) and unversioned. ``esgdrs`` will apply a version regardless of the incoming file path. The
@@ -33,10 +50,11 @@ List the datasets related to the incoming files
 
 The ``list`` action lists the publication-level dataset corresponding to your MIP-compliant files. The resulting table
 lists each dataset with:
- - the latest known version on the filesystem (i.e., the root directory),
- - the upgraded version to apply,
- - the number of related incoming files,
- - the total size of the upgraded dataset (i.e., the sum of all incoming files related to this upgrade).
+
+- the latest known version on the filesystem (i.e., the root directory),
+- the upgraded version to apply,
+- the number of related incoming files,
+- the total size of the upgraded dataset (i.e., the sum of all incoming files related to this upgrade).
 
 .. code-block:: bash
 

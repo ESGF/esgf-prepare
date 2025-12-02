@@ -4,60 +4,126 @@
 Code documentation
 ==================
 
-esgfetchini
-***********
-
-.. automodule:: esgprep.esgfetchini
-.. automodule:: esgprep.fetchini.constants
-.. automodule:: esgprep.fetchini.context
-.. automodule:: esgprep.fetchini.main
-
-esgfetchtables
-**************
-
-.. automodule:: esgprep.esgfetchtables
-.. automodule:: esgprep.fetchtables.constants
-.. automodule:: esgprep.fetchtables.context
-.. automodule:: esgprep.fetchtables.main
+.. note:: This section provides API documentation for the esgprep Python modules.
 
 esgdrs
 ******
 
+Main module
+^^^^^^^^^^^
 .. automodule:: esgprep.esgdrs
-.. automodule:: esgprep.drs.constants
-.. automodule:: esgprep.drs.custom_exceptions
-.. automodule:: esgprep.drs.context
-.. automodule:: esgprep.drs.handler
-.. automodule:: esgprep.drs.main
+   :members:
+   :undoc-members:
 
-esgcheckvocab
-*************
-.. automodule:: esgprep.esgcheckvocab
-.. automodule:: esgprep.checkvocab.constants
-.. automodule:: esgprep.checkvocab.context
-.. automodule:: esgprep.checkvocab.custom_exceptions
-.. automodule:: esgprep.checkvocab.main
+Submodules
+^^^^^^^^^^
+.. automodule:: esgprep.drs
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep.drs.constants
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep.drs.context
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep.drs.make
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep.drs.remove
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep.drs.latest
+   :members:
+   :undoc-members:
 
 esgmapfile
 **********
 
+Main module
+^^^^^^^^^^^
 .. automodule:: esgprep.esgmapfile
-.. automodule:: esgprep.mapfile.constants
-.. automodule:: esgprep.mapfile.context
-.. automodule:: esgprep.mapfile.custom_exceptions
-.. automodule:: esgprep.mapfile.handler
-.. automodule:: esgprep.mapfile.main
+   :members:
+   :undoc-members:
 
-utils
-*****
-.. automodule:: esgprep.utils.collectors
-.. automodule:: esgprep.utils.constants
-.. automodule:: esgprep.utils.context
-.. automodule:: esgprep.utils.custom_exceptions
-.. automodule:: esgprep.utils.custom_print
-.. automodule:: esgprep.utils.github
-.. automodule:: esgprep.utils.misc
-.. automodule:: esgprep.utils.parser
+Submodules
+^^^^^^^^^^
+.. automodule:: esgprep.mapfile
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep.mapfile.constants
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep.mapfile.context
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep.mapfile.make
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep.mapfile.show
+   :members:
+   :undoc-members:
+
+Utilities
+*********
+
+Collectors
+^^^^^^^^^^
+.. automodule:: esgprep._collectors
+   :members:
+   :undoc-members:
+
+Contexts
+^^^^^^^^
+.. automodule:: esgprep._contexts
+   :members:
+   :undoc-members:
+
+Exceptions
+^^^^^^^^^^
+.. automodule:: esgprep._exceptions
+   :members:
+   :undoc-members:
+
+Handlers
+^^^^^^^^
+.. automodule:: esgprep._handlers
+   :members:
+   :undoc-members:
+
+Utils
+^^^^^
+.. automodule:: esgprep._utils.checksum
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep._utils.help
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep._utils.ncfile
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep._utils.parser
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep._utils.path
+   :members:
+   :undoc-members:
+
+.. automodule:: esgprep._utils.print
+   :members:
+   :undoc-members:
 
 
 .. moduleauthor:: Levavasseur Guillaume (CNRS/IPSL) <glipsl@ipsl.fr>

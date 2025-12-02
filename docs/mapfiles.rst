@@ -4,6 +4,22 @@
 Generate mapfile for ESGF publication
 =====================================
 
+.. important:: **PREREQUISITE:** Before using ``esgmapfile``, you must install the controlled vocabularies:
+
+   .. code-block:: bash
+
+      esgvoc install
+      # OR if using uv:
+      uv run esgvoc install
+
+   Without this step, ``esgmapfile`` commands will fail with: ``RuntimeError: universe connection is not initialized``
+
+   **Keep vocabularies updated:** Run ``esgvoc install`` periodically to get the latest controlled vocabulary
+   updates from ESGF projects, ensuring compatibility with new experiments, models, and facet values.
+
+   See :ref:`installation` for more details, or visit the
+   `esgvoc documentation <https://esgf.github.io/esgf-vocab/index.html>`_ for advanced vocabulary management.
+
 The publication process on the ESGF nodes requires *mapfiles*. Mapfiles are text files where each line
 describes a file to publish, using the following format:
 
@@ -36,27 +52,57 @@ directory is used.
 
     $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/
 
+Specify checksum algorithm
+**************************
+
+``esgmapfile`` supports multiple checksum algorithms for file integrity verification. You can choose between standard
+hashlib algorithms and multihash algorithms using the ``--checksum-type`` option.
+
+**Standard algorithms** (default: sha256):
+ * ``sha256`` - SHA-256 (default and recommended)
+ * ``sha1`` - SHA-1
+ * ``md5`` - MD5
+ * Other hashlib-supported algorithms
+
+**Multihash algorithms** (ESGF-compliant format):
+ * ``sha2-256`` - SHA2-256 in multihash format
+ * ``sha2-512`` - SHA2-512 in multihash format
+ * ``sha3-256`` - SHA3-256 in multihash format
+ * ``sha3-512`` - SHA3-512 in multihash format
+ * ``sha1`` - SHA-1 in multihash format
+
+.. code-block:: bash
+
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --checksum-type sha256
+    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --checksum-type sha2-256
+
+.. note:: Multihash is a self-describing hash format that includes the algorithm identifier and hash length in the
+    output. This makes it more robust for long-term data integrity verification and is the recommended format for
+    ESGF data publication.
+
 Mapfile without files checksums
 *******************************
 
-Because this could be time consuming ``--no-checksum`` allows you not include the file checksum into your mapfile(s).
+Because checksumming can be time consuming, ``--no-checksum`` allows you to skip checksum computation in your mapfile(s).
 
 .. code-block:: bash
 
     $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
 
+.. warning:: Checksums are strongly recommended for data integrity verification and ESGF publication requirements.
+
 Mapfile with pre-calculated checksums
 *************************************
 
-If your file checksum have been already calculated apart, you can submit a file to ``esgmapfile`` with the checksums
+If your file checksums have been already calculated, you can submit a file to ``esgmapfile`` with the checksums
 list. This checksum file must have the same format as the output of the UNIX command-lines "\*sum".
 
 .. code-block:: bash
 
     $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --checksums-from /PATH/TO/CHECKSUMS/FILE
 
-
-.. note:: In the case of unfound checksums, it falls back to compute the checksum as normal.
+.. note:: In the case of unfound checksums, it falls back to compute the checksum as normal. The checksum type must
+    match the format in the checksums file.
 
 Mapfile without DRS versions
 ****************************
