@@ -55,7 +55,7 @@ def build_mapfile_entry(dataset_name, dataset_version, ffp, size, optional_attrs
     """
     line = [dataset_name]
     if dataset_version:
-        line = ['{}#{}'.format(dataset_name, dataset_version)]
+        line = ['{}.v{}'.format(dataset_name, dataset_version)]
     line.append(ffp)
     line.append(str(size))
     for k, v in optional_attrs.items():
