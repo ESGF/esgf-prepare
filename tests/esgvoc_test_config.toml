@@ -1,0 +1,34 @@
+# esgvoc Test Configuration for esgprep tests
+#
+# This configuration is used by pytest to create an isolated test environment.
+# It should match your development environment configuration to ensure
+# tests use the same vocabulary branches you're working with.
+#
+# The fixture will:
+# 1. Load this configuration
+# 2. Create an isolated "esgprep_cv_test" configuration
+# 3. Run tests with this configuration
+# 4. Restore your original configuration after tests
+
+[[projects]]
+project_name = "cmip6"
+github_repo = "https://github.com/WCRP-CMIP/CMIP6_CVs"
+branch = "esgvoc_dev"
+local_path = "repos/CMIP6_CVs"
+db_path = "dbs/cmip6.sqlite"
+offline_mode = false
+
+[[projects]]
+project_name = "cmip6plus"
+github_repo = "https://github.com/WCRP-CMIP/CMIP6Plus_CVs"
+branch = "esgvoc_dev"
+local_path = "repos/CMIP6Plus_CVs"
+db_path = "dbs/cmip6plus.sqlite"
+offline_mode = false
+
+[universe]
+github_repo = "https://github.com/WCRP-CMIP/WCRP-universe"
+branch = "esgvoc_dev"
+local_path = "repos/WCRP-universe"
+db_path = "dbs/universe.sqlite"
+offline_mode = false

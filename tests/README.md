@@ -51,33 +51,35 @@ tests_new/
 
 ## Running Tests
 
+**First Time Setup**: The first time you run tests, the `configure_esgvoc` fixture will automatically download and install controlled vocabularies (~100MB). This may take a few minutes but only happens once.
+
 ### Run All Tests
 ```bash
-pytest tests_new/
+pytest tests/
 ```
 
 ### Run Only Unit Tests
 ```bash
-pytest tests_new/unit/
+pytest tests/unit/
 ```
 
 ### Run Only Integration Tests
 ```bash
-pytest tests_new/integration/
+pytest tests/integration/
 ```
 
 ### Run Tests Excluding Integration Tests
 ```bash
-pytest tests_new/ -m "not integration"
+pytest tests/ -m "not integration"
 ```
 
 ### Run Specific Test Categories
 ```bash
 # Run only slow tests
-pytest tests_new/ -m "slow"
+pytest tests/ -m "slow"
 
 # Run excluding slow tests
-pytest tests_new/ -m "not slow"
+pytest tests/ -m "not slow"
 ```
 
 ## Test Markers
@@ -89,6 +91,21 @@ pytest tests_new/ -m "not slow"
 ## Fixtures Available
 
 ### Global Fixtures (conftest.py)
+
+#### Automatic Fixtures (autouse=True)
+- `configure_esgvoc`: **Session-scoped**, automatically configures and installs esgvoc controlled vocabularies in an isolated test environment. This fixture:
+  - Saves current user's esgvoc configuration
+  - Loads test configuration from `tests/esgvoc_test_config.toml`
+  - Creates isolated `esgprep_cv_test` configuration
+  - Downloads ESGF vocabularies from GitHub (first run only)
+  - Builds SQLite databases (~100MB, first run only)
+  - Runs all tests with isolated configuration
+  - Restores user's original configuration after tests
+  - **No explicit usage required** - it runs automatically before all tests
+
+**Configuration File**: Edit `tests/esgvoc_test_config.toml` to match your development environment's esgvoc branches and repositories.
+
+#### Manual Fixtures
 - `tmp_dir`: Temporary directory for test outputs
 - `test_data_dir`: Path to test data fixtures
 - `real_data_dir`: Path to real test data
