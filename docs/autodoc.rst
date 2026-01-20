@@ -20,6 +20,7 @@ Submodules
 .. automodule:: esgprep.drs
    :members:
    :undoc-members:
+   :no-index:
 
 .. automodule:: esgprep.drs.constants
    :members:
@@ -55,6 +56,7 @@ Submodules
 .. automodule:: esgprep.mapfile
    :members:
    :undoc-members:
+   :no-index:
 
 .. automodule:: esgprep.mapfile.constants
    :members:

@@ -56,7 +56,7 @@ Installation from GitHub
 4. The ``esgdrs`` and ``esgmapfile`` command-lines are now available.
 
 Using uv (recommended for development)
-*************************************
+**************************************
 
 For a faster and more modern Python package manager, you can use `uv <https://github.com/astral-sh/uv>`_:
 

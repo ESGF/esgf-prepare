@@ -31,10 +31,13 @@ the *Data Reference Syntax* on local filesystems and/or generate mapfiles for ES
 
    installation
    getting_started
+   concepts
    configuration
    usage
    drs
    mapfiles
+   examples
+   troubleshooting
    migration
    faq
    credits

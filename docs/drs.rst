@@ -68,7 +68,7 @@ to ignore some files your can submit a list of files to ignore during data disco
     $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/ --ignore-from-incoming /PATH/TO/LIST/OF/FILES/TO/IGNORE
 
 .. note:: Each run also produces a temporary file which stores the scan results to be used by next subcommands avoiding
-to rescan a lot of files.
+   to rescan a lot of files.
 
 Set a facet value
 *****************
@@ -164,7 +164,7 @@ To overwrite existing file:
     $> esgdrs todo --project PROJECT_ID /PATH/TO/SCAN/ --commands-file /PATH/TO/COMMANDS.txt --overwrite-commands-file
 
 .. warning:: The ``drs`` action is also able to remove incoming files in some particular case
-(see ``--upgrade-from-latest`` and ``--ignore-from-latest`` options).
+   (see ``--upgrade-from-latest`` and ``--ignore-from-latest`` options).
 
 Change the migration mode
 *************************
