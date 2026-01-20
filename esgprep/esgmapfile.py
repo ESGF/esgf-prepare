@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -94,23 +94,23 @@ def get_args():
         help=LATEST_SYMLINK_HELP)
     parent.add_argument(
         '--ignore-dir',
-        metavar="'^.*/(files|\.\w*).*$'",
+        metavar=r"'^.*/(files|\.\w*).*$'",
         type=regex_validator,
-        default='^.*/(files|\.[\w]*).*$',
+        default=r'^.*/(files|\.[\w]*).*$',
         help=IGNORE_DIR_HELP)
     parent.add_argument(
         '--include-file',
-        metavar="'^.*\.nc$'",
+        metavar=r"'^.*\.nc$'",
         type=regex_validator,
         action='append',
-        default=['^.*\.nc$'],
+        default=[r'^.*\.nc$'],
         help=INCLUDE_FILE_HELP['mapfile'])
     parent.add_argument(
         '--exclude-file',
-        metavar="'^\..*$'",
+        metavar=r"'^\..*$'",
         type=regex_validator,
         action='append',
-        default=['^\..*$'],
+        default=[r'^\..*$'],
         help=EXCLUDE_FILE_HELP)
     parent.add_argument(
         '--max-processes',
