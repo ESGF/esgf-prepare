@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "esgf-prepare"
-version = "0.1.0"
+version = "3.0.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "esgvoc>=1.0.1",
+    "esgvoc>=2.1.0",
     "fuzzywuzzy>=0.18.0",
     "hurry-filesize>=0.9",
     "lockfile>=0.12.2",
@@ -33,7 +33,29 @@ path = "esgprep/__init__.py"
 dev = [
     "jupyter-console>=6.6.3",
     "pytest>=8.3.5",
+    "sphinx>=8.2.3",
+    "sphinx-rtd-theme>=3.0.2",
 ]
 [project.scripts]
 esgdrs = "esgprep.esgdrs:main"
 esgmapfile = "esgprep.esgmapfile:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+    "slow: marks tests as slow running",
+    "skip_this: marks tests to be skipped",
+]
+# Filter warnings
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
