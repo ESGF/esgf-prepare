@@ -1,0 +1,535 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concepts &amp; Terminology &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Concepts &amp; Terminology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data-reference-syntax-drs">Data Reference Syntax (DRS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#facets">Facets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dataset-ids">Dataset IDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#versions">Versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mapfiles">Mapfiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cmor-climate-model-output-rewriter">CMOR (Climate Model Output Rewriter)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#controlled-vocabularies">Controlled Vocabularies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Concepts &amp; Terminology</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/concepts.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="concepts-terminology">
+<span id="concepts"></span><h1>Concepts &amp; Terminology<a class="headerlink" href="#concepts-terminology" title="Link to this heading"></a></h1>
+<p>This section explains key ESGF concepts that are essential for understanding how <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> works.
+Read this before diving into the tool-specific documentation.</p>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#data-reference-syntax-drs" id="id1">Data Reference Syntax (DRS)</a></p></li>
+<li><p><a class="reference internal" href="#facets" id="id2">Facets</a></p></li>
+<li><p><a class="reference internal" href="#dataset-ids" id="id3">Dataset IDs</a></p></li>
+<li><p><a class="reference internal" href="#versions" id="id4">Versions</a></p></li>
+<li><p><a class="reference internal" href="#mapfiles" id="id5">Mapfiles</a></p></li>
+<li><p><a class="reference internal" href="#cmor-climate-model-output-rewriter" id="id6">CMOR (Climate Model Output Rewriter)</a></p></li>
+<li><p><a class="reference internal" href="#controlled-vocabularies" id="id7">Controlled Vocabularies</a></p></li>
+<li><p><a class="reference internal" href="#glossary" id="id8">Glossary</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id9">See Also</a></p></li>
+</ul>
+</nav>
+<section id="data-reference-syntax-drs">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Data Reference Syntax (DRS)</a><a class="headerlink" href="#data-reference-syntax-drs" title="Link to this heading"></a></h2>
+<p><strong>What it is:</strong>
+The Data Reference Syntax (DRS) is a standardized way to organize climate data files in a hierarchical
+directory structure. Each project (CMIP7, CORDEX, etc.) defines its own DRS specification.</p>
+<p><strong>Why it matters:</strong>
+A consistent DRS structure enables:</p>
+<ul class="simple">
+<li><p>Automated data discovery across ESGF nodes</p></li>
+<li><p>Predictable file locations for scripts and tools</p></li>
+<li><p>Standardized dataset identification</p></li>
+<li><p>Efficient data management and versioning</p></li>
+</ul>
+<p><strong>Structure example (CMIP7 - MIP-DRS7):</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;root&gt;/
+└── MIP-DRS7/
+    └── &lt;mip_era&gt;/
+        └── &lt;activity&gt;/
+            └── &lt;organisation&gt;/
+                └── &lt;source&gt;/
+                    └── &lt;experiment&gt;/
+                        └── &lt;variant_label&gt;/
+                            └── &lt;region&gt;/
+                                └── &lt;frequency&gt;/
+                                    └── &lt;variable&gt;/
+                                        └── &lt;branded_suffix&gt;/
+                                            └── &lt;grid_label&gt;/
+                                                └── &lt;directory_date&gt;/
+                                                    └── &lt;filename&gt;.nc
+</pre></div>
+</div>
+<p><strong>Concrete example:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/data/
+└── MIP-DRS7/
+    └── CMIP7/
+        └── CMIP/
+            └── IPSL/
+                └── IPSL-CM7A-LR/
+                    └── historical/
+                        └── r1i1p1f1/
+                            └── glb/
+                                └── mon/
+                                    └── tas/
+                                        └── none/
+                                            └── g1/
+                                                ├── d20250101/
+                                                │   └── tas_mon_IPSL-CM7A-LR_historical_r1i1p1f1_glb_g1_185001-201412.nc
+                                                └── latest -&gt; d20250101/
+</pre></div>
+</div>
+<p><strong>How esgprep uses it:</strong>
+<code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> reads your NetCDF files, extracts facet values from filenames and global attributes,
+then organizes files into the correct DRS hierarchy.</p>
+</section>
+<section id="facets">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Facets</a><a class="headerlink" href="#facets" title="Link to this heading"></a></h2>
+<p><strong>Definition:</strong>
+Facets are metadata attributes that categorize and identify datasets. Each project defines
+which facets are required and their allowed values.</p>
+<p><strong>Common CMIP7 facets:</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 50.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Facet</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mip_era</span></code></p></td>
+<td><p>MIP generation</p></td>
+<td><p>CMIP7</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">activity</span></code></p></td>
+<td><p>MIP activity</p></td>
+<td><p>CMIP, C4MIP, AerChemMIP</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">organisation</span></code></p></td>
+<td><p>Modeling center</p></td>
+<td><p>IPSL, CCCma, MOHC</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">source</span></code></p></td>
+<td><p>Model name</p></td>
+<td><p>IPSL-CM7A-LR, CanESM6-MR</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">experiment</span></code></p></td>
+<td><p>Experiment type</p></td>
+<td><p>historical, 1pctCO2-bgc</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">variant_label</span></code></p></td>
+<td><p>Ensemble member</p></td>
+<td><p>r1i1p1f1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">region</span></code></p></td>
+<td><p>Geographic region</p></td>
+<td><p>glb (global)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">frequency</span></code></p></td>
+<td><p>Temporal frequency</p></td>
+<td><p>mon, day, 1hr, 6hr</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">variable</span></code></p></td>
+<td><p>Variable name</p></td>
+<td><p>tas, pr, tos</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">grid_label</span></code></p></td>
+<td><p>Grid type</p></td>
+<td><p>g1, g99</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How facets are extracted:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>NetCDF File
+    │
+    ├── Filename parsing
+    │   tas_mon_IPSL-CM7A-LR_historical_r1i1p1f1_glb_g1_185001-201412.nc
+    │    │   │        │          │         │    │  │
+    │    │   │        │          │         │    │  └── grid_label
+    │    │   │        │          │         │    └── region
+    │    │   │        │          │         └── variant_label
+    │    │   │        │          └── experiment
+    │    │   │        └── source
+    │    │   └── frequency
+    │    └── variable
+    │
+    ├── Global attributes (NetCDF metadata)
+    │   organisation = &quot;IPSL&quot;
+    │   activity = &quot;CMIP&quot;
+    │   mip_era = &quot;CMIP7&quot;
+    │
+    └── Command-line overrides (--set-value)
+</pre></div>
+</div>
+<p><strong>Facet flow:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Facets → Dataset ID → Directory Path → Mapfile Entry
+</pre></div>
+</div>
+</section>
+<section id="dataset-ids">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Dataset IDs</a><a class="headerlink" href="#dataset-ids" title="Link to this heading"></a></h2>
+<p><strong>What they are:</strong>
+Dataset IDs are unique identifiers for datasets, constructed by joining facet values with dots,
+followed by the version.</p>
+<p><strong>Format (new - recommended):</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;project&gt;.&lt;facet1&gt;.&lt;facet2&gt;.&lt;facet3&gt;...&lt;facetN&gt;.v&lt;YYYYMMDD&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The dataset ID format is transitioning from <code class="docutils literal notranslate"><span class="pre">#YYYYMMDD</span></code> suffix to <code class="docutils literal notranslate"><span class="pre">.vYYYYMMDD</span></code> suffix.
+The new format integrates the version as part of the identifier, making it more consistent
+with directory naming conventions.</p>
+</div>
+<p><strong>Example (CMIP7):</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># New format (recommended):
+CMIP7.CMIP.IPSL.IPSL-CM7A-LR.historical.r1i1p1f1.glb.mon.tas.g1.v20250101
+
+# Legacy format (deprecated):
+CMIP7.CMIP.IPSL.IPSL-CM7A-LR.historical.r1i1p1f1.glb.mon.tas.g1#20250101
+</pre></div>
+</div>
+<p><strong>Components breakdown:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CMIP7</span></code> - MIP era</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CMIP</span></code> - Activity</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IPSL</span></code> - Organisation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IPSL-CM7A-LR</span></code> - Source (model)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">historical</span></code> - Experiment</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">r1i1p1f1</span></code> - Variant label (realization, initialization, physics, forcing)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">glb</span></code> - Region (global)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mon</span></code> - Frequency (monthly)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tas</span></code> - Variable (near-surface air temperature)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">g1</span></code> - Grid label</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v20250101</span></code> - Version (date: vYYYYMMDD)</p></li>
+</ul>
+<p><strong>Why they matter:</strong>
+Dataset IDs are used in:</p>
+<ul class="simple">
+<li><p>ESGF search and discovery</p></li>
+<li><p>Mapfile generation</p></li>
+<li><p>Data citation</p></li>
+<li><p>Cross-node data replication</p></li>
+</ul>
+</section>
+<section id="versions">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Versions</a><a class="headerlink" href="#versions" title="Link to this heading"></a></h2>
+<p><strong>Purpose:</strong>
+Versions track dataset updates over time, allowing users to access specific data releases
+and ensuring reproducibility of scientific analyses.</p>
+<p><strong>Format:</strong>
+<code class="docutils literal notranslate"><span class="pre">vYYYYMMDD</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">v20250101</span></code>) for directories
+<code class="docutils literal notranslate"><span class="pre">dYYYYMMDD</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">d20250101</span></code>) for files directory</p>
+<p><strong>Version management in DRS:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>tas/g1/
+├── files/
+│   ├── d20250101/
+│   │   └── tas_*.nc          (original files)
+│   └── d20250615/
+│       └── tas_*.nc          (updated files)
+│
+├── v20250101/
+│   └── tas_*.nc -&gt; ../files/d20250101/tas_*.nc    (symlinks)
+│
+├── v20250615/
+│   ├── tas_001.nc -&gt; ../files/d20250101/tas_001.nc  (unchanged, reuses old)
+│   └── tas_002.nc -&gt; ../files/d20250615/tas_002.nc  (new version)
+│
+└── latest -&gt; v20250615/      (always points to newest)
+</pre></div>
+</div>
+<p><strong>Key concepts:</strong></p>
+<ul class="simple">
+<li><p><strong>files/ directory</strong>: Contains actual data files organized by date</p></li>
+<li><p><strong>vYYYYMMDD/ directories</strong>: Contain symlinks to files</p></li>
+<li><p><strong>Symlink reuse</strong>: Unchanged files in new versions link to original files (saves disk space)</p></li>
+<li><p><strong>latest symlink</strong>: Always points to the most recent version</p></li>
+</ul>
+<p><strong>How esgprep handles versions:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">esgdrs</span> <span class="pre">upgrade</span></code>: Creates new version directories with appropriate symlinks</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">esgdrs</span> <span class="pre">latest</span></code>: Updates the <code class="docutils literal notranslate"><span class="pre">latest</span></code> symlink</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--upgrade-from-latest</span></code>: Reuses unchanged files from previous version</p></li>
+</ul>
+</section>
+<section id="mapfiles">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Mapfiles</a><a class="headerlink" href="#mapfiles" title="Link to this heading"></a></h2>
+<p><strong>What they are:</strong>
+Mapfiles are text files that list all files in a dataset for ESGF publication.
+They serve as the input to the ESGF publication gateway.</p>
+<p><strong>Format:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>dataset_id | file_path | size_bytes | mod_time | checksum_type=checksum_value | ...
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The dataset ID in mapfiles is transitioning from <code class="docutils literal notranslate"><span class="pre">#YYYYMMDD</span></code> to <code class="docutils literal notranslate"><span class="pre">.vYYYYMMDD</span></code> format.
+<code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> generates mapfiles using the new format by default.</p>
+</div>
+<p><strong>Example mapfile content:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CMIP7.CMIP.IPSL.IPSL-CM7A-LR.historical.r1i1p1f1.glb.mon.tas.g1.v20250101 | /data/MIP-DRS7/.../tas_mon_*.nc | 2456789012 | mod_time=1704067200.0 | checksum=abc123... | checksum_type=SHA256
+</pre></div>
+</div>
+<p><strong>Field breakdown:</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dataset_id</span></code></p></td>
+<td><p>Full dataset identifier with version (<code class="docutils literal notranslate"><span class="pre">.vYYYYMMDD</span></code> format)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">file_path</span></code></p></td>
+<td><p>Absolute path to the file</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">size_bytes</span></code></p></td>
+<td><p>File size in bytes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mod_time</span></code></p></td>
+<td><p>File modification timestamp</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">checksum</span></code></p></td>
+<td><p>File integrity hash value</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">checksum_type</span></code></p></td>
+<td><p>Hash algorithm used (SHA256, SHA2-256, etc.)</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to generate:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/data/MIP-DRS7/
+</pre></div>
+</div>
+<p><strong>Output location:</strong>
+By default, mapfiles are written to the current directory with naming pattern:
+<code class="docutils literal notranslate"><span class="pre">&lt;dataset_id&gt;.map</span></code></p>
+</section>
+<section id="cmor-climate-model-output-rewriter">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">CMOR (Climate Model Output Rewriter)</a><a class="headerlink" href="#cmor-climate-model-output-rewriter" title="Link to this heading"></a></h2>
+<p><strong>What it is:</strong>
+CMOR is a library that standardizes climate model output according to CF conventions
+and project-specific requirements (CMIP7, CORDEX, etc.).</p>
+<p><strong>CMOR-compliant files have:</strong></p>
+<ul class="simple">
+<li><p>Standardized variable names and units</p></li>
+<li><p>Required global attributes (organisation, source, etc.)</p></li>
+<li><p>Consistent filename conventions</p></li>
+<li><p>CF-compliant coordinate systems</p></li>
+</ul>
+<p><strong>What esgprep expects:</strong></p>
+<ul class="simple">
+<li><p>NetCDF files processed by CMOR (or equivalent)</p></li>
+<li><p>Filenames following project naming conventions</p></li>
+<li><p>Required global attributes present</p></li>
+<li><p>Valid facet values in vocabularies</p></li>
+</ul>
+<p><strong>Example CMOR filename (CMIP7):</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;variable&gt;_&lt;frequency&gt;_&lt;source&gt;_&lt;experiment&gt;_&lt;variant_label&gt;_&lt;region&gt;_&lt;grid_label&gt;[_&lt;time_range&gt;].nc
+
+tas_mon_IPSL-CM7A-LR_historical_r1i1p1f1_glb_g1_185001-201412.nc
+</pre></div>
+</div>
+<p><strong>Link:</strong> <a class="reference external" href="https://cmor.llnl.gov/">CMOR Documentation</a></p>
+</section>
+<section id="controlled-vocabularies">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Controlled Vocabularies</a><a class="headerlink" href="#controlled-vocabularies" title="Link to this heading"></a></h2>
+<p><strong>What they are:</strong>
+Controlled vocabularies (CVs) are approved lists of valid values for each facet.
+They ensure consistency across all ESGF data providers.</p>
+<p><strong>Managed by:</strong>
+The <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library provides vocabulary access for <code class="docutils literal notranslate"><span class="pre">esgprep</span></code>.</p>
+<p><strong>Examples of controlled values (CMIP7):</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mip_era:      CMIP7
+activity:     CMIP, C4MIP, AerChemMIP, HighResMIP, ...
+organisation: IPSL, CCCma, MOHC, MPI-M, ...
+experiment:   historical, 1pctCO2-bgc, esm-flat10, ...
+frequency:    mon, day, 6hr, 3hr, 1hr, ...
+</pre></div>
+</div>
+<p><strong>What happens with invalid values:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$&gt; esgdrs list --project cmip7 /data/
+ERROR: Invalid value &#39;invalid_experiment&#39; for facet &#39;experiment&#39;
+Valid values: historical, 1pctCO2-bgc, esm-flat10, ...
+</pre></div>
+</div>
+<p><strong>Exploring available values:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List all projects</span>
+$&gt;<span class="w"> </span>esgvoc<span class="w"> </span>list-projects
+
+<span class="c1"># Get values for a specific collection</span>
+$&gt;<span class="w"> </span>esgvoc<span class="w"> </span>get<span class="w"> </span>cmip7:activity:
+
+<span class="c1"># Validate a DRS path</span>
+$&gt;<span class="w"> </span>esgvoc<span class="w"> </span>drsvalid<span class="w"> </span>cmip7<span class="w"> </span>directory<span class="w"> </span>/path/to/data
+</pre></div>
+</div>
+<p><strong>Updating vocabularies:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>esgvoc
+</pre></div>
+</div>
+</section>
+<section id="glossary">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Glossary</a><a class="headerlink" href="#glossary" title="Link to this heading"></a></h2>
+<dl class="simple glossary">
+<dt id="term-CF-Conventions">CF Conventions<a class="headerlink" href="#term-CF-Conventions" title="Link to this term"></a></dt><dd><p>Climate and Forecast conventions for NetCDF metadata standardization.</p>
+</dd>
+<dt id="term-Dataset">Dataset<a class="headerlink" href="#term-Dataset" title="Link to this term"></a></dt><dd><p>A collection of files sharing the same facet values (except time range).</p>
+</dd>
+<dt id="term-DRS">DRS<a class="headerlink" href="#term-DRS" title="Link to this term"></a></dt><dd><p>Data Reference Syntax - hierarchical directory structure for climate data.</p>
+</dd>
+<dt id="term-ESGF">ESGF<a class="headerlink" href="#term-ESGF" title="Link to this term"></a></dt><dd><p>Earth System Grid Federation - distributed data infrastructure for climate science.</p>
+</dd>
+<dt id="term-Facet">Facet<a class="headerlink" href="#term-Facet" title="Link to this term"></a></dt><dd><p>A metadata attribute that categorizes data (e.g., variable, experiment, source).</p>
+</dd>
+<dt id="term-Mapfile">Mapfile<a class="headerlink" href="#term-Mapfile" title="Link to this term"></a></dt><dd><p>Text file listing dataset files for ESGF publication.</p>
+</dd>
+<dt id="term-MIP-DRS7">MIP-DRS7<a class="headerlink" href="#term-MIP-DRS7" title="Link to this term"></a></dt><dd><p>The Data Reference Syntax specification designed for CMIP7 and future MIP projects.</p>
+</dd>
+<dt id="term-Variant-Label">Variant Label<a class="headerlink" href="#term-Variant-Label" title="Link to this term"></a></dt><dd><p>Ensemble identifier in format <code class="docutils literal notranslate"><span class="pre">r&lt;N&gt;i&lt;M&gt;p&lt;L&gt;f&lt;K&gt;</span></code> (realization, initialization, physics, forcing).</p>
+</dd>
+<dt id="term-MIP">MIP<a class="headerlink" href="#term-MIP" title="Link to this term"></a></dt><dd><p>Model Intercomparison Project (e.g., CMIP, CORDEX).</p>
+</dd>
+<dt id="term-Symlink">Symlink<a class="headerlink" href="#term-Symlink" title="Link to this term"></a></dt><dd><p>Symbolic link - a file pointing to another file’s location.</p>
+</dd>
+<dt id="term-Version">Version<a class="headerlink" href="#term-Version" title="Link to this term"></a></dt><dd><p>Dataset release identifier in format <code class="docutils literal notranslate"><span class="pre">vYYYYMMDD</span></code>.</p>
+</dd>
+</dl>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">See Also</a><a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="getting_started.html#getting-started"><span class="std std-ref">Getting Started</span></a> - Hands-on tutorial</p></li>
+<li><p><a class="reference internal" href="drs.html#drs"><span class="std std-ref">Manage local data through the DRS</span></a> - Detailed DRS command reference</p></li>
+<li><p><a class="reference internal" href="mapfiles.html#mapfiles"><span class="std std-ref">Generate mapfile for ESGF publication</span></a> - Mapfile generation guide</p></li>
+<li><p><a class="reference external" href="https://wcrp-cmip.org/cmip7/">CMIP7 Data Request</a></p></li>
+<li><p><a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/JADm">ESGF Best Practices</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="configuration.html" class="btn btn-neutral float-right" title="Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

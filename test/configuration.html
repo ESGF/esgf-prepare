@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Generic usage" href="usage.html" />
+    <link rel="prev" title="Concepts &amp; Terminology" href="concepts.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#using-esgvoc">Using esgvoc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#supported-projects">Supported Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checksum-configuration">Checksum Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-configuration">Advanced Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#migration-from-ini-files">Migration from INI files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/configuration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configuration">
+<span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> version 3.0+ uses the <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library for configuration and controlled vocabulary management.
+This approach replaces the previous INI file-based configuration system with a more modern and maintainable solution.</p>
+<section id="using-esgvoc">
+<h2>Using esgvoc<a class="headerlink" href="#using-esgvoc" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library automatically manages:</dt><dd><ul class="simple">
+<li><p>Controlled vocabularies for ESGF projects</p></li>
+<li><p>Project-specific Data Reference Syntax (DRS) definitions</p></li>
+<li><p>Facet validation and mapping</p></li>
+<li><p>Vocabulary caching and updates</p></li>
+</ul>
+</dd>
+</dl>
+<p>No manual configuration file management is required. The library handles fetching and caching of project definitions
+automatically.</p>
+</section>
+<section id="supported-projects">
+<h2>Supported Projects<a class="headerlink" href="#supported-projects" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> provides built-in support for major ESGF projects, including:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>CMIP6</p></li>
+<li><p>CMIP5</p></li>
+<li><p>CORDEX</p></li>
+<li><p>input4MIPs</p></li>
+<li><p>obs4MIPs</p></li>
+<li><p>And other ESGF-approved projects</p></li>
+</ul>
+</div></blockquote>
+<p>Project vocabularies are maintained in the <a class="reference external" href="https://github.com/ESGF/esgvoc">esgvoc repository</a> and automatically
+synchronized when using <code class="docutils literal notranslate"><span class="pre">esgprep</span></code>.</p>
+</section>
+<section id="checksum-configuration">
+<h2>Checksum Configuration<a class="headerlink" href="#checksum-configuration" title="Link to this heading"></a></h2>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> uses SHA256 for file checksums. This is the recommended checksum algorithm for ESGF
+data publication and is used automatically unless otherwise specified.</p>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> version 3.0+ supports both standard hashlib algorithms and multihash algorithms. Multihash is a
+self-describing hash format that includes the algorithm identifier and hash length, making it more robust for
+long-term data integrity verification.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code>, you can specify the checksum algorithm using the <code class="docutils literal notranslate"><span class="pre">--checksum-type</span></code> option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standard algorithm (default)</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--checksum-type<span class="w"> </span>sha256<span class="w"> </span>/PATH/TO/SCAN/
+
+<span class="c1"># Multihash algorithm (recommended for ESGF)</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--checksum-type<span class="w"> </span>sha2-256<span class="w"> </span>/PATH/TO/SCAN/
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Supported algorithms include:</dt><dd><ul class="simple">
+<li><p><strong>Standard</strong>: sha256, sha1, md5, and other hashlib algorithms</p></li>
+<li><p><strong>Multihash</strong>: sha2-256, sha2-512, sha3-256, sha3-512, sha1</p></li>
+</ul>
+</dd>
+</dl>
+<p>See <a class="reference internal" href="mapfiles.html#mapfiles"><span class="std std-ref">Generate mapfile for ESGF publication</span></a> for more details on checksum options.</p>
+</section>
+<section id="advanced-configuration">
+<h2>Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Link to this heading"></a></h2>
+<p>For advanced use cases or custom project definitions, please refer to the <a class="reference external" href="https://esgvoc.readthedocs.io/">esgvoc documentation</a> for information on:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Adding custom project definitions</p></li>
+<li><p>Modifying vocabulary mappings</p></li>
+<li><p>Configuring vocabulary sources</p></li>
+<li><p>Managing local vocabulary caches</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="migration-from-ini-files">
+<h2>Migration from INI files<a class="headerlink" href="#migration-from-ini-files" title="Link to this heading"></a></h2>
+<p>If you were previously using <code class="docutils literal notranslate"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> configuration files:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library replaces the functionality of <code class="docutils literal notranslate"><span class="pre">ESGConfigParser</span></code></p></li>
+<li><p>Project definitions are now managed centrally through <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code></p></li>
+<li><p>No manual INI file management is required</p></li>
+<li><p>See the <a class="reference internal" href="migration.html#migration"><span class="std std-ref">Migration Guide from esgprep 2.x to 3.0</span></a> guide for details on transitioning from the old system</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="concepts.html" class="btn btn-neutral float-left" title="Concepts &amp; Terminology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Generic usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

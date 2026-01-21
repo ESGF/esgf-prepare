@@ -1,0 +1,222 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="getting_started.html" />
+    <link rel="prev" title="Indices and tables" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation-from-pypi">Installation from PyPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-from-github">Installation from GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-uv-recommended-for-development">Using uv (recommended for development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies-and-requirements">Dependencies and requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> version 3.0+ requires Python 3.12 or higher.</p>
+</div>
+<section id="installation-from-pypi">
+<h2>Installation from PyPI<a class="headerlink" href="#installation-from-pypi" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>esgprep
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>REQUIRED:</strong> After installing <code class="docutils literal notranslate"><span class="pre">esgprep</span></code>, you must initialize the controlled vocabularies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+<p>This command downloads ESGF project vocabularies from GitHub and builds local databases.
+Without this step, <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> and <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> commands will fail with an error.</p>
+<p>The installation downloads approximately 100MB of data and may take a few minutes depending on your connection.</p>
+<p><strong>IMPORTANT:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> periodically to update your local vocabularies with the latest
+controlled vocabulary changes from ESGF projects. Outdated vocabularies may cause validation errors
+or prevent recognition of newly added facets, experiments, or models.</p>
+<p>For more information about controlled vocabularies management, see the
+<a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a>.</p>
+</div>
+</section>
+<section id="installation-from-github">
+<h2>Installation from GitHub<a class="headerlink" href="#installation-from-github" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Clone <a class="reference external" href="https://github.com/ESGF/esgf-prepare">our GitHub project</a>:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ESGF/esgf-prepare.git
+<span class="nb">cd</span><span class="w"> </span>esgf-prepare
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Install using pip:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Initialize the controlled vocabularies:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> and <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> command-lines are now available.</p></li>
+</ol>
+</section>
+<section id="using-uv-recommended-for-development">
+<h2>Using uv (recommended for development)<a class="headerlink" href="#using-uv-recommended-for-development" title="Link to this heading"></a></h2>
+<p>For a faster and more modern Python package manager, you can use <a class="reference external" href="https://github.com/astral-sh/uv">uv</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install uv if not already installed</span>
+curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+
+<span class="c1"># Create a virtual environment and install esgprep</span>
+uv<span class="w"> </span>sync
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">  </span><span class="c1"># On Windows: .venv\Scripts\activate</span>
+
+<span class="c1"># Initialize controlled vocabularies</span>
+esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>To run <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> tools you have to be logged into a machine which mounts the filesystem hosting the data to publish.</p>
+</div>
+</section>
+<section id="dependencies-and-requirements">
+<h2>Dependencies and requirements<a class="headerlink" href="#dependencies-and-requirements" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><strong>System requirements:</strong></dt><dd><ul class="simple">
+<li><p>Linux distribution</p></li>
+<li><p>Python 3.12 or higher</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Python dependencies:</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> uses standard Python libraries and the following external packages:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/esgvoc/">esgvoc</a> &gt;= 1.2.1 - ESGF controlled vocabulary and configuration handler (replaces ESGConfigParser)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/fuzzywuzzy/">fuzzywuzzy</a> &gt;= 0.18.0 - Fuzzy string matching</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/hurry.filesize/">hurry.filesize</a> &gt;= 0.9 - Human-readable file sizes</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/lockfile/">lockfile</a> &gt;= 0.12.2 - File locking</p></li>
+<li><p><a class="reference external" href="https://unidata.github.io/netcdf4-python/">netCDF4</a> &gt;= 1.7.2 - NetCDF file handling</p></li>
+<li><p><a class="reference external" href="https://numpy.org/">numpy</a> &gt;= 2.2.6 - Numerical computing</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/python-Levenshtein/">python-levenshtein</a> &gt;= 0.27.1 - Fast string matching</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/">requests</a> &gt;= 2.32.3 - HTTP library</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/treelib/">treelib</a> &gt;= 1.7.1 - Tree data structure</p></li>
+</ul>
+</div></blockquote>
+<p>All dependencies are automatically installed when installing <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> via pip.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Indices and tables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

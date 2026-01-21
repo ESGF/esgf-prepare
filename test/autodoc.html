@@ -1,0 +1,1104 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code documentation &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Change Log" href="log.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#esgdrs">esgdrs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-esgprep.esgdrs">Main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.esgdrs.get_args"><code class="docutils literal notranslate"><span class="pre">get_args()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.esgdrs.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-esgprep.drs">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.drs.context.ProcessingContext"><code class="docutils literal notranslate"><span class="pre">ProcessingContext</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.drs.make.Process"><code class="docutils literal notranslate"><span class="pre">Process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.drs.remove.Process"><code class="docutils literal notranslate"><span class="pre">Process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.drs.latest.Process"><code class="docutils literal notranslate"><span class="pre">Process</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#esgmapfile">esgmapfile</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.esgmapfile.get_args"><code class="docutils literal notranslate"><span class="pre">get_args()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.esgmapfile.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.mapfile.context.ProcessingContext"><code class="docutils literal notranslate"><span class="pre">ProcessingContext</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.mapfile.make.Process"><code class="docutils literal notranslate"><span class="pre">Process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep.mapfile.show.Process"><code class="docutils literal notranslate"><span class="pre">Process</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-esgprep._collectors">Collectors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._collectors.Collector"><code class="docutils literal notranslate"><span class="pre">Collector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._collectors.FilterCollection"><code class="docutils literal notranslate"><span class="pre">FilterCollection</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-esgprep._contexts">Contexts</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._contexts.BaseContext"><code class="docutils literal notranslate"><span class="pre">BaseContext</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-esgprep._exceptions">Exceptions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.KeyNotFound"><code class="docutils literal notranslate"><span class="pre">KeyNotFound</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.InvalidChecksumType"><code class="docutils literal notranslate"><span class="pre">InvalidChecksumType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.ChecksumFail"><code class="docutils literal notranslate"><span class="pre">ChecksumFail</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.NoFileFound"><code class="docutils literal notranslate"><span class="pre">NoFileFound</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.DuplicatedDataset"><code class="docutils literal notranslate"><span class="pre">DuplicatedDataset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.OlderUpgrade"><code class="docutils literal notranslate"><span class="pre">OlderUpgrade</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.DuplicatedFile"><code class="docutils literal notranslate"><span class="pre">DuplicatedFile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.UnchangedTrackingID"><code class="docutils literal notranslate"><span class="pre">UnchangedTrackingID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.NoVersionPattern"><code class="docutils literal notranslate"><span class="pre">NoVersionPattern</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.InconsistentDRSPath"><code class="docutils literal notranslate"><span class="pre">InconsistentDRSPath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.NoProjectCodeFound"><code class="docutils literal notranslate"><span class="pre">NoProjectCodeFound</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._exceptions.MissingCVdata"><code class="docutils literal notranslate"><span class="pre">MissingCVdata</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-esgprep._handlers">Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-esgprep._utils.checksum">Utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.checksum.multihash"><code class="docutils literal notranslate"><span class="pre">multihash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.checksum.multihash_hex"><code class="docutils literal notranslate"><span class="pre">multihash_hex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.checksum.detect_multihash_algo"><code class="docutils literal notranslate"><span class="pre">detect_multihash_algo()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.checksum.is_multihash_algo"><code class="docutils literal notranslate"><span class="pre">is_multihash_algo()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.checksum.checksum"><code class="docutils literal notranslate"><span class="pre">checksum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.checksum.get_checksum_pattern"><code class="docutils literal notranslate"><span class="pre">get_checksum_pattern()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.checksum.get_checksum"><code class="docutils literal notranslate"><span class="pre">get_checksum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.ncfile.ncopen"><code class="docutils literal notranslate"><span class="pre">ncopen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.ncfile.get_ncattrs"><code class="docutils literal notranslate"><span class="pre">get_ncattrs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.ncfile.get_tracking_id"><code class="docutils literal notranslate"><span class="pre">get_tracking_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.ncfile.is_valid"><code class="docutils literal notranslate"><span class="pre">is_valid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.ncfile.is_uuid"><code class="docutils literal notranslate"><span class="pre">is_uuid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.ncfile.get_project"><code class="docutils literal notranslate"><span class="pre">get_project()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.parser.CustomArgumentParser"><code class="docutils literal notranslate"><span class="pre">CustomArgumentParser</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.parser.MultilineFormatter"><code class="docutils literal notranslate"><span class="pre">MultilineFormatter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.parser.DirectoryChecker"><code class="docutils literal notranslate"><span class="pre">DirectoryChecker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.parser.ConfigFileLoader"><code class="docutils literal notranslate"><span class="pre">ConfigFileLoader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.parser.ChecksumsReader"><code class="docutils literal notranslate"><span class="pre">ChecksumsReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.parser.DatasetsReader"><code class="docutils literal notranslate"><span class="pre">DatasetsReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.parser.VersionChecker"><code class="docutils literal notranslate"><span class="pre">VersionChecker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.parser.keyval_converter"><code class="docutils literal notranslate"><span class="pre">keyval_converter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.parser.regex_validator"><code class="docutils literal notranslate"><span class="pre">regex_validator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.parser.processes_validator"><code class="docutils literal notranslate"><span class="pre">processes_validator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.extract_version"><code class="docutils literal notranslate"><span class="pre">extract_version()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.get_version_index"><code class="docutils literal notranslate"><span class="pre">get_version_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.get_version_and_subpath"><code class="docutils literal notranslate"><span class="pre">get_version_and_subpath()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.get_path_to_version"><code class="docutils literal notranslate"><span class="pre">get_path_to_version()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.get_ordered_version_paths"><code class="docutils literal notranslate"><span class="pre">get_ordered_version_paths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.get_ordered_file_version_paths"><code class="docutils literal notranslate"><span class="pre">get_ordered_file_version_paths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.get_versions"><code class="docutils literal notranslate"><span class="pre">get_versions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.get_drs"><code class="docutils literal notranslate"><span class="pre">get_drs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.is_latest_symlink"><code class="docutils literal notranslate"><span class="pre">is_latest_symlink()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.with_latest_target"><code class="docutils literal notranslate"><span class="pre">with_latest_target()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.get_project"><code class="docutils literal notranslate"><span class="pre">get_project()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.get_terms"><code class="docutils literal notranslate"><span class="pre">get_terms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.path.dataset_id"><code class="docutils literal notranslate"><span class="pre">dataset_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.print.COLOR"><code class="docutils literal notranslate"><span class="pre">COLOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.print.COLORS"><code class="docutils literal notranslate"><span class="pre">COLORS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#esgprep._utils.print.Print"><code class="docutils literal notranslate"><span class="pre">Print</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Code documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/autodoc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="code-documentation">
+<span id="autodoc"></span><h1>Code documentation<a class="headerlink" href="#code-documentation" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This section provides API documentation for the esgprep Python modules.</p>
+</div>
+<section id="esgdrs">
+<h2>esgdrs<a class="headerlink" href="#esgdrs" title="Link to this heading"></a></h2>
+<section id="module-esgprep.esgdrs">
+<span id="main-module"></span><h3>Main module<a class="headerlink" href="#module-esgprep.esgdrs" title="Link to this heading"></a></h3>
+<dl class="field-list simple">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Toolbox to prepare ESGF data for publication.</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep.esgdrs.get_args">
+<span class="sig-prename descclassname"><span class="pre">esgprep.esgdrs.</span></span><span class="sig-name descname"><span class="pre">get_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/esgdrs.html#get_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.esgdrs.get_args" title="Link to this definition"></a></dt>
+<dd><p>Returns parsed command-line arguments.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep.esgdrs.main">
+<span class="sig-prename descclassname"><span class="pre">esgprep.esgdrs.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/esgdrs.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.esgdrs.main" title="Link to this definition"></a></dt>
+<dd><p>Run main program</p>
+</dd></dl>
+
+</section>
+<section id="module-esgprep.drs">
+<span id="submodules"></span><h3>Submodules<a class="headerlink" href="#module-esgprep.drs" title="Link to this heading"></a></h3>
+<p><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">esgprep.drs.</span></span><span class="sig-name descname"><span class="pre">do_scanning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/drs.html#do_scanning"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns True if file scanning is necessary regarding command-line arguments</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">esgprep.drs.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/drs.html#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Main process.</p>
+</dd></dl>
+
+<dl class="field-list simple" id="module-esgprep.drs.constants">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Constants used in this module.</p>
+</dd>
+</dl>
+<dl class="field-list simple" id="module-esgprep.drs.context">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Processing context used in this module.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep.drs.context.ProcessingContext">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep.drs.context.</span></span><span class="sig-name descname"><span class="pre">ProcessingContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/drs/context.html#ProcessingContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.drs.context.ProcessingContext" title="Link to this definition"></a></dt>
+<dd><p>Processing context class to drive main process.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep.drs.context.ProcessingContext.check_commands_file">
+<span class="sig-name descname"><span class="pre">check_commands_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/drs/context.html#ProcessingContext.check_commands_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.drs.context.ProcessingContext.check_commands_file" title="Link to this definition"></a></dt>
+<dd><p>Checks commands file behavior.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="field-list simple" id="module-esgprep.drs.make">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Manages the filesystem tree according to the project the Data Reference Syntax and versioning.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep.drs.make.Process">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep.drs.make.</span></span><span class="sig-name descname"><span class="pre">Process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/drs/make.html#Process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.drs.make.Process" title="Link to this definition"></a></dt>
+<dd><p>Child process.</p>
+</dd></dl>
+
+<dl class="field-list simple" id="module-esgprep.drs.remove">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Manages the filesystem tree according to the project the Data Reference Syntax and versioning.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep.drs.remove.Process">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep.drs.remove.</span></span><span class="sig-name descname"><span class="pre">Process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/drs/remove.html#Process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.drs.remove.Process" title="Link to this definition"></a></dt>
+<dd><p>Child process.</p>
+</dd></dl>
+
+<dl class="field-list simple" id="module-esgprep.drs.latest">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Manages the filesystem tree according to the project the Data Reference Syntax and versioning.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep.drs.latest.Process">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep.drs.latest.</span></span><span class="sig-name descname"><span class="pre">Process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/drs/latest.html#Process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.drs.latest.Process" title="Link to this definition"></a></dt>
+<dd><p>Child process.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="esgmapfile">
+<h2>esgmapfile<a class="headerlink" href="#esgmapfile" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>Main module<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<dl class="field-list simple" id="module-esgprep.esgmapfile">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Toolbox to prepare ESGF data for publication.</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep.esgmapfile.get_args">
+<span class="sig-prename descclassname"><span class="pre">esgprep.esgmapfile.</span></span><span class="sig-name descname"><span class="pre">get_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/esgmapfile.html#get_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.esgmapfile.get_args" title="Link to this definition"></a></dt>
+<dd><p>Returns parsed command-line arguments.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep.esgmapfile.main">
+<span class="sig-prename descclassname"><span class="pre">esgprep.esgmapfile.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/esgmapfile.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.esgmapfile.main" title="Link to this definition"></a></dt>
+<dd><p>Run main program</p>
+</dd></dl>
+
+</section>
+<section id="id2">
+<h3>Submodules<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p id="module-esgprep.mapfile"><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">esgprep.mapfile.</span></span><span class="sig-name descname"><span class="pre">build_mapfile_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/mapfile.html#build_mapfile_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Injects token values and returns mapfile name.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">esgprep.mapfile.</span></span><span class="sig-name descname"><span class="pre">build_mapfile_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ffp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_attrs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/mapfile.html#build_mapfile_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Generate mapfile line corresponding to the source.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">esgprep.mapfile.</span></span><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/mapfile.html#write"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Append line to a mapfile.
+It generates a lockfile to avoid that several threads write on the same file at the same time.
+A LockFile is acquired and released after writing. Acquiring LockFile is timeouted if it’s locked by other thread.
+Each process adds one line to the appropriate mapfile.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">esgprep.mapfile.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/mapfile.html#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Main process.</p>
+</dd></dl>
+
+<dl class="field-list simple" id="module-esgprep.mapfile.constants">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Constants used in this module.</p>
+</dd>
+</dl>
+<dl class="field-list simple" id="module-esgprep.mapfile.context">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Processing context used in this module.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep.mapfile.context.ProcessingContext">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep.mapfile.context.</span></span><span class="sig-name descname"><span class="pre">ProcessingContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/mapfile/context.html#ProcessingContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.mapfile.context.ProcessingContext" title="Link to this definition"></a></dt>
+<dd><p>Processing context class to drive main process.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep.mapfile.context.ProcessingContext.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/mapfile/context.html#ProcessingContext.clean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.mapfile.context.ProcessingContext.clean" title="Link to this definition"></a></dt>
+<dd><p>Clean directory from incomplete mapfiles.
+Incomplete mapfiles from a previous run are silently removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="field-list simple" id="module-esgprep.mapfile.make">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Generates ESGF mapfiles upon a local ESGF node or not.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep.mapfile.make.Process">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep.mapfile.make.</span></span><span class="sig-name descname"><span class="pre">Process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/mapfile/make.html#Process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.mapfile.make.Process" title="Link to this definition"></a></dt>
+<dd><p>Child process.</p>
+</dd></dl>
+
+<dl class="field-list simple" id="module-esgprep.mapfile.show">
+<dt class="field-odd">platform<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unix</p>
+</dd>
+<dt class="field-even">synopsis<span class="colon">:</span></dt>
+<dd class="field-even"><p>Show mapfile name to be generated..</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep.mapfile.show.Process">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep.mapfile.show.</span></span><span class="sig-name descname"><span class="pre">Process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/mapfile/show.html#Process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep.mapfile.show.Process" title="Link to this definition"></a></dt>
+<dd><p>Child process.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Link to this heading"></a></h2>
+<section id="module-esgprep._collectors">
+<span id="collectors"></span><h3>Collectors<a class="headerlink" href="#module-esgprep._collectors" title="Link to this heading"></a></h3>
+<p id="module-esgprep._collectors.__init__.py"><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._collectors.Collector">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._collectors.</span></span><span class="sig-name descname"><span class="pre">Collector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sources</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_collectors.html#Collector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._collectors.Collector" title="Link to this definition"></a></dt>
+<dd><p>Base collector class to yield input sources.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._collectors.FilterCollection">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._collectors.</span></span><span class="sig-name descname"><span class="pre">FilterCollection</span></span><a class="reference internal" href="_modules/esgprep/_collectors.html#FilterCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._collectors.FilterCollection" title="Link to this definition"></a></dt>
+<dd><p>Evaluates a string against a dictionary of several regular expressions.
+The dictionary includes 2-tuples with the regular expression as a string and a boolean
+indicating to match (i.e., include) or non-match (i.e., exclude) the corresponding expression.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._collectors.FilterCollection.FILTER_TYPES">
+<span class="sig-name descname"><span class="pre">FILTER_TYPES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">typing.Pattern)</span></span><a class="headerlink" href="#esgprep._collectors.FilterCollection.FILTER_TYPES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._collectors.FilterCollection.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inclusive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_collectors.html#FilterCollection.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._collectors.FilterCollection.add" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-esgprep._contexts">
+<span id="contexts"></span><h3>Contexts<a class="headerlink" href="#module-esgprep._contexts" title="Link to this heading"></a></h3>
+<p id="module-esgprep._contexts.__init__.py"><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._contexts.BaseContext">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._contexts.</span></span><span class="sig-name descname"><span class="pre">BaseContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_contexts.html#BaseContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._contexts.BaseContext" title="Link to this definition"></a></dt>
+<dd><p>Base class for processing context manager.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._contexts.BaseContext.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_contexts.html#BaseContext.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._contexts.BaseContext.set" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-esgprep._exceptions">
+<span id="exceptions"></span><h3>Exceptions<a class="headerlink" href="#module-esgprep._exceptions" title="Link to this heading"></a></h3>
+<p id="module-esgprep._exceptions.__init__.py"><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.KeyNotFound">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">KeyNotFound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#KeyNotFound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.KeyNotFound" title="Link to this definition"></a></dt>
+<dd><p>Raised when a class key is not found.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.InvalidChecksumType">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">InvalidChecksumType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#InvalidChecksumType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.InvalidChecksumType" title="Link to this definition"></a></dt>
+<dd><p>Raised when checksum type in unknown.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.ChecksumFail">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">ChecksumFail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checksum_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#ChecksumFail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.ChecksumFail" title="Link to this definition"></a></dt>
+<dd><p>Raised when a checksum fails.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.NoFileFound">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">NoFileFound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#NoFileFound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.NoFileFound" title="Link to this definition"></a></dt>
+<dd><p>Raised when no file found.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.DuplicatedDataset">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">DuplicatedDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#DuplicatedDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.DuplicatedDataset" title="Link to this definition"></a></dt>
+<dd><p>Raised if a dataset already exists with submitted version.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.OlderUpgrade">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">OlderUpgrade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latest</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#OlderUpgrade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.OlderUpgrade" title="Link to this definition"></a></dt>
+<dd><p>Raised if a dataset already exists with submitted version.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.DuplicatedFile">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">DuplicatedFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upgrade</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#DuplicatedFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.DuplicatedFile" title="Link to this definition"></a></dt>
+<dd><p>Raised if a NetCDF file already exists into submitted dataset version.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.UnchangedTrackingID">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">UnchangedTrackingID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latest_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upgrade</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upgrade_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#UnchangedTrackingID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.UnchangedTrackingID" title="Link to this definition"></a></dt>
+<dd><p>Raised if a NetCDF file already has the tracking ID of submitted file to upgrade.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.NoVersionPattern">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">NoVersionPattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patterns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#NoVersionPattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.NoVersionPattern" title="Link to this definition"></a></dt>
+<dd><p>Raised if no version facet found in the destination format.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.InconsistentDRSPath">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">InconsistentDRSPath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#InconsistentDRSPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.InconsistentDRSPath" title="Link to this definition"></a></dt>
+<dd><p>Raised when DRS path doesn’t start with the project ID.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.NoProjectCodeFound">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">NoProjectCodeFound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#NoProjectCodeFound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.NoProjectCodeFound" title="Link to this definition"></a></dt>
+<dd><p>Raised when no project code found or extract from DRS path or file.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esgprep._exceptions.MissingCVdata">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._exceptions.</span></span><span class="sig-name descname"><span class="pre">MissingCVdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authority</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_exceptions.html#MissingCVdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._exceptions.MissingCVdata" title="Link to this definition"></a></dt>
+<dd><p>Raised when CV data is missing for an authority/project.</p>
+</dd></dl>
+
+</section>
+<section id="module-esgprep._handlers">
+<span id="handlers"></span><h3>Handlers<a class="headerlink" href="#module-esgprep._handlers" title="Link to this heading"></a></h3>
+<p id="module-esgprep._handlers.__init__.py"><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+</section>
+<section id="module-esgprep._utils.checksum">
+<span id="utils"></span><h3>Utils<a class="headerlink" href="#module-esgprep._utils.checksum" title="Link to this heading"></a></h3>
+<p id="module-esgprep._utils.checksum.py"><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.checksum.multihash">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.checksum.</span></span><span class="sig-name descname"><span class="pre">multihash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/checksum.html#multihash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.checksum.multihash" title="Link to this definition"></a></dt>
+<dd><p>Generate a multihash for the given data using the specified algorithm.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>data: The data to hash
+algo: The multihash algorithm name (e.g., “sha2-256”)</p>
+</dd>
+<dt>Returns:</dt><dd><p>The multihash as bytes (code + length + digest)</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: If the algorithm is not supported</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.checksum.multihash_hex">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.checksum.</span></span><span class="sig-name descname"><span class="pre">multihash_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/checksum.html#multihash_hex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.checksum.multihash_hex" title="Link to this definition"></a></dt>
+<dd><p>Generate a multihash for the given data and return it as a hex string.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>data: The data to hash
+algo: The multihash algorithm name (e.g., “sha2-256”)</p>
+</dd>
+<dt>Returns:</dt><dd><p>The multihash as a hexadecimal string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.checksum.detect_multihash_algo">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.checksum.</span></span><span class="sig-name descname"><span class="pre">detect_multihash_algo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hash_hex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/checksum.html#detect_multihash_algo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.checksum.detect_multihash_algo" title="Link to this definition"></a></dt>
+<dd><p>Detect the multihash algorithm from a multihash hex string.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>hash_hex: The multihash as a hexadecimal string</p>
+</dd>
+<dt>Returns:</dt><dd><p>The algorithm name (e.g., “sha2-256”) or None if not a valid multihash</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.checksum.is_multihash_algo">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.checksum.</span></span><span class="sig-name descname"><span class="pre">is_multihash_algo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checksum_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/checksum.html#is_multihash_algo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.checksum.is_multihash_algo" title="Link to this definition"></a></dt>
+<dd><p>Check if a checksum type is a multihash algorithm.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>checksum_type: The checksum type to check</p>
+</dd>
+<dt>Returns:</dt><dd><p>True if it’s a multihash algorithm, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.checksum.checksum">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.checksum.</span></span><span class="sig-name descname"><span class="pre">checksum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ffp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checksum_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">human_readable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/checksum.html#checksum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.checksum.checksum" title="Link to this definition"></a></dt>
+<dd><p>Computes a file checksum. Supports both standard hashlib algorithms and multihash algorithms.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.checksum.get_checksum_pattern">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.checksum.</span></span><span class="sig-name descname"><span class="pre">get_checksum_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checksum_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/checksum.html#get_checksum_pattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.checksum.get_checksum_pattern" title="Link to this definition"></a></dt>
+<dd><p>Builds a regular expression describing a checksum pattern.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.checksum.get_checksum">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.checksum.</span></span><span class="sig-name descname"><span class="pre">get_checksum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ffp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checksum_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sha256'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checksums</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/checksum.html#get_checksum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.checksum.get_checksum" title="Link to this definition"></a></dt>
+<dd><p>Global method to get file checksum:
+1. By computing the checksum directly.
+2. Through a list of checksums in a dictionary way {file: checksum}.</p>
+</dd></dl>
+
+<p id="module-esgprep._utils.help.py"><span id="module-esgprep._utils.help"></span><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+<p id="module-esgprep._utils.ncfile.py"><span id="module-esgprep._utils.ncfile"></span><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.ncfile.ncopen">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.ncfile.</span></span><span class="sig-name descname"><span class="pre">ncopen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/ncfile.html#ncopen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.ncfile.ncopen" title="Link to this definition"></a></dt>
+<dd><p>Opens opens a netCDF file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.ncfile.get_ncattrs">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.ncfile.</span></span><span class="sig-name descname"><span class="pre">get_ncattrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/ncfile.html#get_ncattrs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.ncfile.get_ncattrs" title="Link to this definition"></a></dt>
+<dd><p>Loads netCDF global attributes from a pathlib.Path as dictionary.
+Ignores attributes with only whitespaces.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.ncfile.get_tracking_id">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.ncfile.</span></span><span class="sig-name descname"><span class="pre">get_tracking_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/ncfile.html#get_tracking_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.ncfile.get_tracking_id" title="Link to this definition"></a></dt>
+<dd><p>Get tracking_id/PID string from netCDF global attributes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.ncfile.is_valid">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.ncfile.</span></span><span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/ncfile.html#is_valid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.ncfile.is_valid" title="Link to this definition"></a></dt>
+<dd><p>Validates a tracking_id/PID string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.ncfile.is_uuid">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.ncfile.</span></span><span class="sig-name descname"><span class="pre">is_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/ncfile.html#is_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.ncfile.is_uuid" title="Link to this definition"></a></dt>
+<dd><p>Validates an UUID.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.ncfile.get_project">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.ncfile.</span></span><span class="sig-name descname"><span class="pre">get_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/ncfile.html#get_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.ncfile.get_project" title="Link to this definition"></a></dt>
+<dd><p>Extract project code from the file attributes.</p>
+</dd></dl>
+
+<p id="module-esgprep._utils.parser.py"><span id="module-esgprep._utils.parser"></span><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.parser.CustomArgumentParser">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.parser.</span></span><span class="sig-name descname"><span class="pre">CustomArgumentParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epilog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatter_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'argparse.HelpFormatter'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_chars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromfile_prefix_chars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argument_default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conflict_handler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_abbrev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#CustomArgumentParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.CustomArgumentParser" title="Link to this definition"></a></dt>
+<dd><p>Custom argument parser class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.parser.CustomArgumentParser.error">
+<span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#CustomArgumentParser.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.CustomArgumentParser.error" title="Link to this definition"></a></dt>
+<dd><p>Prints a usage message incorporating the message to stderr and
+exits.</p>
+<p>If you override this in a subclass, it should not return – it
+should either exit or raise an exception.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.parser.MultilineFormatter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.parser.</span></span><span class="sig-name descname"><span class="pre">MultilineFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prog</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#MultilineFormatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.MultilineFormatter" title="Link to this definition"></a></dt>
+<dd><p>Custom formatter class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.parser.MultilineFormatter.add_arguments">
+<span class="sig-name descname"><span class="pre">add_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#MultilineFormatter.add_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.MultilineFormatter.add_arguments" title="Link to this definition"></a></dt>
+<dd><p>Sort optional arguments alphabetically while keeping positional arguments first.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.parser.DirectoryChecker">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.parser.</span></span><span class="sig-name descname"><span class="pre">DirectoryChecker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#DirectoryChecker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.DirectoryChecker" title="Link to this definition"></a></dt>
+<dd><p>Action class to check a directory.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.parser.DirectoryChecker.directory_checker">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">directory_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#DirectoryChecker.directory_checker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.DirectoryChecker.directory_checker" title="Link to this definition"></a></dt>
+<dd><p>Verify a directory exists.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.parser.ConfigFileLoader">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.parser.</span></span><span class="sig-name descname"><span class="pre">ConfigFileLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#ConfigFileLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.ConfigFileLoader" title="Link to this definition"></a></dt>
+<dd><p>Configuration file action class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.parser.ConfigFileLoader.load">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#ConfigFileLoader.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.ConfigFileLoader.load" title="Link to this definition"></a></dt>
+<dd><p>Loads configuration file parser.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.parser.ChecksumsReader">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.parser.</span></span><span class="sig-name descname"><span class="pre">ChecksumsReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#ChecksumsReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.ChecksumsReader" title="Link to this definition"></a></dt>
+<dd><p>Action class to read a checksum file similar to any checksum client output.
+Returns a dictionary where (key: value) pairs respectively are the file path and its checksum.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.parser.ChecksumsReader.read">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#ChecksumsReader.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.ChecksumsReader.read" title="Link to this definition"></a></dt>
+<dd><p>Reads checksum list.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.parser.DatasetsReader">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.parser.</span></span><span class="sig-name descname"><span class="pre">DatasetsReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#DatasetsReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.DatasetsReader" title="Link to this definition"></a></dt>
+<dd><p>Action class to read a dataset identifier list from a simple text file.
+Returns a list of identifiers.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.parser.DatasetsReader.read">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#DatasetsReader.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.DatasetsReader.read" title="Link to this definition"></a></dt>
+<dd><p>Reads checksum list.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.parser.VersionChecker">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.parser.</span></span><span class="sig-name descname"><span class="pre">VersionChecker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#VersionChecker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.VersionChecker" title="Link to this definition"></a></dt>
+<dd><p>Custom action class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.parser.VersionChecker.version_checker">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">version_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#VersionChecker.version_checker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.VersionChecker.version_checker" title="Link to this definition"></a></dt>
+<dd><p>Validates version number.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.parser.keyval_converter">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.parser.</span></span><span class="sig-name descname"><span class="pre">keyval_converter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pair</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#keyval_converter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.keyval_converter" title="Link to this definition"></a></dt>
+<dd><p>Validates (key = value) argument format.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.parser.regex_validator">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.parser.</span></span><span class="sig-name descname"><span class="pre">regex_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#regex_validator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.regex_validator" title="Link to this definition"></a></dt>
+<dd><p>Validates a regular expression syntax.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.parser.processes_validator">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.parser.</span></span><span class="sig-name descname"><span class="pre">processes_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/parser.html#processes_validator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.parser.processes_validator" title="Link to this definition"></a></dt>
+<dd><p>Validates the maximum number of processes.</p>
+</dd></dl>
+
+<dl class="py function" id="module-esgprep._utils.path">
+<dt class="sig sig-object py" id="esgprep._utils.path.extract_version">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">extract_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#extract_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.extract_version" title="Link to this definition"></a></dt>
+<dd><p>Extracts the version string (vXXXXXXXX) from the given path.
+Raises a ValueError if no valid version is found.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.get_version_index">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">get_version_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#get_version_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.get_version_index" title="Link to this definition"></a></dt>
+<dd><p>Returns the index position of the version part (vXXXXXXXX) in the path parts.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.get_version_and_subpath">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">get_version_and_subpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#get_version_and_subpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.get_version_and_subpath" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of path parts from the version part to the end of the path.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.get_path_to_version">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">get_path_to_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#get_path_to_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.get_path_to_version" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of path parts from the start part to the version of the path.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.get_ordered_version_paths">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">get_ordered_version_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#get_ordered_version_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.get_ordered_version_paths" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of all “version directory” paths in the base_path directory, ordered by version,
+excluding the ‘latest’ symlink.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.get_ordered_file_version_paths">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">get_ordered_file_version_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/path.html#get_ordered_file_version_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.get_ordered_file_version_paths" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.get_versions">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">get_versions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#get_versions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.get_versions" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of all version directory paths for the given path, ordered by version.
+This is used to find all existing versions of a dataset.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.get_drs">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">get_drs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#get_drs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.get_drs" title="Link to this definition"></a></dt>
+<dd><p>Returns the DRS (Data Reference Syntax) part of the path.
+This returns the path up to but not including the version.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.is_latest_symlink">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">is_latest_symlink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#is_latest_symlink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.is_latest_symlink" title="Link to this definition"></a></dt>
+<dd><p>Check if the path contains ‘latest’ and is a symlink.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.with_latest_target">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">with_latest_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#with_latest_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.with_latest_target" title="Link to this definition"></a></dt>
+<dd><p>If path is a ‘latest’ symlink, return the target path.
+Otherwise return the original path.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.get_project">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">get_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#get_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.get_project" title="Link to this definition"></a></dt>
+<dd><p>Extract project code from a pathlib.Path object.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.get_terms">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">get_terms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#get_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.get_terms" title="Link to this definition"></a></dt>
+<dd><p>Extract DRS terms from NetCDF file global attributes.
+Returns a dictionary of DRS terms for the given path.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="esgprep._utils.path.dataset_id">
+<span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">dataset_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#dataset_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.dataset_id" title="Link to this definition"></a></dt>
+<dd><p>Build dataset identifier from NetCDF file using esgvoc DrsGenerator.
+Returns the dataset identifier string for the given path.</p>
+</dd></dl>
+
+<p id="module-esgprep._utils.print.py"><span id="module-esgprep._utils.print"></span><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLOR">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.print.</span></span><span class="sig-name descname"><span class="pre">COLOR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLOR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLOR" title="Link to this definition"></a></dt>
+<dd><p>Define color object for print statements
+Default is no color (i.e., restore original color)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLOR.PALETTE">
+<span class="sig-name descname"><span class="pre">PALETTE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'blue':</span> <span class="pre">34,</span> <span class="pre">'cyan':</span> <span class="pre">36,</span> <span class="pre">'gray':</span> <span class="pre">37,</span> <span class="pre">'green':</span> <span class="pre">32,</span> <span class="pre">'light</span> <span class="pre">blue':</span> <span class="pre">94,</span> <span class="pre">'light</span> <span class="pre">cyan':</span> <span class="pre">96,</span> <span class="pre">'light</span> <span class="pre">gray':</span> <span class="pre">97,</span> <span class="pre">'light</span> <span class="pre">green':</span> <span class="pre">92,</span> <span class="pre">'light</span> <span class="pre">magenta':</span> <span class="pre">95,</span> <span class="pre">'light</span> <span class="pre">red':</span> <span class="pre">91,</span> <span class="pre">'light</span> <span class="pre">yellow':</span> <span class="pre">93,</span> <span class="pre">'magenta':</span> <span class="pre">35,</span> <span class="pre">'red':</span> <span class="pre">31,</span> <span class="pre">'yellow':</span> <span class="pre">33}</span></span><a class="headerlink" href="#esgprep._utils.print.COLOR.PALETTE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLOR.RESTORE">
+<span class="sig-name descname"><span class="pre">RESTORE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[0m'</span></span><a class="headerlink" href="#esgprep._utils.print.COLOR.RESTORE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLOR.COLORS">
+<span class="sig-name descname"><span class="pre">COLORS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#esgprep._utils.print.COLOR.COLORS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLOR.bold">
+<span class="sig-name descname"><span class="pre">bold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLOR.bold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLOR.bold" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLOR.italic">
+<span class="sig-name descname"><span class="pre">italic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLOR.italic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLOR.italic" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLOR.underline">
+<span class="sig-name descname"><span class="pre">underline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLOR.underline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLOR.underline" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLOR.blink">
+<span class="sig-name descname"><span class="pre">blink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLOR.blink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLOR.blink" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLORS">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.print.</span></span><span class="sig-name descname"><span class="pre">COLORS</span></span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLORS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLORS" title="Link to this definition"></a></dt>
+<dd><p>Preset colors statements depending on the status.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLORS.OKBLUE">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">OKBLUE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLORS.OKBLUE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLORS.OKBLUE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLORS.HEADER">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">HEADER</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLORS.HEADER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLORS.HEADER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLORS.SUCCESS">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">SUCCESS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLORS.SUCCESS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLORS.SUCCESS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLORS.FAIL">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">FAIL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLORS.FAIL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLORS.FAIL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLORS.INFO">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">INFO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLORS.INFO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLORS.INFO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLORS.WARNING">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">WARNING</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLORS.WARNING"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLORS.WARNING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLORS.ERROR">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ERROR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLORS.ERROR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLORS.ERROR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.COLORS.DEBUG">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DEBUG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#COLORS.DEBUG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.COLORS.DEBUG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">esgprep._utils.print.</span></span><span class="sig-name descname"><span class="pre">Print</span></span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print" title="Link to this definition"></a></dt>
+<dd><p>Class to manage and dispatch print statement depending on log and debug mode.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.LOG">
+<span class="sig-name descname"><span class="pre">LOG</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#esgprep._utils.print.Print.LOG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.DEBUG">
+<span class="sig-name descname"><span class="pre">DEBUG</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#esgprep._utils.print.Print.DEBUG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.CMD">
+<span class="sig-name descname"><span class="pre">CMD</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#esgprep._utils.print.Print.CMD" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.LOG_TO_STDOUT">
+<span class="sig-name descname"><span class="pre">LOG_TO_STDOUT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#esgprep._utils.print.Print.LOG_TO_STDOUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.LOGFILE">
+<span class="sig-name descname"><span class="pre">LOGFILE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#esgprep._utils.print.Print.LOGFILE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.CARRIAGE_RETURNED">
+<span class="sig-name descname"><span class="pre">CARRIAGE_RETURNED</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#esgprep._utils.print.Print.CARRIAGE_RETURNED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.BUFFER">
+<span class="sig-name descname"><span class="pre">BUFFER</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Synchronized</span> <span class="pre">wrapper</span> <span class="pre">for</span> <span class="pre">c_wchar_p(139994713513712)&gt;</span></span><a class="headerlink" href="#esgprep._utils.print.Print.BUFFER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.init">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.init" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.check_carriage_return">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_carriage_return</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.check_carriage_return"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.check_carriage_return" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.print_to_stdout">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">print_to_stdout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.print_to_stdout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.print_to_stdout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.print_to_logfile">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">print_to_logfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.print_to_logfile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.print_to_logfile" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.progress">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.progress" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.command">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.log">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.log" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.summary">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.summary" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.info">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.info" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.debug">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.debug" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.warning">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.warning" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.error">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.error" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.success">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.success" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.result">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.result" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.exception">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.exception" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.flush">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.flush" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.enable_colors">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">enable_colors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.enable_colors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.enable_colors" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esgprep._utils.print.Print.disable_colors">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">disable_colors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/esgprep/_utils/print.html#Print.disable_colors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.print.Print.disable_colors" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<p><em>Module author: Levavasseur Guillaume (CNRS/IPSL) &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="log.html" class="btn btn-neutral float-left" title="Change Log" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

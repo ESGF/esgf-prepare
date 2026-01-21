@@ -1,0 +1,659 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frequently Asked Questions &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Credits" href="credits.html" />
+    <link rel="prev" title="Migration Guide from esgprep 2.x to 3.0" href="migration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#general">General</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-esgprep-and-why-should-i-use-it">What is esgprep and why should I use it?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#do-i-need-to-be-on-an-esgf-node-to-use-esgprep">Do I need to be on an ESGF node to use esgprep?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-data-formats-are-supported">What data formats are supported?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-use-esgprep-for-non-esgf-projects">Can I use esgprep for non-ESGF projects?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-python-version-do-i-need">What Python version do I need?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-upgrade-from-version-2-x">How do I upgrade from version 2.x?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-if-pip-install-fails">What if pip install fails?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-know-which-project-to-specify">How do I know which project to specify?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-if-my-project-isn-t-supported">What if my project isn’t supported?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-test-without-modifying-my-files">Can I test without modifying my files?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-undo-an-esgdrs-upgrade">How do I undo an esgdrs upgrade?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#checksums">Checksums</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#which-checksum-algorithm-should-i-use">Which checksum algorithm should I use?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-skip-checksums">Can I skip checksums?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-provide-pre-calculated-checksums">How do I provide pre-calculated checksums?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#why-is-my-project-not-recognized">Why is my project not recognized?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-if-i-get-facet-validation-errors">What if I get facet validation errors?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-handle-duplicate-files">How do I handle duplicate files?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#migration-from-v2-x">Migration from v2.x</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-changed-from-version-2-x">What changed from version 2.x?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#where-did-esgfetchini-go">Where did esgfetchini go?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#do-my-old-scripts-still-work">Do my old scripts still work?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Frequently Asked Questions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/faq.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="frequently-asked-questions">
+<span id="faq"></span><h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Link to this heading"></a></h1>
+<p>This page answers common questions about <code class="docutils literal notranslate"><span class="pre">esgprep</span></code>. For detailed troubleshooting,
+see <a class="reference internal" href="troubleshooting.html#troubleshooting"><span class="std std-ref">Troubleshooting</span></a>.</p>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#general" id="id1">General</a></p>
+<ul>
+<li><p><a class="reference internal" href="#what-is-esgprep-and-why-should-i-use-it" id="id2">What is esgprep and why should I use it?</a></p></li>
+<li><p><a class="reference internal" href="#do-i-need-to-be-on-an-esgf-node-to-use-esgprep" id="id3">Do I need to be on an ESGF node to use esgprep?</a></p></li>
+<li><p><a class="reference internal" href="#what-data-formats-are-supported" id="id4">What data formats are supported?</a></p></li>
+<li><p><a class="reference internal" href="#can-i-use-esgprep-for-non-esgf-projects" id="id5">Can I use esgprep for non-ESGF projects?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#installation" id="id6">Installation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#what-python-version-do-i-need" id="id7">What Python version do I need?</a></p></li>
+<li><p><a class="reference internal" href="#how-do-i-upgrade-from-version-2-x" id="id8">How do I upgrade from version 2.x?</a></p></li>
+<li><p><a class="reference internal" href="#what-if-pip-install-fails" id="id9">What if pip install fails?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#usage" id="id10">Usage</a></p>
+<ul>
+<li><p><a class="reference internal" href="#how-do-i-know-which-project-to-specify" id="id11">How do I know which project to specify?</a></p></li>
+<li><p><a class="reference internal" href="#what-if-my-project-isn-t-supported" id="id12">What if my project isn’t supported?</a></p></li>
+<li><p><a class="reference internal" href="#can-i-test-without-modifying-my-files" id="id13">Can I test without modifying my files?</a></p></li>
+<li><p><a class="reference internal" href="#how-do-i-undo-an-esgdrs-upgrade" id="id14">How do I undo an esgdrs upgrade?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#checksums" id="id15">Checksums</a></p>
+<ul>
+<li><p><a class="reference internal" href="#which-checksum-algorithm-should-i-use" id="id16">Which checksum algorithm should I use?</a></p></li>
+<li><p><a class="reference internal" href="#can-i-skip-checksums" id="id17">Can I skip checksums?</a></p></li>
+<li><p><a class="reference internal" href="#how-do-i-provide-pre-calculated-checksums" id="id18">How do I provide pre-calculated checksums?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#troubleshooting" id="id19">Troubleshooting</a></p>
+<ul>
+<li><p><a class="reference internal" href="#why-is-my-project-not-recognized" id="id20">Why is my project not recognized?</a></p></li>
+<li><p><a class="reference internal" href="#what-if-i-get-facet-validation-errors" id="id21">What if I get facet validation errors?</a></p></li>
+<li><p><a class="reference internal" href="#how-do-i-handle-duplicate-files" id="id22">How do I handle duplicate files?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#migration-from-v2-x" id="id23">Migration from v2.x</a></p>
+<ul>
+<li><p><a class="reference internal" href="#what-changed-from-version-2-x" id="id24">What changed from version 2.x?</a></p></li>
+<li><p><a class="reference internal" href="#where-did-esgfetchini-go" id="id25">Where did esgfetchini go?</a></p></li>
+<li><p><a class="reference internal" href="#do-my-old-scripts-still-work" id="id26">Do my old scripts still work?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#see-also" id="id27">See Also</a></p></li>
+</ul>
+</nav>
+<section id="general">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">General</a><a class="headerlink" href="#general" title="Link to this heading"></a></h2>
+<section id="what-is-esgprep-and-why-should-i-use-it">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">What is esgprep and why should I use it?</a><a class="headerlink" href="#what-is-esgprep-and-why-should-i-use-it" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> is a tool suite for preparing climate data for publication on the
+Earth System Grid Federation (ESGF). It handles two main tasks:</p>
+<ol class="arabic simple">
+<li><p><strong>DRS organization</strong> (<code class="docutils literal notranslate"><span class="pre">esgdrs</span></code>): Organizes your NetCDF files into the
+standardized Data Reference Syntax directory structure required by ESGF.</p></li>
+<li><p><strong>Mapfile generation</strong> (<code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code>): Creates mapfiles containing file
+metadata (paths, sizes, checksums) needed by the ESGF publication system.</p></li>
+</ol>
+<p>You should use it if you’re publishing climate model output or observational
+data to ESGF and need to comply with project data standards (CMIP6, CMIP7,
+CORDEX, etc.).</p>
+</section>
+<section id="do-i-need-to-be-on-an-esgf-node-to-use-esgprep">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Do I need to be on an ESGF node to use esgprep?</a><a class="headerlink" href="#do-i-need-to-be-on-an-esgf-node-to-use-esgprep" title="Link to this heading"></a></h3>
+<p>No. <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> can run on any Linux/Unix system with Python 3.12+. You can
+prepare your data locally and then transfer the DRS structure and mapfiles
+to your ESGF node for publication.</p>
+</section>
+<section id="what-data-formats-are-supported">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">What data formats are supported?</a><a class="headerlink" href="#what-data-formats-are-supported" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> works with <strong>NetCDF files</strong> (<code class="docutils literal notranslate"><span class="pre">.nc</span></code>). The files should be:</p>
+<ul class="simple">
+<li><p>CMOR-compliant (following CF conventions)</p></li>
+<li><p>Named according to project conventions</p></li>
+<li><p>Containing required global attributes</p></li>
+</ul>
+<p>Other formats (HDF5, GRIB, etc.) are not supported.</p>
+</section>
+<section id="can-i-use-esgprep-for-non-esgf-projects">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Can I use esgprep for non-ESGF projects?</a><a class="headerlink" href="#can-i-use-esgprep-for-non-esgf-projects" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> is designed specifically for ESGF projects with controlled
+vocabularies managed by <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code>. It validates facet values against
+these vocabularies.</p>
+<p>For custom projects, you would need to:</p>
+<ol class="arabic simple">
+<li><p>Define your project in <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> (see esgvoc documentation)</p></li>
+<li><p>Or use alternative tools for non-ESGF data organization</p></li>
+</ol>
+</section>
+</section>
+<section id="installation">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Installation</a><a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<section id="what-python-version-do-i-need">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">What Python version do I need?</a><a class="headerlink" href="#what-python-version-do-i-need" title="Link to this heading"></a></h3>
+<p>Python <strong>3.12 or higher</strong> is required. Check your version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python3<span class="w"> </span>--version
+Python<span class="w"> </span><span class="m">3</span>.12.7
+</pre></div>
+</div>
+<p>If you have an older version, consider using <code class="docutils literal notranslate"><span class="pre">pyenv</span></code> or <code class="docutils literal notranslate"><span class="pre">conda</span></code> to
+install a newer Python.</p>
+</section>
+<section id="how-do-i-upgrade-from-version-2-x">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">How do I upgrade from version 2.x?</a><a class="headerlink" href="#how-do-i-upgrade-from-version-2-x" title="Link to this heading"></a></h3>
+<p>Version 3.0 has significant changes from 2.x:</p>
+<ol class="arabic">
+<li><p><strong>Install the new version:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>esgprep
+</pre></div>
+</div>
+</li>
+<li><p><strong>Install controlled vocabularies:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+<li><p><strong>Update your scripts:</strong></p>
+<ul class="simple">
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">esgfetchini</span></code> calls (no longer needed)</p></li>
+<li><p>Configuration is now handled by <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code></p></li>
+<li><p>Command syntax is mostly compatible</p></li>
+</ul>
+</li>
+</ol>
+<p>See <a class="reference internal" href="migration.html#migration"><span class="std std-ref">Migration Guide from esgprep 2.x to 3.0</span></a> for detailed migration instructions.</p>
+</section>
+<section id="what-if-pip-install-fails">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">What if pip install fails?</a><a class="headerlink" href="#what-if-pip-install-fails" title="Link to this heading"></a></h3>
+<p>Common solutions:</p>
+<ol class="arabic">
+<li><p><strong>Upgrade pip first:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+</pre></div>
+</div>
+</li>
+<li><p><strong>Use a virtual environment:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>esgprep-env
+$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>esgprep-env/bin/activate
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>esgprep
+</pre></div>
+</div>
+</li>
+<li><p><strong>Check for conflicting packages:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>check
+</pre></div>
+</div>
+</li>
+<li><p><strong>Install build dependencies (if compilation fails):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Debian/Ubuntu</span>
+$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-dev<span class="w"> </span>libnetcdf-dev
+
+<span class="c1"># RHEL/CentOS</span>
+$<span class="w"> </span>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>python3-devel<span class="w"> </span>netcdf-devel
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="usage">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Usage</a><a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
+<section id="how-do-i-know-which-project-to-specify">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">How do I know which project to specify?</a><a class="headerlink" href="#how-do-i-know-which-project-to-specify" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">--project</span></code> argument must match a project defined in the <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code>
+controlled vocabularies. Common values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cmip6</span></code> - CMIP6 data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmip7</span></code> - CMIP7 data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cordex</span></code> - CORDEX regional projections</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cordex-cmip6</span></code> - CORDEX driven by CMIP6 models</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">input4mips</span></code> - Input datasets for MIPs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs4mips</span></code> - Observational datasets for MIPs</p></li>
+</ul>
+<p>To list available projects:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>list-projects
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Project names are <strong>case-sensitive</strong>. Use <code class="docutils literal notranslate"><span class="pre">cmip6</span></code>, not <code class="docutils literal notranslate"><span class="pre">CMIP6</span></code>.</p>
+</div>
+</section>
+<section id="what-if-my-project-isn-t-supported">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">What if my project isn’t supported?</a><a class="headerlink" href="#what-if-my-project-isn-t-supported" title="Link to this heading"></a></h3>
+<p>If your project isn’t in the vocabulary:</p>
+<ol class="arabic">
+<li><p><strong>Check for updates:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>esgvoc
+$<span class="w"> </span>esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+<li><p><strong>Verify the project name</strong> (check spelling, case)</p></li>
+<li><p><strong>Contact your project administrators</strong> - new projects need to be
+added to the official ESGF vocabularies</p></li>
+<li><p><strong>For testing purposes</strong>, you may be able to use a similar project’s
+vocabulary, but this is not recommended for production.</p></li>
+</ol>
+</section>
+<section id="can-i-test-without-modifying-my-files">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Can I test without modifying my files?</a><a class="headerlink" href="#can-i-test-without-modifying-my-files" title="Link to this heading"></a></h3>
+<p>Yes, several approaches:</p>
+<ol class="arabic">
+<li><p><strong>Use dry-run commands:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Preview datasets</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/
+
+<span class="c1"># Preview structure</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/
+
+<span class="c1"># See planned operations</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span>--root<span class="w"> </span>/tmp/test
+</pre></div>
+</div>
+</li>
+<li><p><strong>Use a temporary output directory:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span><span class="se">\</span>
+<span class="w">                      </span>--root<span class="w"> </span>/tmp/test-drs<span class="w"> </span>--link
+</pre></div>
+</div>
+</li>
+<li><p><strong>Use hard links (``–link``)</strong> to avoid copying files - original
+files remain untouched.</p></li>
+</ol>
+</section>
+<section id="how-do-i-undo-an-esgdrs-upgrade">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">How do I undo an esgdrs upgrade?</a><a class="headerlink" href="#how-do-i-undo-an-esgdrs-upgrade" title="Link to this heading"></a></h3>
+<p>There’s no automatic “undo” command. However:</p>
+<ol class="arabic">
+<li><p><strong>If you used ``–link`` (hard links):</strong></p>
+<p>Your original files are untouched. Simply delete the DRS structure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/path/to/drs/PROJECT/
+</pre></div>
+</div>
+</li>
+<li><p><strong>If you used ``–symlink``:</strong></p>
+<p>Original files are untouched. Delete the DRS structure.</p>
+</li>
+<li><p><strong>If you used default mode (move) or ``–copy``:</strong></p>
+<p>Files were moved/copied. You’ll need to move them back manually or
+restore from backup.</p>
+</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Always use <code class="docutils literal notranslate"><span class="pre">--link</span></code> when testing to preserve your original files.</p>
+</div>
+</section>
+</section>
+<section id="checksums">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Checksums</a><a class="headerlink" href="#checksums" title="Link to this heading"></a></h2>
+<section id="which-checksum-algorithm-should-i-use">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Which checksum algorithm should I use?</a><a class="headerlink" href="#which-checksum-algorithm-should-i-use" title="Link to this heading"></a></h3>
+<p><strong>Recommended: SHA256</strong> (default)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/
+</pre></div>
+</div>
+<p>For new ESGF infrastructure, you can use <strong>multihash format</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/<span class="w"> </span><span class="se">\</span>
+<span class="w">                  </span>--checksum-type<span class="w"> </span>sha2-256
+</pre></div>
+</div>
+<p><strong>Comparison:</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 30.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Algorithm</p></th>
+<th class="head"><p>Use Case</p></th>
+<th class="head"><p>Speed</p></th>
+<th class="head"><p>ESGF Support</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>sha256</p></td>
+<td><p>General use (default)</p></td>
+<td><p>Fast</p></td>
+<td><p>Full</p></td>
+</tr>
+<tr class="row-odd"><td><p>sha2-256</p></td>
+<td><p>Multihash format</p></td>
+<td><p>Fast</p></td>
+<td><p>Modern nodes</p></td>
+</tr>
+<tr class="row-even"><td><p>sha2-512</p></td>
+<td><p>Higher security</p></td>
+<td><p>Slower</p></td>
+<td><p>Modern nodes</p></td>
+</tr>
+<tr class="row-odd"><td><p>md5</p></td>
+<td><p>Legacy only</p></td>
+<td><p>Fastest</p></td>
+<td><p>Deprecated</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="can-i-skip-checksums">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Can I skip checksums?</a><a class="headerlink" href="#can-i-skip-checksums" title="Link to this heading"></a></h3>
+<p>Yes, for <strong>testing only</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/<span class="w"> </span>--no-checksum
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Never skip checksums for production data. Checksums are required for
+ESGF publication and data integrity verification.</p>
+</div>
+</section>
+<section id="how-do-i-provide-pre-calculated-checksums">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">How do I provide pre-calculated checksums?</a><a class="headerlink" href="#how-do-i-provide-pre-calculated-checksums" title="Link to this heading"></a></h3>
+<p>For large datasets, pre-calculate checksums to save time:</p>
+<ol class="arabic">
+<li><p><strong>Generate checksums:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>find<span class="w"> </span>/data<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.nc&quot;</span><span class="w"> </span>-exec<span class="w"> </span>sha256sum<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>&gt;<span class="w"> </span>checksums.txt
+</pre></div>
+</div>
+</li>
+<li><p><strong>Use them with esgmapfile:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/<span class="w"> </span><span class="se">\</span>
+<span class="w">                  </span>--checksums-from<span class="w"> </span>checksums.txt
+</pre></div>
+</div>
+</li>
+</ol>
+<p>The file format should be standard <code class="docutils literal notranslate"><span class="pre">sha256sum</span></code> output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>abc123def456...  /path/to/file1.nc
+789xyz012abc...  /path/to/file2.nc
+</pre></div>
+</div>
+</section>
+</section>
+<section id="troubleshooting">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">Troubleshooting</a><a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<section id="why-is-my-project-not-recognized">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Why is my project not recognized?</a><a class="headerlink" href="#why-is-my-project-not-recognized" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ValueError: Project &#39;cmip6&#39; not found in esgvoc
+</pre></div>
+</div>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic">
+<li><p>Initialize vocabularies (required after installation):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+<li><p>Check spelling (case-sensitive):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Correct</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/
+
+<span class="c1"># Wrong</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>CMIP6<span class="w"> </span>/data/
+</pre></div>
+</div>
+</li>
+<li><p>Update esgvoc:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>esgvoc
+$<span class="w"> </span>esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+<li><p>List available projects:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>list-projects
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="what-if-i-get-facet-validation-errors">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">What if I get facet validation errors?</a><a class="headerlink" href="#what-if-i-get-facet-validation-errors" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ERROR: Invalid value &#39;my_experiment&#39; for facet &#39;experiment&#39;
+</pre></div>
+</div>
+<p><strong>This means</strong> your data contains values not in the controlled vocabulary.</p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic">
+<li><p><strong>Check your NetCDF attributes:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ncdump<span class="w"> </span>-h<span class="w"> </span>your_file.nc<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>experiment
+</pre></div>
+</div>
+</li>
+<li><p><strong>See valid values:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>get<span class="w"> </span>cmip6:experiment:
+</pre></div>
+</div>
+</li>
+<li><p><strong>If the value should be valid</strong>, update esgvoc:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>esgvoc
+$<span class="w"> </span>esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+<li><p><strong>Override temporarily</strong> (use with caution):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span><span class="se">\</span>
+<span class="w">                   </span>--set-value<span class="w"> </span><span class="nv">experiment</span><span class="o">=</span>historical<span class="w"> </span><span class="se">\</span>
+<span class="w">                   </span>/data/
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="how-do-i-handle-duplicate-files">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">How do I handle duplicate files?</a><a class="headerlink" href="#how-do-i-handle-duplicate-files" title="Link to this heading"></a></h3>
+<p>If you get warnings about duplicate datasets:</p>
+<ol class="arabic">
+<li><p><strong>Check if files are truly duplicates:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>md5sum<span class="w"> </span>/path/to/file1.nc<span class="w"> </span>/path/to/file2.nc
+</pre></div>
+</div>
+</li>
+<li><p><strong>If publishing an update</strong>, use versioning:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span><span class="se">\</span>
+<span class="w">                      </span>--upgrade-from-latest
+</pre></div>
+</div>
+</li>
+<li><p><strong>If replacing existing data</strong>, remove the old version first:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/data/drs/CMIP6/.../v20240101/
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="migration-from-v2-x">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink">Migration from v2.x</a><a class="headerlink" href="#migration-from-v2-x" title="Link to this heading"></a></h2>
+<section id="what-changed-from-version-2-x">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">What changed from version 2.x?</a><a class="headerlink" href="#what-changed-from-version-2-x" title="Link to this heading"></a></h3>
+<p>Major changes in v3.0:</p>
+<ol class="arabic simple">
+<li><p><strong>esgfetchini removed</strong> - Configuration now handled by <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code></p></li>
+<li><p><strong>esgvoc required</strong> - Must run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> before first use</p></li>
+<li><p><strong>Python 3.12+ required</strong> - Older Python versions not supported</p></li>
+<li><p><strong>Command structure</strong> - Some subcommands reorganized</p></li>
+<li><p><strong>Mapfile format</strong> - Version separator changed from <code class="docutils literal notranslate"><span class="pre">#</span></code> to <code class="docutils literal notranslate"><span class="pre">.v</span></code></p></li>
+</ol>
+<p>See <a class="reference internal" href="migration.html#migration"><span class="std std-ref">Migration Guide from esgprep 2.x to 3.0</span></a> for complete details.</p>
+</section>
+<section id="where-did-esgfetchini-go">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Where did esgfetchini go?</a><a class="headerlink" href="#where-did-esgfetchini-go" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">esgfetchini</span></code> is <strong>no longer needed</strong>. In v2.x, it downloaded INI
+configuration files. In v3.0, configuration is handled by the <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code>
+library:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Old way (v2.x) - NO LONGER NEEDED</span>
+$<span class="w"> </span>esgfetchini
+
+<span class="c1"># New way (v3.0)</span>
+$<span class="w"> </span>esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library manages controlled vocabularies and project
+definitions automatically.</p>
+</section>
+<section id="do-my-old-scripts-still-work">
+<h3><a class="toc-backref" href="#id26" role="doc-backlink">Do my old scripts still work?</a><a class="headerlink" href="#do-my-old-scripts-still-work" title="Link to this heading"></a></h3>
+<p>Most scripts will work with minor modifications:</p>
+<ol class="arabic">
+<li><p><strong>Remove esgfetchini calls:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Remove this line</span>
+esgfetchini
+
+<span class="c1"># Add this once (or in setup)</span>
+esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+<li><p><strong>Check command syntax:</strong></p>
+<p>Most commands are compatible, but verify with <code class="docutils literal notranslate"><span class="pre">--help</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgdrs<span class="w"> </span>--help
+$<span class="w"> </span>esgmapfile<span class="w"> </span>--help
+</pre></div>
+</div>
+</li>
+<li><p><strong>Update Python version</strong> if needed (3.12+ required)</p></li>
+<li><p><strong>Test with sample data</strong> before running on production</p></li>
+</ol>
+</section>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id27" role="doc-backlink">See Also</a><a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="getting_started.html#getting-started"><span class="std std-ref">Getting Started</span></a> - Step-by-step tutorial</p></li>
+<li><p><a class="reference internal" href="troubleshooting.html#troubleshooting"><span class="std std-ref">Troubleshooting</span></a> - Detailed error solutions</p></li>
+<li><p><a class="reference internal" href="concepts.html#concepts"><span class="std std-ref">Concepts &amp; Terminology</span></a> - ESGF terminology explained</p></li>
+<li><p><a class="reference internal" href="migration.html#migration"><span class="std std-ref">Migration Guide from esgprep 2.x to 3.0</span></a> - Upgrading from v2.x</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="migration.html" class="btn btn-neutral float-left" title="Migration Guide from esgprep 2.x to 3.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="credits.html" class="btn btn-neutral float-right" title="Credits" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

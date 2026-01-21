@@ -1,0 +1,400 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>esgprep._utils.path &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">esgprep._utils.path</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for esgprep._utils.path</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.print</span><span class="w"> </span><span class="kn">import</span> <span class="n">Print</span>
+
+
+<div class="viewcode-block" id="extract_version">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.extract_version">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_version</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts the version string (vXXXXXXXX) from the given path.</span>
+<span class="sd">    Raises a ValueError if no valid version is found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;v\d</span><span class="si">{8}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s2">&quot;latest&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;latest&quot;</span>
+    <span class="k">elif</span> <span class="s2">&quot;files&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;files&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid version format in path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_version_index">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_version_index">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_version_index</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the index position of the version part (vXXXXXXXX) in the path parts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">extract_version</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">parts</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parts</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">part</span> <span class="o">==</span> <span class="n">version</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">i</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No version found in path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_version_and_subpath">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_version_and_subpath">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_version_and_subpath</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of path parts from the version part to the end of the path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">get_version_index</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="n">index</span><span class="p">:])</span></div>
+
+
+
+<div class="viewcode-block" id="get_path_to_version">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_path_to_version">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_path_to_version</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of path parts from the start part to the version of the path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">get_version_index</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parts</span><span class="p">[:</span><span class="n">index</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="get_ordered_version_paths">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_ordered_version_paths">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ordered_version_paths</span><span class="p">(</span><span class="n">base_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of all &quot;version directory&quot; paths in the base_path directory, ordered by version,</span>
+<span class="sd">    excluding the &#39;latest&#39; symlink.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">base_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">base_path</span><span class="o">.</span><span class="n">iterdir</span><span class="p">())</span>
+    <span class="c1"># Extract versions and filter valid ones, excluding &#39;latest&#39; and &#39;files&#39;</span>
+    <span class="n">versioned_paths</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">extract_version</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;latest&quot;</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;files&quot;</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Sort by version (numeric sorting for vXXXXXXXX)</span>
+    <span class="n">versioned_paths</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]))</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">versioned_paths</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="get_ordered_file_version_paths">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_ordered_file_version_paths">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ordered_file_version_paths</span><span class="p">(</span><span class="n">base_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">version_paths</span> <span class="o">=</span> <span class="n">get_ordered_version_paths</span><span class="p">(</span><span class="n">base_path</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">version_path</span> <span class="ow">in</span> <span class="n">version_paths</span><span class="p">:</span>
+        <span class="n">file_version_path</span> <span class="o">=</span> <span class="n">version_path</span> <span class="o">/</span> <span class="n">file_name</span>
+        <span class="k">if</span> <span class="n">file_version_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_version_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<div class="viewcode-block" id="get_versions">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_versions">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_versions</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of all version directory paths for the given path, ordered by version.</span>
+<span class="sd">    This is used to find all existing versions of a dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">versions</span> <span class="o">=</span> <span class="n">get_ordered_version_paths</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">versions</span><span class="p">:</span>
+        <span class="c1"># If no versions found, try the parent directory</span>
+        <span class="c1"># This handles cases where path might be inside a version directory</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span> <span class="o">!=</span> <span class="n">path</span><span class="p">:</span>  <span class="c1"># Avoid infinite recursion at root</span>
+            <span class="n">versions</span> <span class="o">=</span> <span class="n">get_ordered_version_paths</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">versions</span></div>
+
+
+
+<div class="viewcode-block" id="get_drs">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_drs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_drs</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the DRS (Data Reference Syntax) part of the path.</span>
+<span class="sd">    This returns the path up to but not including the version.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get the path parts up to the version</span>
+        <span class="n">drs_parts</span> <span class="o">=</span> <span class="n">get_path_to_version</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="o">*</span><span class="n">drs_parts</span><span class="p">)</span> <span class="k">if</span> <span class="n">drs_parts</span> <span class="k">else</span> <span class="n">Path</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="c1"># If no version found, return the full path</span>
+        <span class="k">return</span> <span class="n">path</span></div>
+
+
+
+<div class="viewcode-block" id="is_latest_symlink">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.is_latest_symlink">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_latest_symlink</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the path contains &#39;latest&#39; and is a symlink.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">&quot;latest&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="with_latest_target">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.with_latest_target">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">with_latest_target</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If path is a &#39;latest&#39; symlink, return the target path.</span>
+<span class="sd">    Otherwise return the original path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_latest_symlink</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">):</span>
+            <span class="c1"># Handle broken symlinks or circular references</span>
+            <span class="k">return</span> <span class="n">path</span>
+    <span class="k">return</span> <span class="n">path</span></div>
+
+
+
+<div class="viewcode-block" id="get_project">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_project">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_project</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract project code from a pathlib.Path object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get all scopes within the loaded authority.</span>
+    <span class="n">scopes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_projects</span><span class="p">())</span>
+    <span class="c1"># Find intersection between scopes list and path parts.</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">scopes</span><span class="p">)</span>
+
+    <span class="c1"># Ensure only one project code matched.</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">project</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">project</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">project</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No project code found: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to match one project code: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="get_terms">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_terms">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_terms</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract DRS terms from NetCDF file global attributes.</span>
+<span class="sd">    Returns a dictionary of DRS terms for the given path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_terms: Processing path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Import NetCDF utilities</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.ncfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ncattrs</span>
+        
+        <span class="c1"># Get NetCDF global attributes</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="n">get_ncattrs</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_terms: NetCDF attributes: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Return the attributes as terms - they contain the DRS terms</span>
+        <span class="k">return</span> <span class="n">attrs</span>
+        
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_terms: Error extracting terms from NetCDF </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+
+
+<div class="viewcode-block" id="dataset_id">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.dataset_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dataset_id</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build dataset identifier from NetCDF file using esgvoc DrsGenerator.</span>
+<span class="sd">    Returns the dataset identifier string for the given path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Processing path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Get project from path</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">get_project</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">project</span><span class="p">:</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: No project found for path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="c1"># Get terms from NetCDF file</span>
+    <span class="n">attrs</span> <span class="o">=</span> <span class="n">get_terms</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">attrs</span><span class="p">:</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: No NetCDF attributes found for path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Use esgvoc DrsGenerator to build dataset identifier</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.drs.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">DrsGenerator</span>
+        
+        <span class="n">generator</span> <span class="o">=</span> <span class="n">DrsGenerator</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+        
+        <span class="c1"># Extract relevant DRS term values from NetCDF attributes</span>
+        <span class="c1"># For CMIP6, we need specific attributes to build the dataset ID</span>
+        <span class="n">drs_terms</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Common CMIP6 DRS attributes in NetCDF files</span>
+        <span class="c1"># Note: member_id might be stored as variant_label in some files</span>
+        <span class="n">drs_attrs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;mip_era&#39;</span><span class="p">,</span> <span class="s1">&#39;activity_id&#39;</span><span class="p">,</span> <span class="s1">&#39;institution_id&#39;</span><span class="p">,</span> <span class="s1">&#39;source_id&#39;</span><span class="p">,</span> <span class="s1">&#39;experiment_id&#39;</span><span class="p">,</span> 
+            <span class="s1">&#39;member_id&#39;</span><span class="p">,</span> <span class="s1">&#39;variant_label&#39;</span><span class="p">,</span> <span class="s1">&#39;table_id&#39;</span><span class="p">,</span> <span class="s1">&#39;variable_id&#39;</span><span class="p">,</span> <span class="s1">&#39;grid_label&#39;</span>
+        <span class="p">]</span>
+        
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">drs_attrs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+                <span class="c1"># Handle space-separated values by taking the first one</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">drs_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Found </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">drs_terms</span><span class="p">:</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: No DRS terms found in NetCDF attributes&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Using DRS terms: </span><span class="si">{</span><span class="n">drs_terms</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Generate dataset ID from bag of terms</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">generate_dataset_id_from_bag_of_terms</span><span class="p">(</span><span class="n">drs_terms</span><span class="p">)</span>
+        
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Report generated_drs_expression: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">generated_drs_expression</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Report errors: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">nb_errors</span><span class="si">}</span><span class="s2">, warnings: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">nb_warnings</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">report</span><span class="o">.</span><span class="n">nb_errors</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">report</span><span class="o">.</span><span class="n">generated_drs_expression</span><span class="p">:</span>
+            <span class="n">identifier</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">generated_drs_expression</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Generated identifier: </span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">identifier</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Generation failed. Errors: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">nb_errors</span><span class="si">}</span><span class="s2">, Expression: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">generated_drs_expression</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="s1">&#39;errors&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Error details: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Error generating dataset_id for </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

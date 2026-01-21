@@ -1,0 +1,494 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>esgprep.drs.make &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../drs.html">esgprep.drs</a></li>
+      <li class="breadcrumb-item active">esgprep.drs.make</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for esgprep.drs.make</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:platform: Unix</span>
+<span class="sd">:synopsis: Manages the filesystem tree according to the project the Data Reference Syntax and versioning.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.drs.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">DrsGenerator</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">DuplicatedFile</span><span class="p">,</span> <span class="n">OlderUpgrade</span><span class="p">,</span>
+                                 <span class="n">UnchangedTrackingID</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._handlers.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">LINK_SEPARATOR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.checksum</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_checksum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.ncfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ncattrs</span><span class="p">,</span> <span class="n">get_tracking_id</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">extract_version</span><span class="p">,</span> <span class="n">get_ordered_version_paths</span><span class="p">,</span>
+                                 <span class="n">get_path_to_version</span><span class="p">,</span> <span class="n">get_version_and_subpath</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.print</span><span class="w"> </span><span class="kn">import</span> <span class="n">COLORS</span><span class="p">,</span> <span class="n">TAGS</span><span class="p">,</span> <span class="n">Print</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FRAMES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.drs.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SPINNER_DESC</span>
+
+
+<div class="viewcode-block" id="Process">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.make.Process">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Process</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Child process.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shared processing context between child processes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">set_values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_keys</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">set_keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">lock</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">errors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">msg_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">progress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">no_checksum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksums_from</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upgrade_from_latest</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">upgrade_from_latest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_latest</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ignore_from_latest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_incoming</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ignore_from_incoming</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Any error switches to the next child process.</span>
+<span class="sd">        It does not stop the main process at all.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Escape in case of error.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Ignore files from incoming</span>
+            <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_incoming</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">TAGS</span><span class="o">.</span><span class="n">SKIP</span> <span class="o">+</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">HEADER</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">))</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">Print</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="c1"># Print info.</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Scanning </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="c1"># Get current netcdf file attributes.</span>
+            <span class="n">current_attrs</span> <span class="o">=</span> <span class="n">get_ncattrs</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+            <span class="c1"># # If attribute value is a separated list, pick up the first item as facet value</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">current_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">current_attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># mainly for activity_id</span>
+
+            <span class="c1"># Add filename to attributes.</span>
+            <span class="n">current_attrs</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span>
+
+            <span class="c1"># Add dataset-version to attributes with &#39;v&#39; prefix for DRS generator.</span>
+            <span class="n">version_for_drs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;v</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">current_attrs</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">version_for_drs</span>
+
+            <span class="c1"># Validate project compatibility before DRS generation</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.ncfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_project</span>
+                <span class="n">file_project</span> <span class="o">=</span> <span class="n">get_project</span><span class="p">(</span><span class="n">current_attrs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">file_project</span> <span class="ow">and</span> <span class="n">file_project</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Project mismatch: CLI specified &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="si">}</span><span class="s2">&#39; but file contains &#39;</span><span class="si">{</span><span class="n">file_project</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;(detected from file attributes). Please use &#39;--project </span><span class="si">{</span><span class="n">file_project</span><span class="si">}</span><span class="s2">&#39; or verify the correct project.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">To see all available projects, run: esgvoc status&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;Project mismatch&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">e</span>
+                <span class="c1"># If project detection fails for other reasons, continue with DRS generation</span>
+                <span class="c1"># to get the original error messages</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Project detection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Instantiate file as no duplicate.</span>
+            <span class="n">is_duplicate</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># Build directory structure.</span>
+            <span class="c1"># DRS terms are validated during this step.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># drspath = drs_path(current_attrs, self.set_values, self.set_keys)</span>
+                <span class="n">dg</span> <span class="o">=</span> <span class="n">DrsGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+                <span class="c1"># print(current_attrs)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">==</span> <span class="s2">&quot;cmip6&quot;</span><span class="p">:</span>
+                    <span class="n">drs_path</span> <span class="o">=</span> <span class="n">dg</span><span class="o">.</span><span class="n">generate_directory_from_mapping</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="o">**</span><span class="n">current_attrs</span><span class="p">,</span>
+                            <span class="o">**</span><span class="p">{</span><span class="s2">&quot;member_id&quot;</span><span class="p">:</span> <span class="n">current_attrs</span><span class="p">[</span><span class="s2">&quot;variant_label&quot;</span><span class="p">]},</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">drs_path</span> <span class="o">=</span> <span class="n">dg</span><span class="o">.</span><span class="n">generate_directory_from_mapping</span><span class="p">({</span><span class="o">**</span><span class="n">current_attrs</span><span class="p">})</span>
+                <span class="c1"># print(&quot;&quot;)</span>
+                <span class="c1"># print(drs_path.generated_drs_expression)</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">drs_path</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Build detailed error message with all DRS errors</span>
+                    <span class="n">error_details</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">drs_path</span><span class="o">.</span><span class="n">errors</span><span class="p">])</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;DRS generation failed with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">drs_path</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span><span class="si">}</span><span class="s2"> error(s):</span><span class="se">\n</span><span class="si">{</span><span class="n">error_details</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">current_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+                    <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="n">drs_path</span><span class="o">.</span><span class="n">generated_drs_expression</span><span class="p">)</span>
+                    <span class="o">/</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">)</span>
+                <span class="c1"># example : CMIP6/CMIP/CCCma/CanESM5/historical/r1i1p2f1/Amon/tas/gn/v20190429/cmip6_IPSL-CM6A-LR_tas_50-60.nc</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Directory structure is None&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="c1"># Instantiate latest version to &quot;Initial&quot;</span>
+            <span class="n">latest_version</span> <span class="o">=</span> <span class="s2">&quot;Initial&quot;</span>
+            <span class="c1"># Get latest existing version of the file.</span>
+            <span class="n">all_versions</span> <span class="o">=</span> <span class="n">get_ordered_version_paths</span><span class="p">(</span><span class="n">current_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_versions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">latest_version</span> <span class="o">=</span> <span class="n">extract_version</span><span class="p">(</span><span class="n">all_versions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">dataset_dir</span> <span class="o">=</span> <span class="n">current_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+            <span class="n">latest_dir</span> <span class="o">=</span> <span class="n">dataset_dir</span> <span class="o">/</span> <span class="s2">&quot;latest&quot;</span>
+            <span class="n">latest_path</span> <span class="o">=</span> <span class="n">latest_dir</span> <span class="o">/</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span>
+            <span class="c1"># latest_path = with_latest_version(current_path)</span>
+            <span class="c1"># latest_path = all_versions[-1] if len(all_versions) &gt;= 1 else None</span>
+
+            <span class="c1"># 1. Check if a latest file version exists (i.e. with the same filename).</span>
+            <span class="k">if</span> <span class="n">latest_path</span> <span class="ow">and</span> <span class="p">(</span><span class="n">latest_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()):</span>
+                <span class="c1"># 2. Check latest version is older than current version.</span>
+                <span class="n">current_version</span> <span class="o">=</span> <span class="n">extract_version</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span>
+                <span class="n">latest_version</span> <span class="o">=</span> <span class="n">extract_version</span><span class="p">(</span><span class="n">latest_path</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">latest_version</span> <span class="o">&gt;</span> <span class="n">current_version</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">OlderUpgrade</span><span class="p">(</span><span class="n">current_version</span><span class="p">,</span> <span class="n">latest_version</span><span class="p">)</span>
+
+                <span class="c1"># Get latest file version attributes.</span>
+                <span class="n">latest_attrs</span> <span class="o">=</span> <span class="n">get_ncattrs</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">latest_path</span><span class="p">))</span>
+
+                <span class="c1"># 3. Check tracking IDs are different.</span>
+                <span class="n">current_tracking_id</span> <span class="o">=</span> <span class="n">get_tracking_id</span><span class="p">(</span><span class="n">current_attrs</span><span class="p">)</span>
+                <span class="n">latest_tracking_id</span> <span class="o">=</span> <span class="n">get_tracking_id</span><span class="p">(</span><span class="n">latest_attrs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">current_tracking_id</span> <span class="o">==</span> <span class="n">latest_tracking_id</span><span class="p">:</span>
+                    <span class="c1"># 4. Check if file sizes are different.</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">source</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="n">latest_path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span>
+                        <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span>
+                    <span class="p">):</span>
+                        <span class="c1"># 5. Check if file checksums are different.</span>
+                        <span class="n">current_checksum</span> <span class="o">=</span> <span class="n">get_checksum</span><span class="p">(</span>
+                            <span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span>
+                        <span class="p">)</span>
+                        <span class="n">latest_checksum</span> <span class="o">=</span> <span class="n">get_checksum</span><span class="p">(</span>
+                            <span class="n">latest_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span>
+                        <span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">current_checksum</span> <span class="o">==</span> <span class="n">latest_checksum</span><span class="p">:</span>
+                            <span class="c1"># Flags file to duplicate.</span>
+                            <span class="n">is_duplicate</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="c1"># If different checksums, tracking IDs must be different too if exist.</span>
+                        <span class="k">elif</span> <span class="n">current_tracking_id</span> <span class="ow">and</span> <span class="n">latest_tracking_id</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">UnchangedTrackingID</span><span class="p">(</span>
+                                <span class="n">latest_path</span><span class="p">,</span>
+                                <span class="n">latest_tracking_id</span><span class="p">,</span>
+                                <span class="n">current_path</span><span class="p">,</span>
+                                <span class="n">current_tracking_id</span><span class="p">,</span>
+                            <span class="p">)</span>
+
+                    <span class="c1"># If different sizes, tracking IDs must be different too if exist.</span>
+                    <span class="k">elif</span> <span class="n">current_tracking_id</span> <span class="ow">and</span> <span class="n">latest_tracking_id</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">UnchangedTrackingID</span><span class="p">(</span>
+                            <span class="n">latest_path</span><span class="p">,</span>
+                            <span class="n">latest_tracking_id</span><span class="p">,</span>
+                            <span class="n">current_path</span><span class="p">,</span>
+                            <span class="n">current_tracking_id</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+            <span class="c1"># Print info.</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Processing </span><span class="si">{source}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Start DRS tree generation.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_duplicate</span><span class="p">:</span>
+                <span class="c1"># Add the current file to the &quot;vYYYYMMDD&quot; folder.</span>
+                <span class="n">parts_from_version</span> <span class="o">=</span> <span class="n">get_version_and_subpath</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span>
+                <span class="n">src</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;..&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parts_from_version</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">src</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;files&quot;</span><span class="p">)</span>
+                <span class="n">version_nb</span> <span class="o">=</span> <span class="n">parts_from_version</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">src</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;d&quot;</span> <span class="o">+</span> <span class="n">version_nb</span><span class="p">)</span>
+
+                <span class="c1"># src += parts_from_version</span>
+                <span class="n">src</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">current_path</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">)</span>  <span class="c1"># Lolo Test to add filename at the end of the relative path reconstructed</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span>
+                    <span class="n">nodes</span><span class="o">=</span><span class="n">current_path</span><span class="o">.</span><span class="n">parts</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_path</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">LINK_SEPARATOR</span><span class="si">}{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">src</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">src</span><span class="p">),</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;symlink&quot;</span><span class="p">,</span>
+                    <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Add the &quot;latest&quot; symlink node.</span>
+                <span class="c1"># nodes = list(dataset_path(current_path).parent.parts)</span>
+                <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_path</span><span class="o">.</span><span class="n">parts</span><span class="p">)[</span>
+                    <span class="p">:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">get_version_and_subpath</span><span class="p">(</span><span class="n">current_path</span><span class="p">))</span>
+                <span class="p">]</span>
+                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;latest&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span>
+                    <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;latest&#39;</span><span class="si">}{</span><span class="n">LINK_SEPARATOR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">src</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;symlink&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_path</span><span class="o">.</span><span class="n">parts</span><span class="p">)[</span>
+                    <span class="mi">0</span> <span class="p">:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">get_version_and_subpath</span><span class="p">(</span><span class="n">current_path</span><span class="p">))</span>
+                <span class="p">]</span>
+
+                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;files&quot;</span><span class="p">)</span>
+                <span class="n">version_nb</span> <span class="o">=</span> <span class="n">parts_from_version</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;d&quot;</span> <span class="o">+</span> <span class="n">version_nb</span><span class="p">)</span>
+                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="c1"># Add the current file to the &quot;files&quot; folder.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span>
+                    <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">current_path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">src</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>  <span class="c1"># Lolo Change current_path to source</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">latest_path</span> <span class="o">=</span> <span class="n">all_versions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_versions</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+
+                <span class="c1"># If latest file version exist and --upgrade-from-latest submitted.</span>
+                <span class="k">if</span> <span class="n">latest_path</span> <span class="ow">and</span> <span class="n">latest_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">upgrade_from_latest</span><span class="p">:</span>
+                    <span class="c1"># Walk through the latest dataset version.</span>
+                    <span class="c1"># Create a symlink for each file with a different filename than the current one</span>
+                    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">latest_path</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">latest_name</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                            <span class="c1"># Add latest files as tree leaves with version to upgrade instead of latest version</span>
+                            <span class="c1"># i.e., copy latest dataset leaves to the current tree.</span>
+                            <span class="c1"># Except if file has be ignored from latest version (i.e., with known issue)</span>
+                            <span class="c1"># Except if file leaf has already been created to avoid overwriting new version</span>
+                            <span class="c1"># Leaf is not created if already exists (i.e., force = False).</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="n">latest_name</span> <span class="o">!=</span> <span class="n">current_path</span><span class="o">.</span><span class="n">name</span>
+                                <span class="ow">and</span> <span class="n">latest_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_latest</span>
+                            <span class="p">):</span>
+                                <span class="n">src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">latest_name</span><span class="p">)</span>
+                                <span class="n">node_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span>
+                                <span class="n">node_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">latest_name</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span>
+                                    <span class="n">nodes</span><span class="o">=</span><span class="n">node_list</span><span class="p">,</span>
+                                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">latest_name</span><span class="si">}{</span><span class="n">LINK_SEPARATOR</span><span class="si">}{</span><span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">src</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                    <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">src</span><span class="p">),</span>
+                                    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;symlink&quot;</span><span class="p">,</span>
+                                <span class="p">)</span>
+
+            <span class="c1"># In the case of the file is duplicated.</span>
+            <span class="c1"># i.e., incoming file already exists in the latest version folder.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># If upgrade from latest is activated, raise the error, no duplicated files allowed.</span>
+                <span class="c1"># Incoming must only contain modifed/corrected files.</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">upgrade_from_latest</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">DuplicatedFile</span><span class="p">(</span><span class="n">latest_path</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+
+                <span class="c1"># If default behavior, the incoming contains all data for a new version</span>
+                <span class="c1"># In the case of a duplicated file, just pass to the expected symlink creation</span>
+                <span class="c1"># and records duplicated file for further removal only if migration mode is the</span>
+                <span class="c1"># default (i.e., moving files). In the case of --copy or --link, keep duplicates</span>
+                <span class="c1"># in place into the incoming directory.</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">latest_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="n">src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">latest_path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span>
+                        <span class="n">nodes</span><span class="o">=</span><span class="n">current_path</span><span class="o">.</span><span class="n">parts</span><span class="p">,</span>
+                        <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_path</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">LINK_SEPARATOR</span><span class="si">}{</span><span class="n">src</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;symlink&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;move&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">duplicates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
+            <span class="c1"># Record entry for list() and uniqueness checkup.</span>
+            <span class="n">record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="s2">&quot;dst&quot;</span><span class="p">:</span> <span class="n">current_path</span><span class="p">,</span> <span class="s2">&quot;is_duplicate&quot;</span><span class="p">:</span> <span class="n">is_duplicate</span><span class="p">}</span>
+            <span class="c1"># print(Path(drs_path.generated_drs_expression).parent)</span>
+            <span class="c1"># key = str(get_path_to_version(current_path.parent))</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">drs_path</span><span class="o">.</span><span class="n">generated_drs_expression</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">has_path</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="c1"># mean we already saw this dataset</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">append_path</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+                <span class="c1"># self.tree.paths[key][&#39;files&#39;].append(record)</span>
+                <span class="n">deux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_path_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;latest&quot;</span><span class="p">)</span>
+                <span class="c1"># print(&quot;CHECK_4 : &quot;,latest_version, self.tree.paths[key][&quot;latest&quot;] )</span>
+                <span class="c1"># if latest_version != self.tree.paths[key][&#39;latest&#39;]:</span>
+                <span class="c1">#    print(&quot;ERROR : &quot;)</span>
+                <span class="c1"># print(self.tree)</span>
+
+                <span class="c1"># assert latest_version == self.tree.paths[key][&#39;latest&#39;]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">infos</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">record</span><span class="p">],</span>
+                    <span class="s2">&quot;latest&quot;</span><span class="p">:</span> <span class="n">latest_version</span><span class="p">,</span>
+                    <span class="s2">&quot;upgrade&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">infos</span><span class="p">)</span>
+
+            <span class="c1"># Print info.</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DRS Path = </span><span class="si">{</span><span class="n">get_path_to_version</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; &lt;-- &quot;</span> <span class="o">+</span> <span class="n">current_path</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="c1"># Return True if success.</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="c1"># Lock error number.</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="c1"># Increase error counter.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">raise</span>
+
+        <span class="c1"># Catch known exception with its traceback.</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># Lock error number.</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="c1"># Increase error counter.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># Format &amp; print exception traceback.</span>
+                <span class="n">exc</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">TAGS</span><span class="o">.</span><span class="n">SKIP</span> <span class="o">+</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">HEADER</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># Lock progress value.</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="c1"># Increase progress counter.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># Clear previous print.</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+                <span class="c1"># Print progress bar.</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">{</span><span class="n">COLORS</span><span class="o">.</span><span class="n">OKBLUE</span><span class="p">(</span><span class="n">SPINNER_DESC</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">FRAMES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">FRAMES</span><span class="p">)]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+                <span class="c1"># Set new message length.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage local data through the DRS &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Generate mapfile for ESGF publication" href="mapfiles.html" />
+    <link rel="prev" title="Generic usage" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Manage local data through the DRS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#list-the-datasets-related-to-the-incoming-files">List the datasets related to the incoming files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#set-a-facet-value">Set a facet value</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#enforce-a-facet-mapping">Enforce a facet mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#set-up-the-version-upgrade">Set up the version upgrade</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualize-the-excepted-drs-tree">Visualize the excepted DRS tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#set-up-a-root-directory">Set up a root directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#list-unix-command-to-apply">List Unix command to apply</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#change-the-migration-mode">Change the migration mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade">Run the DRS upgrade</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade-from-the-latest-version">Run the DRS upgrade from the latest version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rescanning-data">Rescanning data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Manage local data through the DRS</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/drs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="manage-local-data-through-the-drs">
+<span id="drs"></span><h1>Manage local data through the DRS<a class="headerlink" href="#manage-local-data-through-the-drs" title="Link to this heading"></a></h1>
+<p>The Data Reference Syntax (DRS) defines the way your data must be organised on your filesystem. This allows a proper
+publication on the ESGF node. <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> is designed to help ESGF data node managers to prepare incoming data for
+publication, placing files in the DRS directory structure, and to manage multiple versions of publication-level datasets
+in a way that minimises disk usage.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>PREREQUISITE:</strong> Before using <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code>, you must install the controlled vocabularies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>install
+<span class="c1"># OR if using uv:</span>
+uv<span class="w"> </span>run<span class="w"> </span>esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+<p>Without this step, <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> commands will fail with: <code class="docutils literal notranslate"><span class="pre">RuntimeError:</span> <span class="pre">universe</span> <span class="pre">connection</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">initialized</span></code></p>
+<p><strong>Keep vocabularies updated:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> periodically to get the latest controlled vocabulary
+updates from ESGF projects, ensuring compatibility with new experiments, models, and facet values.</p>
+<p>See <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> for more details, or visit the
+<a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a> for advanced vocabulary management.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Only CMORized netCDF files are supported as incoming files.</p>
+</div>
+<p>Several <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> actions are available to manage your local archive:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">list</span></code> lists publication-level datasets,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tree</span></code> displays the final DRS tree,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">todo</span></code> shows file operations pending for the next version,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">upgrade</span></code> makes the changes to upgrade datasets to the next version.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> deduces the expected DRS by scanning the incoming files and checking the facets against the
+project vocabularies managed by <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code>. The DRS facets values are deduced from:</p>
+<ol class="arabic simple">
+<li><p>The command-line using <code class="docutils literal notranslate"><span class="pre">--set-value</span> <span class="pre">facet=value</span></code>. This flag can be used several times to set several facets values.</p></li>
+<li><p>The filename pattern using the <code class="docutils literal notranslate"><span class="pre">filename_format</span></code> from the project vocabulary definitions.</p></li>
+<li><p>The NetCDF global attributes by picking the attribute with the nearest name of the facet key.</p></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The incoming files are supposed to be produced by <a class="reference external" href="https://cmor.llnl.gov/">CMOR</a> (or at least be
+CMOR-compliant) and unversioned. <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> will apply a version regardless of the incoming file path. The
+applied version only depends on the <code class="docutils literal notranslate"><span class="pre">--version</span></code> flag and the existing dataset versions in the DRS <code class="docutils literal notranslate"><span class="pre">--root</span></code>.</p>
+</div>
+<section id="list-the-datasets-related-to-the-incoming-files">
+<h2>List the datasets related to the incoming files<a class="headerlink" href="#list-the-datasets-related-to-the-incoming-files" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">list</span></code> action lists the publication-level dataset corresponding to your MIP-compliant files. The resulting table
+lists each dataset with:</p>
+<ul class="simple">
+<li><p>the latest known version on the filesystem (i.e., the root directory),</p></li>
+<li><p>the upgraded version to apply,</p></li>
+<li><p>the number of related incoming files,</p></li>
+<li><p>the total size of the upgraded dataset (i.e., the sum of all incoming files related to this upgrade).</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> doesn’t have filter arguments as <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code>. It only support non-hidden netCDF files. Nevertheless,
+to ignore some files your can submit a list of files to ignore during data discovery:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--ignore-from-incoming<span class="w"> </span>/PATH/TO/LIST/OF/FILES/TO/IGNORE
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each run also produces a temporary file which stores the scan results to be used by next subcommands avoiding
+to rescan a lot of files.</p>
+</div>
+</section>
+<section id="set-a-facet-value">
+<h2>Set a facet value<a class="headerlink" href="#set-a-facet-value" title="Link to this heading"></a></h2>
+<p>In some cases, a DRS facet value cannot be properly deduces from the above sources. To solve this issue, a facet value
+can be set for the whole scan. By duplicating the flag several facet value can be enforced. If the same facet key is
+used, only the last value will be considered.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY</span><span class="o">=</span>VALUE
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY1</span><span class="o">=</span>VALUE1<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY2</span><span class="o">=</span>VALUE2
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For instance, the <code class="docutils literal notranslate"><span class="pre">product</span></code> facet in CMIP5 project is not part of the filename and is often set to
+<code class="docutils literal notranslate"><span class="pre">output</span></code> in CMIP5 NetCDF global attributes however it should be <code class="docutils literal notranslate"><span class="pre">output1</span></code> or <code class="docutils literal notranslate"><span class="pre">output2</span></code>. Consequently, you can
+use <code class="docutils literal notranslate"><span class="pre">--set-value</span> <span class="pre">product=output1</span></code> or <code class="docutils literal notranslate"><span class="pre">--set-value</span> <span class="pre">product=output2</span></code> depending on the dataset.</p>
+</div>
+</section>
+<section id="enforce-a-facet-mapping">
+<h2>Enforce a facet mapping<a class="headerlink" href="#enforce-a-facet-mapping" title="Link to this heading"></a></h2>
+<p>Based on the same schema of the <code class="docutils literal notranslate"><span class="pre">--set-value</span></code> argument, the mapping between a (list of) facet key and a (list of)
+particular NetCDF attribute can be enforced for the whole scan.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-key<span class="w"> </span><span class="nv">FACET_KEY</span><span class="o">=</span>ATTRIBUTE
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-key<span class="w"> </span><span class="nv">FACET_KEY1</span><span class="o">=</span>ATTRIBUTE1<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY2</span><span class="o">=</span>ATTRIBUTE2
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For instance, the <code class="docutils literal notranslate"><span class="pre">institute</span></code> facet in CORDEX project is not part of the filename and corresponds to the
+<code class="docutils literal notranslate"><span class="pre">institute_id</span></code> NetCDF global attribute. Consequently, you can use <code class="docutils literal notranslate"><span class="pre">--set-key</span> <span class="pre">institute=institute_id</span></code>.</p>
+</div>
+</section>
+<section id="set-up-the-version-upgrade">
+<h2>Set up the version upgrade<a class="headerlink" href="#set-up-the-version-upgrade" title="Link to this heading"></a></h2>
+<p>The upgraded version can be set using <code class="docutils literal notranslate"><span class="pre">--version</span> <span class="pre">YYYYMMDD</span></code> instead of the current date (the default).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--version<span class="w"> </span>YYYYMMDD
+</pre></div>
+</div>
+</section>
+<section id="visualize-the-excepted-drs-tree">
+<h2>Visualize the excepted DRS tree<a class="headerlink" href="#visualize-the-excepted-drs-tree" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">tree`</span> <span class="pre">action</span> <span class="pre">allows</span> <span class="pre">you</span> <span class="pre">to</span> <span class="pre">print</span> <span class="pre">the</span> <span class="pre">expected</span> <span class="pre">DRS</span> <span class="pre">tree</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">similar</span> <span class="pre">way</span> <span class="pre">as</span> <span class="pre">the</span> <span class="pre">Unix</span> <span class="pre">&quot;tree&quot;</span> <span class="pre">command.</span>
+<span class="pre">All</span> <span class="pre">the</span> <span class="pre">DRS</span> <span class="pre">parts</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">root</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">filename</span> <span class="pre">are</span> <span class="pre">shown.</span> <span class="pre">In</span> <span class="pre">addition,</span> <span class="pre">the</span> <span class="pre">symlink</span> <span class="pre">skeleton</span> <span class="pre">between</span> <span class="pre">the</span> <span class="pre">dataset</span>
+<span class="pre">versions</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">&quot;latest&quot;</span> <span class="pre">symlinks</span> <span class="pre">are</span> <span class="pre">displayed</span> <span class="pre">as</span> <span class="pre">it</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">generated</span> <span class="pre">on</span> <span class="pre">your</span> <span class="pre">filesystem.</span> <span class="pre">Indeed,</span> <span class="pre">in</span> <span class="pre">order</span> <span class="pre">to</span> <span class="pre">save</span>
+<span class="pre">disk</span> <span class="pre">space,</span> <span class="pre">the</span> <span class="pre">scanned</span> <span class="pre">files</span> <span class="pre">are</span> <span class="pre">moved</span> <span class="pre">into</span> <span class="pre">``files/dYYYYMMDD</span></code> folders. The <code class="docutils literal notranslate"><span class="pre">vYYYYMMDD</span></code> has a
+symbolic links skeleton that avoid to duplicate files between two versions.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Some miscellaneous characters could appear due to wrong encoding configuration. To see ASCII characters,
+choose another utf-8 font in your console setup.</p>
+</div>
+</section>
+<section id="set-up-a-root-directory">
+<h2>Set up a root directory<a class="headerlink" href="#set-up-a-root-directory" title="Link to this heading"></a></h2>
+<p>By default, the DRS tree is built from your current directory. This can be changed by submitting a root path.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--root<span class="w"> </span>/PATH/TO/MY_ROOT
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The DRS tree is automatically rebuilt from the project level. Be careful to not submit a root path
+including the project.</p>
+</div>
+</section>
+<section id="list-unix-command-to-apply">
+<h2>List Unix command to apply<a class="headerlink" href="#list-unix-command-to-apply" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">todo</span></code> action allows to check deeper which Unix commands would be run on the filesystem in order to upgrade
+the datasets versions. It can be seen as a dry-run to check which unix commands should be apply to build the expected
+DRS tree. At this step, no file are moved or copy to the final DRS.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
+</pre></div>
+</div>
+<p>Those Unix command-lines can also be written into a file for further process:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--commands-file<span class="w"> </span>/PATH/TO/COMMANDS.txt
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only the commands statements are written to the file. This is not a logfile.</p>
+</div>
+<p>By default another <code class="docutils literal notranslate"><span class="pre">esgdrs</span> <span class="pre">todo</span></code> run will append new command-lines to the file (if exists).
+To overwrite existing file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--commands-file<span class="w"> </span>/PATH/TO/COMMANDS.txt<span class="w"> </span>--overwrite-commands-file
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">drs</span></code> action is also able to remove incoming files in some particular case
+(see <code class="docutils literal notranslate"><span class="pre">--upgrade-from-latest</span></code> and <code class="docutils literal notranslate"><span class="pre">--ignore-from-latest</span></code> options).</p>
+</div>
+</section>
+<section id="change-the-migration-mode">
+<h2>Change the migration mode<a class="headerlink" href="#change-the-migration-mode" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> allows different file migration mode.
+Default is to move the files from the incoming path to the root directory. Use <code class="docutils literal notranslate"><span class="pre">--copy</span></code> to make hard copies,
+<code class="docutils literal notranslate"><span class="pre">--link</span></code> to make hard links or <code class="docutils literal notranslate"><span class="pre">--symlink</span></code> to make symbolic links from the incoming path. We recommend to use
+<code class="docutils literal notranslate"><span class="pre">--link</span></code> and remove the incoming directory after DRS checking. This doesn’t affect the symbolic link skeleton used
+for the dataset versioning.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--copy
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--link
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--symlink
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> temporarily stores the result of the <code class="docutils literal notranslate"><span class="pre">list</span></code> action to quickly generate the DRS tree
+afterwards. This requires to strictly submit the same arguments from the <code class="docutils literal notranslate"><span class="pre">list</span></code> action to the following ones.
+If not, the incoming files are automatically scan again.</p>
+</div>
+</section>
+<section id="run-the-drs-upgrade">
+<h2>Run the DRS upgrade<a class="headerlink" href="#run-the-drs-upgrade" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">upgrade</span></code> action automatically places your MIP-compliant netCDF files into the DRS directory structure.
+It applies the Unix commands listed by <code class="docutils literal notranslate"><span class="pre">todo</span></code> action to generated the DRS tree displayed by <code class="docutils literal notranslate"><span class="pre">tree</span></code> action.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
+</pre></div>
+</div>
+</section>
+<section id="run-the-drs-upgrade-from-the-latest-version">
+<h2>Run the DRS upgrade from the latest version<a class="headerlink" href="#run-the-drs-upgrade-from-the-latest-version" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> supports two upgrade methods:</p>
+<blockquote>
+<div><p><em>(a)</em> (the default) The incoming directory must contain the complete contents of the new version of the dataset.
+If a file is unchanged from the previous version, it must still be supplied in incoming, although esgprep will
+detect that it is unmodified, and will optimise disk space by removing duplicates and symlinking to the old version
+instead. Any files that are not supplied are treated as removed in the new version.</p>
+<p><em>(b)</em> The new version of the dataset is based primarily on the previous published version. The user supplies in the
+incoming directory (or directories) only the files which are modified in the new version. Any file not supplied in
+incoming is considered to be the same as in the previous version, and a symlink is created accordingly.</p>
+</div></blockquote>
+<p>The option <code class="docutils literal notranslate"><span class="pre">--upgrade-from-latest</span></code> allows you to toggle to method <em>(b)</em>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--upgrade-from-latest
+</pre></div>
+</div>
+<p>By construction, method <em>(b)</em> might not support to simply delete a file between versions, rather than modifying it.
+The associated flag <code class="docutils literal notranslate"><span class="pre">--ignore-from-latest</span></code> allows you to submit a list of filenames to ignore during the version
+upgrade (i.e., files to be deleted between versions).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--ignore-from-latest<span class="w"> </span>/PATH/TO/FILENAMES.TXT
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">--ignore-from-latest</span></code> is submitted, <code class="docutils literal notranslate"><span class="pre">--upgrade-from-latest</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> by default.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We highly recommend to use the <code class="docutils literal notranslate"><span class="pre">tree</span></code>  action to see what the upgraded tree looks like before applying
+the upgrade.</p>
+</div>
+</section>
+<section id="rescanning-data">
+<h2>Rescanning data<a class="headerlink" href="#rescanning-data" title="Link to this heading"></a></h2>
+<p>By default the <code class="docutils literal notranslate"><span class="pre">list</span></code> action scans data and record the rebuilt DRS tree into a temporary Pickle file. This file is
+then read to skip data scan when other actions (i.e., <code class="docutils literal notranslate"><span class="pre">tree</span></code>, <code class="docutils literal notranslate"><span class="pre">todo</span></code> or <code class="docutils literal notranslate"><span class="pre">upgrad</span></code>) are invoked, except if key
+options have been changed from the previous <code class="docutils literal notranslate"><span class="pre">list</span></code> call. In such a case the scan is redone automatically.
+To force the rescan in any case:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--rescan
+</pre></div>
+</div>
+</section>
+<section id="exit-status">
+<h2>Exit status<a class="headerlink" href="#exit-status" title="Link to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>Status = 0</dt><dd><p>All the files have been successfully scanned and the DRS tree properly generated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Status &gt; 0</dt><dd><p>Some scan errors occurred. Some files have been skipped or failed during the scan potentially leading to an
+incomplete DRS tree.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Generic usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mapfiles.html" class="btn btn-neutral float-right" title="Generate mapfile for ESGF publication" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

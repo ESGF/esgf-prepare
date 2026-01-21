@@ -1,0 +1,474 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-World Examples &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="Generate mapfile for ESGF publication" href="mapfiles.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Real-World Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cmip7-example">CMIP7 Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scenario">Scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-1-list-datasets">Step 1: List datasets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-preview-the-drs-structure">Step 2: Preview the DRS structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-apply-the-drs-structure">Step 3: Apply the DRS structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4-generate-mapfiles">Step 4: Generate mapfiles</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cordex-cmip6-example">CORDEX-CMIP6 Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Step 1: List datasets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-preview-and-apply-drs">Step 2: Preview and apply DRS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-generate-mapfiles">Step 3: Generate mapfiles</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-differences-between-projects">Key Differences Between Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dataset-updates-new-versions">Dataset Updates (New Versions)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-upgrade-from-latest">Using –upgrade-from-latest</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-before-production">Testing Before Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#large-dataset-processing">Large Dataset Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pre-calculate-checksums">Pre-calculate checksums</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimize-multiprocessing">Optimize multiprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Real-World Examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="real-world-examples">
+<span id="examples"></span><h1>Real-World Examples<a class="headerlink" href="#real-world-examples" title="Link to this heading"></a></h1>
+<p>This section provides complete, copy-paste-ready examples for common ESGF projects.
+Each example shows the full workflow from raw data to publication-ready mapfiles.</p>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#cmip7-example" id="id4">CMIP7 Example</a></p>
+<ul>
+<li><p><a class="reference internal" href="#scenario" id="id5">Scenario</a></p></li>
+<li><p><a class="reference internal" href="#step-1-list-datasets" id="id6">Step 1: List datasets</a></p></li>
+<li><p><a class="reference internal" href="#step-2-preview-the-drs-structure" id="id7">Step 2: Preview the DRS structure</a></p></li>
+<li><p><a class="reference internal" href="#step-3-apply-the-drs-structure" id="id8">Step 3: Apply the DRS structure</a></p></li>
+<li><p><a class="reference internal" href="#step-4-generate-mapfiles" id="id9">Step 4: Generate mapfiles</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#cordex-cmip6-example" id="id10">CORDEX-CMIP6 Example</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id11">Scenario</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id12">Step 1: List datasets</a></p></li>
+<li><p><a class="reference internal" href="#step-2-preview-and-apply-drs" id="id13">Step 2: Preview and apply DRS</a></p></li>
+<li><p><a class="reference internal" href="#step-3-generate-mapfiles" id="id14">Step 3: Generate mapfiles</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#key-differences-between-projects" id="id15">Key Differences Between Projects</a></p></li>
+<li><p><a class="reference internal" href="#dataset-updates-new-versions" id="id16">Dataset Updates (New Versions)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id3" id="id17">Scenario</a></p></li>
+<li><p><a class="reference internal" href="#using-upgrade-from-latest" id="id18">Using –upgrade-from-latest</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#testing-before-production" id="id19">Testing Before Production</a></p></li>
+<li><p><a class="reference internal" href="#large-dataset-processing" id="id20">Large Dataset Processing</a></p>
+<ul>
+<li><p><a class="reference internal" href="#pre-calculate-checksums" id="id21">Pre-calculate checksums</a></p></li>
+<li><p><a class="reference internal" href="#optimize-multiprocessing" id="id22">Optimize multiprocessing</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#see-also" id="id23">See Also</a></p></li>
+</ul>
+</nav>
+<section id="cmip7-example">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">CMIP7 Example</a><a class="headerlink" href="#cmip7-example" title="Link to this heading"></a></h2>
+<p>CMIP7 (Coupled Model Intercomparison Project Phase 7) is the latest generation of coordinated
+climate model experiments. This example demonstrates preparing CMIP7 data for ESGF publication.</p>
+<section id="scenario">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Scenario</a><a class="headerlink" href="#scenario" title="Link to this heading"></a></h3>
+<p>You have CMIP7 model output from IPSL-CM7A-LR for the historical experiment:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/incoming/
+├── tas_mon_IPSL-CM7A-LR_historical_r1i1p1f1_glb_g1_185001-201412.nc
+├── tas_mon_IPSL-CM7A-LR_historical_r2i1p1f1_glb_g1_185001-201412.nc
+└── pr_mon_IPSL-CM7A-LR_historical_r1i1p1f1_glb_g1_185001-201412.nc
+</pre></div>
+</div>
+</section>
+<section id="step-1-list-datasets">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Step 1: List datasets</a><a class="headerlink" href="#step-1-list-datasets" title="Link to this heading"></a></h3>
+<p>First, check what datasets will be created:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/incoming/
+</pre></div>
+</div>
+<p>Expected output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Dataset: CMIP7.CMIP.IPSL.IPSL-CM7A-LR.historical.r1i1p1f1.glb.mon.tas.g1
+Files: 1, Size: 2.3 GB, Version: v20250120
+
+Dataset: CMIP7.CMIP.IPSL.IPSL-CM7A-LR.historical.r2i1p1f1.glb.mon.tas.g1
+Files: 1, Size: 2.3 GB, Version: v20250120
+
+Dataset: CMIP7.CMIP.IPSL.IPSL-CM7A-LR.historical.r1i1p1f1.glb.mon.pr.g1
+Files: 1, Size: 1.8 GB, Version: v20250120
+</pre></div>
+</div>
+</section>
+<section id="step-2-preview-the-drs-structure">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Step 2: Preview the DRS structure</a><a class="headerlink" href="#step-2-preview-the-drs-structure" title="Link to this heading"></a></h3>
+<p>See how files will be organized:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/incoming/
+</pre></div>
+</div>
+<p>Expected output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/data/MIP-DRS7/
+└── CMIP7/
+    └── CMIP/
+        └── IPSL/
+            └── IPSL-CM7A-LR/
+                └── historical/
+                    ├── r1i1p1f1/
+                    │   └── glb/
+                    │       └── mon/
+                    │           ├── tas/
+                    │           │   └── none/
+                    │           │       └── g1/
+                    │           │           ├── v20250120/
+                    │           │           └── latest -&gt; v20250120/
+                    │           └── pr/
+                    │               └── none/
+                    │                   └── g1/
+                    │                       ├── v20250120/
+                    │                       └── latest -&gt; v20250120/
+                    └── r2i1p1f1/
+                        └── ...
+</pre></div>
+</div>
+</section>
+<section id="step-3-apply-the-drs-structure">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Step 3: Apply the DRS structure</a><a class="headerlink" href="#step-3-apply-the-drs-structure" title="Link to this heading"></a></h3>
+<p>Create the directory structure using symlinks (recommended to save disk space):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>/data<span class="w"> </span>--link<span class="w"> </span>/incoming/
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">--link</span></code> to create symlinks instead of copying files. This saves disk space
+and allows the original files to remain in place.</p>
+</div>
+</section>
+<section id="step-4-generate-mapfiles">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Step 4: Generate mapfiles</a><a class="headerlink" href="#step-4-generate-mapfiles" title="Link to this heading"></a></h3>
+<p>Create mapfiles for ESGF publication:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/data/MIP-DRS7/
+</pre></div>
+</div>
+<p>Output files:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CMIP7.CMIP.IPSL.IPSL-CM7A-LR.historical.r1i1p1f1.glb.mon.tas.g1.v20250120.map
+CMIP7.CMIP.IPSL.IPSL-CM7A-LR.historical.r2i1p1f1.glb.mon.tas.g1.v20250120.map
+CMIP7.CMIP.IPSL.IPSL-CM7A-LR.historical.r1i1p1f1.glb.mon.pr.g1.v20250120.map
+</pre></div>
+</div>
+<p>Example mapfile content:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CMIP7.CMIP.IPSL.IPSL-CM7A-LR.historical.r1i1p1f1.glb.mon.tas.g1.v20250120 | /data/MIP-DRS7/CMIP7/CMIP/IPSL/IPSL-CM7A-LR/historical/r1i1p1f1/glb/mon/tas/none/g1/v20250120/tas_mon_IPSL-CM7A-LR_historical_r1i1p1f1_glb_g1_185001-201412.nc | 2469134567 | mod_time=1737331200.0 | checksum=a1b2c3d4... | checksum_type=SHA256
+</pre></div>
+</div>
+</section>
+</section>
+<section id="cordex-cmip6-example">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">CORDEX-CMIP6 Example</a><a class="headerlink" href="#cordex-cmip6-example" title="Link to this heading"></a></h2>
+<p>CORDEX (Coordinated Regional Climate Downscaling Experiment) provides high-resolution
+regional climate projections. This example shows preparing CORDEX-CMIP6 data.</p>
+<section id="id1">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Scenario</a><a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>You have CORDEX data for the European domain from the ALARO1-SFX model:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/incoming/
+├── tas_EUR-12_MPI-ESM1-2-HR_historical_r1i1p1f1_RMIB-UGent_ALARO1-SFX_v1_day_19500101-19501231.nc
+└── pr_EUR-12_MPI-ESM1-2-HR_historical_r1i1p1f1_RMIB-UGent_ALARO1-SFX_v1_day_19500101-19501231.nc
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Step 1: List datasets</a><a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>/incoming/
+</pre></div>
+</div>
+<p>Expected output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Dataset: CORDEX.DD.EUR-12.RMIB-UGent.MPI-ESM1-2-HR.historical.r1i1p1f1.ALARO1-SFX.v1.day.tas
+Files: 1, Size: 450 MB, Version: v20250120
+
+Dataset: CORDEX.DD.EUR-12.RMIB-UGent.MPI-ESM1-2-HR.historical.r1i1p1f1.ALARO1-SFX.v1.day.pr
+Files: 1, Size: 380 MB, Version: v20250120
+</pre></div>
+</div>
+</section>
+<section id="step-2-preview-and-apply-drs">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Step 2: Preview and apply DRS</a><a class="headerlink" href="#step-2-preview-and-apply-drs" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Preview structure</span>
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>/incoming/
+
+<span class="c1"># Apply structure</span>
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>--root<span class="w"> </span>/data<span class="w"> </span>--link<span class="w"> </span>/incoming/
+</pre></div>
+</div>
+</section>
+<section id="step-3-generate-mapfiles">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Step 3: Generate mapfiles</a><a class="headerlink" href="#step-3-generate-mapfiles" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>/data/CORDEX/
+</pre></div>
+</div>
+</section>
+</section>
+<section id="key-differences-between-projects">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Key Differences Between Projects</a><a class="headerlink" href="#key-differences-between-projects" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 40.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>CMIP7</p></th>
+<th class="head"><p>CORDEX-CMIP6</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Scope</strong></p></td>
+<td><p>Global climate models</p></td>
+<td><p>Regional downscaling</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Resolution</strong></p></td>
+<td><p>~100-250 km</p></td>
+<td><p>12-50 km</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Key facets</strong></p></td>
+<td><p>source, experiment, frequency</p></td>
+<td><p>domain_id, driving_source_id, source_id</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>DRS root</strong></p></td>
+<td><p>MIP-DRS7/CMIP7/</p></td>
+<td><p>CORDEX/</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="dataset-updates-new-versions">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Dataset Updates (New Versions)</a><a class="headerlink" href="#dataset-updates-new-versions" title="Link to this heading"></a></h2>
+<p>When you need to publish an updated version of existing data:</p>
+<section id="id3">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Scenario</a><a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>You have corrections to existing CMIP7 data:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/incoming_v2/
+└── tas_mon_IPSL-CM7A-LR_historical_r1i1p1f1_glb_g1_185001-201412.nc  (corrected)
+</pre></div>
+</div>
+</section>
+<section id="using-upgrade-from-latest">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Using –upgrade-from-latest</a><a class="headerlink" href="#using-upgrade-from-latest" title="Link to this heading"></a></h3>
+<p>This option reuses unchanged files from the previous version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
+<span class="w">                  </span>--root<span class="w"> </span>/data<span class="w"> </span><span class="se">\</span>
+<span class="w">                  </span>--link<span class="w"> </span><span class="se">\</span>
+<span class="w">                  </span>--upgrade-from-latest<span class="w"> </span><span class="se">\</span>
+<span class="w">                  </span>/incoming_v2/
+</pre></div>
+</div>
+<p>Result:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/data/MIP-DRS7/CMIP7/.../tas/none/g1/
+├── files/
+│   ├── d20250101/
+│   │   └── tas_*.nc          (original)
+│   └── d20250120/
+│       └── tas_*.nc          (corrected)
+│
+├── v20250101/
+│   └── tas_*.nc -&gt; ../files/d20250101/tas_*.nc
+│
+├── v20250120/
+│   └── tas_*.nc -&gt; ../files/d20250120/tas_*.nc  (new version)
+│
+└── latest -&gt; v20250120/      (updated)
+</pre></div>
+</div>
+<p>Generate mapfiles for the new version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--latest<span class="w"> </span>/data/MIP-DRS7/
+</pre></div>
+</div>
+</section>
+</section>
+<section id="testing-before-production">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">Testing Before Production</a><a class="headerlink" href="#testing-before-production" title="Link to this heading"></a></h2>
+<p>Always test your workflow before modifying production data:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a test directory</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>/tmp/esgprep_test
+
+<span class="c1"># Copy a few sample files</span>
+cp<span class="w"> </span>/incoming/tas_*.nc<span class="w"> </span>/tmp/esgprep_test/
+
+<span class="c1"># Test the workflow</span>
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/tmp/esgprep_test/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/tmp/esgprep_test/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>/tmp/test_output<span class="w"> </span>--link<span class="w"> </span>/tmp/esgprep_test/
+
+<span class="c1"># Verify structure</span>
+tree<span class="w"> </span>/tmp/test_output/
+
+<span class="c1"># Generate test mapfiles</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/tmp/test_output/
+
+<span class="c1"># Review mapfiles</span>
+cat<span class="w"> </span>*.map
+
+<span class="c1"># Clean up when satisfied</span>
+rm<span class="w"> </span>-rf<span class="w"> </span>/tmp/esgprep_test<span class="w"> </span>/tmp/test_output
+</pre></div>
+</div>
+</section>
+<section id="large-dataset-processing">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">Large Dataset Processing</a><a class="headerlink" href="#large-dataset-processing" title="Link to this heading"></a></h2>
+<p>For datasets with many files (&gt;10,000), optimize processing:</p>
+<section id="pre-calculate-checksums">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Pre-calculate checksums</a><a class="headerlink" href="#pre-calculate-checksums" title="Link to this heading"></a></h3>
+<p>For large files, pre-calculating checksums can save time:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create checksum file</span>
+find<span class="w"> </span>/incoming<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.nc&quot;</span><span class="w"> </span>-exec<span class="w"> </span>sha256sum<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>&gt;<span class="w"> </span>checksums.txt
+
+<span class="c1"># Use pre-calculated checksums</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
+<span class="w">                   </span>--checksums-from<span class="w"> </span>checksums.txt<span class="w"> </span><span class="se">\</span>
+<span class="w">                   </span>/data/MIP-DRS7/
+</pre></div>
+</div>
+</section>
+<section id="optimize-multiprocessing">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Optimize multiprocessing</a><a class="headerlink" href="#optimize-multiprocessing" title="Link to this heading"></a></h3>
+<p>Adjust the number of processes based on your system:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use 8 processes (default is 4)</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
+<span class="w">                   </span>--max-processes<span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="se">\</span>
+<span class="w">                   </span>/data/MIP-DRS7/
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>For I/O-bound operations (reading many files), more processes may not help.
+For CPU-bound operations (checksum calculation), use as many cores as available.</p>
+</div>
+</section>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink">See Also</a><a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="concepts.html#concepts"><span class="std std-ref">Concepts &amp; Terminology</span></a> - Understanding ESGF terminology</p></li>
+<li><p><a class="reference internal" href="drs.html#drs"><span class="std std-ref">Manage local data through the DRS</span></a> - Detailed esgdrs command reference</p></li>
+<li><p><a class="reference internal" href="mapfiles.html#mapfiles"><span class="std std-ref">Generate mapfile for ESGF publication</span></a> - Detailed esgmapfile command reference</p></li>
+<li><p><a class="reference internal" href="troubleshooting.html#troubleshooting"><span class="std std-ref">Troubleshooting</span></a> - Common issues and solutions</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mapfiles.html" class="btn btn-neutral float-left" title="Generate mapfile for ESGF publication" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

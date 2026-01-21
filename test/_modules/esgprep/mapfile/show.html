@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>esgprep.mapfile.show &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../mapfile.html">esgprep.mapfile</a></li>
+      <li class="breadcrumb-item active">esgprep.mapfile.show</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for esgprep.mapfile.show</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :platform: Unix</span>
+<span class="sd">    :synopsis: Show mapfile name to be generated..</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FRAMES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.mapfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_mapfile_name</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.mapfile.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SPINNER_DESC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.print</span><span class="w"> </span><span class="kn">import</span> <span class="n">Print</span><span class="p">,</span> <span class="n">COLORS</span><span class="p">,</span> <span class="n">TAGS</span>
+
+
+<div class="viewcode-block" id="Process">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep.mapfile.show.Process">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Process</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Child process.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shared processing context between child processes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapfile_name</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">mapfile_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">outdir</span>
+        <span class="c1"># self.cfg = ctx.cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">basename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">progress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">msg_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">lock</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">errors</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Any error switches to the next child process.</span>
+<span class="sd">        It does not stop the main process at all.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Escape in case of error.</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="c1"># Import utilities depending on the source type.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_terms</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">get_project</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_terms</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">get_project</span>
+            <span class="c1"># Build dataset identifier.</span>
+            <span class="c1"># DRS terms are validated during this step.</span>
+            <span class="n">identifier</span> <span class="o">=</span> <span class="n">dataset_id</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
+            <span class="c1"># Check dataset identifier is not None.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">identifier</span><span class="p">:</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Dataset identifier is None&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="c1"># Split identifier into name &amp; version.</span>
+            <span class="c1"># Identifier does not always end by a version.</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">identifier</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\.latest|\.v[0-9]*$&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">identifier</span><span class="p">)):</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="n">identifier</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span> <span class="c1"># remove &quot;v&quot; only for name in mapfile NOT for the mapfile name</span>
+                <span class="n">dataset</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">identifier</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="c1"># Build mapfile name.</span>
+            <span class="n">outfile</span> <span class="o">=</span> <span class="n">build_mapfile_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapfile_name</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+            <span class="c1"># Build mapfile directory.</span>
+            <span class="n">outdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="c1"># try:</span>
+            <span class="c1">#     outdir = outdir.joinpath(self.cfg.get(section=&#39;config:{}&#39;.format(get_project(source)),</span>
+            <span class="c1">#                                           option=&#39;mapfile_drs&#39;,</span>
+            <span class="c1">#                                           vars=get_terms(source)))</span>
+            <span class="c1">#</span>
+            <span class="c1"># except:</span>
+            <span class="c1">#     pass</span>
+
+            <span class="c1"># Build full mapfile path.</span>
+            <span class="n">outpath</span> <span class="o">=</span> <span class="n">outdir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+
+            <span class="c1"># Print success.</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> &lt;-- </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">source</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="c1"># Returns mapfile name or path only.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basename</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">outfile</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">outpath</span>
+
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+
+            <span class="c1"># Lock error number.</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+
+                <span class="c1"># Increase error counter.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">raise</span>
+
+        <span class="c1"># Catch known exception with its traceback.</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+
+            <span class="c1"># Lock error number.</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+
+                <span class="c1"># Increase error counter.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># Format &amp; print exception traceback.</span>
+                <span class="n">exc</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">TAGS</span><span class="o">.</span><span class="n">SKIP</span> <span class="o">+</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">HEADER</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+
+            <span class="c1"># Lock progress value.</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+
+                <span class="c1"># Increase progress counter.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># Clear previous print.</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+                <span class="c1"># Print progress bar.</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">COLORS</span><span class="o">.</span><span class="n">OKBLUE</span><span class="p">(</span><span class="n">SPINNER_DESC</span><span class="p">),</span>
+                                          <span class="n">FRAMES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">FRAMES</span><span class="p">)],</span>
+                                          <span class="n">source</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+                <span class="c1"># Set new message length.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

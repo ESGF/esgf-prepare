@@ -1,0 +1,669 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Concepts &amp; Terminology" href="concepts.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#understanding-the-workflow">Understanding the Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-scenario">Example Scenario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-list-datasets">Step 1: List Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-preview-drs-structure">Step 2: Preview DRS Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-3-see-planned-operations">Step 3: See Planned Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-4-apply-drs-structure">Step 4: Apply DRS Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-5-generate-mapfiles">Step 5: Generate Mapfiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-6-verify-everything">Step 6: Verify Everything</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-options">Common Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-s-next">What’s Next?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-issues">Common Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quick-reference">Quick Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/getting_started.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-started">
+<span id="id1"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
+<p>This guide will walk you through your first use of <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> to prepare climate data for ESGF publication.
+By the end, you’ll understand the complete workflow from raw NetCDF files to publication-ready mapfiles.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This guide assumes you have already installed <code class="docutils literal notranslate"><span class="pre">esgprep</span></code>. If not, see <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>.</p>
+</div>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<p>Before starting, ensure you have:</p>
+<dl class="simple">
+<dt><strong>System Requirements:</strong></dt><dd><ul class="simple">
+<li><p>Python 3.12 or higher</p></li>
+<li><p>Linux/Unix environment</p></li>
+<li><p>Access to the filesystem containing your data</p></li>
+<li><p>Sufficient disk space (at least 2x your data size for DRS structure)</p></li>
+</ul>
+</dd>
+<dt><strong>Data Requirements:</strong></dt><dd><ul class="simple">
+<li><p>CMOR-compliant NetCDF files</p></li>
+<li><p>Files from a supported ESGF project (CMIP6, CMIP5, CORDEX, etc.)</p></li>
+<li><p>Files with proper global attributes and naming conventions</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Verify Your Environment:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check Python version</span>
+$<span class="w"> </span>python3<span class="w"> </span>--version
+Python<span class="w"> </span><span class="m">3</span>.12.7
+
+<span class="c1"># Check esgprep is installed</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>--version
+esgdrs<span class="w"> </span><span class="o">(</span>from<span class="w"> </span>esgprep<span class="w"> </span>v3.0.0<span class="w"> </span><span class="m">2019</span>-01-09<span class="o">)</span>
+
+$<span class="w"> </span>esgmapfile<span class="w"> </span>--version
+esgmapfile<span class="w"> </span><span class="o">(</span>from<span class="w"> </span>esgprep<span class="w"> </span>v3.0.0<span class="w"> </span><span class="m">2019</span>-01-09<span class="o">)</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>Initialize Controlled Vocabularies</strong></p>
+<p>Before using <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> for the first time, you must initialize the controlled vocabularies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>install
+</pre></div>
+</div>
+<p>This downloads ESGF project vocabularies and builds local databases. The installation may take a few minutes.</p>
+<p><strong>What happens if you skip this?</strong> You’ll see an error like:
+<code class="docutils literal notranslate"><span class="pre">RuntimeError:</span> <span class="pre">universe</span> <span class="pre">connection</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">initialized</span></code></p>
+<p><strong>Keep your vocabularies updated:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> periodically to get the latest controlled
+vocabulary updates from ESGF projects. This ensures you can work with newly added experiments, models,
+or updated facet values.</p>
+<p>For more details about controlled vocabularies, see the <a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a>.</p>
+</div>
+</section>
+<section id="understanding-the-workflow">
+<h2>Understanding the Workflow<a class="headerlink" href="#understanding-the-workflow" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> workflow has two main stages:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────┐
+│  NetCDF Files   │  Your incoming/raw data
+│  (any location) │
+└────────┬────────┘
+         │
+         │ esgdrs list    (preview datasets)
+         │ esgdrs tree    (preview structure)
+         │ esgdrs upgrade (organize files)
+         ↓
+┌─────────────────┐
+│  DRS Structure  │  Files organized by ESGF standards
+│  (versioned)    │
+└────────┬────────┘
+         │
+         │ esgmapfile make (generate publication metadata)
+         ↓
+┌─────────────────┐
+│    Mapfiles     │  Ready for ESGF publication
+└─────────────────┘
+</pre></div>
+</div>
+<p><strong>Key Concepts:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>DRS (Data Reference Syntax)</strong>: A standardized directory structure for organizing climate data</p></li>
+<li><p><strong>Facets</strong>: Metadata attributes (like project, model, experiment) that define your data</p></li>
+<li><p><strong>Dataset ID</strong>: A unique identifier constructed from facets, like <code class="docutils literal notranslate"><span class="pre">CMIP6.CMIP.IPSL.IPSL-CM6A-LR.historical...</span></code></p></li>
+<li><p><strong>Mapfiles</strong>: Text files listing your data files with checksums, required for ESGF publication</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="example-scenario">
+<h2>Example Scenario<a class="headerlink" href="#example-scenario" title="Link to this heading"></a></h2>
+<p>Let’s prepare CMIP6 data from the IPSL-CM6A-LR model for publication.</p>
+<p><strong>Starting Point:</strong></p>
+<p>You have NetCDF files in an incoming directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/data/incoming/
+├──<span class="w"> </span>tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
+├──<span class="w"> </span>tas_Amon_IPSL-CM6A-LR_historical_r2i1p1f1_gr_185001-201412.nc
+└──<span class="w"> </span>pr_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
+</pre></div>
+</div>
+<p><strong>Goal:</strong></p>
+<p>Create a DRS-compliant structure and generate mapfiles for ESGF publication.</p>
+</section>
+<section id="step-1-list-datasets">
+<h2>Step 1: List Datasets<a class="headerlink" href="#step-1-list-datasets" title="Link to this heading"></a></h2>
+<p>First, let’s see what datasets <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> detects from your files:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/
+</pre></div>
+</div>
+<p><strong>Expected Output:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DRS tree generation [----&lt;-] ...
+DRS tree generation [&lt;&lt;&lt;&lt;&lt;&lt;] Completed
+Number of success(es): 3
+Number of error(s): 0
+===================================================================================================================================
+                    Publication level                       Latest version   -&gt;  Upgrade version   Files to upgrade      Total size
+-----------------------------------------------------------------------------------------------------------------------------------
+CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr      Initial       -&gt;     v20250125                     1            1.2G
+CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r2i1p1f1/Amon/tas/gr      Initial       -&gt;     v20250125                     1            1.2G
+CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/pr/gr       Initial       -&gt;     v20250125                     1            2.1G
+===================================================================================================================================
+</pre></div>
+</div>
+<p><strong>What This Shows:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Progress spinner during file scanning: <code class="docutils literal notranslate"><span class="pre">[----&lt;-]</span></code> → <code class="docutils literal notranslate"><span class="pre">[&lt;&lt;&lt;&lt;&lt;&lt;]</span></code></p></li>
+<li><p>Success/error counts for processed files</p></li>
+<li><p>Table showing:
+- <strong>Publication level</strong>: Dataset path in DRS structure
+- <strong>Latest version</strong>: “Initial” for new datasets, or existing version number
+- <strong>Upgrade version</strong>: New version to be created (vYYYYMMDD format, typically today’s date)
+- <strong>Files to upgrade</strong>: Count of files in this dataset
+- <strong>Total size</strong>: Human-readable size of the dataset</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you see errors here about invalid facets or unrecognized project, check that:</p>
+<ul class="simple">
+<li><p>Your files are CMOR-compliant</p></li>
+<li><p>The project name is spelled correctly (case-sensitive: <code class="docutils literal notranslate"><span class="pre">cmip6</span></code> not <code class="docutils literal notranslate"><span class="pre">CMIP6</span></code>)</p></li>
+<li><p>Files have proper global attributes</p></li>
+</ul>
+</div>
+</section>
+<section id="step-2-preview-drs-structure">
+<h2>Step 2: Preview DRS Structure<a class="headerlink" href="#step-2-preview-drs-structure" title="Link to this heading"></a></h2>
+<p>Before making changes, preview what the DRS structure will look like:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span>--root<span class="w"> </span>/data/esgf-data
+</pre></div>
+</div>
+<p><strong>Expected Output:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DRS tree generation [----&lt;-] ...
+DRS tree generation [&lt;&lt;&lt;&lt;&lt;&lt;] Completed
+Number of success(es): 3
+Number of error(s): 0
+===================================================================================================================================
+                                                          Upgrade DRS Tree
+-----------------------------------------------------------------------------------------------------------------------------------
+/data/esgf-data
+CMIP6
+└── CMIP
+    └── IPSL
+        └── IPSL-CM6A-LR
+            └── historical
+                ├── r1i1p1f1
+                │   └── Amon
+                │       ├── tas
+                │       │   └── gr
+                │       │       ├── files
+                │       │       │   └── d20250125
+                │       │       │       └── tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
+                │       │       ├── latest -&gt; v20250125
+                │       │       └── v20250125
+                │       │           └── tas_Amon_*.nc -&gt; ../files/d20250125/tas_Amon_*.nc
+                │       └── pr
+                │           └── gr
+                │               ├── files
+                │               │   └── d20250125
+                │               ├── latest -&gt; v20250125
+                │               └── v20250125
+                └── r2i1p1f1
+                    └── Amon
+                        └── tas
+                            └── gr
+                                ├── files
+                                │   └── d20250125
+                                ├── latest -&gt; v20250125
+                                └── v20250125
+===================================================================================================================================
+</pre></div>
+</div>
+<p><strong>What This Shows:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Complete directory hierarchy following ESGF DRS</p></li>
+<li><p>Files organized by facets: activity, institution, model, experiment, variant, frequency, variable, grid</p></li>
+<li><p><strong>files/dYYYYMMDD/</strong> directories containing actual data files</p></li>
+<li><p><strong>vYYYYMMDD/</strong> directories with symlinks pointing to files</p></li>
+<li><p><strong>latest</strong> symlinks pointing to newest version directory</p></li>
+<li><p>Arrow notation (<code class="docutils literal notranslate"><span class="pre">-&gt;</span></code>) showing symlink targets</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--root</span></code> option specifies where to create the DRS structure. If omitted, it uses your current directory.</p>
+</div>
+</section>
+<section id="step-3-see-planned-operations">
+<h2>Step 3: See Planned Operations<a class="headerlink" href="#step-3-see-planned-operations" title="Link to this heading"></a></h2>
+<p>For more detail on what operations will be performed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span>--root<span class="w"> </span>/data/esgf-data<span class="w"> </span>--link
+</pre></div>
+</div>
+<p><strong>Expected Output:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DRS tree generation [----&lt;-] ...
+DRS tree generation [&lt;&lt;&lt;&lt;&lt;&lt;] Completed
+Number of success(es): 3
+Number of error(s): 0
+===================================================================================================================================
+                                                    Unix command-lines (DRY-RUN)
+-----------------------------------------------------------------------------------------------------------------------------------
+mkdir -p /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20250125
+ln -s ../files/d20250125/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20250125/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
+mkdir -p /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr
+ln -s v20250125 /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/latest
+mkdir -p /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/files/d20250125
+ln /data/incoming/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/files/d20250125/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
+
+[... similar commands for other files ...]
+===================================================================================================================================
+</pre></div>
+</div>
+<p><strong>What This Shows:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Header: “Unix command-lines (DRY-RUN)” indicates no actual changes</p></li>
+<li><p>Exact Unix commands that will be executed:
+1. <code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">-p</span></code> - Create version directories
+2. <code class="docutils literal notranslate"><span class="pre">ln</span> <span class="pre">-s</span></code> - Create symlinks from version dir to files/
+3. <code class="docutils literal notranslate"><span class="pre">ln</span> <span class="pre">-s</span></code> - Create latest symlink pointing to version
+4. <code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">-p</span></code> - Create files/dYYYYMMDD directory
+5. <code class="docutils literal notranslate"><span class="pre">ln</span></code> - Create hard link (with <code class="docutils literal notranslate"><span class="pre">--link</span></code> flag) or <code class="docutils literal notranslate"><span class="pre">mv</span></code> - Move file (default)</p></li>
+<li><p>Sequence shows complete operation for each dataset</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">--copy</span></code> instead of <code class="docutils literal notranslate"><span class="pre">--link</span></code> if you want to preserve the original files separately.
+Use <code class="docutils literal notranslate"><span class="pre">--symlink</span></code> for symbolic links (use with caution - broken if source moves).</p>
+</div>
+</section>
+<section id="step-4-apply-drs-structure">
+<h2>Step 4: Apply DRS Structure<a class="headerlink" href="#step-4-apply-drs-structure" title="Link to this heading"></a></h2>
+<p>Now let’s actually create the DRS structure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span>--root<span class="w"> </span>/data/esgf-data<span class="w"> </span>--link
+</pre></div>
+</div>
+<p><strong>Expected Output:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DRS tree generation [----&lt;-] ...
+DRS tree generation [&lt;&lt;&lt;&lt;&lt;&lt;] Completed
+Number of success(es): 3
+Number of error(s): 0
+===================================================================================================================================
+                                                         Unix command-lines
+-----------------------------------------------------------------------------------------------------------------------------------
+mkdir -p /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20250125
+ln -s ../files/d20250125/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20250125/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
+ln -s v20250125 /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/latest
+mkdir -p /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/files/d20250125
+ln /data/incoming/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/files/d20250125/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
+
+[... similar commands for other datasets ...]
+===================================================================================================================================
+</pre></div>
+</div>
+<p><strong>What Just Happened:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Commands shown are actually being executed (no longer “DRY-RUN”)</p></li>
+<li><p>DRS directory structure created under <code class="docutils literal notranslate"><span class="pre">/data/esgf-data/CMIP6/</span></code></p></li>
+<li><p>Files hard-linked (with <code class="docutils literal notranslate"><span class="pre">--link</span></code>) to their DRS locations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">latest</span></code> symlinks created pointing to v20250125</p></li>
+<li><p>Success count confirms all operations completed</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Verify the Result:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ls<span class="w"> </span>-lh<span class="w"> </span>/data/esgf-data/cmip6/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/
+
+drwxr-xr-x<span class="w">  </span><span class="m">2</span><span class="w"> </span>user<span class="w"> </span>group<span class="w"> </span><span class="m">4</span>.0K<span class="w"> </span>Nov<span class="w"> </span><span class="m">25</span><span class="w"> </span><span class="m">10</span>:30<span class="w"> </span>v20250125
+lrwxrwxrwx<span class="w">  </span><span class="m">1</span><span class="w"> </span>user<span class="w"> </span>group<span class="w">   </span><span class="m">10</span><span class="w"> </span>Nov<span class="w"> </span><span class="m">25</span><span class="w"> </span><span class="m">10</span>:30<span class="w"> </span>latest<span class="w"> </span>-&gt;<span class="w"> </span>v20250125
+
+$<span class="w"> </span>ls<span class="w"> </span>/data/esgf-data/cmip6/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20250125/
+
+tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
+</pre></div>
+</div>
+<p>Perfect! Your data is now organized according to ESGF DRS.</p>
+</section>
+<section id="step-5-generate-mapfiles">
+<h2>Step 5: Generate Mapfiles<a class="headerlink" href="#step-5-generate-mapfiles" title="Link to this heading"></a></h2>
+<p>Now generate the mapfiles needed for ESGF publication:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/esgf-data/CMIP6/<span class="w"> </span>--outdir<span class="w"> </span>/data/mapfiles
+</pre></div>
+</div>
+<p><strong>Expected Output:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Mapfiles generation [----&lt;-] ...
+Mapfiles generation [&lt;&lt;&lt;&lt;&lt;&lt;] Completed
+
+Mapfile(s) generated: 3 (in /data/mapfiles)
+Number of success(es): 3
+Number of error(s): 0
+</pre></div>
+</div>
+<p><strong>What Was Created:</strong></p>
+<p>Mapfiles are text files with one line per data file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>cat<span class="w"> </span>/data/mapfiles/CMIP6.CMIP.IPSL.IPSL-CM6A-LR.historical.r1i1p1f1.Amon.tas.gr.v20250125.map
+</pre></div>
+</div>
+<p><strong>Content:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CMIP6.CMIP.IPSL.IPSL-CM6A-LR.historical.r1i1p1f1.Amon.tas.gr#20250125 | /data/esgf-data/CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/tas/gr/v20250125/tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc | 1234567890 | mod_time=1732531200.0 | checksum=a3d5e6f7890b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d
+</pre></div>
+</div>
+<dl class="simple">
+<dt><strong>Format:</strong></dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dataset_id#version</span> <span class="pre">|</span> <span class="pre">file_path</span> <span class="pre">|</span> <span class="pre">size_bytes</span> <span class="pre">|</span> <span class="pre">mod_time=TIMESTAMP</span> <span class="pre">|</span> <span class="pre">checksum=HEXDIGEST</span></code></p></li>
+<li><p>Note: Version uses <code class="docutils literal notranslate"><span class="pre">#</span></code> separator (not <code class="docutils literal notranslate"><span class="pre">.v</span></code>) in the dataset ID within mapfiles</p></li>
+<li><p>Checksum type defaults to SHA256 unless specified with <code class="docutils literal notranslate"><span class="pre">--checksum-type</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<p>These mapfiles are ready for ESGF publication!</p>
+</section>
+<section id="step-6-verify-everything">
+<h2>Step 6: Verify Everything<a class="headerlink" href="#step-6-verify-everything" title="Link to this heading"></a></h2>
+<p>Let’s verify the complete workflow succeeded:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check DRS structure exists</span>
+$<span class="w"> </span>tree<span class="w"> </span>/data/esgf-data/CMIP6/<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+<span class="c1"># or use: find /data/esgf-data/CMIP6/ -type f -o -type l</span>
+
+<span class="c1"># Check mapfiles were created</span>
+$<span class="w"> </span>ls<span class="w"> </span>-lh<span class="w"> </span>/data/mapfiles/
+-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>user<span class="w"> </span>group<span class="w"> </span><span class="m">350</span><span class="w"> </span>Jan<span class="w"> </span><span class="m">25</span><span class="w"> </span><span class="m">10</span>:30<span class="w"> </span>CMIP6.CMIP.IPSL.IPSL-CM6A-LR.historical.r1i1p1f1.Amon.tas.gr.v20250125.map
+-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>user<span class="w"> </span>group<span class="w"> </span><span class="m">350</span><span class="w"> </span>Jan<span class="w"> </span><span class="m">25</span><span class="w"> </span><span class="m">10</span>:30<span class="w"> </span>CMIP6.CMIP.IPSL.IPSL-CM6A-LR.historical.r2i1p1f1.Amon.tas.gr.v20250125.map
+-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>user<span class="w"> </span>group<span class="w"> </span><span class="m">350</span><span class="w"> </span>Jan<span class="w"> </span><span class="m">25</span><span class="w"> </span><span class="m">10</span>:30<span class="w"> </span>CMIP6.CMIP.IPSL.IPSL-CM6A-LR.historical.r1i1p1f1.Amon.pr.gr.v20250125.map
+
+<span class="c1"># View mapfile content</span>
+$<span class="w"> </span>cat<span class="w"> </span>/data/mapfiles/*.map<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-1
+CMIP6.CMIP.IPSL.IPSL-CM6A-LR.historical.r1i1p1f1.Amon.tas.gr#20250125<span class="w"> </span><span class="p">|</span><span class="w"> </span>/data/esgf-data/CMIP6/...<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">1234567890</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>...
+</pre></div>
+</div>
+</section>
+<section id="common-options">
+<h2>Common Options<a class="headerlink" href="#common-options" title="Link to this heading"></a></h2>
+<p>During your workflow, you may want to use these common options:</p>
+<p><strong>Performance:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use multiple processors for faster processing</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span>--max-processes<span class="w"> </span><span class="m">8</span>
+
+<span class="c1"># Skip checksums for faster testing (not for production!)</span>
+$<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/esgf-data/CMIP6/<span class="w"> </span>--no-checksum
+</pre></div>
+</div>
+<p><strong>Checksums:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use multihash format (recommended for new data)</span>
+$<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/esgf-data/CMIP6/<span class="w"> </span>--checksum-type<span class="w"> </span>sha2-256
+
+<span class="c1"># Provide pre-calculated checksums</span>
+$<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/esgf-data/CMIP6/<span class="w"> </span>--checksums-from<span class="w"> </span>checksums.txt
+</pre></div>
+</div>
+<p><strong>Versioning:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify a custom version</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span>--version<span class="w"> </span><span class="m">20241201</span>
+
+<span class="c1"># Process all versions (not just latest)</span>
+$<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/esgf-data/CMIP6/<span class="w"> </span>--all-versions
+</pre></div>
+</div>
+<p><strong>Logging:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save output to logfile</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span>--log<span class="w"> </span>/var/log/esgprep/
+
+<span class="c1"># Enable debug mode for troubleshooting</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span>--debug
+</pre></div>
+</div>
+</section>
+<section id="what-s-next">
+<h2>What’s Next?<a class="headerlink" href="#what-s-next" title="Link to this heading"></a></h2>
+<p>Congratulations! You’ve successfully:</p>
+<blockquote>
+<div><p>✓ Organized your data into ESGF DRS structure
+✓ Generated mapfiles for ESGF publication
+✓ Computed checksums for data integrity</p>
+</div></blockquote>
+<p><strong>Next Steps:</strong></p>
+<ol class="arabic">
+<li><p><strong>Publish to ESGF:</strong></p>
+<p>Use the ESGF publisher tools with your mapfiles:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgpublish<span class="w"> </span>--map<span class="w"> </span>/data/mapfiles/*.map<span class="w"> </span>--service<span class="w"> </span>fileservice
+</pre></div>
+</div>
+</li>
+<li><p><strong>Learn More:</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="drs.html#drs"><span class="std std-ref">Manage local data through the DRS</span></a> - Detailed DRS command reference</p></li>
+<li><p><a class="reference internal" href="mapfiles.html#mapfiles"><span class="std std-ref">Generate mapfile for ESGF publication</span></a> - Advanced mapfile options</p></li>
+<li><p><a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">Configuration</span></a> - Checksum and vocabulary configuration</p></li>
+<li><p><a class="reference internal" href="migration.html#migration"><span class="std std-ref">Migration Guide from esgprep 2.x to 3.0</span></a> - Migrating from version 2.x</p></li>
+</ul>
+</li>
+<li><p><strong>Handle Updates:</strong></p>
+<p>When you need to publish a new version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># New files in incoming directory</span>
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/
+<span class="c1"># Will show version increment: v20250126</span>
+
+$<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span>--upgrade-from-latest
+<span class="c1"># Only processes changed files, symlinks unchanged ones</span>
+
+$<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/esgf-data/CMIP6/
+<span class="c1"># Generates new mapfiles for updated version</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="common-issues">
+<h2>Common Issues<a class="headerlink" href="#common-issues" title="Link to this heading"></a></h2>
+<p><strong>Problem:</strong> “Project ‘cmip6’ not found in vocabulary”</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ValueError:<span class="w"> </span>Project<span class="w"> </span><span class="s1">&#39;cmip6&#39;</span><span class="w"> </span>not<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span>esgvoc
+</pre></div>
+</div>
+<p><strong>Solution:</strong> Check project name spelling (case-sensitive). Update esgvoc:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>esgvoc
+</pre></div>
+</div>
+<p>—</p>
+<p><strong>Problem:</strong> “Invalid facet value” errors</p>
+<p><strong>Solution:</strong> Your NetCDF files may not be CMOR-compliant. Verify:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check file attributes</span>
+ncdump<span class="w"> </span>-h<span class="w"> </span>your_file.nc<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;:&quot;</span>
+</pre></div>
+</div>
+<p>Ensure global attributes match project requirements.</p>
+<p>—</p>
+<p><strong>Problem:</strong> Checksumming is very slow</p>
+<p><strong>Solution:</strong> For large files, pre-calculate checksums:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate checksums separately</span>
+sha256sum<span class="w"> </span>/data/incoming/*.nc<span class="w"> </span>&gt;<span class="w"> </span>checksums.txt
+
+<span class="c1"># Use them in esgmapfile</span>
+esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/esgf-data/CMIP6/<span class="w"> </span>--checksums-from<span class="w"> </span>checksums.txt
+</pre></div>
+</div>
+<p>—</p>
+<p><strong>Problem:</strong> Need to test without modifying data</p>
+<p><strong>Solution:</strong> Use a test directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create test directory</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>/tmp/test
+
+<span class="c1"># Test in /tmp</span>
+esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/data/incoming/<span class="w"> </span>--root<span class="w"> </span>/tmp/test<span class="w"> </span>--link
+
+<span class="c1"># Review output with tree or find</span>
+tree<span class="w"> </span>/tmp/test/CMIP6/
+
+<span class="c1"># If satisfied, run on production location</span>
+</pre></div>
+</div>
+</section>
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>
+<p>If you encounter issues:</p>
+<ol class="arabic simple">
+<li><p><strong>Check the logs:</strong> Use <code class="docutils literal notranslate"><span class="pre">--log</span></code> and <code class="docutils literal notranslate"><span class="pre">--debug</span></code> options</p></li>
+<li><p><strong>Read the FAQ:</strong> See <a class="reference internal" href="faq.html#faq"><span class="std std-ref">Frequently Asked Questions</span></a> for common questions</p></li>
+<li><p><strong>Consult detailed docs:</strong> <a class="reference internal" href="usage.html#usage"><span class="std std-ref">Generic usage</span></a>, <a class="reference internal" href="drs.html#drs"><span class="std std-ref">Manage local data through the DRS</span></a>, <a class="reference internal" href="mapfiles.html#mapfiles"><span class="std std-ref">Generate mapfile for ESGF publication</span></a></p></li>
+<li><p><strong>Report bugs:</strong> <a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues">https://github.com/ESGF/esgf-prepare/issues</a></p></li>
+</ol>
+<p><strong>Useful Commands for Debugging:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check esgprep version</span>
+esgdrs<span class="w"> </span>--version
+esgmapfile<span class="w"> </span>--version
+
+<span class="c1"># Check available projects (if esgvoc accessible)</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import esgvoc; print(esgvoc.list_projects())&quot;</span>
+
+<span class="c1"># Verify NetCDF file structure</span>
+ncdump<span class="w"> </span>-h<span class="w"> </span>your_file.nc
+
+<span class="c1"># Test with single file</span>
+esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip6<span class="w"> </span>/path/to/single/file.nc
+</pre></div>
+</div>
+</section>
+<section id="quick-reference">
+<h2>Quick Reference<a class="headerlink" href="#quick-reference" title="Link to this heading"></a></h2>
+<p><strong>Essential Commands:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Preview what datasets will be created</span>
+esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT<span class="w"> </span>/path/to/incoming/
+
+<span class="c1"># Preview DRS directory structure</span>
+esgdrs<span class="w"> </span>make<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>PROJECT<span class="w"> </span>/path/to/incoming/<span class="w"> </span>--root<span class="w"> </span>/output/path
+
+<span class="c1"># See planned operations (dry-run)</span>
+esgdrs<span class="w"> </span>make<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT<span class="w"> </span>/path/to/incoming/<span class="w"> </span>--root<span class="w"> </span>/output/path<span class="w"> </span>--link
+
+<span class="c1"># Apply DRS structure</span>
+esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT<span class="w"> </span>/path/to/incoming/<span class="w"> </span>--root<span class="w"> </span>/output/path<span class="w"> </span>--link
+
+<span class="c1"># Generate mapfiles</span>
+esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT<span class="w"> </span>--directory<span class="w"> </span>/path/to/drs/<span class="w"> </span>--outdir<span class="w"> </span>/path/to/mapfiles/
+
+<span class="c1"># Show mapfile paths (dry-run)</span>
+esgmapfile<span class="w"> </span>show<span class="w"> </span>--project<span class="w"> </span>PROJECT<span class="w"> </span>--directory<span class="w"> </span>/path/to/drs/
+</pre></div>
+</div>
+<dl class="simple">
+<dt><strong>Common Projects:</strong></dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cmip6</span></code> - CMIP6</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmip5</span></code> - CMIP5</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cordex</span></code> - CORDEX</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">input4mips</span></code> - input4MIPs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs4mips</span></code> - obs4MIPs</p></li>
+</ul>
+</dd>
+</dl>
+<p>For a complete list, check the <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library documentation.</p>
+<p>—</p>
+<p><strong>Ready to dive deeper?</strong> Continue to <a class="reference internal" href="usage.html#usage"><span class="std std-ref">Generic usage</span></a> for comprehensive command-line options, or <a class="reference internal" href="drs.html#drs"><span class="std std-ref">Manage local data through the DRS</span></a> for detailed DRS management features.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="concepts.html" class="btn btn-neutral float-right" title="Concepts &amp; Terminology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

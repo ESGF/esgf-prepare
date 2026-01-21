@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>esgprep.drs.latest &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            esgprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts.html">Concepts &amp; Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drs.html">Manage local data through the DRS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autodoc.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">esgprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../drs.html">esgprep.drs</a></li>
+      <li class="breadcrumb-item active">esgprep.drs.latest</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for esgprep.drs.latest</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :platform: Unix</span>
+<span class="sd">    :synopsis: Manages the filesystem tree according to the project the Data Reference Syntax and versioning.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.print</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FRAMES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.drs.constants</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._handlers.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">LINK_SEPARATOR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._handlers.dataset_id</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+
+<div class="viewcode-block" id="Process">
+<a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.latest.Process">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Process</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Child process.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shared processing context between child processes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">set_values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_keys</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">set_keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">lock</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">errors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">msg_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">progress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">no_checksum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksums_from</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksum_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upgrade_from_latest</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">upgrade_from_latest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_latest</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ignore_from_latest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_incoming</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ignore_from_incoming</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Any error switches to the next child process.</span>
+<span class="sd">        It does not stop the main process at all.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Escape in case of error.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># For dataset objects, skip processing as we can&#39;t convert them without pyessv</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping dataset object </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> - dataset conversion not supported without pyessv&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="c1"># Work with path directly</span>
+            <span class="n">current_path</span> <span class="o">=</span> <span class="n">source</span>
+
+            <span class="c1"># Basic validation - check if path looks like a DRS structure</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">current_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Path does not exist: </span><span class="si">{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="c1"># If source is a file, we need to find the dataset directory (parent of version directory)</span>
+            <span class="k">if</span> <span class="n">current_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="c1"># Navigate up the path to find the dataset directory</span>
+                <span class="c1"># Expected structure: .../dataset_dir/vYYYYMMDD/filename</span>
+                <span class="c1"># or: .../dataset_dir/files/dYYYYMMDD/filename</span>
+                <span class="n">dataset_path</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">current_path</span><span class="o">.</span><span class="n">parents</span><span class="p">:</span>
+                    <span class="c1"># Look for version directories in this parent</span>
+                    <span class="n">version_dirs</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">parent</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^v\d</span><span class="si">{8}</span><span class="s1">$&#39;</span><span class="p">,</span> <span class="n">child</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                                <span class="n">version_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">PermissionError</span><span class="p">):</span>
+                        <span class="k">continue</span>
+
+                    <span class="k">if</span> <span class="n">version_dirs</span><span class="p">:</span>
+                        <span class="n">dataset_path</span> <span class="o">=</span> <span class="n">parent</span>
+                        <span class="k">break</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset_path</span><span class="p">:</span>
+                    <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find dataset directory for file: </span><span class="si">{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+
+                <span class="n">current_path</span> <span class="o">=</span> <span class="n">dataset_path</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found dataset directory: </span><span class="si">{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># For latest symlink creation, we need to work at the dataset level</span>
+            <span class="c1"># Find version directories in the current path</span>
+            <span class="n">versions</span> <span class="o">=</span> <span class="n">get_ordered_version_paths</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">versions</span><span class="p">:</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No version directories found in </span><span class="si">{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="c1"># Get latest version directory name</span>
+            <span class="n">latest_version_path</span> <span class="o">=</span> <span class="n">versions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">latest_version</span> <span class="o">=</span> <span class="n">extract_version</span><span class="p">(</span><span class="n">latest_version_path</span><span class="p">)</span>
+
+            <span class="c1"># Create &quot;latest&quot; symlink at the dataset level (parent of version directories)</span>
+            <span class="n">dataset_path</span> <span class="o">=</span> <span class="n">latest_version_path</span><span class="o">.</span><span class="n">parent</span>
+            <span class="n">latest_symlink_path</span> <span class="o">=</span> <span class="n">dataset_path</span> <span class="o">/</span> <span class="s2">&quot;latest&quot;</span>
+
+            <span class="c1"># Check if latest symlink exists and points to the right version</span>
+            <span class="k">if</span> <span class="n">latest_symlink_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">latest_symlink_path</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">():</span>
+                    <span class="n">current_target</span> <span class="o">=</span> <span class="n">latest_symlink_path</span><span class="o">.</span><span class="n">readlink</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">current_target</span> <span class="o">==</span> <span class="n">Path</span><span class="p">(</span><span class="n">latest_version</span><span class="p">):</span>
+                        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Latest symlink already correct: </span><span class="si">{</span><span class="n">latest_symlink_path</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">latest_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Latest path exists but is not a symlink: </span><span class="si">{</span><span class="n">latest_symlink_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="c1"># Add the &quot;latest&quot; symlink node to the tree</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">latest_symlink_path</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span>
+                <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;latest</span><span class="si">{</span><span class="n">LINK_SEPARATOR</span><span class="si">}{</span><span class="n">latest_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">latest_version</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symlink&#39;</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Print info.</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Latest symlink = </span><span class="si">{</span><span class="n">latest_symlink_path</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">latest_version</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="c1"># Return True if success.</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="c1"># Lock error number.</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="c1"># Increase error counter.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">raise</span>
+
+        <span class="c1"># Catch known exception with its traceback.</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># Lock error number.</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="c1"># Increase error counter.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># Format &amp; print exception traceback.</span>
+                <span class="n">exc</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">TAGS</span><span class="o">.</span><span class="n">SKIP</span> <span class="o">+</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">HEADER</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># Lock progress value.</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="c1"># Increase progress counter.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># Clear previous print.</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+                <span class="c1"># Print progress bar.</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">{</span><span class="n">COLORS</span><span class="o">.</span><span class="n">OKBLUE</span><span class="p">(</span><span class="n">SPINNER_DESC</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">FRAMES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">FRAMES</span><span class="p">)]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+                <span class="c1"># Set new message length.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
