@@ -1,0 +1,40 @@
+name: documentation
+
+on:
+  push:
+    branches:
+      - devel3  # TODO: Change back to 'main' after testing
+    paths:
+      - docs/**
+      - esgprep/**
+      - .github/workflows/docs.yml
+
+jobs:
+  documentation:
+    name: Build and publish documentation
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install dependencies
+        run: uv sync --group dev
+
+      - name: Build documentation
+        working-directory: docs
+        run: uv run make html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/devel3'  # TODO: Change back to 'main' after testing
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          destination_dir: test  # TODO: Remove this line after testing
