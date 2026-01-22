@@ -21,6 +21,8 @@ from esgprep.constants import FINAL_FRAME, FINAL_STATUS
 from esgprep.drs.constants import CONTROLLED_ARGS, SPINNER_DESC, TREE_FILE
 from esgprep.drs.context import ProcessingContext
 
+__all__ = ["run"]
+
 
 def do_scanning(ctx):
     """
@@ -46,9 +48,6 @@ def do_scanning(ctx):
         # Ensure that processing context is similar to previous run.
         for k in CONTROLLED_ARGS:
             if getattr(ctx, k) != old_args[k]:
-                # msg = '"{}" argument has changed: "{}" instead of "{}" -- '.format(k,
-                #                                                                    getattr(ctx, k),
-                #                                                                    old_args[k])
                 msg = f'"{k}" argument has changed: "{getattr(ctx, k)}" instead of "{old_args[k]}" -- '
                 msg += "Rescanning files."
                 Print.warning(msg)
@@ -65,7 +64,6 @@ def run(args):
     Main process.
 
     """
-    # print("OYYY : ",args)
     quiet = args.quiet if hasattr(args, "quiet") else False
     if quiet:
         _STDOUT.stdout_off()
@@ -90,10 +88,12 @@ def run(args):
         else:
             # The pickle caching with multiprocessing proxies is unreliable
             # Always perform fresh scan to ensure consistent behavior
-            Print.warning(f"Cached DRS tree exists but using fresh scan for reliability (use '--rescan' flag is no longer needed)")
+            Print.warning(
+                f"Cached DRS tree exists but using fresh scan for reliability (use '--rescan' flag is no longer needed)"
+            )
             if os.path.exists(TREE_FILE):
                 os.remove(TREE_FILE)  # Remove old pickle file
-            # Force rescan by setting ctx.rescan = True  
+            # Force rescan by setting ctx.rescan = True
             ctx.rescan = True
             # Perform fresh scan using the same logic as the main scan
             r = Runner(ctx.processes)
@@ -134,14 +134,9 @@ def run(args):
             ctx.tree.get_display_lengths()
             getattr(ctx.tree, ctx.action)(quiet=quiet)
 
-            # (vérifier si les dossier "dversion" ou 'var_version" correspondant à la version à supprimer sont vide.
-            #             # si empty supprimer le dossier.)
-            #             # faire equivalent rmdir dans dataset_path() pour supprimer les dossiers vides
-            #             # assurer qu'il n'y a pas de symlink mort.
-
-            # remove empty folder # seems to work
+            # Remove empty folder # seems to work
             # Skip rmdir for read-only operations to preserve directories
-            if ctx.action not in ['list', 'todo', 'tree']:
+            if ctx.action not in ["list", "todo", "tree"]:
                 ctx.tree.rmdir()
 
             # ctx.tree.show(line_type='ascii-ex',level=0)

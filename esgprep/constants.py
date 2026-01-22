@@ -13,34 +13,31 @@ from datetime import datetime
 
 # Program version
 # Remember to change VERSION_DATE below when updating
-VERSION = '3.0.0'
+VERSION = "3.0.0"
 
 # Date
-VERSION_DATE = datetime(year=2019, month=9, day=1).strftime("%Y-%d-%m")
+VERSION_DATE = datetime.now().strftime("%Y-%d-%m")
 
 # Shell colors map
-SHELL_COLORS = {'red': 1,
-                'green': 2,
-                'yellow': 3,
-                'blue': 4,
-                'magenta': 5,
-                'cyan': 6,
-                'gray': 7}
+SHELL_COLORS = {
+    "red": 1,
+    "green": 2,
+    "yellow": 3,
+    "blue": 4,
+    "magenta": 5,
+    "cyan": 6,
+    "gray": 7,
+}
 
 # GitHub API parameter for references
-GITHUB_API_PARAMETER = '?{}={}'
+GITHUB_API_PARAMETER = "?{}={}"
 
 # DRS version pattern
-VERSION_PATTERN = r'(v\d{8})|(latest)'  # test changement ça  '^(v[\d]+|latest)$'
+VERSION_PATTERN = r"(v\d{8})|(latest)"
 
 # Spinner frames
-FRAMES = ["[-----<]",
-          "[----<-]",
-          "[---<--]",
-          "[--<---]",
-          "[-<----]",
-          "[<-----]"]
+FRAMES = ["[-----<]", "[----<-]", "[---<--]", "[--<---]", "[-<----]", "[<-----]"]
 
 # Final spinner frame
-FINAL_FRAME = '[<<<<<<]'
-FINAL_STATUS = 'Completed'
+FINAL_FRAME = "[<<<<<<]"
+FINAL_STATUS = "Completed"

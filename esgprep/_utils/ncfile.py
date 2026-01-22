@@ -138,7 +138,6 @@ def get_project(attrs: str | dict) -> str | None:
 
     # Set project code from global attributes.
     key, score = extractOne("mip_era", attrs.keys(), scorer=partial_ratio)  # type: ignore
-    # QUESTION ; mip_era ? ou project ?
     if score < 80:
         raise NoProjectCodeFound(attrs)
 
@@ -146,5 +145,3 @@ def get_project(attrs: str | dict) -> str | None:
 
     # Return project code.
     return project
-
-

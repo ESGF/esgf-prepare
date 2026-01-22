@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-    :platform: Unix
-    :synopsis: Generates ESGF mapfiles upon a local ESGF node or not.
+:platform: Unix
+:synopsis: Generates ESGF mapfiles upon a local ESGF node or not.
 
 """
 
@@ -29,7 +29,7 @@ class Process(object):
         """
         self.mapfile_name = ctx.mapfile_name
         self.outdir = ctx.outdir
-#        self.cfg = ctx.cfg
+        #        self.cfg = ctx.cfg
         self.basename = ctx.basename
         self.no_checksum = ctx.no_checksum
         self.checksums_from = ctx.checksums_from
@@ -47,17 +47,24 @@ class Process(object):
         It does not stop the main process at all.
 
         """
-        Print.debug(f"Process.__call__: Processing source: {source} (type: {type(source)})")
+        Print.debug(
+            f"Process.__call__: Processing source: {source} (type: {type(source)})"
+        )
         # Escape in case of error.
         try:
-
             # Import utilities depending on the source type.
             if isinstance(source, Path):
                 from esgprep._utils.path import get_terms, dataset_id, get_project
-                Print.debug(f"Process.__call__: Using path utilities for source: {source}")
+
+                Print.debug(
+                    f"Process.__call__: Using path utilities for source: {source}"
+                )
             else:
                 from esgprep._utils.dataset import get_terms, dataset_id, get_project
-                Print.debug(f"Process.__call__: Using dataset utilities for source: {source}")
+
+                Print.debug(
+                    f"Process.__call__: Using dataset utilities for source: {source}"
+                )
 
             # Build dataset identifier.
             # DRS terms are validated during this step.
@@ -67,7 +74,9 @@ class Process(object):
 
             # Check dataset identifier is not None.
             if not identifier:
-                Print.debug(f'Process.__call__: Dataset identifier is None for source: {source}')
+                Print.debug(
+                    f"Process.__call__: Dataset identifier is None for source: {source}"
+                )
                 return False
 
             # Split identifier into name & version.
@@ -76,17 +85,19 @@ class Process(object):
             version = None
 
             # First check if version is in the identifier (legacy support)
-            if re.search(r'\.latest|\.v[0-9]*$', str(identifier)):
-                version = identifier.split('.')[-1][1:]  # remove "v" only for name in mapfile NOT for the mapfile name
-                dataset = '.'.join(identifier.split('.')[:-1])
+            if re.search(r"\.latest|\.v[0-9]*$", str(identifier)):
+                version = identifier.split(".")[-1][
+                    1:
+                ]  # remove "v" only for name in mapfile NOT for the mapfile name
+                dataset = ".".join(identifier.split(".")[:-1])
             else:
                 # Extract version from file path (DRS structure)
                 for part in source.parts:
-                    if part.startswith('v') and part[1:].isdigit():
+                    if part.startswith("v") and part[1:].isdigit():
                         version = part[1:]  # remove "v" prefix
                         break
-                    elif part == 'latest':
-                        version = 'latest'
+                    elif part == "latest":
+                        version = "latest"
                         break
 
             # Build mapfile name.
@@ -107,30 +118,34 @@ class Process(object):
 
             # Create mapfile directory.
             try:
-                os.makedirs(outdir)
-            except OSError:
-                pass
+                os.makedirs(outdir, exist_ok=True)
+            except OSError as e:
+                Print.warning(f"Failed to create mapfile directory {outdir}: {e}")
 
             # Gathers optional mapfile info into a dictionary.
             optional_attrs = dict()
-            optional_attrs['mod_time'] = source.stat().st_mtime
+            optional_attrs["mod_time"] = source.stat().st_mtime
             if not self.no_checksum:
-                optional_attrs['checksum'] = get_checksum(str(source), self.checksum_type, self.checksums_from)
-            optional_attrs['dataset_tech_notes'] = self.notes_url
-            optional_attrs['dataset_tech_notes_title'] = self.notes_title
+                optional_attrs["checksum"] = get_checksum(
+                    str(source), self.checksum_type, self.checksums_from
+                )
+            optional_attrs["dataset_tech_notes"] = self.notes_url
+            optional_attrs["dataset_tech_notes_title"] = self.notes_title
 
             # Generate the corresponding mapfile entry/line.
-            line = build_mapfile_entry(dataset_name=dataset,
-                                       dataset_version=version,
-                                       ffp=str(source),
-                                       size=source.stat().st_size,
-                                       optional_attrs=optional_attrs)
+            line = build_mapfile_entry(
+                dataset_name=dataset,
+                dataset_version=version,
+                ffp=str(source),
+                size=source.stat().st_size,
+                optional_attrs=optional_attrs,
+            )
 
             # Write line into mapfile.
             write(outpath, line)
 
             # Print success.
-            msg = '{} <-- {}'.format(outfile.with_suffix(''), source)
+            msg = "{} <-- {}".format(outfile.with_suffix(""), source)
             with self.lock:
                 Print.success(msg)
 
@@ -138,10 +153,8 @@ class Process(object):
             return outpath
 
         except KeyboardInterrupt:
-
             # Lock error number.
             with self.lock:
-
                 # Increase error counter.
                 self.errors.value += 1
 
@@ -149,37 +162,35 @@ class Process(object):
 
         # Catch known exception with its traceback.
         except Exception:
-
             # Lock error number.
             with self.lock:
-
                 # Increase error counter.
                 self.errors.value += 1
 
                 # Format & print exception traceback.
                 exc = traceback.format_exc().splitlines()
-                msg = TAGS.SKIP + COLORS.HEADER(str(source)) + '\n'
-                msg += '\n'.join(exc)
+                msg = TAGS.SKIP + COLORS.HEADER(str(source)) + "\n"
+                msg += "\n".join(exc)
                 Print.exception(msg, buffer=True)
 
             return None
 
         finally:
-
             # Lock progress value.
             with self.lock:
-
                 # Increase progress counter.
                 self.progress.value += 1
 
                 # Clear previous print.
-                msg = '\r{}'.format(' ' * self.msg_length.value)
+                msg = "\r{}".format(" " * self.msg_length.value)
                 Print.progress(msg)
 
                 # Print progress bar.
-                msg = '\r{} {} {}'.format(COLORS.OKBLUE(SPINNER_DESC),
-                                          FRAMES[self.progress.value % len(FRAMES)],
-                                          source)
+                msg = "\r{} {} {}".format(
+                    COLORS.OKBLUE(SPINNER_DESC),
+                    FRAMES[self.progress.value % len(FRAMES)],
+                    source,
+                )
                 Print.progress(msg)
 
                 # Set new message length.

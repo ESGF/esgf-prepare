@@ -56,12 +56,16 @@ class DRSLeaf(object):
             # Print mkdir command for both todo and actual execution
             line = f"{'mkdir -p'} {os.path.dirname(self.dst)}"
             print_cmd(line, quiet, todo_only)
-            
+
             if not todo_only:
                 try:
-                    os.makedirs(os.path.dirname(self.dst))
-                except OSError:
-                    pass
+                    os.makedirs(os.path.dirname(self.dst), exist_ok=True)
+                except FileExistsError:
+                    pass  # Directory already exists, expected case
+                except OSError as e:
+                    from esgprep._utils.print import Print
+
+                    Print.warning(f"Failed to create directory: {e}")
 
         # Unlink symbolic link if already exists.
         if self.mode == "symlink" and os.path.lexists(self.dst):
@@ -73,8 +77,8 @@ class DRSLeaf(object):
         # Make upgrade depending on the migration mode.
         line = UNIX_COMMAND_LABEL[self.mode]
         if self.src:
-            line += " " + str(self.src)  # Lolo change add str(Posix)
-        line += " " + str(self.dst)  # Lolo change str(Posix)
+            line += " " + str(self.src)
+        line += " " + str(self.dst)
         print_cmd(line, quiet, todo_only)
         if not todo_only:
             if self.src:
@@ -174,16 +178,16 @@ class DRSTree(Tree):
         # Dataset hash record.
         self.hash = dict()
 
-    def add_path(self, key: str, value: dict):
+    def add_path(self, key: str, value: dict) -> None:
         self.paths[key] = value
 
-    def append_path(self, key: str, what: str, value: dict):
+    def append_path(self, key: str, what: str, value: dict) -> None:
         self.paths[key][what].append(value)
 
     def has_path(self, key: str) -> bool:
         return key in self.paths
 
-    def get_path(self, key: str):
+    def get_path(self, key: str) -> dict | None:
         return self.paths.get(key)
 
     def get_path_value(self, key: str, field: str):
@@ -191,29 +195,29 @@ class DRSTree(Tree):
             return self.paths[key].get(field)
         return None
 
-    def get_serializable_data(self):
+    def get_serializable_data(self) -> dict:
         """Extract serializable data from DRSTree for caching."""
         return {
-            'paths': self.paths,
-            'drs_root': self.drs_root,
-            'drs_mode': self.drs_mode,
-            'd_lengths': self.d_lengths,
-            'commands_file': self.commands_file,
-            'duplicates': self.duplicates,
-            'hash': self.hash
+            "paths": self.paths,
+            "drs_root": self.drs_root,
+            "drs_mode": self.drs_mode,
+            "d_lengths": self.d_lengths,
+            "commands_file": self.commands_file,
+            "duplicates": self.duplicates,
+            "hash": self.hash,
         }
 
-    def restore_from_data(self, data):
+    def restore_from_data(self, data: dict) -> None:
         """Restore DRSTree state from serializable data."""
-        self.paths = data.get('paths', {})
-        self.drs_root = data.get('drs_root')
-        self.drs_mode = data.get('drs_mode')
-        self.d_lengths = data.get('d_lengths', [])
-        self.commands_file = data.get('commands_file')
-        self.duplicates = data.get('duplicates', [])
-        self.hash = data.get('hash', {})
+        self.paths = data.get("paths", {})
+        self.drs_root = data.get("drs_root")
+        self.drs_mode = data.get("drs_mode")
+        self.d_lengths = data.get("d_lengths", [])
+        self.commands_file = data.get("commands_file")
+        self.duplicates = data.get("duplicates", [])
+        self.hash = data.get("hash", {})
 
-    def get_display_lengths(self):
+    def get_display_lengths(self) -> None:
         """
         Gets the string lengths for comfort display of "list" action.
 
@@ -325,43 +329,14 @@ class DRSTree(Tree):
         Remove empty version directory and its empty parents.
 
         """
-        # TEST ça à l'air de marcher ..: au lieu de regarder dans self.path => qu'on a remplit au fur et à mesure .. on va directement checker le Tree
         all_tree_nodes = self.all_nodes()
         for node in all_tree_nodes[::-1]:
             if node.is_root() == False:
                 str_path = node.identifier
-                # c = node.data
-                # d = c.dst
-                # m_path = Path(node["data"]["dst"])
                 if Path(str_path).is_dir():
                     if len(os.listdir(str(str_path))) == 0:
                         print("remove empty dir ", str_path)
                         os.rmdir(str_path)
-        """ manque le latest ? il n'y a pas de noeud latest dans le DRSTree ? """
-
-        """
-        for dataset, infos in self.paths.items():
-            # dans infos .. il y les records qu'on a rempli dans le Tree remove : self.tree.paths[key]['files'] = [record]
-            a = infos["files"]
-            list_dir_to_check = [i["dst"] for i in infos["files"]]
-            for f in list_dir_to_check:
-                if f.is_dir():
-                    if len(os.listdir(f)) == 0:  # empty dir
-                        print("remove dir ", f)
-                        os.rmdir(f)
-                    for parent in f.parents:
-                        try:
-                            if len(os.listdir(parent)) == 0:
-                                os.rmdir(parent)
-                                print("remove dir ", parent)
-                        except OSError:
-                            break
-            """
-        # os.rmdir(infos['current']) # Lolo There is not infos["current"] ??? Why ???
-        # for parent in infos['current'].parents:
-        #    try:
-        #        os.rmdir(parent)
-        #    except OSError:
         #        break
 
     def list(self, **kwargs):
@@ -431,11 +406,12 @@ class DRSTree(Tree):
         if self.drs_root and self.size() > 0:
             # Show root path on single line for better readability
             print(self.drs_root)
-            
+
             # Create a new tree with only the DRS structure (relative to root)
             from treelib import Tree
+
             display_tree = Tree()
-            
+
             # Find all nodes that are under the DRS root
             drs_nodes = []
             for node in self.all_nodes():
@@ -444,44 +420,46 @@ class DRSTree(Tree):
                     if node.identifier == self.drs_root:
                         continue  # Skip the root itself
                     rel_path = os.path.relpath(node.identifier, self.drs_root)
-                    if rel_path and rel_path != '.':
+                    if rel_path and rel_path != ".":
                         drs_nodes.append((rel_path, node))
-            
+
             # Build the display tree with relative paths
             for rel_path, original_node in sorted(drs_nodes):
                 path_parts = rel_path.split(os.sep)
-                
+
                 # Create all parent nodes if they don't exist
                 for i in range(len(path_parts)):
-                    current_rel_path = os.sep.join(path_parts[:i+1])
-                    
+                    current_rel_path = os.sep.join(path_parts[: i + 1])
+
                     if not display_tree.contains(current_rel_path):
                         parent_path = None if i == 0 else os.sep.join(path_parts[:i])
-                        
+
                         # Use the actual directory/file name as tag
                         tag = path_parts[i]
-                        
+
                         # For leaf nodes with data, indicate it's a link to source
-                        if (i == len(path_parts) - 1 and original_node.data and 
-                            hasattr(original_node.data, 'src') and original_node.data.src and
-                            hasattr(original_node.data, 'mode')):
-                            if original_node.data.mode == 'symlink':
+                        if (
+                            i == len(path_parts) - 1
+                            and original_node.data
+                            and hasattr(original_node.data, "src")
+                            and original_node.data.src
+                            and hasattr(original_node.data, "mode")
+                        ):
+                            if original_node.data.mode == "symlink":
                                 tag = f"{tag} -> {os.path.basename(str(original_node.data.src))}"
-                            elif original_node.data.mode == 'move':
+                            elif original_node.data.mode == "move":
                                 tag = f"{tag} (moved from {os.path.basename(str(original_node.data.src))})"
-                            elif original_node.data.mode == 'copy':
+                            elif original_node.data.mode == "copy":
                                 tag = f"{tag} (copied from {os.path.basename(str(original_node.data.src))})"
-                        
+
                         try:
                             display_tree.create_node(
-                                tag=tag, 
-                                identifier=current_rel_path, 
-                                parent=parent_path
+                                tag=tag, identifier=current_rel_path, parent=parent_path
                             )
                         except:
                             # Node might already exist
                             pass
-            
+
             # Show the display tree if it has content
             if display_tree.size() > 0:
                 display_tree.show()
@@ -559,10 +537,3 @@ def print_cmd(line, quiet=False, todo_only=False):
         _STDOUT.stdout_off()
     else:
         print(line)
-
-
-#    if commands_file and todo_only:
-#       with open(commands_file, mode) as f:
-#          f.write('{}\n'.format(line))
-# else:
-#    print(line)

@@ -8,3 +8,5 @@
 .. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.fr>
 
 """
+
+__all__ = []
