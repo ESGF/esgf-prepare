@@ -1,13 +1,15 @@
-.. _migration:
+ .. _migration:
 
 
-Migration Guide from esgprep 2.x to 3.0
-========================================
+ Changelog from esgprep 2.x to 3.0
+ ==================================
 
-``esgprep`` version 3.0 introduces significant changes from the previous Python 2 version. This guide helps you
-transition from version 2.x to 3.0.
+ ``esgprep`` version 3.0 introduces significant changes from the previous Python 2 version. This document
+ summarizes what's new and changed.
 
-.. note:: Version 3.0 is a Python 3.12+ rewrite with modernized architecture and dependencies.
+ .. note:: Version 3.0 is a Python 3.12+ rewrite with modernized architecture and dependencies. Most changes
+    are automatic and don't require modifications to your workflow. This is provided for informational purposes
+    to help you understand the improvements.
 
 Breaking Changes
 ****************

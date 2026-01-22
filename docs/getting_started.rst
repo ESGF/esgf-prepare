@@ -67,7 +67,7 @@ The ``esgprep`` workflow has two main stages:
 .. code-block:: text
 
     ┌─────────────────┐
-    │  NetCDF Files   │  Your incoming/raw data
+    │  NetCDF Files   │  Your incoming standardized data
     │  (any location) │
     └────────┬────────┘
              │
@@ -76,7 +76,7 @@ The ``esgprep`` workflow has two main stages:
              │ esgdrs upgrade (organize files)
              ↓
     ┌─────────────────┐
-    │  DRS Structure  │  Files organized by ESGF standards
+    │  DRS Structure  │  Files organized following the project DRS
     │  (versioned)    │
     └────────┬────────┘
              │
@@ -98,9 +98,9 @@ Example Scenario
 
 Let's prepare CMIP6 data from the IPSL-CM6A-LR model for publication.
 
-**Starting Point:**
+ **Starting Point:**
 
-You have NetCDF files in an incoming directory:
+ You have standardized NetCDF files (e.g., via CMOR) that follow the project norm (CMIP7 or other supported project) in an incoming directory:
 
 .. code-block:: bash
 
@@ -138,16 +138,16 @@ First, let's see what datasets ``esgprep`` detects from your files:
     CMIP6/CMIP/IPSL/IPSL-CM6A-LR/historical/r1i1p1f1/Amon/pr/gr       Initial       ->     v20250125                     1            2.1G
     ===================================================================================================================================
 
-**What This Shows:**
+ **What This Shows:**
 
- * Progress spinner during file scanning: ``[----<-]`` → ``[<<<<<<]``
- * Success/error counts for processed files
- * Table showing:
-   - **Publication level**: Dataset path in DRS structure
-   - **Latest version**: "Initial" for new datasets, or existing version number
-   - **Upgrade version**: New version to be created (vYYYYMMDD format, typically today's date)
-   - **Files to upgrade**: Count of files in this dataset
-   - **Total size**: Human-readable size of the dataset
+  * Progress spinner during file scanning: ``[----<-]`` → ``[<<<<<<]``
+  * Success/error counts for processed files
+  * Table showing:
+    * **Publication level**: Dataset path in DRS structure
+    * **Latest version**: "Initial" for new datasets, or existing version number
+    * **Upgrade version**: New version to be created (vYYYYMMDD format, typically today's date)
+    * **Files to upgrade**: Count of files in this dataset
+    * **Total size**: Human-readable size of the dataset
 
 .. tip:: If you see errors here about invalid facets or unrecognized project, check that:
 
@@ -248,16 +248,18 @@ For more detail on what operations will be performed:
     [... similar commands for other files ...]
     ===================================================================================================================================
 
-**What This Shows:**
+ **What This Shows:**
 
- * Header: "Unix command-lines (DRY-RUN)" indicates no actual changes
- * Exact Unix commands that will be executed:
-   1. ``mkdir -p`` - Create version directories
-   2. ``ln -s`` - Create symlinks from version dir to files/
-   3. ``ln -s`` - Create latest symlink pointing to version
-   4. ``mkdir -p`` - Create files/dYYYYMMDD directory
-   5. ``ln`` - Create hard link (with ``--link`` flag) or ``mv`` - Move file (default)
- * Sequence shows complete operation for each dataset
+  * Header: "Unix command-lines (DRY-RUN)" indicates no actual changes
+  * Exact Unix commands that will be executed:
+
+    1. ``mkdir -p`` - Create version directories
+    2. ``ln -s`` - Create symlinks from version dir to files/
+    3. ``ln -s`` - Create latest symlink pointing to version
+    4. ``mkdir -p`` - Create files/dYYYYMMDD directory
+    5. ``ln`` - Create hard link (with ``--link`` flag) or ``mv`` - Move file (default)
+
+  * Sequence shows complete operation for each dataset
 
 .. tip:: Use ``--copy`` instead of ``--link`` if you want to preserve the original files separately.
    Use ``--symlink`` for symbolic links (use with caution - broken if source moves).
@@ -424,11 +426,11 @@ During your workflow, you may want to use these common options:
 What's Next?
 ************
 
-Congratulations! You've successfully:
+ Congratulations! You've successfully:
 
- ✓ Organized your data into ESGF DRS structure
- ✓ Generated mapfiles for ESGF publication
- ✓ Computed checksums for data integrity
+  * ✓ Organized your data into ESGF DRS structure
+  * ✓ Generated mapfiles for ESGF publication
+  * ✓ Computed checksums for data integrity
 
 **Next Steps:**
 

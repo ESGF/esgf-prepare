@@ -55,22 +55,21 @@ Installation from GitHub
 
 4. The ``esgdrs`` and ``esgmapfile`` command-lines are now available.
 
-Using uv (recommended for development)
-**************************************
+ Using uv (recommended for development)
+ **************************************
 
-For a faster and more modern Python package manager, you can use `uv <https://github.com/astral-sh/uv>`_:
+ For a faster and more modern Python package manager, you can use `uv <https://github.com/astral-sh/uv>`_:
 
-.. code-block:: bash
+ .. code-block:: bash
 
-   # Install uv if not already installed
-   curl -LsSf https://astral.sh/uv/install.sh | sh
+    # Install uv if not already installed
+    curl -LsSf https://astral.sh/uv/install.sh | sh
 
-   # Create a virtual environment and install esgprep
-   uv sync
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+    # Create a virtual environment and install esgprep
+    uv sync
 
-   # Initialize controlled vocabularies
-   esgvoc install
+    # Initialize controlled vocabularies
+    uv run esgvoc install
 
 .. warning:: To run ``esgprep`` tools you have to be logged into a machine which mounts the filesystem hosting the data to publish.
 
