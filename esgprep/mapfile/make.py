@@ -6,7 +6,9 @@
 
 """
 
-import traceback, re, os
+import traceback
+import re
+import os
 from pathlib import Path
 
 from esgprep._utils.checksum import get_checksum
@@ -54,13 +56,13 @@ class Process(object):
         try:
             # Import utilities depending on the source type.
             if isinstance(source, Path):
-                from esgprep._utils.path import get_terms, dataset_id, get_project
+                from esgprep._utils.path import dataset_id
 
                 Print.debug(
                     f"Process.__call__: Using path utilities for source: {source}"
                 )
             else:
-                from esgprep._utils.dataset import get_terms, dataset_id, get_project
+                from esgprep._utils.dataset import dataset_id
 
                 Print.debug(
                     f"Process.__call__: Using dataset utilities for source: {source}"

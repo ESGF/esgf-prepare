@@ -11,17 +11,23 @@
 
 import getpass
 from pathlib import Path
+from shutil import Error
 from tempfile import NamedTemporaryFile
 
+from esgprep._exceptions.io import (
+    CrossMigrationDenied,
+    MigrationDenied,
+    ReadAccessDenied,
+    WriteAccessDenied,
+)
 from hurry.filesize import size
 from treelib import Tree
 from treelib.tree import DuplicatedNodeIdError
 
 from esgprep import _STDOUT
 from esgprep._exceptions import DuplicatedDataset
-from esgprep._exceptions.io import *
 from esgprep._handlers.constants import LINK_SEPARATOR, UNIX_COMMAND, UNIX_COMMAND_LABEL
-from esgprep._utils.print import *
+import os
 
 
 class DRSLeaf(object):
@@ -331,7 +337,7 @@ class DRSTree(Tree):
         """
         all_tree_nodes = self.all_nodes()
         for node in all_tree_nodes[::-1]:
-            if node.is_root() == False:
+            if not node.is_root():
                 str_path = node.identifier
                 if Path(str_path).is_dir():
                     if len(os.listdir(str(str_path))) == 0:
@@ -456,10 +462,9 @@ class DRSTree(Tree):
                             display_tree.create_node(
                                 tag=tag, identifier=current_rel_path, parent=parent_path
                             )
-                        except:
+                        except Error:
                             # Node might already exist
                             pass
-
             # Show the display tree if it has content
             if display_tree.size() > 0:
                 display_tree.show()

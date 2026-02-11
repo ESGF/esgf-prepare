@@ -35,6 +35,7 @@ dev = [
     "pytest>=8.3.5",
     "sphinx>=8.2.3",
     "sphinx-rtd-theme>=3.0.2",
+    "ty>=0.0.16",
 ]
 [project.scripts]
 esgdrs = "esgprep.esgdrs:main"

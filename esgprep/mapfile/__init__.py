@@ -9,13 +9,15 @@
 
 """
 
+from datetime import datetime
 from pathlib import Path
 import re
 import sys
+import os
 
 from esgprep import _STDOUT
 from esgprep._contexts.multiprocessing import Runner
-from esgprep._utils.print import Print, COLORS, TAGS
+from esgprep._utils.print import Print, COLORS
 from esgprep.constants import FINAL_FRAME, FINAL_STATUS
 from esgprep.mapfile.constants import WORKING_EXTENSION, MAPFILE_EXTENSION, SPINNER_DESC
 from esgprep.mapfile.context import ProcessingContext

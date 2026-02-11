@@ -28,7 +28,7 @@ class CustomArgumentParser(argparse.ArgumentParser):
     def error(self, message):
         # Change exist status in case of wrong arguments.
         self.print_usage(sys.stderr)
-        self.exit(-1, gettext(f'{self.prog}: error: {message}\n'))
+        self.exit(-1, gettext(f"{self.prog}: error: {message}\n"))
 
 
 class MultilineFormatter(argparse.RawTextHelpFormatter):
@@ -44,22 +44,25 @@ class MultilineFormatter(argparse.RawTextHelpFormatter):
         # behaviour is independent of terminal device.
         if sys.stdin.isatty() and sys.stdout.isatty():
             try:
-                _, columns = os.popen('stty size', 'r').read().split()
+                _, columns = os.popen("stty size", "r").read().split()
             except ValueError:
                 columns = default_columns
         else:
             columns = default_columns
-        super(MultilineFormatter, self).__init__(prog, max_help_position=100, width=int(columns))
+        super(MultilineFormatter, self).__init__(
+            prog, max_help_position=100, width=int(columns)
+        )
 
     def add_arguments(self, actions):
         """Sort optional arguments alphabetically while keeping positional arguments first."""
+
         # Helper function to get sort key for any action
         def get_sort_key(action):
             if not action.option_strings:
-                return ''
+                return ""
             # Sort by shortest option string, removing leading dashes for comparison
             shortest = min(action.option_strings, key=len)
-            return shortest.lstrip('-').lower()
+            return shortest.lstrip("-").lower()
 
         # Separate positional and optional arguments
         positional_actions = []
@@ -73,8 +76,16 @@ class MultilineFormatter(argparse.RawTextHelpFormatter):
 
         # Sort optional arguments alphabetically by their shortest option string
         # but keep -h/--help first
-        help_actions = [a for a in optional_actions if '-h' in a.option_strings or '--help' in a.option_strings]
-        other_actions = [a for a in optional_actions if '-h' not in a.option_strings and '--help' not in a.option_strings]
+        help_actions = [
+            a
+            for a in optional_actions
+            if "-h" in a.option_strings or "--help" in a.option_strings
+        ]
+        other_actions = [
+            a
+            for a in optional_actions
+            if "-h" not in a.option_strings and "--help" not in a.option_strings
+        ]
 
         other_actions.sort(key=get_sort_key)
 
@@ -86,16 +97,17 @@ class MultilineFormatter(argparse.RawTextHelpFormatter):
 
     def _format_actions_usage(self, actions, groups):
         """Sort actions in usage line as well."""
+
         # Helper function to get sort key for any action
         def get_sort_key(action):
             if not action.option_strings:
-                return ''
+                return ""
             shortest = min(action.option_strings, key=len)
-            return shortest.lstrip('-').lower()
+            return shortest.lstrip("-").lower()
 
         # Sort actions within each group by temporarily modifying the group
         for group in groups:
-            if hasattr(group, '_group_actions'):
+            if hasattr(group, "_group_actions"):
                 group._group_actions = sorted(group._group_actions, key=get_sort_key)
 
         # Sort non-grouped actions
@@ -128,7 +140,7 @@ class DirectoryChecker(argparse.Action):
 
         # Catch no such directory error.
         if not os.path.isdir(path):
-            msg = f'No such directory: {path}'
+            msg = f"No such directory: {path}"
             raise argparse.ArgumentTypeError(msg)
 
         # Return path.
@@ -156,7 +168,7 @@ class ConfigFileLoader(argparse.Action):
 
         # Catch no such file error.
         if not os.path.isdir(path):
-            msg = f'No such directory: {path}'
+            msg = f"No such directory: {path}"
             raise argparse.ArgumentTypeError(msg)
 
         # Check existing esg.ini
@@ -196,7 +208,7 @@ class ChecksumsReader(argparse.Action):
 
         # Catch no such file error.
         if not os.path.isfile(path):
-            msg = 'No such file: {}'.format(path)
+            msg = "No such file: {}".format(path)
             raise argparse.ArgumentTypeError(msg)
 
         # Instantiate checksum dictionary.
@@ -204,7 +216,9 @@ class ChecksumsReader(argparse.Action):
 
         # Read pre-computed checksums.
         with open(path) as checksums_file:
-            for checksum, ffp in [entry.split() for entry in checksums_file.read().splitlines()]:
+            for checksum, ffp in [
+                entry.split() for entry in checksums_file.read().splitlines()
+            ]:
                 ffp = os.path.abspath(os.path.normpath(ffp))
                 checksums[ffp] = checksum
 
@@ -234,7 +248,7 @@ class DatasetsReader(argparse.Action):
 
         # Catch no such file error.
         if not os.path.isfile(path):
-            msg = 'No such file: {}'.format(path)
+            msg = "No such file: {}".format(path)
             raise argparse.ArgumentTypeError(msg)
 
         # Read pre-computed checksums.
@@ -260,24 +274,23 @@ class VersionChecker(argparse.Action):
 
         """
         # Match version with appropriate regex.
-        if re.compile(r'^[\d]{1,8}$').search(str(version)):
-
+        if re.compile(r"^[\d]{1,8}$").search(str(version)):
             # Validates date format in case of 8 digits version.
             if len(version) == 8:
                 try:
-                    datetime.strptime(version, '%Y%m%d')
+                    datetime.strptime(version, "%Y%m%d")
 
                 # Catch wrong date format.
                 except ValueError:
-                    msg = f'Invalid version date: {str(version)}.'
+                    msg = f"Invalid version date: {str(version)}."
                     raise argparse.ArgumentTypeError(msg)
 
             # Return version.
-            return f'v{version}'
+            return f"v{version}"
 
         # Catch wrong version format.
         else:
-            msg = f'Invalid version type: {str(version)}.\nAvailable format is YYYYMMDD or an integer.'
+            msg = f"Invalid version type: {str(version)}.\nAvailable format is YYYYMMDD or an integer."
             raise argparse.ArgumentTypeError(msg)
 
 
@@ -287,11 +300,11 @@ def keyval_converter(pair):
 
     """
     # Build pattern.
-    pattern = re.compile(r'([^=]+)=([^=]+)(?:,|$)')
+    pattern = re.compile(r"([^=]+)=([^=]+)(?:,|$)")
 
     # Catch wrong format error.
     if not pattern.search(pair):
-        msg = f'Bad argument syntax: {pair}'
+        msg = f"Bad argument syntax: {pair}"
         raise argparse.ArgumentTypeError(msg)
 
     # Return pair as dictionary {key: value}.
@@ -309,7 +322,7 @@ def regex_validator(string):
 
     # Catch wrong regex syntax.
     except re.error:
-        msg = f'Bad regex syntax: {string}'
+        msg = f"Bad regex syntax: {string}"
         raise argparse.ArgumentTypeError(msg)
 
 

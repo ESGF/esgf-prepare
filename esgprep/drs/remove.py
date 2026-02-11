@@ -10,7 +10,6 @@ import os
 import traceback
 from pathlib import Path
 
-from esgprep._handlers.constants import LINK_SEPARATOR
 from esgprep._utils.path import get_ordered_version_paths, get_path_to_version
 from esgprep._utils.print import COLORS, TAGS, Print
 from esgprep.constants import FRAMES

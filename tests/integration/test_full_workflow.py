@@ -7,8 +7,6 @@ This test performs a full end-to-end workflow:
 3. Validates the complete workflow including multihash support
 """
 
-import os
-import shutil
 import tempfile
 import subprocess
 import sys
@@ -185,7 +183,7 @@ class TestFullWorkflow:
                 } line {i + 1}"
 
                 # Verify dataset identifier format
-                dataset_id = parts[0]
+                # dataset_id = parts[0]
                 # assert "#" in dataset_id, f"Dataset ID should contain version in {mapfile.name}"
 
                 # Verify file path exists
@@ -198,9 +196,9 @@ class TestFullWorkflow:
 
                 # Verify NO checksum_type is present (since we removed it)
                 has_checksum_type = any("checksum_type=" in part for part in parts)
-                assert (
-                    not has_checksum_type
-                ), f"checksum_type should not be present in: {line}"
+                assert not has_checksum_type, (
+                    f"checksum_type should not be present in: {line}"
+                )
 
                 if i == 0:  # Show first entry as example
                     print(f"  Example entry: {line}")
@@ -384,4 +382,3 @@ class TestFullWorkflow:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

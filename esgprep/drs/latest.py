@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
 """
-    :platform: Unix
-    :synopsis: Manages the filesystem tree according to the project the Data Reference Syntax and versioning.
+:platform: Unix
+:synopsis: Manages the filesystem tree according to the project the Data Reference Syntax and versioning.
 
 """
+
 import re
 import traceback
 from pathlib import Path
 
-from esgprep._exceptions import *
-from esgprep._utils.path import *
-from esgprep._utils.print import *
+from esgprep._utils.path import extract_version, get_ordered_version_paths
+from esgprep._utils.print import COLORS, TAGS, Print
 from esgprep.constants import FRAMES
-from esgprep.drs.constants import *
 from esgprep._handlers.constants import LINK_SEPARATOR
 from esgprep._handlers.dataset_id import Dataset
+from esgprep.drs.constants import SPINNER_DESC
 
 
 class Process(object):
@@ -55,7 +55,9 @@ class Process(object):
         try:
             # For dataset objects, skip processing as we can't convert them without pyessv
             if isinstance(source, Dataset):
-                Print.debug(f"Skipping dataset object {source} - dataset conversion not supported without pyessv")
+                Print.debug(
+                    f"Skipping dataset object {source} - dataset conversion not supported without pyessv"
+                )
                 return None
 
             # Work with path directly
@@ -77,7 +79,7 @@ class Process(object):
                     version_dirs = []
                     try:
                         for child in parent.iterdir():
-                            if child.is_dir() and re.match(r'^v\d{8}$', child.name):
+                            if child.is_dir() and re.match(r"^v\d{8}$", child.name):
                                 version_dirs.append(child)
                     except (OSError, PermissionError):
                         continue
@@ -87,7 +89,9 @@ class Process(object):
                         break
 
                 if not dataset_path:
-                    Print.debug(f"Could not find dataset directory for file: {current_path}")
+                    Print.debug(
+                        f"Could not find dataset directory for file: {current_path}"
+                    )
                     return None
 
                 current_path = dataset_path
@@ -113,10 +117,14 @@ class Process(object):
                 if latest_symlink_path.is_symlink():
                     current_target = latest_symlink_path.readlink()
                     if current_target == Path(latest_version):
-                        Print.debug(f"Latest symlink already correct: {latest_symlink_path} -> {latest_version}")
+                        Print.debug(
+                            f"Latest symlink already correct: {latest_symlink_path} -> {latest_version}"
+                        )
                         return True
                 else:
-                    Print.debug(f"Latest path exists but is not a symlink: {latest_symlink_path}")
+                    Print.debug(
+                        f"Latest path exists but is not a symlink: {latest_symlink_path}"
+                    )
                     return None
 
             # Add the "latest" symlink node to the tree
@@ -125,11 +133,11 @@ class Process(object):
                 nodes=nodes,
                 label=f"latest{LINK_SEPARATOR}{latest_version}",
                 src=latest_version,
-                mode='symlink'
+                mode="symlink",
             )
 
             # Print info.
-            msg = f'Latest symlink = {latest_symlink_path} -> {latest_version}'
+            msg = f"Latest symlink = {latest_symlink_path} -> {latest_version}"
             Print.success(msg)
 
             # Return True if success.
@@ -151,8 +159,8 @@ class Process(object):
 
                 # Format & print exception traceback.
                 exc = traceback.format_exc().splitlines()
-                msg = TAGS.SKIP + COLORS.HEADER(str(source)) + '\n'
-                msg += '\n'.join(exc)
+                msg = TAGS.SKIP + COLORS.HEADER(str(source)) + "\n"
+                msg += "\n".join(exc)
                 Print.exception(msg, buffer=True)
 
             return None

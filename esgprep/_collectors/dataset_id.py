@@ -27,7 +27,6 @@ class DatasetCollector(Collector):
 
         # StopIteration error means no files found in all input sources.
         try:
-
             # Iterate on input sources.
             for source in self.sources:
                 # Yield dataset object.

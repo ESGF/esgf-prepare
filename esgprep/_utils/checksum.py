@@ -14,7 +14,6 @@ import os
 import re
 
 from esgprep._exceptions import InvalidChecksumType, ChecksumFail
-from esgprep._utils.print import Print
 
 # Multihash support - implement varint encoding directly to avoid dependency
 
@@ -195,7 +194,7 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
                             Print.info(f"  Progress: {progress_pct}%")
 
                 if show_progress:
-                    Print.info(f"  Converting data to bytes for hash calculation...")
+                    Print.info("  Converting data to bytes for hash calculation...")
                 data = bytes(hash_data)
             else:
                 # Read file data normally for smaller files
@@ -246,7 +245,7 @@ def checksum(ffp, checksum_type, include_filename=False, human_readable=True):
                 hash_algo.update(os.path.basename(ffp).encode())
 
             if show_progress:
-                Print.info(f"  Checksum completed")
+                Print.info("  Checksum completed")
 
             # Return human readable checksum.
             if human_readable:

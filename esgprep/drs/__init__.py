@@ -10,11 +10,10 @@
 """
 
 import os
-import pickle
 import sys
 
 from esgprep import _STDOUT
-from esgprep._contexts.multiprocessing import Runner, Manager
+from esgprep._contexts.multiprocessing import Runner
 from esgprep._utils import load, store
 from esgprep._utils.print import COLORS, Print
 from esgprep.constants import FINAL_FRAME, FINAL_STATUS
@@ -89,7 +88,7 @@ def run(args):
             # The pickle caching with multiprocessing proxies is unreliable
             # Always perform fresh scan to ensure consistent behavior
             Print.warning(
-                f"Cached DRS tree exists but using fresh scan for reliability (use '--rescan' flag is no longer needed)"
+                "Cached DRS tree exists but using fresh scan for reliability (use '--rescan' flag is no longer needed)"
             )
             if os.path.exists(TREE_FILE):
                 os.remove(TREE_FILE)  # Remove old pickle file

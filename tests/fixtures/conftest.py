@@ -3,7 +3,6 @@ Pytest fixtures specific to test data generation and validation.
 """
 
 import pytest
-from pathlib import Path
 
 from .generators import (
     create_files_different_variables,
@@ -37,8 +36,4 @@ def sample_netcdf_files(tmp_dir, netcdf_generator):
         incoming_dir, count=3, time_range=(1, 10)
     )
 
-    return {
-        "directory": incoming_dir,
-        "files": files,
-        "count": len(files)
-    }
+    return {"directory": incoming_dir, "files": files, "count": len(files)}

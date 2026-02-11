@@ -11,14 +11,12 @@
 
 from uuid import UUID
 
-import esgvoc.api as ev
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
 from netCDF4 import Dataset
 
 from esgprep._exceptions import NoProjectCodeFound
 from esgprep._exceptions.netcdf import InvalidNetCDFFile, NoNetCDFAttribute
-from esgprep._utils.print import Print
 from esgprep.drs.constants import PID_PREFIXES
 
 

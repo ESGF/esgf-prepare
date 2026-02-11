@@ -7,14 +7,11 @@ using the esgmapfile make command.
 
 import re
 from argparse import Namespace
-from pathlib import Path
-import pytest
 
 from esgprep.esgmapfile import run as mapfile_run
 from esgprep.esgdrs import run as drs_run
 from tests.fixtures.generators import (
     create_files_different_variables,
-    clean_directory,
 )
 
 
@@ -115,8 +112,9 @@ class TestMapfileMake:
 
             # Should contain some data lines (not just comments)
             data_lines = [
-                line.strip() for line in content.split('\n')
-                if line.strip() and not line.startswith('#')
+                line.strip()
+                for line in content.split("\n")
+                if line.strip() and not line.startswith("#")
             ]
             assert len(data_lines) > 0, f"Mapfile {mapfile} contains no data entries"
 
@@ -147,8 +145,9 @@ class TestMapfileMake:
 
             # Find data lines with checksums
             data_lines = [
-                line.strip() for line in content.split('\n')
-                if line.strip() and not line.startswith('#')
+                line.strip()
+                for line in content.split("\n")
+                if line.strip() and not line.startswith("#")
             ]
 
             assert len(data_lines) > 0, "No data entries found"
@@ -164,7 +163,9 @@ class TestMapfileMake:
 
                 # Verify NO checksum_type is present (since we removed it)
                 has_checksum_type = any("checksum_type=" in part for part in parts)
-                assert not has_checksum_type, f"checksum_type should not be present: {line}"
+                assert not has_checksum_type, (
+                    f"checksum_type should not be present: {line}"
+                )
 
     def test_mapfile_different_checksum_types(self, drs_test_structure):
         """Test mapfile creation with different checksum algorithms."""
@@ -200,15 +201,18 @@ class TestMapfileMake:
                     content = f.read()
 
                 data_lines = [
-                    line.strip() for line in content.split('\n')
-                    if line.strip() and not line.startswith('#')
+                    line.strip()
+                    for line in content.split("\n")
+                    if line.strip() and not line.startswith("#")
                 ]
 
                 assert len(data_lines) > 0, f"No data in mapfile for {algo}"
 
                 # Check that all lines have checksums
                 for line in data_lines:
-                    has_checksum = any("checksum=" in part for part in line.split(" | "))
+                    has_checksum = any(
+                        "checksum=" in part for part in line.split(" | ")
+                    )
                     assert has_checksum, f"Missing checksum in {algo} mapfile: {line}"
 
     def test_mapfile_empty_drs(self, drs_test_structure):
@@ -229,10 +233,13 @@ class TestMapfileMake:
                 with open(mapfile, "r") as f:
                     content = f.read()
                 data_lines = [
-                    line.strip() for line in content.split('\n')
-                    if line.strip() and not line.startswith('#')
+                    line.strip()
+                    for line in content.split("\n")
+                    if line.strip() and not line.startswith("#")
                 ]
-                assert len(data_lines) == 0, f"Unexpected data in mapfile from empty DRS: {mapfile}"
+                assert len(data_lines) == 0, (
+                    f"Unexpected data in mapfile from empty DRS: {mapfile}"
+                )
 
     def test_mapfile_dataset_names(self, drs_test_structure):
         """Test that mapfile names follow correct dataset naming convention."""
@@ -257,7 +264,9 @@ class TestMapfileMake:
         for mapfile in mapfiles:
             # Mapfile names should follow CMIP6 dataset naming convention
             filename = mapfile.name
-            assert filename.endswith('.map'), f"Mapfile should end with .map: {filename}"
+            assert filename.endswith(".map"), (
+                f"Mapfile should end with .map: {filename}"
+            )
 
             # Should contain project and other DRS elements
-            assert 'CMIP6' in filename, f"Mapfile name should contain CMIP6: {filename}"
+            assert "CMIP6" in filename, f"Mapfile name should contain CMIP6: {filename}"

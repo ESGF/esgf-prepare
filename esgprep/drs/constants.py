@@ -7,9 +7,7 @@
 """
 
 import tempfile
-from os import link, symlink, environ, remove
-from shutil import copy2 as copy
-from shutil import move
+from os import environ
 from pathlib import Path
 
 # Spinner description.
