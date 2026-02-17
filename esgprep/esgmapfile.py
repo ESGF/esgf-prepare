@@ -212,7 +212,7 @@ def get_args():
         "--no-cleanup", action="store_true", default=False, help=NO_CLEANUP_HELP
     )
 
-    # Add subparser.
+    # Subparser for "esgmapfile show"
     show = subparsers.add_parser(
         "show",
         prog="esgmapfile show",
