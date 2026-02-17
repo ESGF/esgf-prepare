@@ -34,30 +34,31 @@ Supported Projects
 Project vocabularies are maintained in the `esgvoc repository <https://github.com/ESGF/esgvoc>`_ and automatically
 synchronized when using ``esgprep``.
 
- Checksum Configuration
- **********************
+Checksum Configuration
+**********************
 
- ``esgprep`` version 3.0+ supports both standard hashlib algorithms and multihash algorithms. **Multihash is now
- the recommended checksum format for ESGF data publication**, and modern publishers will only accept multihash
- formats for new submissions. SHA256 legacy format support is maintained for compatibility with existing
- data.
+``esgprep`` version 3.0+ supports both standard hashlib algorithms and multihash algorithms. **Multihash is now
+the recommended checksum format for ESGF data publication**, and modern publishers will only accept multihash
+formats for new submissions. SHA256 legacy format support is maintained for compatibility with existing
+data.
 
- Multihash is a self-describing hash format that includes the algorithm identifier and hash length, making it
- more robust for long-term data integrity verification.
+Multihash is a self-describing hash format that includes the algorithm identifier and hash length, making it
+more robust for long-term data integrity verification.
 
- For ``esgmapfile``, you can specify the checksum algorithm using the ``--checksum-type`` option:
+For ``esgmapfile``, you can specify the checksum algorithm using the ``--checksum-type`` option:
 
- .. code-block:: bash
+.. code-block:: bash
 
-     # Standard algorithm (legacy, for compatibility)
-     $> esgmapfile make --project PROJECT_ID --checksum-type sha256 /PATH/TO/SCAN/
+    # Standard algorithm (legacy, for compatibility)
+    $> esgmapfile make --project PROJECT_ID --checksum-type sha256 /PATH/TO/SCAN/
 
-     # Multihash algorithm (recommended for new data)
-     $> esgmapfile make --project PROJECT_ID --checksum-type sha2-256 /PATH/TO/SCAN/
+    # Multihash algorithm (recommended for new data)
+    $> esgmapfile make --project PROJECT_ID --checksum-type sha2-256 /PATH/TO/SCAN/
 
- Supported algorithms include:
-  * **Standard**: sha256, sha1, md5, and other hashlib algorithms
-  * **Multihash**: sha2-256, sha2-512, sha3-256, sha3-512, sha1
+Supported algorithms include:
+
+* **Standard**: sha256, sha1, md5, and other hashlib algorithms
+* **Multihash**: sha2-256, sha2-512, sha3-256, sha3-512, sha1
 
 See :ref:`mapfiles` for more details on checksum options.
 
@@ -65,7 +66,7 @@ Advanced Configuration
 **********************
 
 For advanced use cases or custom project definitions, please refer to the `esgvoc documentation
-<https://esgvoc.readthedocs.io/>`_ for information on:
+<https://esgf.github.io/esgf-vocab/index.html>`_ for information on:
 
  * Adding custom project definitions
  * Modifying vocabulary mappings

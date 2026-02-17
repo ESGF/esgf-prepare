@@ -1,15 +1,15 @@
- .. _migration:
+.. _migration:
 
 
- Changelog from esgprep 2.x to 3.0
- ==================================
+Changelog from esgprep 2.x to 3.0
+==================================
 
- ``esgprep`` version 3.0 introduces significant changes from the previous Python 2 version. This document
- summarizes what's new and changed.
+``esgprep`` version 3.0 introduces significant changes from the previous Python 2 version. This document
+summarizes what's new and changed.
 
- .. note:: Version 3.0 is a Python 3.12+ rewrite with modernized architecture and dependencies. Most changes
-    are automatic and don't require modifications to your workflow. This is provided for informational purposes
-    to help you understand the improvements.
+.. note:: Version 3.0 is a Python 3.12+ rewrite with modernized architecture and dependencies. Most changes
+   are automatic and don't require modifications to your workflow. This is provided for informational purposes
+   to help you understand the improvements.
 
 Breaking Changes
 ****************
@@ -65,7 +65,7 @@ No action required. The ``esgvoc`` library automatically handles configuration a
 **Advanced configuration:**
 
 If you need to customize vocabulary sources or manage caching, refer to the `esgvoc documentation
-<https://esgvoc.readthedocs.io/>`_.
+<https://esgf.github.io/esgf-vocab/index.html>`_.
 
 Migration from esgfetchtables
 ******************************
@@ -148,7 +148,7 @@ Dependency Changes
 
 **New dependencies:**
 
- * ``esgvoc`` >= 1.0.1 - Controlled vocabulary and configuration management
+ * ``esgvoc`` >= 2.2.1 - Controlled vocabulary and configuration management
  * ``python-levenshtein`` >= 0.27.1 - Enhanced string matching
  * Updated versions of ``numpy``, ``netCDF4``, and other core libraries
 
@@ -218,4 +218,4 @@ If you encounter issues during migration:
  * Check the updated documentation for :ref:`usage`, :ref:`drs`, and :ref:`mapfiles`
  * Review the :ref:`configuration` section for ``esgvoc`` details
  * Report issues on `GitHub <https://github.com/ESGF/esgf-prepare/issues>`_
- * Consult the `esgvoc documentation <https://esgvoc.readthedocs.io/>`_ for vocabulary management
+ * Consult the `esgvoc documentation <https://esgf.github.io/esgf-vocab/index.html>`_ for vocabulary management

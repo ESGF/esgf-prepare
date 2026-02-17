@@ -55,12 +55,12 @@ Installation from GitHub
 
 4. The ``esgdrs`` and ``esgmapfile`` command-lines are now available.
 
- Using uv (recommended for development)
- **************************************
+Using uv (recommended)
+**********************
 
- For a faster and more modern Python package manager, you can use `uv <https://github.com/astral-sh/uv>`_:
+For a faster and more modern Python package manager, you can use `uv <https://github.com/astral-sh/uv>`_:
 
- .. code-block:: bash
+.. code-block:: bash
 
     # Install uv if not already installed
     curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -70,6 +70,23 @@ Installation from GitHub
 
     # Initialize controlled vocabularies
     uv run esgvoc install
+
+.. tip:: **Activate the virtual environment** to avoid prefixing every command with ``uv run``:
+
+   .. code-block:: bash
+
+       # Activate the virtual environment created by uv
+       source .venv/bin/activate
+
+       # Now all commands work directly
+       esgvoc install
+       esgdrs --version
+       esgmapfile --version
+
+       # Deactivate when done
+       deactivate
+
+   Once activated, all commands in this documentation can be used without the ``uv run`` prefix.
 
 .. warning:: To run ``esgprep`` tools you have to be logged into a machine which mounts the filesystem hosting the data to publish.
 
@@ -84,7 +101,7 @@ Dependencies and requirements
 
 ``esgprep`` uses standard Python libraries and the following external packages:
 
- * `esgvoc <https://pypi.org/project/esgvoc/>`_ >= 1.2.1 - ESGF controlled vocabulary and configuration handler (replaces ESGConfigParser)
+ * `esgvoc <https://pypi.org/project/esgvoc/>`_ >= 2.2.1 - ESGF controlled vocabulary and configuration handler (replaces ESGConfigParser)
  * `fuzzywuzzy <https://pypi.org/project/fuzzywuzzy/>`_ >= 0.18.0 - Fuzzy string matching
  * `hurry.filesize <https://pypi.org/project/hurry.filesize/>`_ >= 0.9 - Human-readable file sizes
  * `lockfile <https://pypi.org/project/lockfile/>`_ >= 0.12.2 - File locking
