@@ -252,7 +252,7 @@ class TestMultihashIntegration:
         mapfile_outdir.mkdir(parents=True)
 
         # Create test files
-        # created_files = create_files_different_variables(incoming_dir, count=1)
+        create_files_different_variables(incoming_dir, count=1)
 
         # Build DRS structure
         drs_args = get_default_make_args(incoming_dir, drs_root)
