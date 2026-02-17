@@ -2,6 +2,146 @@
 
 """
 .. module:: esgprep.drs
+    :platform: Unix
+    :synopsis: Manages the filesystem tree according to the project the Data Reference Syntax and versioning.
+
 .. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.fr>
 
 """
+
+import os
+import sys
+
+from esgprep import _STDOUT
+from esgprep._contexts.multiprocessing import Runner
+from esgprep._utils import load, store
+from esgprep._utils.print import COLORS, Print
+from esgprep.constants import FINAL_FRAME, FINAL_STATUS
+from esgprep.drs.constants import CONTROLLED_ARGS, SPINNER_DESC, TREE_FILE
+from esgprep.drs.context import ProcessingContext
+
+__all__ = ["run"]
+
+
+def do_scanning(ctx):
+    """
+    Returns True if file scanning is necessary regarding command-line arguments
+
+    """
+    # Rescan forced from command-line.
+    if ctx.rescan:
+        return True
+
+    # Rescan forced if "list" action.
+    elif ctx.action == "list":
+        return True
+
+    # Rescan forced if other action & different flags value.
+    elif os.path.isfile(TREE_FILE):
+        # Load results from previous run.
+        reader = load(TREE_FILE)
+
+        # Read command-line args.
+        old_args = next(reader)
+
+        # Ensure that processing context is similar to previous run.
+        for k in CONTROLLED_ARGS:
+            if getattr(ctx, k) != old_args[k]:
+                msg = f'"{k}" argument has changed: "{getattr(ctx, k)}" instead of "{old_args[k]}" -- '
+                msg += "Rescanning files."
+                Print.warning(msg)
+                return True
+
+        return False
+
+    else:
+        return True
+
+
+def run(args):
+    """
+    Main process.
+
+    """
+    quiet = args.quiet if hasattr(args, "quiet") else False
+    if quiet:
+        _STDOUT.stdout_off()
+
+    # Instantiate processing context.
+    with ProcessingContext(args) as ctx:
+        # Disable file scan if a previous DRS tree have generated using same context and no "list" action.
+        if do_scanning(ctx):
+            # Instantiate the runner.
+            r = Runner(ctx.processes)
+
+            # Get runner results.
+            results = r.run(ctx.sources, ctx)
+
+            # Final print.
+            msg = f"\r{' ' * ctx.msg_length.value}"
+            Print.progress(msg)
+            msg = f"\r{COLORS.OKBLUE(SPINNER_DESC)} {FINAL_FRAME} {FINAL_STATUS}\n"
+            Print.progress(msg)
+
+        # Load cached DRS tree.
+        else:
+            # The pickle caching with multiprocessing proxies is unreliable
+            # Always perform fresh scan to ensure consistent behavior
+            Print.warning(
+                "Cached DRS tree exists but using fresh scan for reliability (use '--rescan' flag is no longer needed)"
+            )
+            if os.path.exists(TREE_FILE):
+                os.remove(TREE_FILE)  # Remove old pickle file
+            # Force rescan by setting ctx.rescan = True
+            ctx.rescan = True
+            # Perform fresh scan using the same logic as the main scan
+            r = Runner(ctx.processes)
+            results = r.run(ctx.sources, ctx)
+            msg = f"\r{' ' * ctx.msg_length.value}"
+            Print.progress(msg)
+            msg = f"\r{COLORS.OKBLUE(SPINNER_DESC)} {FINAL_FRAME} {FINAL_STATUS}\n"
+            Print.progress(msg)
+
+        # Flush buffer
+        Print.flush()
+
+        # Get number of sources.
+        ctx.nbsources = ctx.progress.value
+
+        # Number of success (excluding errors/skipped files).
+        ctx.success = len(list(filter(None, results)))
+
+        # Rollback --commands-file value to command-line argument in any case
+        ctx.tree.commands_file = ctx.commands_file
+
+        # Backup DRS tree and context for later usage.
+        store(
+            TREE_FILE,
+            data=[
+                {key: ctx.__getattribute__(key) for key in CONTROLLED_ARGS},
+                ctx.tree.get_serializable_data(),  # Save serializable data instead of proxy
+                results,
+            ],
+        )
+        Print.info(f"DRS tree recorded for next usage onto {TREE_FILE}.")
+
+        # Evaluate the list of results triggering action.
+        if any(results):
+            # Check upgrade uniqueness
+            ctx.tree.check_uniqueness()
+            # Apply tree action
+            ctx.tree.get_display_lengths()
+            getattr(ctx.tree, ctx.action)(quiet=quiet)
+
+            # Remove empty folder # seems to work
+            # Skip rmdir for read-only operations to preserve directories
+            if ctx.action not in ["list", "todo", "tree"]:
+                ctx.tree.rmdir()
+
+            # ctx.tree.show(line_type='ascii-ex',level=0)
+            # print(json.dumps(json.loads(ctx.tree.to_json()), indent=2))
+            # print()
+
+    # Evaluate errors & exit with corresponding return code.
+    if ctx.final_error_count > 0:
+        sys.exit(ctx.final_error_count)

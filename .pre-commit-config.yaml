@@ -1,0 +1,29 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      # - id: double-quote-string-fixer
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.15.0
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+        args: [--fix]
+      # Run the formatter.
+      - id: ruff-format
+        #types_or: [ python, pyi ] # uncomment if needed for jupyter notebooks
+
+  # - repo: local
+  #   hooks:
+  #     - id: ty
+  #       name: ty (type checker)
+  #       entry: uv run ty check
+  #       language: python
+  #       types: [python]
+  #       # pass_filenames: false
+  #       # additional_dependencies: ['ty>=0.0.1a14']

@@ -4,11 +4,24 @@
 Generic usage
 =============
 
+.. important:: **REQUIRED FIRST STEP:** Before using any ``esgdrs`` or ``esgmapfile`` commands, you must install the controlled vocabularies:
+
+   .. code-block:: bash
+
+      esgvoc install
+      # OR if using uv:
+      uv run esgvoc install
+
+   Without this step, all commands will fail with: ``RuntimeError: universe connection is not initialized``
+
+   **Keep vocabularies updated:** Run ``esgvoc install`` regularly to update your local controlled vocabularies
+   with the latest changes from ESGF projects. Outdated vocabularies may cause validation failures.
+
+   See :ref:`installation` for more details, or visit the
+   `esgvoc documentation <https://esgf.github.io/esgf-vocab/index.html>`_ for advanced vocabulary management.
+
 All the following arguments can be safely combined and add to each of the esgprep **COMMAND**:
- - ``esgfetchini``
- - ``esgfetchtables``
  - ``esgdrs``
- - ``esgcheckvocab``
  - ``esgmapfile``
 
 Check the help
@@ -43,28 +56,24 @@ verbose mode displaying each step with useful additional information.
 Specify the project
 *******************
 
-The ``--project`` argument is used to parse the corresponding configuration INI file. It is **always required**
-(except for ``esgfetchini`` and ``esgfetchtables`` subcommands). This argument is case-sensitive and has to
-correspond to a section name of the configuration file(s).
+The ``--project`` argument is used to parse the corresponding project configuration. It is **always required**.
+This argument is case-sensitive and has to correspond to a valid project name in the esgvoc controlled vocabularies.
 
 .. code-block:: bash
 
     $> COMMAND [SUBCOMMAND] {-p,--project} PROJECT_ID
 
-Submit a configuration directory
-********************************
+Configuration management
+************************
 
-By default, the configuration files are fetched or read from the ``$ESGINI_DIR`` environment variable. If not exists,
-``/esg/config/esgcet`` that is the usual configuration directory on ESGF nodes is used. If you're preparing your data
-outside of an ESGF node, you can submit another directory to fetch and read the configuration files.
+Configuration and controlled vocabularies are now managed by the ``esgvoc`` library. The ``esgvoc`` library
+automatically handles vocabulary fetching and caching. By default, vocabularies are cached locally to avoid
+repeated downloads.
 
-.. code-block:: bash
+For more information on ``esgvoc`` configuration, see the :ref:`configuration` section.
 
-    $> COMMAND [SUBCOMMAND] -i /PATH/TO/CONFIG/
-
-.. note::
-    In the case of ``esgfetchini`` command, if you're not on an ESGF node and ``/esg/config/esgcet`` doesn't exist,
-    the configuration file(s) are fetched into an ``ini`` folder in your working directory.
+For detailed information about controlled vocabularies management and the ``esgvoc`` library, see the
+`esgvoc documentation <https://esgf.github.io/esgf-vocab/index.html>`_.
 
 Use a logfile
 *************
@@ -80,9 +89,9 @@ It can be changed by adding a optional logfile directory to the flag.
 Use filters
 ***********
 
-``esgcheckvocab`` and ``esgmapfile`` subcommands will scan your local archive to achieve proper data
+``esgdrs`` and ``esgmapfile`` commands will scan your local archive to achieve proper data
 management. In such a scan, you can filter the file discovery by using a Python regular expression
-(see `re <https://docs.python.org/2/library/re.html>`_ Python library).
+(see `re <https://docs.python.org/3/library/re.html>`_ Python library).
 
 The default is to walk through your local filesystem ignoring the ``files`` and ``latest`` version levels
 and any hidden folders by using the following regular expression: ``^.*/(files|latest|\.[\w]*).*$``. It can be change
@@ -102,8 +111,7 @@ including the following one ``.*\.nc$``. It can be independently change with:
 Keep in mind that ``--ignore-dir`` and ``--exclude-file`` specifie a directory pattern **NOT** to be matched, while
 ``--include-file`` specifies a filename pattern **TO BE** matched.
 
-.. warning:: ``esgfetchini`` does not allow those features and ``esgdrs`` only works with unhidden
-    NetCDF files. ``esgfetchtables`` only supports ``--include-file`` and ``--exclude-file`` flags.
+.. warning:: ``esgdrs`` only works with unhidden NetCDF files.
 
 Use multiprocessing
 *******************

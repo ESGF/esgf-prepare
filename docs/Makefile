@@ -5,7 +5,7 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
-BUILDDIR      = ../../docs-build
+BUILDDIR      = _build
 PDFBUILDDIR   = /tmp
 PDF           = ../manual.pdf
 
@@ -185,4 +185,3 @@ gh-pages: html
 	git commit -m "Docs rebuilt at $( date +'%Y/%m/%d - %H:%M:%S')";\
 	git push origin gh-pages
 	@echo "Build finished and committed on gh-pages."
-

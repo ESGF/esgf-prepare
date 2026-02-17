@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "esgf-prepare"
+version = "3.0.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "esgvoc>=2.2.0",
+    "fuzzywuzzy>=0.18.0",
+    "hurry-filesize>=0.9",
+    "lockfile>=0.12.2",
+    "netcdf4>=1.7.2",
+    "numpy>=2.2.6",
+    "python-levenshtein>=0.27.1",
+    "requests>=2.32.3",
+    "treelib>=1.7.1",
+]
+
+[tool.hatch.build]
+sources = ["."]
+
+[tool.hatch.build.targets.wheel]
+packages = ["esgprep"]
+
+[tool.hatch.version]
+path = "esgprep/__init__.py"
+
+[dependency-groups]
+dev = [
+    "jupyter-console>=6.6.3",
+    "pytest>=8.3.5",
+    "sphinx>=8.2.3",
+    "sphinx-rtd-theme>=3.0.2",
+    "ty>=0.0.16",
+]
+[project.scripts]
+esgdrs = "esgprep.esgdrs:main"
+esgmapfile = "esgprep.esgmapfile:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+    "slow: marks tests as slow running",
+    "skip_this: marks tests to be skipped",
+]
+# Filter warnings
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]

@@ -6,4 +6,18 @@ dist
 .idea
 .DS_Store
 /ops
-\.vscode/*
+\.vscode/*uv.lock
+.python-version
+output_root/
+uv.lock
+esgprep/tests/test_data
+tests/test_data
+tests/test_data/root
+# New test structure temporary directories
+tests/tmp/
+tests/fixtures/sample_data/generated/
+tests/fixtures/real_data/manual_output/
+**/test_output/
+**/*test_temp*/
+# Ignore mapfiles directory created by test runs
+mapfiles/
