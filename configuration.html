@@ -1,321 +1,207 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Configuration &mdash; esgprep 2.9.6 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration &mdash; esgprep 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="esgprep 2.9.6 documentation" href="index.html"/>
-        <link rel="next" title="Generic usage" href="usage.html"/>
-        <link rel="prev" title="Installation" href="installation.html"/> 
-
-  
-  <script src="static/js/modernizr.min.js"></script>
-
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=acc74ff5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Generic usage" href="usage.html" />
+    <link rel="prev" title="Concepts &amp; Terminology" href="concepts.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+        <div class="wy-side-nav-search" >
 
           
-            <a href="index.html" class="icon icon-home"> esgprep
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            esgprep
           </a>
-
-          
-            
-            
-              <div class="version">
-                2.9
-              </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts &amp; Terminology</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#location">Location</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#esg-ini"><code class="docutils literal"><span class="pre">esg.ini</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#esg-project-id-ini"><code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-esgvoc">Using esgvoc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#supported-projects">Supported Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checksum-configuration">Checksum Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-configuration">Advanced Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#migration-from-ini-files">Migration from INI files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Generic usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fetchini.html">Fetch ESGF configuration INI files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fetchtables.html">Fetch CMOR tables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="drs.html">Manage local data through the DRS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="checkvocab.html">Check CV against configuration INI files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently asked questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Real-World Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Changelog from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodoc.html">Code documentation</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">esgprep</a>
-        
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>Configuration</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Configuration</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="sources/configuration.rst.txt" rel="nofollow"> View page source</a>
-          
-        
+            <a href="_sources/configuration.rst.txt" rel="nofollow"> View page source</a>
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="configuration">
-<span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal"><span class="pre">esgprep</span></code> works according to
-<a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/JADm">the configuration INI file(s) of the ESGF nodes</a>.</p>
-<div class="section" id="location">
-<h2>Location<a class="headerlink" href="#location" title="Permalink to this headline">¶</a></h2>
-<p>On an ESGF node, the configuration directory containing those INI files is <code class="docutils literal"><span class="pre">/esg/config/esgcet</span></code>, that is the default
-for <code class="docutils literal"><span class="pre">esgprep</span></code>. In the case you are running <code class="docutils literal"><span class="pre">esgprep</span></code> outside of an ESGF node, the directory gathering all <code class="docutils literal"><span class="pre">.ini</span></code>
-files has to be submitted using the <code class="docutils literal"><span class="pre">-i</span></code> option (see <a class="reference internal" href="usage.html#usage"><span class="std std-ref">Generic usage</span></a>).</p>
-</div>
-<div class="section" id="esg-ini">
-<h2><code class="docutils literal"><span class="pre">esg.ini</span></code><a class="headerlink" href="#esg-ini" title="Permalink to this headline">¶</a></h2>
-<p>This INI file gathers all required information to configure the datanode regarding to data publication (e.g.,
-PostgreSQL access, THREDDS configuration, etc.).</p>
-<p>The only configuration in this section is to define the checksum client and checksum
-type under the <code class="docutils literal"><span class="pre">[default]</span></code> section. Edit the file to set the Shell command line to use (default is <code class="docutils literal"><span class="pre">sha256sum</span></code>).</p>
-<div class="highlight-ini"><div class="highlight"><pre><span></span><span class="k">[default]</span>
-<span class="na">checksum</span> <span class="o">=</span> <span class="s">sha256sum | SHA256</span>
+             
+  <section id="configuration">
+<span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> version 3.0+ uses the <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library for configuration and controlled vocabulary management.
+This approach replaces the previous INI file-based configuration system with a more modern and maintainable solution.</p>
+<section id="using-esgvoc">
+<h2>Using esgvoc<a class="headerlink" href="#using-esgvoc" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library automatically manages:</dt><dd><ul class="simple">
+<li><p>Controlled vocabularies for ESGF projects</p></li>
+<li><p>Project-specific Data Reference Syntax (DRS) definitions</p></li>
+<li><p>Facet validation and mapping</p></li>
+<li><p>Vocabulary caching and updates</p></li>
+</ul>
+</dd>
+</dl>
+<p>No manual configuration file management is required. The library handles fetching and caching of project definitions
+automatically.</p>
+</section>
+<section id="supported-projects">
+<h2>Supported Projects<a class="headerlink" href="#supported-projects" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> provides built-in support for major ESGF projects, including:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>CMIP6</p></li>
+<li><p>CMIP5</p></li>
+<li><p>CORDEX</p></li>
+<li><p>input4MIPs</p></li>
+<li><p>obs4MIPs</p></li>
+<li><p>And other ESGF-approved projects</p></li>
+</ul>
+</div></blockquote>
+<p>Project vocabularies are maintained in the <a class="reference external" href="https://github.com/ESGF/esgvoc">esgvoc repository</a> and automatically
+synchronized when using <code class="docutils literal notranslate"><span class="pre">esgprep</span></code>.</p>
+</section>
+<section id="checksum-configuration">
+<h2>Checksum Configuration<a class="headerlink" href="#checksum-configuration" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> version 3.0+ supports both standard hashlib algorithms and multihash algorithms. <strong>Multihash is now
+the recommended checksum format for ESGF data publication</strong>, and modern publishers will only accept multihash
+formats for new submissions. SHA256 legacy format support is maintained for compatibility with existing
+data.</p>
+<p>Multihash is a self-describing hash format that includes the algorithm identifier and hash length, making it
+more robust for long-term data integrity verification.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code>, you can specify the checksum algorithm using the <code class="docutils literal notranslate"><span class="pre">--checksum-type</span></code> option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standard algorithm (legacy, for compatibility)</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--checksum-type<span class="w"> </span>sha256<span class="w"> </span>/PATH/TO/SCAN/
+
+<span class="c1"># Multihash algorithm (recommended for new data)</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--checksum-type<span class="w"> </span>sha2-256<span class="w"> </span>/PATH/TO/SCAN/
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If <code class="docutils literal"><span class="pre">esg.ini</span></code> is unfound, the default is SHA256.</p>
-</div>
-</div>
-<div class="section" id="esg-project-id-ini">
-<h2><code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code><a class="headerlink" href="#esg-project-id-ini" title="Permalink to this headline">¶</a></h2>
-<p>Those INI files declare all facets and allowed values according to the Data Reference Syntax (DRS) and the controlled
-vocabularies of the corresponding project. Preset <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> files have been properly built by
-ESGF community for the following projects:</p>
+<p>Supported algorithms include:</p>
+<ul class="simple">
+<li><p><strong>Standard</strong>: sha256, sha1, md5, and other hashlib algorithms</p></li>
+<li><p><strong>Multihash</strong>: sha2-256, sha2-512, sha3-256, sha3-512, sha1</p></li>
+</ul>
+<p>See <a class="reference internal" href="mapfiles.html#mapfiles"><span class="std std-ref">Generate mapfile for ESGF publication</span></a> for more details on checksum options.</p>
+</section>
+<section id="advanced-configuration">
+<h2>Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Link to this heading"></a></h2>
+<p>For advanced use cases or custom project definitions, please refer to the <a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a> for information on:</p>
 <blockquote>
 <div><ul class="simple">
-<li>CMIP6</li>
-<li>CMIP5</li>
-<li>CORDEX</li>
-<li>CORDEX-Adjust</li>
-<li>EUCLIPSE</li>
-<li>GeoMIP</li>
-<li>input4MIPs</li>
-<li>obs4MIPs</li>
-<li>PMIP3</li>
-<li>LUCID</li>
-<li>PRIMAVERA</li>
-<li>TAMIP</li>
-<li>ISIMIP-FT</li>
+<li><p>Adding custom project definitions</p></li>
+<li><p>Modifying vocabulary mappings</p></li>
+<li><p>Configuring vocabulary sources</p></li>
+<li><p>Managing local vocabulary caches</p></li>
 </ul>
 </div></blockquote>
-<p>They can be downloaded from <a class="reference external" href="https://github.com/ESGF/config/tree/devel/publisher-configs/ini">the GitHub repository</a>
-or using <code class="docutils literal"><span class="pre">esgfetchini</span></code>.
-If no <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> corresponds to your project you can made your own following <a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/JADm">the ESGF Best Practices
-document</a>:</p>
+</section>
+<section id="migration-from-ini-files">
+<h2>Migration from INI files<a class="headerlink" href="#migration-from-ini-files" title="Link to this heading"></a></h2>
+<p>If you were previously using <code class="docutils literal notranslate"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> configuration files:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Please follow the structure detailed <a class="reference external" href="https://acme-climate.atlassian.net/wiki/x/loDRAw">here</a>.</li>
-<li>Add your project into the <code class="docutils literal"><span class="pre">project_options</span></code> list of your <code class="docutils literal"><span class="pre">esg.ini</span></code>.</li>
-<li>The <code class="docutils literal"><span class="pre">--project</span></code> argument of <code class="docutils literal"><span class="pre">esgprep</span></code> directly refers to the <code class="docutils literal"><span class="pre">project_id</span></code> (i.e., requires lowercase).</li>
-<li>The <code class="docutils literal"><span class="pre">directory_format</span></code> attribute is required for auto-detection and uses a regular expression to match with the full path of the files.</li>
-<li>All facets of the <code class="docutils literal"><span class="pre">dataset_id</span></code> are not necessarily found in the <code class="docutils literal"><span class="pre">directory_format</span></code>.</li>
-<li>All common facets to the <code class="docutils literal"><span class="pre">dataset_id</span></code> and the <code class="docutils literal"><span class="pre">directory_format</span></code> must have the same name.</li>
-<li>If a facet is missing in <code class="docutils literal"><span class="pre">directory_format</span></code> to allow the <code class="docutils literal"><span class="pre">dataset_id</span></code> filling, declare the appropriate <code class="docutils literal"><span class="pre">facet_map</span></code>. The maptable uses the value of a declared facet to map the value of another missing facet in the <code class="docutils literal"><span class="pre">directory_format</span></code>.</li>
-<li>The missing facet has to be declared as a “destination” key (i.e., on the right of the colon).</li>
-<li>Duplicated lines cannot occur in a maptable.</li>
-<li>A facet has to have at least one options list or maptable.</li>
-<li>A <code class="docutils literal"><span class="pre">mapfile_drs</span></code> attribute can be added to your project section to organize related mapfiles.</li>
-<li>Make sure the <code class="docutils literal"><span class="pre">dataset_id</span></code> and the <code class="docutils literal"><span class="pre">directory_format</span></code> options reflect your directory structure accordingly.</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library replaces the functionality of <code class="docutils literal notranslate"><span class="pre">ESGConfigParser</span></code></p></li>
+<li><p>Project definitions are now managed centrally through <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code></p></li>
+<li><p>No manual INI file management is required</p></li>
+<li><p>See the <a class="reference internal" href="migration.html#migration"><span class="std std-ref">Changelog from esgprep 2.x to 3.0</span></a> guide for details on transitioning from the old system</p></li>
 </ul>
 </div></blockquote>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Feel free to submit your own <code class="docutils literal"><span class="pre">esg.&lt;project_id&gt;.ini</span></code> in order to add it to the GitHub repository and make
-it available trough <code class="docutils literal"><span class="pre">esgfetchini</span></code> command-line.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
 
 
-           </div>
-           <div class="articleComments">
-            
            </div>
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="usage.html" class="btn btn-neutral float-right" title="Generic usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="concepts.html" class="btn btn-neutral float-left" title="Concepts &amp; Terminology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Generic usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2016, Levavasseur, G..
-
-    </p>
+    <p>&#169; Copyright 2025, Troussellier, Laurent.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'2.9.6',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="static/jquery.js"></script>
-      <script type="text/javascript" src="static/underscore.js"></script>
-      <script type="text/javascript" src="static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
