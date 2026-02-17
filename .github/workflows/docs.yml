@@ -3,7 +3,7 @@ name: documentation
 on:
   push:
     branches:
-      - devel3  # TODO: Change back to 'main' after testing
+      - main
     paths:
       - docs/**
       - esgprep/**
@@ -33,8 +33,7 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
-        if: github.ref == 'refs/heads/devel3'  # TODO: Change back to 'main' after testing
+        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          destination_dir: test  # TODO: Remove this line after testing
