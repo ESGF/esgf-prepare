@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Real-World Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migration.html">Changelog from esgprep 2.x to 3.0</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../log.html">Change Log</a></li>
@@ -91,6 +91,7 @@
 <span class="sd">.. moduleauthor:: Guillaume Levavasseur &lt;glipsl@ipsl.fr&gt;</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">hashlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">algorithms_available</span> <span class="k">as</span> <span class="n">checksum_types</span>
 
 
@@ -217,7 +218,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">latest</span><span class="p">,</span> <span class="n">latest_id</span><span class="p">,</span> <span class="n">upgrade</span><span class="p">,</span> <span class="n">upgrade_id</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Latest file version has the same tracking ID/PID, which has to be unique.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Latest file version has the same tracking ID/PID, which has to be unique.&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;latest  file: &#39;</span><span class="si">{</span><span class="n">latest_id</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">latest</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;upgrade file: &#39;</span><span class="si">{</span><span class="n">upgrade_id</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">upgrade</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
@@ -282,11 +285,27 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">authority</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Unable to find/load CV -- Please use </span><span class="se">\&quot;</span><span class="s2">esgfetchcv</span><span class="se">\&quot;</span><span class="s2">.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Unable to find/load CV -- Please use &quot;esgfetchcv&quot;.&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;authority: &#39;</span><span class="si">{</span><span class="n">authority</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;project: &#39;</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span></div>
 
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;KeyNotFound&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;InvalidChecksumType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ChecksumFail&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NoFileFound&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DuplicatedDataset&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OlderUpgrade&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DuplicatedFile&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UnchangedTrackingID&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NoVersionPattern&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;InconsistentDRSPath&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NoProjectCodeFound&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MissingCVdata&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </pre></div>
 
            </div>

@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Real-World Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migration.html">Changelog from esgprep 2.x to 3.0</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../log.html">Change Log</a></li>
@@ -93,20 +93,19 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep</span><span class="w"> </span><span class="kn">import</span> <span class="n">_STDOUT</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._contexts.multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Runner</span><span class="p">,</span> <span class="n">Manager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._contexts.multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Runner</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">load</span><span class="p">,</span> <span class="n">store</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.print</span><span class="w"> </span><span class="kn">import</span> <span class="n">COLORS</span><span class="p">,</span> <span class="n">Print</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FINAL_FRAME</span><span class="p">,</span> <span class="n">FINAL_STATUS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.drs.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">CONTROLLED_ARGS</span><span class="p">,</span> <span class="n">SPINNER_DESC</span><span class="p">,</span> <span class="n">TREE_FILE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.drs.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessingContext</span>
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="do_scanning">
-<a class="viewcode-back" href="../../autodoc.html#esgprep.drs.do_scanning">[docs]</a>
+
 <span class="k">def</span><span class="w"> </span><span class="nf">do_scanning</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns True if file scanning is necessary regarding command-line arguments</span>
@@ -131,9 +130,6 @@
         <span class="c1"># Ensure that processing context is similar to previous run.</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">CONTROLLED_ARGS</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">!=</span> <span class="n">old_args</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
-                <span class="c1"># msg = &#39;&quot;{}&quot; argument has changed: &quot;{}&quot; instead of &quot;{}&quot; -- &#39;.format(k,</span>
-                <span class="c1">#                                                                    getattr(ctx, k),</span>
-                <span class="c1">#                                                                    old_args[k])</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&quot; argument has changed: &quot;</span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; instead of &quot;</span><span class="si">{</span><span class="n">old_args</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot; -- &#39;</span>
                 <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;Rescanning files.&quot;</span>
                 <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -142,8 +138,7 @@
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
-
+        <span class="k">return</span> <span class="kc">True</span>
 
 
 <div class="viewcode-block" id="run">
@@ -153,7 +148,6 @@
 <span class="sd">    Main process.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># print(&quot;OYYY : &quot;,args)</span>
     <span class="n">quiet</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">quiet</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;quiet&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">quiet</span><span class="p">:</span>
         <span class="n">_STDOUT</span><span class="o">.</span><span class="n">stdout_off</span><span class="p">()</span>
@@ -178,10 +172,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># The pickle caching with multiprocessing proxies is unreliable</span>
             <span class="c1"># Always perform fresh scan to ensure consistent behavior</span>
-            <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cached DRS tree exists but using fresh scan for reliability (use &#39;--rescan&#39; flag is no longer needed)&quot;</span><span class="p">)</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Cached DRS tree exists but using fresh scan for reliability (use &#39;--rescan&#39; flag is no longer needed)&quot;</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">TREE_FILE</span><span class="p">)</span>  <span class="c1"># Remove old pickle file</span>
-            <span class="c1"># Force rescan by setting ctx.rescan = True  </span>
+            <span class="c1"># Force rescan by setting ctx.rescan = True</span>
             <span class="n">ctx</span><span class="o">.</span><span class="n">rescan</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="c1"># Perform fresh scan using the same logic as the main scan</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">processes</span><span class="p">)</span>
@@ -222,14 +218,9 @@
             <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_display_lengths</span><span class="p">()</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span><span class="p">)(</span><span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
 
-            <span class="c1"># (vérifier si les dossier &quot;dversion&quot; ou &#39;var_version&quot; correspondant à la version à supprimer sont vide.</span>
-            <span class="c1">#             # si empty supprimer le dossier.)</span>
-            <span class="c1">#             # faire equivalent rmdir dans dataset_path() pour supprimer les dossiers vides</span>
-            <span class="c1">#             # assurer qu&#39;il n&#39;y a pas de symlink mort.</span>
-
-            <span class="c1"># remove empty folder # seems to work</span>
+            <span class="c1"># Remove empty folder # seems to work</span>
             <span class="c1"># Skip rmdir for read-only operations to preserve directories</span>
-            <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="s1">&#39;todo&#39;</span><span class="p">,</span> <span class="s1">&#39;tree&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">action</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;todo&quot;</span><span class="p">,</span> <span class="s2">&quot;tree&quot;</span><span class="p">]:</span>
                 <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">rmdir</span><span class="p">()</span>
 
             <span class="c1"># ctx.tree.show(line_type=&#39;ascii-ex&#39;,level=0)</span>

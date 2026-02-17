@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Real-World Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Changelog from esgprep 2.x to 3.0</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
@@ -71,7 +71,6 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-          <li class="breadcrumb-item"><a href="../mapfile.html">esgprep.mapfile</a></li>
       <li class="breadcrumb-item active">esgprep.mapfile.context</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -85,18 +84,18 @@
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    :platform: Unix</span>
-<span class="sd">    :synopsis: Processing context used in this module.</span>
+<span class="sd">:platform: Unix</span>
+<span class="sd">:synopsis: Processing context used in this module.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">fnmatch</span>
-
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._collectors.dataset_id</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetCollector</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._collectors.drs_path</span><span class="w"> </span><span class="kn">import</span> <span class="n">DRSPathCollector</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._contexts.multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiprocessingContext</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.print</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.mapfile.constants</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.print</span><span class="w"> </span><span class="kn">import</span> <span class="n">COLORS</span><span class="p">,</span> <span class="n">Print</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.mapfile.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">WORKING_EXTENSION</span>
 
 
 <div class="viewcode-block" id="ProcessingContext">
@@ -111,29 +110,29 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">ProcessingContext</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
         <span class="c1"># Set notes title.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">notes_title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;tech_notes_title&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notes_title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;tech_notes_title&quot;</span><span class="p">)</span>
 
         <span class="c1"># Set notes url.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">notes_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;tech_notes_url&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notes_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;tech_notes_url&quot;</span><span class="p">)</span>
 
         <span class="c1"># Set a fixed mapfile name.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mapfile_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;mapfile&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapfile_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;mapfile&quot;</span><span class="p">)</span>
 
         <span class="c1"># Set mapfile output directory.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;outdir&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;outdir&quot;</span><span class="p">)</span>
 
         <span class="c1"># Enable/disable working mapfile cleanup.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">no_cleanup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;no_cleanup&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_cleanup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;no_cleanup&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="c1"># Enable/disable mapfile basename display only.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;basename&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;basename&quot;</span><span class="p">)</span>
 
         <span class="c1"># Discover DRS &quot;latest&quot; symlink as version.</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">latest_symlink</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;latest&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span>
 
         <span class="c1"># Discover all DRS versions.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;all_versions&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;all_versions&quot;</span><span class="p">)</span>
 
         <span class="c1"># Set mapfile counter.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nbmap</span> <span class="o">=</span> <span class="mi">0</span>
@@ -148,7 +147,6 @@
         <span class="c1"># Instantiate data collector.</span>
         <span class="c1"># The input source is a list directories.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
-
             <span class="c1"># Instantiate file collector to walk through the tree.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">DRSPathCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
 
@@ -162,31 +160,35 @@
             <span class="c1"># Set version filter.</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
                 <span class="c1"># Pick up all encountered versions by adding &quot;/latest&quot; exclusion</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;version_filter&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="s1">&#39;/latest&#39;</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;version_filter&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="s2">&quot;/latest&quot;</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
                 <span class="c1"># Pick up the specified version only (--version flag) by adding &quot;/v{version}&quot; inclusion</span>
                 <span class="c1"># If --latest-symlink, --version is set to &quot;latest&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;version_filter&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;version_filter&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Default behavior: pick up the latest version among encountered versions.</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;version_filter&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="s1">&#39;/latest&#39;</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">PathFilter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;version_filter&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="s2">&quot;/latest&quot;</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># The input source is a list of dataset identifiers (potentially from stdin).</span>
         <span class="k">else</span><span class="p">:</span>
-
             <span class="c1"># Instantiate dataset collector.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">DatasetCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
-
         <span class="c1"># Summary message about mapfiles.</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;show&#39;</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Mapfile(s) to be generated: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbmap</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;show&quot;</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Mapfile(s) to be generated: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbmap</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Mapfile(s) generated: </span><span class="si">{}</span><span class="s1"> (in </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbmap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Mapfile(s) generated: </span><span class="si">{}</span><span class="s2"> (in </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbmap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">)</span>
 
         <span class="c1"># All files have been successfully scanned without errors.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbsources</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
@@ -213,12 +215,14 @@
 <span class="sd">        Incomplete mapfiles from a previous run are silently removed.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Removing incomplete mapfiles with &quot;</span><span class="si">{}</span><span class="s1">&quot; extension in &quot;</span><span class="si">{}</span><span class="s1">&quot; -- &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Removing incomplete mapfiles with &quot;</span><span class="si">{}</span><span class="s1">&quot; extension in &quot;</span><span class="si">{}</span><span class="s1">&quot; -- &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">WORKING_EXTENSION</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span>
+        <span class="p">)</span>
         <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;Please use &quot;--no-cleanup&quot; in the case of parallel &quot;esgmapfile&quot; instances with the same &quot;--outdir&quot;.&#39;</span>
         <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="n">Print</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="s1">&#39;*</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="s2">&quot;*</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WORKING_EXTENSION</span><span class="p">)):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span></div>
 </div>
 

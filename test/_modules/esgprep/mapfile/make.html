@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Real-World Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Changelog from esgprep 2.x to 3.0</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
@@ -71,7 +71,6 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-          <li class="breadcrumb-item"><a href="../mapfile.html">esgprep.mapfile</a></li>
       <li class="breadcrumb-item active">esgprep.mapfile.make</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -85,12 +84,14 @@
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    :platform: Unix</span>
-<span class="sd">    :synopsis: Generates ESGF mapfiles upon a local ESGF node or not.</span>
+<span class="sd">:platform: Unix</span>
+<span class="sd">:synopsis: Generates ESGF mapfiles upon a local ESGF node or not.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span><span class="o">,</span><span class="w"> </span><span class="nn">re</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.checksum</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_checksum</span>
@@ -115,7 +116,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapfile_name</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">mapfile_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">outdir</span>
-<span class="c1">#        self.cfg = ctx.cfg</span>
+        <span class="c1">#        self.cfg = ctx.cfg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">basename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">no_checksum</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">checksums_from</span>
@@ -133,17 +134,24 @@
 <span class="sd">        It does not stop the main process at all.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Process.__call__: Processing source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> (type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Process.__call__: Processing source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> (type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
         <span class="c1"># Escape in case of error.</span>
         <span class="k">try</span><span class="p">:</span>
-
             <span class="c1"># Import utilities depending on the source type.</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
-                <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_terms</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">get_project</span>
-                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Process.__call__: Using path utilities for source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset_id</span>
+
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Process.__call__: Using path utilities for source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_terms</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">get_project</span>
-                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Process.__call__: Using dataset utilities for source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset_id</span>
+
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Process.__call__: Using dataset utilities for source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
 
             <span class="c1"># Build dataset identifier.</span>
             <span class="c1"># DRS terms are validated during this step.</span>
@@ -153,7 +161,9 @@
 
             <span class="c1"># Check dataset identifier is not None.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">identifier</span><span class="p">:</span>
-                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Process.__call__: Dataset identifier is None for source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Process.__call__: Dataset identifier is None for source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
             <span class="c1"># Split identifier into name &amp; version.</span>
@@ -162,17 +172,19 @@
             <span class="n">version</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="c1"># First check if version is in the identifier (legacy support)</span>
-            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\.latest|\.v[0-9]*$&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">identifier</span><span class="p">)):</span>
-                <span class="n">version</span> <span class="o">=</span> <span class="n">identifier</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># remove &quot;v&quot; only for name in mapfile NOT for the mapfile name</span>
-                <span class="n">dataset</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">identifier</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\.latest|\.v[0-9]*$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">identifier</span><span class="p">)):</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="n">identifier</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span>
+                    <span class="mi">1</span><span class="p">:</span>
+                <span class="p">]</span>  <span class="c1"># remove &quot;v&quot; only for name in mapfile NOT for the mapfile name</span>
+                <span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">identifier</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Extract version from file path (DRS structure)</span>
                 <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">parts</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">part</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;v&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">part</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
                         <span class="n">version</span> <span class="o">=</span> <span class="n">part</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># remove &quot;v&quot; prefix</span>
                         <span class="k">break</span>
-                    <span class="k">elif</span> <span class="n">part</span> <span class="o">==</span> <span class="s1">&#39;latest&#39;</span><span class="p">:</span>
-                        <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;latest&#39;</span>
+                    <span class="k">elif</span> <span class="n">part</span> <span class="o">==</span> <span class="s2">&quot;latest&quot;</span><span class="p">:</span>
+                        <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span>
                         <span class="k">break</span>
 
             <span class="c1"># Build mapfile name.</span>
@@ -193,30 +205,34 @@
 
             <span class="c1"># Create mapfile directory.</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-                <span class="k">pass</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create mapfile directory </span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="c1"># Gathers optional mapfile info into a dictionary.</span>
             <span class="n">optional_attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-            <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;mod_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span>
+            <span class="n">optional_attrs</span><span class="p">[</span><span class="s2">&quot;mod_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_checksum</span><span class="p">:</span>
-                <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;checksum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_checksum</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span><span class="p">)</span>
-            <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;dataset_tech_notes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_url</span>
-            <span class="n">optional_attrs</span><span class="p">[</span><span class="s1">&#39;dataset_tech_notes_title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_title</span>
+                <span class="n">optional_attrs</span><span class="p">[</span><span class="s2">&quot;checksum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_checksum</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span>
+                <span class="p">)</span>
+            <span class="n">optional_attrs</span><span class="p">[</span><span class="s2">&quot;dataset_tech_notes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_url</span>
+            <span class="n">optional_attrs</span><span class="p">[</span><span class="s2">&quot;dataset_tech_notes_title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_title</span>
 
             <span class="c1"># Generate the corresponding mapfile entry/line.</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">build_mapfile_entry</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
-                                       <span class="n">dataset_version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
-                                       <span class="n">ffp</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">),</span>
-                                       <span class="n">size</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span>
-                                       <span class="n">optional_attrs</span><span class="o">=</span><span class="n">optional_attrs</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">build_mapfile_entry</span><span class="p">(</span>
+                <span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
+                <span class="n">dataset_version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
+                <span class="n">ffp</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">),</span>
+                <span class="n">size</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span>
+                <span class="n">optional_attrs</span><span class="o">=</span><span class="n">optional_attrs</span><span class="p">,</span>
+            <span class="p">)</span>
 
             <span class="c1"># Write line into mapfile.</span>
             <span class="n">write</span><span class="p">(</span><span class="n">outpath</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
 
             <span class="c1"># Print success.</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> &lt;-- </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">source</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> &lt;-- </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">source</span><span class="p">)</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
                 <span class="n">Print</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -224,10 +240,8 @@
             <span class="k">return</span> <span class="n">outpath</span>
 
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-
             <span class="c1"># Lock error number.</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-
                 <span class="c1"># Increase error counter.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -235,37 +249,35 @@
 
         <span class="c1"># Catch known exception with its traceback.</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-
             <span class="c1"># Lock error number.</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-
                 <span class="c1"># Increase error counter.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
 
                 <span class="c1"># Format &amp; print exception traceback.</span>
                 <span class="n">exc</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="n">TAGS</span><span class="o">.</span><span class="n">SKIP</span> <span class="o">+</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">HEADER</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
-                <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">TAGS</span><span class="o">.</span><span class="n">SKIP</span> <span class="o">+</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">HEADER</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
                 <span class="n">Print</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">finally</span><span class="p">:</span>
-
             <span class="c1"># Lock progress value.</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-
                 <span class="c1"># Increase progress counter.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
 
                 <span class="c1"># Clear previous print.</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                 <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
                 <span class="c1"># Print progress bar.</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">COLORS</span><span class="o">.</span><span class="n">OKBLUE</span><span class="p">(</span><span class="n">SPINNER_DESC</span><span class="p">),</span>
-                                          <span class="n">FRAMES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">FRAMES</span><span class="p">)],</span>
-                                          <span class="n">source</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">COLORS</span><span class="o">.</span><span class="n">OKBLUE</span><span class="p">(</span><span class="n">SPINNER_DESC</span><span class="p">),</span>
+                    <span class="n">FRAMES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">FRAMES</span><span class="p">)],</span>
+                    <span class="n">source</span><span class="p">,</span>
+                <span class="p">)</span>
                 <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
                 <span class="c1"># Set new message length.</span>

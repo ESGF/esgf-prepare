@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Migration Guide from esgprep 2.x to 3.0 &mdash; esgprep 3.0.0 documentation</title>
+  <title>Changelog from esgprep 2.x to 3.0 &mdash; esgprep 3.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
@@ -52,7 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Real-World Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Migration Guide from esgprep 2.x to 3.0</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog from esgprep 2.x to 3.0</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#breaking-changes">Breaking Changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#migration-from-esgfetchini">Migration from esgfetchini</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#migration-from-esgfetchtables">Migration from esgfetchtables</a></li>
@@ -85,7 +85,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Migration Guide from esgprep 2.x to 3.0</li>
+      <li class="breadcrumb-item active">Changelog from esgprep 2.x to 3.0</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/migration.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -95,13 +95,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="migration-guide-from-esgprep-2-x-to-3-0">
-<span id="migration"></span><h1>Migration Guide from esgprep 2.x to 3.0<a class="headerlink" href="#migration-guide-from-esgprep-2-x-to-3-0" title="Link to this heading"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> version 3.0 introduces significant changes from the previous Python 2 version. This guide helps you
-transition from version 2.x to 3.0.</p>
+  <section id="changelog-from-esgprep-2-x-to-3-0">
+<span id="migration"></span><h1>Changelog from esgprep 2.x to 3.0<a class="headerlink" href="#changelog-from-esgprep-2-x-to-3-0" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> version 3.0 introduces significant changes from the previous Python 2 version. This document
+summarizes what’s new and changed.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Version 3.0 is a Python 3.12+ rewrite with modernized architecture and dependencies.</p>
+<p>Version 3.0 is a Python 3.12+ rewrite with modernized architecture and dependencies. Most changes
+are automatic and don’t require modifications to your workflow. This is provided for informational purposes
+to help you understand the improvements.</p>
 </div>
 <section id="breaking-changes">
 <h2>Breaking Changes<a class="headerlink" href="#breaking-changes" title="Link to this heading"></a></h2>
@@ -151,7 +153,7 @@ $&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="
 </ul>
 </div></blockquote>
 <p><strong>Advanced configuration:</strong></p>
-<p>If you need to customize vocabulary sources or manage caching, refer to the <a class="reference external" href="https://esgvoc.readthedocs.io/">esgvoc documentation</a>.</p>
+<p>If you need to customize vocabulary sources or manage caching, refer to the <a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a>.</p>
 </section>
 <section id="migration-from-esgfetchtables">
 <h2>Migration from esgfetchtables<a class="headerlink" href="#migration-from-esgfetchtables" title="Link to this heading"></a></h2>
@@ -230,7 +232,7 @@ $&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="
 <p><strong>New dependencies:</strong></p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> &gt;= 1.0.1 - Controlled vocabulary and configuration management</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> &gt;= 2.2.1 - Controlled vocabulary and configuration management</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">python-levenshtein</span></code> &gt;= 0.27.1 - Enhanced string matching</p></li>
 <li><p>Updated versions of <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>, and other core libraries</p></li>
 </ul>
@@ -315,7 +317,7 @@ them into the vocabulary system. See <a class="reference internal" href="configu
 <li><p>Check the updated documentation for <a class="reference internal" href="usage.html#usage"><span class="std std-ref">Generic usage</span></a>, <a class="reference internal" href="drs.html#drs"><span class="std std-ref">Manage local data through the DRS</span></a>, and <a class="reference internal" href="mapfiles.html#mapfiles"><span class="std std-ref">Generate mapfile for ESGF publication</span></a></p></li>
 <li><p>Review the <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">Configuration</span></a> section for <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> details</p></li>
 <li><p>Report issues on <a class="reference external" href="https://github.com/ESGF/esgf-prepare/issues">GitHub</a></p></li>
-<li><p>Consult the <a class="reference external" href="https://esgvoc.readthedocs.io/">esgvoc documentation</a> for vocabulary management</p></li>
+<li><p>Consult the <a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a> for vocabulary management</p></li>
 </ul>
 </div></blockquote>
 </section>

@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Real-World Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Changelog from esgprep 2.x to 3.0</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../log.html">Change Log</a></li>
@@ -94,14 +94,12 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fuzzywuzzy.fuzz</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial_ratio</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fuzzywuzzy.process</span><span class="w"> </span><span class="kn">import</span> <span class="n">extractOne</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">netCDF4</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoProjectCodeFound</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._exceptions.netcdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidNetCDFFile</span><span class="p">,</span> <span class="n">NoNetCDFAttribute</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.print</span><span class="w"> </span><span class="kn">import</span> <span class="n">Print</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.drs.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PID_PREFIXES</span>
 
 
@@ -238,7 +236,6 @@
 
     <span class="c1"># Set project code from global attributes.</span>
     <span class="n">key</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">extractOne</span><span class="p">(</span><span class="s2">&quot;mip_era&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">scorer</span><span class="o">=</span><span class="n">partial_ratio</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-    <span class="c1"># QUESTION ; mip_era ? ou project ?</span>
     <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;</span> <span class="mi">80</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NoProjectCodeFound</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
 
@@ -246,8 +243,6 @@
 
     <span class="c1"># Return project code.</span>
     <span class="k">return</span> <span class="n">project</span></div>
-
-
 
 </pre></div>
 

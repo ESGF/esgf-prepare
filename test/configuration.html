@@ -59,7 +59,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mapfiles.html">Generate mapfile for ESGF publication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Real-World Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide from esgprep 2.x to 3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Changelog from esgprep 2.x to 3.0</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="log.html">Change Log</a></li>
@@ -126,31 +126,30 @@ synchronized when using <code class="docutils literal notranslate"><span class="
 </section>
 <section id="checksum-configuration">
 <h2>Checksum Configuration<a class="headerlink" href="#checksum-configuration" title="Link to this heading"></a></h2>
-<p>By default, <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> uses SHA256 for file checksums. This is the recommended checksum algorithm for ESGF
-data publication and is used automatically unless otherwise specified.</p>
-<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> version 3.0+ supports both standard hashlib algorithms and multihash algorithms. Multihash is a
-self-describing hash format that includes the algorithm identifier and hash length, making it more robust for
-long-term data integrity verification.</p>
+<p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> version 3.0+ supports both standard hashlib algorithms and multihash algorithms. <strong>Multihash is now
+the recommended checksum format for ESGF data publication</strong>, and modern publishers will only accept multihash
+formats for new submissions. SHA256 legacy format support is maintained for compatibility with existing
+data.</p>
+<p>Multihash is a self-describing hash format that includes the algorithm identifier and hash length, making it
+more robust for long-term data integrity verification.</p>
 <p>For <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code>, you can specify the checksum algorithm using the <code class="docutils literal notranslate"><span class="pre">--checksum-type</span></code> option:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standard algorithm (default)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standard algorithm (legacy, for compatibility)</span>
 $&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--checksum-type<span class="w"> </span>sha256<span class="w"> </span>/PATH/TO/SCAN/
 
-<span class="c1"># Multihash algorithm (recommended for ESGF)</span>
+<span class="c1"># Multihash algorithm (recommended for new data)</span>
 $&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--checksum-type<span class="w"> </span>sha2-256<span class="w"> </span>/PATH/TO/SCAN/
 </pre></div>
 </div>
-<dl class="simple">
-<dt>Supported algorithms include:</dt><dd><ul class="simple">
+<p>Supported algorithms include:</p>
+<ul class="simple">
 <li><p><strong>Standard</strong>: sha256, sha1, md5, and other hashlib algorithms</p></li>
 <li><p><strong>Multihash</strong>: sha2-256, sha2-512, sha3-256, sha3-512, sha1</p></li>
 </ul>
-</dd>
-</dl>
 <p>See <a class="reference internal" href="mapfiles.html#mapfiles"><span class="std std-ref">Generate mapfile for ESGF publication</span></a> for more details on checksum options.</p>
 </section>
 <section id="advanced-configuration">
 <h2>Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Link to this heading"></a></h2>
-<p>For advanced use cases or custom project definitions, please refer to the <a class="reference external" href="https://esgvoc.readthedocs.io/">esgvoc documentation</a> for information on:</p>
+<p>For advanced use cases or custom project definitions, please refer to the <a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a> for information on:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Adding custom project definitions</p></li>
@@ -168,7 +167,7 @@ $&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="
 <li><p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library replaces the functionality of <code class="docutils literal notranslate"><span class="pre">ESGConfigParser</span></code></p></li>
 <li><p>Project definitions are now managed centrally through <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code></p></li>
 <li><p>No manual INI file management is required</p></li>
-<li><p>See the <a class="reference internal" href="migration.html#migration"><span class="std std-ref">Migration Guide from esgprep 2.x to 3.0</span></a> guide for details on transitioning from the old system</p></li>
+<li><p>See the <a class="reference internal" href="migration.html#migration"><span class="std std-ref">Changelog from esgprep 2.x to 3.0</span></a> guide for details on transitioning from the old system</p></li>
 </ul>
 </div></blockquote>
 </section>
