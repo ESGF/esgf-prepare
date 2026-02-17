@@ -6,17 +6,14 @@ pointing to the most recent version directories in DRS structures.
 """
 
 import re
-import shutil
 from argparse import Namespace
 from pathlib import Path
-import pytest
 
 from esgprep.esgdrs import run
 from tests.fixtures.generators import (
     create_files_different_variables,
     clean_directory,
 )
-from tests.fixtures.validators import DRSValidator
 
 
 def get_default_make_args(incoming_dir, drs_root) -> Namespace:
@@ -87,7 +84,7 @@ def find_version_directories(root_dir: Path) -> list[Path]:
     """Find all version directories (vYYYYMMDD pattern) in the DRS structure."""
     version_dirs = []
     for path in root_dir.rglob("v*"):
-        if path.is_dir() and re.match(r'^v\d{8}$', path.name):
+        if path.is_dir() and re.match(r"^v\d{8}$", path.name):
             version_dirs.append(path)
     return version_dirs
 
@@ -124,8 +121,9 @@ class TestDRSLatest:
 
         # Step 6: Verify symlinks were recreated correctly
         recreated_symlinks = find_latest_symlinks(drs_root)
-        assert len(recreated_symlinks) == len(initial_symlinks), \
+        assert len(recreated_symlinks) == len(initial_symlinks), (
             f"Expected {len(initial_symlinks)} symlinks, got {len(recreated_symlinks)}"
+        )
 
         # Step 7: Validate each symlink
         for symlink in recreated_symlinks:
@@ -156,7 +154,9 @@ class TestDRSLatest:
 
         # Step 5: Verify multiple versions exist
         version_dirs = find_version_directories(drs_root)
-        assert len(version_dirs) >= 2, f"Expected at least 2 version directories, got {len(version_dirs)}"
+        assert len(version_dirs) >= 2, (
+            f"Expected at least 2 version directories, got {len(version_dirs)}"
+        )
 
         # Step 6: Remove all latest symlinks
         initial_symlinks = find_latest_symlinks(drs_root)
@@ -175,7 +175,9 @@ class TestDRSLatest:
         for symlink in recreated_symlinks:
             assert symlink.exists() and symlink.is_symlink()
             target = symlink.readlink()
-            assert target == Path("v19810102"), f"Expected symlink to point to v19810102, got {target}"
+            assert target == Path("v19810102"), (
+                f"Expected symlink to point to v19810102, got {target}"
+            )
 
     def test_latest_no_existing_structure(self, drs_test_structure):
         """Test latest command when no DRS structure exists."""
@@ -258,4 +260,6 @@ class TestDRSLatest:
 
         # At least one should point to the newer version
         targets = [symlink.readlink() for symlink in final_symlinks]
-        assert Path("v19810102") in targets, "Should have at least one symlink pointing to v19810102"
+        assert Path("v19810102") in targets, (
+            "Should have at least one symlink pointing to v19810102"
+        )

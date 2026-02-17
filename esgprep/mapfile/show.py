@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-    :platform: Unix
-    :synopsis: Show mapfile name to be generated..
+:platform: Unix
+:synopsis: Show mapfile name to be generated..
 
 """
+
 import re
 import traceback
 from pathlib import Path
@@ -43,20 +44,19 @@ class Process(object):
         """
         # Escape in case of error.
         try:
-
             # Import utilities depending on the source type.
             if isinstance(source, Path):
-                from esgprep._utils.path import get_terms, dataset_id, get_project
+                from esgprep._utils.path import dataset_id
 
             else:
-                from esgprep._utils.dataset import get_terms, dataset_id, get_project
+                from esgprep._utils.dataset import dataset_id
             # Build dataset identifier.
             # DRS terms are validated during this step.
             identifier = dataset_id(source)
 
             # Check dataset identifier is not None.
             if not identifier:
-                Print.debug('Dataset identifier is None')
+                Print.debug("Dataset identifier is None")
                 return False
 
             # Split identifier into name & version.
@@ -64,9 +64,11 @@ class Process(object):
             dataset = identifier
             version = None
 
-            if re.search(r'\.latest|\.v[0-9]*$', str(identifier)):
-                version = identifier.split('.')[-1][1:] # remove "v" only for name in mapfile NOT for the mapfile name
-                dataset = '.'.join(identifier.split('.')[:-1])
+            if re.search(r"\.latest|\.v[0-9]*$", str(identifier)):
+                version = identifier.split(".")[-1][
+                    1:
+                ]  # remove "v" only for name in mapfile NOT for the mapfile name
+                dataset = ".".join(identifier.split(".")[:-1])
             # Build mapfile name.
             outfile = build_mapfile_name(self.mapfile_name, dataset, version)
             # Build mapfile directory.
@@ -83,7 +85,7 @@ class Process(object):
             outpath = outdir.joinpath(outfile)
 
             # Print success.
-            msg = '{} <-- {}'.format(outfile.with_suffix(''), source)
+            msg = "{} <-- {}".format(outfile.with_suffix(""), source)
             with self.lock:
                 Print.success(msg)
 
@@ -94,10 +96,8 @@ class Process(object):
                 return outpath
 
         except KeyboardInterrupt:
-
             # Lock error number.
             with self.lock:
-
                 # Increase error counter.
                 self.errors.value += 1
 
@@ -105,37 +105,35 @@ class Process(object):
 
         # Catch known exception with its traceback.
         except Exception:
-
             # Lock error number.
             with self.lock:
-
                 # Increase error counter.
                 self.errors.value += 1
 
                 # Format & print exception traceback.
                 exc = traceback.format_exc().splitlines()
-                msg = TAGS.SKIP + COLORS.HEADER(str(source)) + '\n'
-                msg += '\n'.join(exc)
+                msg = TAGS.SKIP + COLORS.HEADER(str(source)) + "\n"
+                msg += "\n".join(exc)
                 Print.exception(msg, buffer=True)
 
             return None
 
         finally:
-
             # Lock progress value.
             with self.lock:
-
                 # Increase progress counter.
                 self.progress.value += 1
 
                 # Clear previous print.
-                msg = '\r{}'.format(' ' * self.msg_length.value)
+                msg = "\r{}".format(" " * self.msg_length.value)
                 Print.progress(msg)
 
                 # Print progress bar.
-                msg = '\r{} {} {}'.format(COLORS.OKBLUE(SPINNER_DESC),
-                                          FRAMES[self.progress.value % len(FRAMES)],
-                                          source)
+                msg = "\r{} {} {}".format(
+                    COLORS.OKBLUE(SPINNER_DESC),
+                    FRAMES[self.progress.value % len(FRAMES)],
+                    source,
+                )
                 Print.progress(msg)
 
                 # Set new message length.

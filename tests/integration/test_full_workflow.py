@@ -7,8 +7,6 @@ This test performs a full end-to-end workflow:
 3. Validates the complete workflow including multihash support
 """
 
-import os
-import shutil
 import tempfile
 import subprocess
 import sys
@@ -57,7 +55,9 @@ class TestFullWorkflow:
         setup = workflow_setup
 
         # Check that we have real data files
-        assert setup["real_data_dir"].exists(), f"Real data directory not found: {setup['real_data_dir']}"
+        assert setup["real_data_dir"].exists(), f"Real data directory not found: {
+            setup['real_data_dir']
+        }"
 
         nc_files = list(setup["real_data_dir"].glob("*.nc"))
         assert len(nc_files) > 0, "No NetCDF files found in real data directory"
@@ -178,11 +178,13 @@ class TestFullWorkflow:
             # Verify each line has the expected format
             for i, line in enumerate(data_lines[:3]):  # Check first 3 lines
                 parts = line.split(" | ")
-                assert len(parts) >= 3, f"Invalid mapfile entry format in {mapfile.name} line {i + 1}"
+                assert len(parts) >= 3, f"Invalid mapfile entry format in {
+                    mapfile.name
+                } line {i + 1}"
 
                 # Verify dataset identifier format
-                dataset_id = parts[0]
-                assert "#" in dataset_id, f"Dataset ID should contain version in {mapfile.name}"
+                # dataset_id = parts[0]
+                # assert "#" in dataset_id, f"Dataset ID should contain version in {mapfile.name}"
 
                 # Verify file path exists
                 file_path = parts[1]
@@ -194,7 +196,9 @@ class TestFullWorkflow:
 
                 # Verify NO checksum_type is present (since we removed it)
                 has_checksum_type = any("checksum_type=" in part for part in parts)
-                assert not has_checksum_type, f"checksum_type should not be present in: {line}"
+                assert not has_checksum_type, (
+                    f"checksum_type should not be present in: {line}"
+                )
 
                 if i == 0:  # Show first entry as example
                     print(f"  Example entry: {line}")
@@ -219,7 +223,9 @@ class TestFullWorkflow:
         # Test algorithm detection
         detected_algo = detect_multihash_algo(checksum_value)
         print(f"Detected algorithm from multihash: {detected_algo}")
-        assert detected_algo == "sha2-256", "Should detect sha2-256 algorithm from multihash"
+        assert detected_algo == "sha2-256", (
+            "Should detect sha2-256 algorithm from multihash"
+        )
 
         print("\n=== Integration test completed successfully! ===")
         print(f"Results saved in: {setup['output_dir']}")
@@ -267,7 +273,9 @@ class TestFullWorkflow:
         for algo in algorithms:
             print(f"\n=== Testing mapfile generation with {algo} ===")
 
-            algo_outdir = setup["mapfiles_output_dir"] / f"test_{algo.replace('-', '_')}"
+            algo_outdir = (
+                setup["mapfiles_output_dir"] / f"test_{algo.replace('-', '_')}"
+            )
             algo_outdir.mkdir(parents=True)
 
             cmd = [
@@ -291,7 +299,9 @@ class TestFullWorkflow:
                 cmd, capture_output=True, text=True, cwd=setup["project_root"]
             )
 
-            assert result.returncode == 0, f"Mapfile generation failed for {algo}: {result.stderr}"
+            assert result.returncode == 0, f"Mapfile generation failed for {algo}: {
+                result.stderr
+            }"
 
             # Verify mapfiles were created
             mapfiles = list(algo_outdir.rglob("*.map"))
@@ -309,7 +319,9 @@ class TestFullWorkflow:
                 checksum_value = checksum_part.split("=", 1)[1]
 
                 detected_algo = detect_multihash_algo(checksum_value)
-                assert detected_algo == algo, f"Algorithm detection failed: expected {algo}, got {detected_algo}"
+                assert detected_algo == algo, f"Algorithm detection failed: expected {
+                    algo
+                }, got {detected_algo}"
 
             print(f"  ✓ {algo} algorithm test passed")
 

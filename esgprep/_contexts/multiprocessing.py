@@ -10,12 +10,11 @@
 """
 
 import signal
-from configparser import NoOptionError, NoSectionError
 from ctypes import c_wchar_p
 from hashlib import algorithms_available as checksum_types
 from importlib import import_module
 from multiprocessing import Lock, Pool
-from multiprocessing.managers import BaseProxy, Namespace, SyncManager
+from multiprocessing.managers import BaseProxy, SyncManager
 from multiprocessing.sharedctypes import Value
 
 import esgvoc.api as ev
@@ -24,6 +23,7 @@ from esgprep._contexts import BaseContext
 from esgprep._exceptions import InvalidChecksumType, MissingCVdata
 from esgprep._handlers.drs_tree import DRSTree
 from esgprep._utils.print import COLORS, Print
+import os
 
 
 class Manager(SyncManager):
@@ -33,7 +33,7 @@ class Manager(SyncManager):
 class DRSTreeProxy(BaseProxy):
     _exposed_ = (
         "get_display_lengths",
-        "add_path", 
+        "add_path",
         "append_path",
         "create_leaf",
         "has_path",
@@ -201,17 +201,25 @@ class MultiprocessingContext(BaseContext):
             if "universe connection is not initialized" in str(e):
                 Print.error("Controlled vocabularies are not initialized.")
                 Print.error("Please run: esgvoc install")
-                Print.error("This command downloads ESGF project vocabularies and builds local databases.")
+                Print.error(
+                    "This command downloads ESGF project vocabularies and builds local databases."
+                )
                 raise SystemExit(1)
             else:
                 raise
         except Exception as e:
             # Catch database errors (OperationalError, etc.)
             error_msg = str(e)
-            if "no such table" in error_msg or "OperationalError" in str(type(e).__name__):
-                Print.error("Controlled vocabulary databases are incomplete or corrupted.")
+            if "no such table" in error_msg or "OperationalError" in str(
+                type(e).__name__
+            ):
+                Print.error(
+                    "Controlled vocabulary databases are incomplete or corrupted."
+                )
                 Print.error("Please run: esgvoc install")
-                Print.error("This will rebuild the databases from the latest vocabularies.")
+                Print.error(
+                    "This will rebuild the databases from the latest vocabularies."
+                )
                 raise SystemExit(1)
             elif "institution" not in str(e):
                 # Original AssertionError case
@@ -248,7 +256,7 @@ class MultiprocessingContext(BaseContext):
         Print.summary(msg)
 
         # Properly shutdown the multiprocessing manager to avoid resource leaks
-        if self.use_pool and hasattr(self, 'manager'):
+        if self.use_pool and hasattr(self, "manager"):
             self.manager.shutdown()
 
         # Store final error count as a regular attribute for post-context access
@@ -266,7 +274,11 @@ class MultiprocessingContext(BaseContext):
             return None
 
         # Get checksum type from command line argument or use default
-        checksum_type = self.checksum_type_arg if hasattr(self, 'checksum_type_arg') and self.checksum_type_arg else "sha256"
+        checksum_type = (
+            self.checksum_type_arg
+            if hasattr(self, "checksum_type_arg") and self.checksum_type_arg
+            else "sha256"
+        )
 
         # Get checksum type from configuration.
         # if 'checksum' in self.cfg.defaults():
@@ -276,7 +288,10 @@ class MultiprocessingContext(BaseContext):
         # Import multihash support here to avoid circular imports
         try:
             from esgprep._utils.checksum import is_multihash_algo
-            if checksum_type not in checksum_types and not is_multihash_algo(checksum_type):
+
+            if checksum_type not in checksum_types and not is_multihash_algo(
+                checksum_type
+            ):
                 raise InvalidChecksumType(checksum_type)
         except ImportError:
             # Fallback to original validation if multihash not available

@@ -16,9 +16,9 @@ class Dataset(object):
 
     """
 
-    def __init__(self, identifier, separator='.'):
+    def __init__(self, identifier, separator="."):
         # Instantiate dataset identifier in a common format.
-        self.identifier = identifier.replace('#', '.v')
+        self.identifier = identifier.replace("#", ".v")
 
         # Instantiate identifier separator.
         self.sep = separator

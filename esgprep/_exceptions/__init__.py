@@ -8,6 +8,7 @@
 .. moduleauthor:: Guillaume Levavasseur <glipsl@ipsl.fr>
 
 """
+
 from hashlib import algorithms_available as checksum_types
 
 
@@ -111,7 +112,9 @@ class UnchangedTrackingID(Exception):
     """
 
     def __init__(self, latest, latest_id, upgrade, upgrade_id):
-        self.msg = "Latest file version has the same tracking ID/PID, which has to be unique."
+        self.msg = (
+            "Latest file version has the same tracking ID/PID, which has to be unique."
+        )
         self.msg += f"\n<latest  file: '{latest_id} - {latest}'>"
         self.msg += f"\n<upgrade file: '{upgrade_id} - {upgrade}'>"
         super(self.__class__, self).__init__(self.msg)
@@ -164,7 +167,23 @@ class MissingCVdata(Exception):
     """
 
     def __init__(self, authority, project):
-        self.msg = "Unable to find/load CV -- Please use \"esgfetchcv\"."
+        self.msg = 'Unable to find/load CV -- Please use "esgfetchcv".'
         self.msg += f"\n<authority: '{authority}'>"
         self.msg += f"\n<project: '{project}'>"
         super(self.__class__, self).__init__(self.msg)
+
+
+__all__ = [
+    "KeyNotFound",
+    "InvalidChecksumType",
+    "ChecksumFail",
+    "NoFileFound",
+    "DuplicatedDataset",
+    "OlderUpgrade",
+    "DuplicatedFile",
+    "UnchangedTrackingID",
+    "NoVersionPattern",
+    "InconsistentDRSPath",
+    "NoProjectCodeFound",
+    "MissingCVdata",
+]

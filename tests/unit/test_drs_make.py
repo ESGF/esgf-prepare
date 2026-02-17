@@ -7,7 +7,6 @@ from incoming NetCDF files using the esgdrs make command.
 
 import re
 from argparse import Namespace
-from pathlib import Path
 import pytest
 
 from esgprep.esgdrs import run
@@ -16,9 +15,9 @@ from tests.fixtures.generators import (
     create_files_different_times,
     create_files_different_members,
     create_files_different_models,
-    clean_directory,
 )
 from tests.fixtures.validators import DRSValidator
+# TODO : fix all
 
 
 def get_default_make_args(incoming_dir, drs_root) -> Namespace:
@@ -73,8 +72,16 @@ class TestDRSMake:
 
         # Validate DRS structure was created
         expected_drs_path = (
-            drs_root / "CMIP6" / "CMIP" / "IPSL" / "IPSL-CM6A-LR" /
-            "historical" / "r1i1p1f1" / "day" / "hur" / "gn"
+            drs_root
+            / "CMIP6"
+            / "CMIP"
+            / "IPSL"
+            / "IPSL-CM6A-LR"
+            / "historical"
+            / "r1i1p1f1"
+            / "day"
+            / "hur"
+            / "gn"
         )
 
         validator = DRSValidator(expected_drs_path)
@@ -95,8 +102,16 @@ class TestDRSMake:
 
         # Validate DRS structure
         expected_drs_path = (
-            drs_root / "CMIP6" / "CMIP" / "IPSL" / "IPSL-CM6A-LR" /
-            "historical" / "r1i1p1f1" / "day" / "tas" / "gn"
+            drs_root
+            / "CMIP6"
+            / "CMIP"
+            / "IPSL"
+            / "IPSL-CM6A-LR"
+            / "historical"
+            / "r1i1p1f1"
+            / "day"
+            / "tas"
+            / "gn"
         )
 
         validator = DRSValidator(expected_drs_path)
@@ -117,8 +132,16 @@ class TestDRSMake:
 
         # Validate DRS structure for one of the members
         expected_drs_path = (
-            drs_root / "CMIP6" / "CMIP" / "IPSL" / "IPSL-CM6A-LR" /
-            "historical" / "r2i1p1f1" / "day" / "tas" / "gn"
+            drs_root
+            / "CMIP6"
+            / "CMIP"
+            / "IPSL"
+            / "IPSL-CM6A-LR"
+            / "historical"
+            / "r2i1p1f1"
+            / "day"
+            / "tas"
+            / "gn"
         )
 
         validator = DRSValidator(expected_drs_path)
@@ -139,8 +162,16 @@ class TestDRSMake:
 
         # Validate DRS structure for one of the models (NESM3)
         expected_drs_path = (
-            drs_root / "CMIP6" / "CMIP" / "IPSL" / "NESM3" /
-            "historical" / "r1i1p1f1" / "day" / "tas" / "gn"
+            drs_root
+            / "CMIP6"
+            / "CMIP"
+            / "IPSL"
+            / "NESM3"
+            / "historical"
+            / "r1i1p1f1"
+            / "day"
+            / "tas"
+            / "gn"
         )
 
         validator = DRSValidator(expected_drs_path)
@@ -171,8 +202,16 @@ class TestDRSMake:
 
         # Validate the upgraded structure
         expected_drs_path = (
-            drs_root / "CMIP6" / "CMIP" / "IPSL" / "IPSL-CM6A-LR" /
-            "historical" / "r1i1p1f1" / "day" / "tas" / "gn"
+            drs_root
+            / "CMIP6"
+            / "CMIP"
+            / "IPSL"
+            / "IPSL-CM6A-LR"
+            / "historical"
+            / "r1i1p1f1"
+            / "day"
+            / "tas"
+            / "gn"
         )
 
         validator = DRSValidator(expected_drs_path)
@@ -208,8 +247,16 @@ class TestDRSMake:
 
         # Verify symlinks were created in version directory
         expected_drs_path = (
-            drs_root / "CMIP6" / "CMIP" / "IPSL" / "IPSL-CM6A-LR" /
-            "historical" / "r1i1p1f1" / "day" / "tas" / "gn"
+            drs_root
+            / "CMIP6"
+            / "CMIP"
+            / "IPSL"
+            / "IPSL-CM6A-LR"
+            / "historical"
+            / "r1i1p1f1"
+            / "day"
+            / "tas"
+            / "gn"
         )
 
         validator = DRSValidator(expected_drs_path)

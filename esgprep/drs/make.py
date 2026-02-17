@@ -12,13 +12,16 @@ from pathlib import Path
 
 from esgvoc.apps.drs.generator import DrsGenerator
 
-from esgprep._exceptions import (DuplicatedFile, OlderUpgrade,
-                                 UnchangedTrackingID)
+from esgprep._exceptions import DuplicatedFile, OlderUpgrade, UnchangedTrackingID
 from esgprep._handlers.constants import LINK_SEPARATOR
 from esgprep._utils.checksum import get_checksum
 from esgprep._utils.ncfile import get_ncattrs, get_tracking_id
-from esgprep._utils.path import (extract_version, get_ordered_version_paths,
-                                 get_path_to_version, get_version_and_subpath)
+from esgprep._utils.path import (
+    extract_version,
+    get_ordered_version_paths,
+    get_path_to_version,
+    get_version_and_subpath,
+)
 from esgprep._utils.print import COLORS, TAGS, Print
 from esgprep.constants import FRAMES
 from esgprep.drs.constants import SPINNER_DESC
@@ -82,12 +85,15 @@ class Process(object):
             current_attrs["filename"] = source.name
 
             # Add dataset-version to attributes with 'v' prefix for DRS generator.
-            version_for_drs = self.version if self.version.startswith('v') else f'v{self.version}'
+            version_for_drs = (
+                self.version if self.version.startswith("v") else f"v{self.version}"
+            )
             current_attrs["version"] = version_for_drs
 
             # Validate project compatibility before DRS generation
             try:
                 from esgprep._utils.ncfile import get_project
+
                 file_project = get_project(current_attrs)
                 if file_project and file_project.lower() != self.project.lower():
                     raise Exception(
@@ -108,9 +114,7 @@ class Process(object):
             # Build directory structure.
             # DRS terms are validated during this step.
             try:
-                # drspath = drs_path(current_attrs, self.set_values, self.set_keys)
                 dg = DrsGenerator(self.project)
-                # print(current_attrs)
                 if self.project == "cmip6":
                     drs_path = dg.generate_directory_from_mapping(
                         {
@@ -118,14 +122,12 @@ class Process(object):
                             **{"member_id": current_attrs["variant_label"]},
                         }
                     )
-                else:
-                    drs_path = dg.generate_directory_from_mapping({**current_attrs})
-                # print("")
-                # print(drs_path.generated_drs_expression)
 
                 if len(drs_path.errors) != 0:
                     # Build detailed error message with all DRS errors
-                    error_details = "\n".join([f"  - {error}" for error in drs_path.errors])
+                    error_details = "\n".join(
+                        [f"  - {error}" for error in drs_path.errors]
+                    )
                     raise Exception(
                         f"DRS generation failed with {len(drs_path.errors)} error(s):\n{error_details}"
                     )
@@ -312,14 +314,6 @@ class Process(object):
             if self.tree.has_path(key):
                 # mean we already saw this dataset
                 self.tree.append_path(key, "files", record)
-                # self.tree.paths[key]['files'].append(record)
-                deux = self.tree.get_path_value(key, "latest")
-                # print("CHECK_4 : ",latest_version, self.tree.paths[key]["latest"] )
-                # if latest_version != self.tree.paths[key]['latest']:
-                #    print("ERROR : ")
-                # print(self.tree)
-
-                # assert latest_version == self.tree.paths[key]['latest']
             else:
                 infos = {
                     "files": [record],

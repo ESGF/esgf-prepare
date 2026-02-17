@@ -18,7 +18,7 @@ import sys
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath("../"))
 from esgprep.constants import VERSION
 
 # -- General configuration ------------------------------------------------
@@ -30,33 +30,33 @@ from esgprep.constants import VERSION
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
     # 'sphinxtogithub'  # Temporarily disabled - incompatible with Python 3.12
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = u'esgprep'
-copyright = u'2025, Troussellier, Laurent'
+project = "esgprep"
+copyright = "2025, Troussellier, Laurent"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '.'.join(VERSION.split('.')[:2])
+version = ".".join(VERSION.split(".")[:2])
 # The full version, including alpha/beta/rc tags.
 release = VERSION
 
@@ -72,7 +72,7 @@ release = VERSION
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ["_build"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -90,7 +90,7 @@ exclude_patterns = ['_build']
 show_authors = True
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -103,7 +103,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -181,17 +181,15 @@ html_static_path = []
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'esgprepdoc'
+htmlhelp_basename = "esgprepdoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     # 'preamble': '',
 }
@@ -200,8 +198,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'esgprep.tex', u'esgprep Documentation',
-     u'Troussellier, Laurent', 'manual'),
+    (
+        "index",
+        "esgprep.tex",
+        "esgprep Documentation",
+        "Troussellier, Laurent",
+        "manual",
+    ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -230,8 +233,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'esgprep', u'esgprep Documentation',
-     [u'Troussellier, Laurent'], 1)
+    ("index", "esgprep", "esgprep Documentation", ["Troussellier, Laurent"], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -244,9 +246,15 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'esgprep', u'esgprep Documentation',
-     u'Troussellier, Laurent', 'esgprep', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        "index",
+        "esgprep",
+        "esgprep Documentation",
+        "Troussellier, Laurent",
+        "esgprep",
+        "One line description of project.",
+        "Miscellaneous",
+    ),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -261,5 +269,5 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
 
-autodoc_member_order = 'bysource'
-autodoc_default_flags = ['members', 'private-members']
+autodoc_member_order = "bysource"
+autodoc_default_flags = ["members", "private-members"]

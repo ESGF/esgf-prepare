@@ -7,7 +7,6 @@ This test verifies that the configure_esgvoc fixture properly:
 - Builds SQLite databases
 - Makes vocabulary data accessible to tests
 """
-import pytest
 
 
 def test_esgvoc_is_configured():
@@ -16,8 +15,9 @@ def test_esgvoc_is_configured():
     import esgvoc.api as ev
 
     # Check that universe connection is initialized
-    assert current_state.universe.db_connection is not None, \
+    assert current_state.universe.db_connection is not None, (
         "Universe database connection should be initialized"
+    )
 
     # Check that we can access vocabularies
     descriptors = ev.get_all_data_descriptors_in_universe()
@@ -29,7 +29,9 @@ def test_esgvoc_is_configured():
     assert len(projects) > 0, "Should have projects"
     assert "cmip6" in projects, "Should have cmip6 project"
 
-    print(f"\n✓ esgvoc configured with {len(descriptors)} descriptors and {len(projects)} projects")
+    print(
+        f"\n✓ esgvoc configured with {len(descriptors)} descriptors and {len(projects)} projects"
+    )
 
 
 def test_esgvoc_vocabulary_access():
@@ -46,7 +48,9 @@ def test_esgvoc_vocabulary_access():
     assert len(projects) > 0, "Should have projects"
     assert "cmip6" in projects, "Should have cmip6"
 
-    print(f"\n✓ Successfully accessed {len(descriptors)} universe descriptors and {len(projects)} projects")
+    print(
+        f"\n✓ Successfully accessed {len(descriptors)} universe descriptors and {len(projects)} projects"
+    )
 
 
 def test_esgvoc_project_basics():
@@ -60,9 +64,13 @@ def test_esgvoc_project_basics():
     assert "cmip6plus" in projects, "cmip6plus should be available"
 
     # Test that projects have database connections
-    assert current_state.projects["cmip6"].db_connection is not None, \
+    assert current_state.projects["cmip6"].db_connection is not None, (
         "cmip6 should have database connection"
-    assert current_state.projects["cmip6plus"].db_connection is not None, \
+    )
+    assert current_state.projects["cmip6plus"].db_connection is not None, (
         "cmip6plus should have database connection"
+    )
 
-    print(f"\n✓ Verified {len(projects)} projects are configured with database connections")
+    print(
+        f"\n✓ Verified {len(projects)} projects are configured with database connections"
+    )

@@ -2,14 +2,60 @@
 # -*- coding: utf-8 -*-
 
 """
-    :platform: Unix
-    :synopsis: Toolbox to prepare ESGF data for publication.
+:platform: Unix
+:synopsis: Toolbox to prepare ESGF data for publication.
 
 """
 
+import argparse
+import sys
+import os
+from datetime import datetime
 from esgprep import __version__
-from esgprep._utils.help import *
-from esgprep._utils.parser import *
+from esgprep._utils.help import (
+    ALL_VERSIONS_HELP,
+    BASENAME_HELP,
+    CHECKSUM_TYPE_HELP,
+    CHECKSUMS_FROM_HELP,
+    COLOR_HELP,
+    DATASET_ID_HELP,
+    DATASET_LIST_HELP,
+    DIRECTORY_HELP,
+    EPILOG,
+    EXCLUDE_FILE_HELP,
+    HELP,
+    IGNORE_DIR_HELP,
+    INCLUDE_FILE_HELP,
+    LATEST_SYMLINK_HELP,
+    LOG_HELP,
+    MAPFILE_HELPS,
+    MAPFILE_NAME_HELP,
+    MAPFILE_SUBCOMMANDS,
+    MAX_PROCESSES_HELP,
+    NO_CHECKSUM_HELP,
+    NO_CLEANUP_HELP,
+    NO_COLOR_HELP,
+    OUTDIR_HELP,
+    PROGRAM_DESC,
+    PROJECT_HELP,
+    QUIET_HELP,
+    SET_VERSION_HELP,
+    SUBCOMMANDS,
+    TECH_NOTES_TITLE_HELP,
+    TECH_NOTES_URL_HELP,
+    VERBOSE_HELP,
+    VERSION_HELP,
+)
+from esgprep._utils.parser import (
+    ChecksumsReader,
+    CustomArgumentParser,
+    DatasetsReader,
+    DirectoryChecker,
+    MultilineFormatter,
+    VersionChecker,
+    processes_validator,
+    regex_validator,
+)
 from esgprep.mapfile import run
 
 
@@ -20,200 +66,186 @@ def get_args():
     """
     # Instantiate argument parser.
     main = CustomArgumentParser(
-        prog='esgmapfile',
-        description=PROGRAM_DESC['mapfile'],
+        prog="esgmapfile",
+        description=PROGRAM_DESC["mapfile"],
         formatter_class=MultilineFormatter,
         add_help=False,
-        epilog=EPILOG)
+        epilog=EPILOG,
+    )
+    main.add_argument("-h", "--help", action="help", help=HELP)
     main.add_argument(
-        '-h', '--help',
-        action='help',
-        help=HELP)
-    main.add_argument(
-        '-v', '--version',
-        action='version',
-        version='%(prog)s ({})'.format(__version__),
-        help=VERSION_HELP)
-    subparsers = main.add_subparsers(
-        title=SUBCOMMANDS,
-        dest='cmd',
-        metavar='',
-        help='')
+        "-v",
+        "--version",
+        action="version",
+        version="%(prog)s ({})".format(__version__),
+        help=VERSION_HELP,
+    )
+    subparsers = main.add_subparsers(title=SUBCOMMANDS, dest="cmd", metavar="", help="")
 
     # Add parent parser with common arguments.
     parent = argparse.ArgumentParser(add_help=False)
+    parent.add_argument("-h", "--help", action="help", help=HELP)
     parent.add_argument(
-        '-h', '--help',
-        action='help',
-        help=HELP)
-    parent.add_argument(
-        '-l', '--log',
-        metavar='CWD',
+        "-l",
+        "--log",
+        metavar="CWD",
         type=str,
-        const='{}/logs'.format(os.getcwd()),
-        nargs='?',
-        help=LOG_HELP)
+        const="{}/logs".format(os.getcwd()),
+        nargs="?",
+        help=LOG_HELP,
+    )
     parent.add_argument(
-        '-d', '--debug',
-        action='store_true',
-        default=False,
-        help=VERBOSE_HELP)
+        "-d", "--debug", action="store_true", default=False, help=VERBOSE_HELP
+    )
     parent.add_argument(
-        '-p', '--project',
-        metavar='NAME',
+        "-p",
+        "--project",
+        metavar="NAME",
         type=str,
         required=True,
-        help=PROJECT_HELP['mapfile'])
+        help=PROJECT_HELP["mapfile"],
+    )
     parent.add_argument(
-        '--mapfile',
-        metavar='{dataset_id}.v{version}.map',
+        "--mapfile",
+        metavar="{dataset_id}.v{version}.map",
         type=str,
-        default='{dataset_id}.v{version}.map',
-        help=MAPFILE_NAME_HELP)
+        default="{dataset_id}.v{version}.map",
+        help=MAPFILE_NAME_HELP,
+    )
     parent.add_argument(
-        '--outdir',
-        metavar='CWD/mapfiles',
+        "--outdir",
+        metavar="CWD/mapfiles",
         type=str,
-        default=os.path.join(os.getcwd(), 'mapfiles'),
-        help=OUTDIR_HELP)
+        default=os.path.join(os.getcwd(), "mapfiles"),
+        help=OUTDIR_HELP,
+    )
     group = parent.add_mutually_exclusive_group(required=False)
     group.add_argument(
-        '--all-versions',
-        action='store_true',
-        default=False,
-        help=ALL_VERSIONS_HELP)
+        "--all-versions", action="store_true", default=False, help=ALL_VERSIONS_HELP
+    )
     group.add_argument(
-        '--version',
+        "--version",
         metavar=datetime.now().strftime("%Y%m%d"),
         action=VersionChecker,
-        help=SET_VERSION_HELP['mapfile'])
+        help=SET_VERSION_HELP["mapfile"],
+    )
     group.add_argument(
-        '--latest-symlink',
-        action='store_true',
-        default=False,
-        help=LATEST_SYMLINK_HELP)
+        "--latest-symlink", action="store_true", default=False, help=LATEST_SYMLINK_HELP
+    )
     parent.add_argument(
-        '--ignore-dir',
+        "--ignore-dir",
         metavar=r"'^.*/(files|\.\w*).*$'",
         type=regex_validator,
-        default=r'^.*/(files|\.[\w]*).*$',
-        help=IGNORE_DIR_HELP)
+        default=r"^.*/(files|\.[\w]*).*$",
+        help=IGNORE_DIR_HELP,
+    )
     parent.add_argument(
-        '--include-file',
+        "--include-file",
         metavar=r"'^.*\.nc$'",
         type=regex_validator,
-        action='append',
-        default=[r'^.*\.nc$'],
-        help=INCLUDE_FILE_HELP['mapfile'])
+        action="append",
+        default=[r"^.*\.nc$"],
+        help=INCLUDE_FILE_HELP["mapfile"],
+    )
     parent.add_argument(
-        '--exclude-file',
+        "--exclude-file",
         metavar=r"'^\..*$'",
         type=regex_validator,
-        action='append',
-        default=[r'^\..*$'],
-        help=EXCLUDE_FILE_HELP)
+        action="append",
+        default=[r"^\..*$"],
+        help=EXCLUDE_FILE_HELP,
+    )
     parent.add_argument(
-        '--max-processes',
-        metavar='4',
+        "--max-processes",
+        metavar="4",
         type=processes_validator,
         default=4,
-        help=MAX_PROCESSES_HELP)
+        help=MAX_PROCESSES_HELP,
+    )
     group = parent.add_mutually_exclusive_group(required=False)
-    group.add_argument(
-        '--color',
-        action='store_true',
-        help=COLOR_HELP)
-    group.add_argument(
-        '--no-color',
-        action='store_true',
-        help=NO_COLOR_HELP)
+    group.add_argument("--color", action="store_true", help=COLOR_HELP)
+    group.add_argument("--no-color", action="store_true", help=NO_COLOR_HELP)
 
     # Add subparser.
     make = subparsers.add_parser(
-        'make',
-        prog='esgmapfile make',
-        description=MAPFILE_SUBCOMMANDS['make'],
+        "make",
+        prog="esgmapfile make",
+        description=MAPFILE_SUBCOMMANDS["make"],
         formatter_class=MultilineFormatter,
-        help=MAPFILE_HELPS['make'],
+        help=MAPFILE_HELPS["make"],
         add_help=False,
-        parents=[parent])
+        parents=[parent],
+    )
 
     make.add_argument(
-        '--directory',
+        "--directory",
         action=DirectoryChecker,
-        nargs='+',
-        help=DIRECTORY_HELP['mapfile'])
+        nargs="+",
+        help=DIRECTORY_HELP["mapfile"],
+    )
     make.add_argument(
-        '--no-checksum',
-        action='store_true',
+        "--no-checksum",
+        action="store_true",
         default=False,
-        help=NO_CHECKSUM_HELP['mapfile'])
+        help=NO_CHECKSUM_HELP["mapfile"],
+    )
     make.add_argument(
-        '--checksum-type',
-        metavar='TYPE',
+        "--checksum-type",
+        metavar="TYPE",
         type=str,
-        default='sha256',
-        help=CHECKSUM_TYPE_HELP)
+        default="sha256",
+        help=CHECKSUM_TYPE_HELP,
+    )
     make.add_argument(
-        '--checksums-from',
-        metavar='CHECKSUM_FILE',
+        "--checksums-from",
+        metavar="CHECKSUM_FILE",
         type=ChecksumsReader,
-        help=CHECKSUMS_FROM_HELP)
+        help=CHECKSUMS_FROM_HELP,
+    )
     make.add_argument(
-        '--tech-notes-url',
-        metavar='URL',
-        type=str,
-        help=TECH_NOTES_URL_HELP)
+        "--tech-notes-url", metavar="URL", type=str, help=TECH_NOTES_URL_HELP
+    )
     make.add_argument(
-        '--tech-notes-title',
-        metavar='TITLE',
-        type=str,
-        help=TECH_NOTES_TITLE_HELP)
+        "--tech-notes-title", metavar="TITLE", type=str, help=TECH_NOTES_TITLE_HELP
+    )
     make.add_argument(
-        '--no-cleanup',
-        action='store_true',
-        default=False,
-        help=NO_CLEANUP_HELP)
+        "--no-cleanup", action="store_true", default=False, help=NO_CLEANUP_HELP
+    )
 
     # Add subparser.
     show = subparsers.add_parser(
-        'show',
-        prog='esgmapfile show',
-        description=MAPFILE_SUBCOMMANDS['show'],
+        "show",
+        prog="esgmapfile show",
+        description=MAPFILE_SUBCOMMANDS["show"],
         formatter_class=MultilineFormatter,
-        help=MAPFILE_HELPS['show'],
+        help=MAPFILE_HELPS["show"],
         add_help=False,
-        parents=[parent])
+        parents=[parent],
+    )
 
     group = show.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        '--directory',
-        metavar='PATH',
+        "--directory",
+        metavar="PATH",
         action=DirectoryChecker,
-        nargs='+',
-        help=DIRECTORY_HELP['mapfile'])
+        nargs="+",
+        help=DIRECTORY_HELP["mapfile"],
+    )
     group.add_argument(
-        '--dataset-list',
-        metavar='TXT_FILE',
+        "--dataset-list",
+        metavar="TXT_FILE",
         type=DatasetsReader,
-        nargs='?',
+        nargs="?",
         const=sys.stdin,
-        help=DATASET_LIST_HELP)
+        help=DATASET_LIST_HELP,
+    )
     group.add_argument(
-        '--dataset-id',
-        metavar='DATASET_ID',
-        action='append',
-        help=DATASET_ID_HELP)
+        "--dataset-id", metavar="DATASET_ID", action="append", help=DATASET_ID_HELP
+    )
+    show.add_argument("--quiet", action="store_true", default=False, help=QUIET_HELP)
     show.add_argument(
-        '--quiet',
-        action='store_true',
-        default=False,
-        help=QUIET_HELP)
-    show.add_argument(
-        '--basename',
-        action='store_true',
-        default=False,
-        help=BASENAME_HELP)
+        "--basename", action="store_true", default=False, help=BASENAME_HELP
+    )
 
     # Return command-line parser & program name.
     return main, main.parse_args()
@@ -232,7 +264,7 @@ def main():
         return
 
     # Add program name as argument.
-    setattr(args, 'prog', parser.prog)
+    setattr(args, "prog", parser.prog)
 
     # Run program.
     run(args)

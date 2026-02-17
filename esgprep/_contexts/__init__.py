@@ -19,7 +19,6 @@ class BaseContext(object):
     """
 
     def __init__(self, args):
-
         # Set arguments.
         self.args = args
 
@@ -27,39 +26,37 @@ class BaseContext(object):
         Print.init(log=args.log, debug=args.debug, cmd=args.prog)
 
         # Enable/disable colors.
-        if 'color' in args and args.color:
+        if "color" in args and args.color:
             Print.enable_colors()
-        if 'no_color' in args and args.no_color:
+        if "no_color" in args and args.no_color:
             Print.disable_colors()
 
         # Set project.
-        self.project = self.set('project')
+        self.project = self.set("project")
 
         # Set program.
-        self.prog = self.set('prog')
+        self.prog = self.set("prog")
 
     def __enter__(self):
-
         # Print command-line running.
         Print.command()
 
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-
         # Print log.
         Print.log()
 
     def set(self, key, default=False):
-
         # Validate argument presence.
         if hasattr(self.args, key):
-
             # Get argument value.
             return getattr(self.args, key)
 
         # If default value desired.
         elif default is not False:
-
             # Set default value.
             return default
+
+
+__all__ = ["BaseContext"]

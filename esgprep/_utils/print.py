@@ -191,12 +191,12 @@ class Print(object):
 
     """
 
-    LOG = None
-    DEBUG = False
-    CMD = None
-    LOG_TO_STDOUT = False
-    LOGFILE = None
-    CARRIAGE_RETURNED = True
+    LOG: str | None = None
+    DEBUG: bool = False
+    CMD: str | None = None
+    LOG_TO_STDOUT: bool = False
+    LOGFILE: str | None = None
+    CARRIAGE_RETURNED: bool = True
 
     # Instantiate buffer as a C character data typecode for shared memory.
     BUFFER = Value(c_wchar_p, "")
@@ -222,6 +222,8 @@ class Print(object):
 
             # Built logfile full path.
             Print.LOGFILE = os.path.join(logdir, logname + ".log")
+        else:
+            Print.LOGFILE = None
 
     @staticmethod
     def check_carriage_return(msg):

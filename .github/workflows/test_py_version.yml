@@ -25,5 +25,8 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
+      - name: Install CV with esgvoc
+        run: uv run esgvoc install
+
       - name: runs tests
         run: uv run --python ${{ matrix.python-version }} pytest

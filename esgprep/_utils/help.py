@@ -9,23 +9,27 @@
 
 """
 
-from esgprep._utils.print import *
-
 # Help
-TITLE = COLOR('yellow').bold(""".___ ___ ___ ___ ___ ___ ___.
+from esgprep._utils.print import COLOR
+
+
+TITLE = COLOR("yellow").bold(""".___ ___ ___ ___ ___ ___ ___.
 | -_|_ -| . | . | __| -_| . |
 |___|___|__ | __|_| |___| __|
 ________|___|_|_________|_|__""")
 
 INTRO = """The ESGF publication process requires a strong and effective data management. "esgprep" allows data providers to easily prepare their data before publishing to an ESGF node. "esgprep" provides python command-lines covering several steps of ESGF publication workflow."""
 
-URL = COLOR('gray').italic("""See full documentation and references at http://esgf.github.io/esgf-prepare/""")
+URL = COLOR("gray").italic(
+    """See full documentation and references at http://esgf.github.io/esgf-prepare/"""
+)
 
-DEFAULT = COLOR('white').italic("""The default values are displayed next to the corresponding flags.""")
+DEFAULT = COLOR("white").italic(
+    """The default values are displayed next to the corresponding flags."""
+)
 
 PROGRAM_DESC = {
-
-    'fetchcv': """
+    "fetchcv": """
 {}
 
 {} "esgprep" uses the "esgvoc" library to deal with Controlled Vocabularies and Data Reference Syntax validation for the corresponding project.
@@ -33,8 +37,7 @@ PROGRAM_DESC = {
 {}
 
 {}""".format(TITLE, INTRO, URL, DEFAULT),
-
-    'drs': """
+    "drs": """
 {}
 
 {} The Data Reference Syntax (DRS) defines the way the data of a given project have to follow on your filesystem. This allows a proper publication on the ESGF. "esgdrs" has been designed to help ESGF datanode managers to prepare incoming data for publication, placing files in the DRS directory structure, and manage multiple versions of publication-level datasets to minimise disk usage. Only MIP-compliant netCDF files are supported as incoming files.
@@ -42,7 +45,7 @@ PROGRAM_DESC = {
 {}
 
 {}""".format(TITLE, INTRO, URL, DEFAULT),
-    'checkvocab': """
+    "checkvocab": """
 {}
 
 {} In the case that your data already follows the appropriate directory structure, you may want to check that all values of each facet are correctly declared in the "esg.<project_id>.ini" sections. "esgcheckvocab" allows you to easily check the configuration file attributes by scanning your data tree or give (a list of) dataset identifiers. It requires that your directory structure or dataset format strictly follows the project Data Reference Syntax (DRS) including the dataset version.
@@ -50,25 +53,25 @@ PROGRAM_DESC = {
 {}
 
 {}""".format(TITLE, INTRO, URL, DEFAULT),
-    'mapfile': """
+    "mapfile": """
 {}
 
 {} The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes a file to publish. It's highly recommended to use mapfile as inputs for ESGF publication. "esgmapfile" allows you to easily generate and manage your ESGF mapfiles. It requires that your directory structure strictly follows the project Data Reference Syntax (DRS) including the dataset version.
 
 {}
 
-{}""".format(TITLE, INTRO, URL, DEFAULT)
+{}""".format(TITLE, INTRO, URL, DEFAULT),
 }
 
-EPILOG = COLOR('gray').italic("""Developed by:
+EPILOG = COLOR("gray").italic("""Developed by:
     Levavasseur, G. (UPMC/IPSL - glipsl@ipsl.fr)
     Berger, K.      (DKRZ      - berger@dkrz.de)
     Iwi, A.         (STFC/CEDA - alan.iwi@stfc.ac.uk)
     Stephens, A.    (STFC/CEDA - ag.stephens@stfc.ac.uk)""")
 
-OPTIONAL = COLOR('blue')("""Optional arguments""")
+OPTIONAL = COLOR("blue")("""Optional arguments""")
 
-POSITIONAL = COLOR('magenta')("""Positional arguments""")
+POSITIONAL = COLOR("magenta")("""Positional arguments""")
 
 HELP = """Show this help message and exit.
 
@@ -93,27 +96,26 @@ VERBOSE_HELP = """Debug mode. It disables progress bars and print verbose proces
 
 """
 
-SUBCOMMANDS = COLOR('red')("""Subcommands""")
+SUBCOMMANDS = COLOR("red")("""Subcommands""")
 
 PROJECT_HELP = {
-
-    'fetchcv': """One or more lower-cased project name(s).
+    "fetchcv": """One or more lower-cased project name(s).
 If not, all projects within an authority are fetched.
 
 """,
-    'fetchtables': """One or more lower-cased project name(s).
+    "fetchtables": """One or more lower-cased project name(s).
 If not, all "*-cmor-tables" contents are fetched.
 
 """,
-    'checkvocab': """Required lower-cased project name.
-    
-""",
-    'drs': """Required lower-cased project name.
-    
-""",
-    'mapfile': """Required lower-cased project name.
+    "checkvocab": """Required lower-cased project name.
 
-"""
+""",
+    "drs": """Required lower-cased project name.
+
+""",
+    "mapfile": """Required lower-cased project name.
+
+""",
 }
 
 AUTHORITY_HELP = """One or more lower-cased authority name(s).
@@ -170,22 +172,19 @@ TAG_REGEX_HELP = """Fetch from all GitHub tags matching the specified regex.
 """
 
 DIRECTORY_HELP = {
-    'checkvocab': """One or more directories to recursively scan. Unix wildcards are allowed.
-    
-""",
-
-    'drs': """One or more directories to recursively scan. Unix wildcards are allowed.
-    
-""",
-
-    'mapfile': """One or more directories to recursively scan. Unix wildcards are allowed.
+    "checkvocab": """One or more directories to recursively scan. Unix wildcards are allowed.
 
 """,
+    "drs": """One or more directories to recursively scan. Unix wildcards are allowed.
 
-    'latest': """One or more directories to recursively scan. Unix wildcards are allowed.
+""",
+    "mapfile": """One or more directories to recursively scan. Unix wildcards are allowed.
+
+""",
+    "latest": """One or more directories to recursively scan. Unix wildcards are allowed.
 If not specified, the current working directory is used.
 
-"""
+""",
 }
 
 DATASET_LIST_HELP = """File containing list of dataset IDs.
@@ -199,21 +198,21 @@ Default ignore paths with folder name(s) starting with "." and/or including "/fi
 """
 
 INCLUDE_FILE_HELP = {
-    'fetchtables': """Filter files matching the regular expression.
+    "fetchtables": """Filter files matching the regular expression.
 Duplicate the flag to set several filters.
 Default includes all regular files.
 
 """,
-    'checkvocab': """Filter files matching the regular expression.
-Duplicate the flag to set several filters.
-Default includes all netCDF files.
-    
-""",
-    'mapfile': """Filter files matching the regular expression.
+    "checkvocab": """Filter files matching the regular expression.
 Duplicate the flag to set several filters.
 Default includes all netCDF files.
 
-"""
+""",
+    "mapfile": """Filter files matching the regular expression.
+Duplicate the flag to set several filters.
+Default includes all netCDF files.
+
+""",
 }
 
 EXCLUDE_FILE_HELP = """Filter files NON-matching the regular expression.
@@ -223,7 +222,7 @@ Default excludes all hidden files.
 """
 
 DRS_SUBCOMMANDS = {
-    'make': """
+    "make": """
 {}
 
 The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs make" subcommand allows you to generate the appropriate directory structure from incoming netCDF files following several modes of migration.
@@ -238,7 +237,7 @@ Usage examples:
 {}
 
 """.format(TITLE, URL, DEFAULT),
-    'remove': """
+    "remove": """
 {}
 
 The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs remove" subcommand allows you to remove one or several dataset versions from you local directory structure preserving the symlink skeleton of remaining versions.
@@ -253,7 +252,7 @@ Usage examples:
 {}
 
 """.format(TITLE, URL, DEFAULT),
-    'latest': """
+    "latest": """
 {}
 
 The Data Reference Syntax (DRS) defines the way your data have to follow on your filesystem. This allows a proper publication on ESGF node. "esgdrs latest" subcommand allows you to generate create the "latest" symlink on a generated directory structure, if they do not already exist.
@@ -267,19 +266,19 @@ Usage examples:
 
 {}
 
-""".format(TITLE, URL, DEFAULT)
+""".format(TITLE, URL, DEFAULT),
 }
 
 DRS_HELPS = {
-    'make': """Generates DRS tree (default).
+    "make": """Generates DRS tree (default).
 See "esgdrs make -h" for full help.
 """,
-    'remove': """Removes dataset versions safely.
+    "remove": """Removes dataset versions safely.
 See "esgdrs remove -h" for full help.
 """,
-    'latest': """Creates "latest" symbolic link at the version level.
+    "latest": """Creates "latest" symbolic link at the version level.
 See "esgdrs latest -h" for full help.
-"""
+""",
 }
 
 ACTION_HELP = """- "list": Lists publication-level datasets (default).
@@ -293,15 +292,13 @@ ROOT_HELP = """Root directory to build the DRS.
 """
 
 SET_VERSION_HELP = {
-    'drs': """Set the version number for all scanned files.
+    "drs": """Set the version number for all scanned files.
 
 """,
-
-    'mapfile':
-        """Generates mapfile(s) scanning datasets with the corresponding version number only. It takes priority over "--all-versions".
+    "mapfile": """Generates mapfile(s) scanning datasets with the corresponding version number only. It takes priority over "--all-versions".
 If directly specified in positional argument, use the version number from supplied directory and disables "--all-versions" and "--latest-symlink".
 
-"""
+""",
 }
 
 SET_VALUE_HELP = """Set a facet value.
@@ -323,12 +320,12 @@ Default: sha256
 """
 
 NO_CHECKSUM_HELP = {
-    'mapfile': """Does not include files checksums into the mapfile(s).
-    
+    "mapfile": """Does not include files checksums into the mapfile(s).
+
 """,
-    'drs': """Disable checksumming during DRS process.
-    
-"""
+    "drs": """Disable checksumming during DRS process.
+
+""",
 }
 
 COMMANDS_FILE_HELP = """Writes Unix command-line statements only in the submitted file.
@@ -348,7 +345,7 @@ See the full documentation to get details on this method.
 
 IGNORE_FROM_LATEST_HELP = """A list of filename to ignore for version upgrade from the latest dataset version.
 Default is to consider the incoming files as the complete content of the new version of the dataset.
-It overwrites default behavior by enabling "--upgrade-from-latest". 
+It overwrites default behavior by enabling "--upgrade-from-latest".
 See the full documentation to get details on this method.
 
 """
@@ -364,7 +361,7 @@ Default is to scan incoming files with "list" action, or if no cached scan resul
 
 """
 
-COPY_HELP = """Copy incoming files into the DRS tree. 
+COPY_HELP = """Copy incoming files into the DRS tree.
 Default is moving files.
 
 """
@@ -388,7 +385,7 @@ Set to "-1" seems all available resources as returned by "multiprocessing.cpu_co
 """
 
 MAPFILE_SUBCOMMANDS = {
-    'make': """
+    "make": """
 {}
 
 The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes a file to publish on the following format:
@@ -410,7 +407,7 @@ dataset_ID | absolute_path | size_bytes [ | option=value ]
 {}
 
 """.format(TITLE, URL, DEFAULT),
-    'show': """
+    "show": """
 {}
 
 The publication process of the ESGF nodes requires mapfiles. Mapfiles are text files where each line describes a file to publish. The mapfile name can depend on several facets or tokens, as part of its path. Displaying expected mapfile full path and name to be generated could facilitate mapfile management and ESGF publication procedures.
@@ -419,18 +416,18 @@ The publication process of the ESGF nodes requires mapfiles. Mapfiles are text f
 
 {}
 
-""".format(TITLE, URL, DEFAULT)
+""".format(TITLE, URL, DEFAULT),
 }
 
 MAPFILE_HELPS = {
-    'make': """Generates ESGF mapfiles (default).|n
+    "make": """Generates ESGF mapfiles (default).|n
 See "esgmapfile make -h" for full help.
 
 """,
-    'show': """Display expected mapfile path.|n
+    "show": """Display expected mapfile path.|n
 See "esgmapfile show -h" for full help.
 
-"""
+""",
 }
 
 MAPFILE_NAME_HELP = """Specifies template for the output mapfile(s) name.
@@ -452,7 +449,7 @@ If not exists, the usual datanode directory is used (i.e., /usr/local/).
 
 NO_SUBFOLDER_HELP = """Disable table sub-folder depending on the GitHub Reference (i.e., a tag or branch).
 Default is to build output directory as: "<TABLES_DIR>/<PROJECT>-cmor-table/<GH_REF>
-    
+
 """
 
 CHECKSUMS_FROM_HELP = """Get the checksums from an submitted file.

@@ -124,8 +124,9 @@ class TestMultihashIntegration:
                 content = f.read()
 
             data_lines = [
-                line.strip() for line in content.split('\n')
-                if line.strip() and not line.startswith('#')
+                line.strip()
+                for line in content.split("\n")
+                if line.strip() and not line.startswith("#")
             ]
 
             for line in data_lines:
@@ -134,13 +135,17 @@ class TestMultihashIntegration:
 
                 # Extract checksum
                 checksum_part = next((p for p in parts if "checksum=" in p), None)
-                assert checksum_part is not None, f"No checksum in mapfile entry: {line}"
+                assert checksum_part is not None, (
+                    f"No checksum in mapfile entry: {line}"
+                )
 
                 checksum_value = checksum_part.split("=", 1)[1]
 
                 # Verify it's a valid multihash
                 detected_algo = detect_multihash_algo(checksum_value)
-                assert detected_algo == "sha2-256", f"Expected sha2-256, got {detected_algo}"
+                assert detected_algo == "sha2-256", (
+                    f"Expected sha2-256, got {detected_algo}"
+                )
 
                 verified_multihash_count += 1
 
@@ -172,7 +177,9 @@ class TestMultihashIntegration:
         mapfiles1 = list(mapfile_outdir1.rglob("*.map"))
         mapfiles2 = list(mapfile_outdir2.rglob("*.map"))
 
-        assert len(mapfiles1) == len(mapfiles2), "Different number of mapfiles generated"
+        assert len(mapfiles1) == len(mapfiles2), (
+            "Different number of mapfiles generated"
+        )
 
         # Extract checksums from both runs
         checksums1 = self._extract_checksums_from_mapfiles(mapfiles1)
@@ -195,7 +202,9 @@ class TestMultihashIntegration:
         algorithm_checksums = {}
 
         for algo in algorithms:
-            outdir = drs_test_structure["tmp_dir"] / f"mapfiles_{algo.replace('-', '_')}"
+            outdir = (
+                drs_test_structure["tmp_dir"] / f"mapfiles_{algo.replace('-', '_')}"
+            )
             outdir.mkdir(parents=True)
 
             # Generate mapfiles with specific algorithm
@@ -213,7 +222,9 @@ class TestMultihashIntegration:
             # Verify algorithm detection
             for checksum in checksums:
                 detected = detect_multihash_algo(checksum)
-                assert detected == algo, f"Wrong algorithm detected for {algo}: {detected}"
+                assert detected == algo, (
+                    f"Wrong algorithm detected for {algo}: {detected}"
+                )
 
             algorithm_checksums[algo] = checksums
 
@@ -227,7 +238,9 @@ class TestMultihashIntegration:
 
                 # Should have no overlap (different algorithms, different checksums)
                 overlap = checksums1.intersection(checksums2)
-                assert len(overlap) == 0, f"Algorithms {algo1} and {algo2} produced identical checksums"
+                assert len(overlap) == 0, (
+                    f"Algorithms {algo1} and {algo2} produced identical checksums"
+                )
 
         print(f"✓ Verified different checksums for {len(algorithms)} algorithms")
 
@@ -239,7 +252,7 @@ class TestMultihashIntegration:
         mapfile_outdir.mkdir(parents=True)
 
         # Create test files
-        created_files = create_files_different_variables(incoming_dir, count=1)
+        create_files_different_variables(incoming_dir, count=1)
 
         # Build DRS structure
         drs_args = get_default_make_args(incoming_dir, drs_root)
@@ -263,8 +276,9 @@ class TestMultihashIntegration:
                 content = f.read()
 
             data_lines = [
-                line.strip() for line in content.split('\n')
-                if line.strip() and not line.startswith('#')
+                line.strip()
+                for line in content.split("\n")
+                if line.strip() and not line.startswith("#")
             ]
 
             for line in data_lines:
@@ -284,8 +298,9 @@ class TestMultihashIntegration:
                     file_content = f.read()
 
                 computed_checksum = multihash_hex(file_content, "sha2-256")
-                assert computed_checksum == expected_checksum, \
+                assert computed_checksum == expected_checksum, (
                     f"Checksum mismatch for {file_path}: expected {expected_checksum}, got {computed_checksum}"
+                )
                 validated_count += 1
 
         assert validated_count > 0, "No checksums were validated"
@@ -299,8 +314,9 @@ class TestMultihashIntegration:
                 content = f.read()
 
             data_lines = [
-                line.strip() for line in content.split('\n')
-                if line.strip() and not line.startswith('#')
+                line.strip()
+                for line in content.split("\n")
+                if line.strip() and not line.startswith("#")
             ]
 
             for line in data_lines:
@@ -372,8 +388,9 @@ class TestMultihashIntegration:
                 content = f.read()
 
             data_lines = [
-                line.strip() for line in content.split('\n')
-                if line.strip() and not line.startswith('#')
+                line.strip()
+                for line in content.split("\n")
+                if line.strip() and not line.startswith("#")
             ]
 
             for line in data_lines:
@@ -386,5 +403,9 @@ class TestMultihashIntegration:
                         assert algo == "sha2-256", f"Wrong algorithm: {algo}"
                         multihash_count += 1
 
-        assert multihash_count > 0, "No multihash checksums found in command line output"
-        print(f"✓ Verified {multihash_count} multihash checksums via command line interface")
+        assert multihash_count > 0, (
+            "No multihash checksums found in command line output"
+        )
+        print(
+            f"✓ Verified {multihash_count} multihash checksums via command line interface"
+        )

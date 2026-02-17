@@ -11,14 +11,12 @@
 
 from uuid import UUID
 
-import esgvoc.api as ev
 from fuzzywuzzy.fuzz import partial_ratio
 from fuzzywuzzy.process import extractOne
 from netCDF4 import Dataset
 
 from esgprep._exceptions import NoProjectCodeFound
 from esgprep._exceptions.netcdf import InvalidNetCDFFile, NoNetCDFAttribute
-from esgprep._utils.print import Print
 from esgprep.drs.constants import PID_PREFIXES
 
 
@@ -138,7 +136,6 @@ def get_project(attrs: str | dict) -> str | None:
 
     # Set project code from global attributes.
     key, score = extractOne("mip_era", attrs.keys(), scorer=partial_ratio)  # type: ignore
-    # QUESTION ; mip_era ? ou project ?
     if score < 80:
         raise NoProjectCodeFound(attrs)
 
@@ -146,5 +143,3 @@ def get_project(attrs: str | dict) -> str | None:
 
     # Return project code.
     return project
-
-

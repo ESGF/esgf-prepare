@@ -69,9 +69,7 @@ class DRSValidator:
             return False
 
         data_dirs = list(files_dir.glob("d*"))
-        version_dirs = [
-            self.folder / f"v{ver}" for ver in self.list_version
-        ]
+        version_dirs = [self.folder / f"v{ver}" for ver in self.list_version]
 
         # Check that each v* directory has a corresponding d* directory
         for ver_dir in version_dirs:
@@ -156,17 +154,21 @@ class DRSValidator:
             and latest_path.is_symlink()
             and last_version_path.exists()
         ):
-            print(f"Latest symlink validation failed: exists={latest_path.exists()}, "
-                  f"is_symlink={latest_path.is_symlink()}, "
-                  f"target_exists={last_version_path.exists()}")
+            print(
+                f"Latest symlink validation failed: exists={latest_path.exists()}, "
+                f"is_symlink={latest_path.is_symlink()}, "
+                f"target_exists={last_version_path.exists()}"
+            )
             return False
 
         # Check that latest is a symlink to the latest version directory
         is_correct = latest_path.resolve() == last_version_path.absolute()
         if not is_correct:
-            print(f"Latest symlink points to wrong target: "
-                  f"points to {latest_path.resolve()}, "
-                  f"should point to {last_version_path.absolute()}")
+            print(
+                f"Latest symlink points to wrong target: "
+                f"points to {latest_path.resolve()}, "
+                f"should point to {last_version_path.absolute()}"
+            )
         return is_correct
 
     def validate_all(self, upgrade_from_latest=True, verbose=True):
@@ -237,7 +239,9 @@ def validate_drs_structure(folder, upgrade_from_latest=True, verbose=True):
         bool: True if validation passes
     """
     validator = DRSValidator(folder)
-    return validator.validate_all(upgrade_from_latest=upgrade_from_latest, verbose=verbose)
+    return validator.validate_all(
+        upgrade_from_latest=upgrade_from_latest, verbose=verbose
+    )
 
 
 # Legacy compatibility - maintain the old interface
@@ -247,10 +251,11 @@ class Post_Test_Folder(DRSValidator):
     def __init__(self, folder: Path):
         super().__init__(folder)
         import warnings
+
         warnings.warn(
             "Post_Test_Folder is deprecated, use DRSValidator instead",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
 
     def contains_at_least_the_3_folders(self):

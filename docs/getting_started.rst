@@ -35,10 +35,10 @@ Before starting, ensure you have:
 
     # Check esgprep is installed
     $ esgdrs --version
-    esgdrs (from esgprep v3.0.0 2019-01-09)
+    esgdrs (from esgprep v3.0.0)
 
     $ esgmapfile --version
-    esgmapfile (from esgprep v3.0.0 2019-01-09)
+    esgmapfile (from esgprep v3.0.0)
 
 .. important:: **Initialize Controlled Vocabularies**
 
@@ -67,8 +67,8 @@ The ``esgprep`` workflow has two main stages:
 .. code-block:: text
 
     ┌─────────────────┐
-    │  NetCDF Files   │  Your incoming/raw data
-    │  (any location) │
+    │  NetCDF Files   │  Your incoming CMOR-compliant standardized data
+    │  (any location) │  (following project norms: CMIP7, CMIP6, etc.)
     └────────┬────────┘
              │
              │ esgdrs list    (preview datasets)
@@ -76,7 +76,7 @@ The ``esgprep`` workflow has two main stages:
              │ esgdrs upgrade (organize files)
              ↓
     ┌─────────────────┐
-    │  DRS Structure  │  Files organized by ESGF standards
+    │  DRS Structure  │  Files organized following the project DRS
     │  (versioned)    │
     └────────┬────────┘
              │
@@ -100,7 +100,11 @@ Let's prepare CMIP6 data from the IPSL-CM6A-LR model for publication.
 
 **Starting Point:**
 
-You have NetCDF files in an incoming directory:
+.. note:: Your files must be **CMOR-compliant standardized NetCDF files** that follow your project's
+   conventions (CMIP7, CMIP6, CORDEX, etc.). Files produced by CMOR or following the same standards
+   will work correctly.
+
+You have standardized NetCDF files in an incoming directory:
 
 .. code-block:: bash
 
@@ -140,14 +144,15 @@ First, let's see what datasets ``esgprep`` detects from your files:
 
 **What This Shows:**
 
- * Progress spinner during file scanning: ``[----<-]`` → ``[<<<<<<]``
- * Success/error counts for processed files
- * Table showing:
-   - **Publication level**: Dataset path in DRS structure
-   - **Latest version**: "Initial" for new datasets, or existing version number
-   - **Upgrade version**: New version to be created (vYYYYMMDD format, typically today's date)
-   - **Files to upgrade**: Count of files in this dataset
-   - **Total size**: Human-readable size of the dataset
+* Progress spinner during file scanning: ``[----<-]`` → ``[<<<<<<]``
+* Success/error counts for processed files
+* Table showing:
+
+  * **Publication level**: Dataset path in DRS structure
+  * **Latest version**: "Initial" for new datasets, or existing version number
+  * **Upgrade version**: New version to be created (vYYYYMMDD format, typically today's date)
+  * **Files to upgrade**: Count of files in this dataset
+  * **Total size**: Human-readable size of the dataset
 
 .. tip:: If you see errors here about invalid facets or unrecognized project, check that:
 
@@ -209,12 +214,12 @@ Before making changes, preview what the DRS structure will look like:
 
 **What This Shows:**
 
- * Complete directory hierarchy following ESGF DRS
- * Files organized by facets: activity, institution, model, experiment, variant, frequency, variable, grid
- * **files/dYYYYMMDD/** directories containing actual data files
- * **vYYYYMMDD/** directories with symlinks pointing to files
- * **latest** symlinks pointing to newest version directory
- * Arrow notation (``->``) showing symlink targets
+* Complete directory hierarchy following project DRS
+* Files organized by facets: activity, institution, model, experiment, variant, frequency, variable, grid
+* **files/dYYYYMMDD/** directories containing actual data files
+* **vYYYYMMDD/** directories with symlinks pointing to files
+* **latest** symlinks pointing to newest version directory
+* Arrow notation (``->``) showing symlink targets
 
 .. note:: The ``--root`` option specifies where to create the DRS structure. If omitted, it uses your current directory.
 
@@ -250,14 +255,16 @@ For more detail on what operations will be performed:
 
 **What This Shows:**
 
- * Header: "Unix command-lines (DRY-RUN)" indicates no actual changes
- * Exact Unix commands that will be executed:
-   1. ``mkdir -p`` - Create version directories
-   2. ``ln -s`` - Create symlinks from version dir to files/
-   3. ``ln -s`` - Create latest symlink pointing to version
-   4. ``mkdir -p`` - Create files/dYYYYMMDD directory
-   5. ``ln`` - Create hard link (with ``--link`` flag) or ``mv`` - Move file (default)
- * Sequence shows complete operation for each dataset
+* Header: "Unix command-lines (DRY-RUN)" indicates no actual changes
+* Exact Unix commands that will be executed:
+
+  1. ``mkdir -p`` - Create version directories
+  2. ``ln -s`` - Create symlinks from version dir to files/
+  3. ``ln -s`` - Create latest symlink pointing to version
+  4. ``mkdir -p`` - Create files/dYYYYMMDD directory
+  5. ``ln`` - Create hard link (with ``--link`` flag) or ``mv`` - Move file (default)
+
+* Sequence shows complete operation for each dataset
 
 .. tip:: Use ``--copy`` instead of ``--link`` if you want to preserve the original files separately.
    Use ``--symlink`` for symbolic links (use with caution - broken if source moves).
@@ -293,11 +300,11 @@ Now let's actually create the DRS structure:
 
 **What Just Happened:**
 
- * Commands shown are actually being executed (no longer "DRY-RUN")
- * DRS directory structure created under ``/data/esgf-data/CMIP6/``
- * Files hard-linked (with ``--link``) to their DRS locations
- * ``latest`` symlinks created pointing to v20250125
- * Success count confirms all operations completed
+* Commands shown are actually being executed (no longer "DRY-RUN")
+* DRS directory structure created under ``/data/esgf-data/CMIP6/``
+* Files hard-linked (with ``--link``) to their DRS locations
+* ``latest`` symlinks created pointing to v20250125
+* Success count confirms all operations completed
 
 **Verify the Result:**
 
@@ -312,7 +319,7 @@ Now let's actually create the DRS structure:
 
     tas_Amon_IPSL-CM6A-LR_historical_r1i1p1f1_gr_185001-201412.nc
 
-Perfect! Your data is now organized according to ESGF DRS.
+Perfect! Your data is now organized according to the project DRS.
 
 Step 5: Generate Mapfiles
 **************************
@@ -426,9 +433,9 @@ What's Next?
 
 Congratulations! You've successfully:
 
- ✓ Organized your data into ESGF DRS structure
- ✓ Generated mapfiles for ESGF publication
- ✓ Computed checksums for data integrity
+* ✓ Organized your data into project DRS structure
+* ✓ Generated mapfiles for ESGF publication
+* ✓ Computed checksums for data integrity
 
 **Next Steps:**
 
