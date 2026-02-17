@@ -9,7 +9,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "esgvoc>=2.1.0",
+    "esgvoc>=2.2.0",
     "fuzzywuzzy>=0.18.0",
     "hurry-filesize>=0.9",
     "lockfile>=0.12.2",
