@@ -34,6 +34,8 @@ TREE_FILE = str(Path(tempfile.gettempdir()) / f"DRSTree_{environ['USER']}.pkl")
 # PID prefixes
 PID_PREFIXES = {
     "cmip6": "hdl:21.14100",
+    "cmip6plus": "hdl:21.14100",
+    "primavera": "hdl:21.14100",
     "cordex": "hdl:21.14103",
     "obs4mips": "hdl:21.14102",
 }
