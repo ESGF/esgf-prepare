@@ -321,8 +321,8 @@
                 <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;latest&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span>
                     <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span>
-                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;latest&#39;</span><span class="si">}{</span><span class="n">LINK_SEPARATOR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">src</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;latest&#39;</span><span class="si">}{</span><span class="n">LINK_SEPARATOR</span><span class="si">}{</span><span class="n">version_for_drs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">src</span><span class="o">=</span><span class="n">version_for_drs</span><span class="p">,</span>
                     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;symlink&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_path</span><span class="o">.</span><span class="n">parts</span><span class="p">)[</span>
