@@ -55,9 +55,7 @@ class TestFullWorkflow:
         setup = workflow_setup
 
         # Check that we have real data files
-        assert setup["real_data_dir"].exists(), f"Real data directory not found: {
-            setup['real_data_dir']
-        }"
+        assert setup["real_data_dir"].exists(), f"Real data directory not found: {setup['real_data_dir']}"
 
         nc_files = list(setup["real_data_dir"].glob("*.nc"))
         assert len(nc_files) > 0, "No NetCDF files found in real data directory"
@@ -178,9 +176,7 @@ class TestFullWorkflow:
             # Verify each line has the expected format
             for i, line in enumerate(data_lines[:3]):  # Check first 3 lines
                 parts = line.split(" | ")
-                assert len(parts) >= 3, f"Invalid mapfile entry format in {
-                    mapfile.name
-                } line {i + 1}"
+                assert len(parts) >= 3, f"Invalid mapfile entry format in {mapfile.name} line {i + 1}"
 
                 # Verify dataset identifier format
                 # dataset_id = parts[0]
@@ -299,9 +295,7 @@ class TestFullWorkflow:
                 cmd, capture_output=True, text=True, cwd=setup["project_root"]
             )
 
-            assert result.returncode == 0, f"Mapfile generation failed for {algo}: {
-                result.stderr
-            }"
+            assert result.returncode == 0, f"Mapfile generation failed for {algo}: {result.stderr}"
 
             # Verify mapfiles were created
             mapfiles = list(algo_outdir.rglob("*.map"))
@@ -319,9 +313,7 @@ class TestFullWorkflow:
                 checksum_value = checksum_part.split("=", 1)[1]
 
                 detected_algo = detect_multihash_algo(checksum_value)
-                assert detected_algo == algo, f"Algorithm detection failed: expected {
-                    algo
-                }, got {detected_algo}"
+                assert detected_algo == algo, f"Algorithm detection failed: expected {algo}, got {detected_algo}"
 
             print(f"  ✓ {algo} algorithm test passed")
 
