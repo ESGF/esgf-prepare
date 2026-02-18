@@ -7,7 +7,7 @@ name = "esgprep"
 version = "3.0.1"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10,<3.14"
 dependencies = [
     "esgvoc>=2.2.0",
     "fuzzywuzzy>=0.18.0",
@@ -33,8 +33,8 @@ path = "esgprep/__init__.py"
 dev = [
     "jupyter-console>=6.6.3",
     "pytest>=8.3.5",
-    "sphinx>=8.2.3",
-    "sphinx-rtd-theme>=3.0.2",
+    "sphinx>=8.2.3; python_version >= '3.11'",
+    "sphinx-rtd-theme>=3.0.2; python_version >= '3.11'",
     "ty>=0.0.16",
 ]
 [project.scripts]
