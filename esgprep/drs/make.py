@@ -235,8 +235,8 @@ class Process(object):
                 nodes.append("latest")
                 self.tree.create_leaf(
                     nodes=nodes,
-                    label=f"{'latest'}{LINK_SEPARATOR}{self.version}",
-                    src=self.version,
+                    label=f"{'latest'}{LINK_SEPARATOR}{version_for_drs}",
+                    src=version_for_drs,
                     mode="symlink",
                 )
                 nodes = list(current_path.parts)[
