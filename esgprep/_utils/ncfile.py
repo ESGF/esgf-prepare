@@ -134,7 +134,12 @@ def get_project(attrs: str | dict) -> str | None:
     if not isinstance(attrs, dict):
         attrs = get_ncattrs(attrs)
 
-    # Set project code from global attributes.
+    # Try project_id first (more specific, e.g. CORDEX-CMIP6)
+    key, score = extractOne("project_id", attrs.keys(), scorer=partial_ratio)  # type: ignore
+    if score >= 80:
+        return attrs[key].lower()
+
+    # Fall back to mip_era (e.g. CMIP6, CMIP7)
     key, score = extractOne("mip_era", attrs.keys(), scorer=partial_ratio)  # type: ignore
     if score < 80:
         raise NoProjectCodeFound(attrs)

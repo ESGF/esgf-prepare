@@ -197,28 +197,18 @@ def dataset_id(path: Path) -> str | None:
 
     try:
         # Use esgvoc DrsGenerator to build dataset identifier
+        from esgvoc.api import DrsType, get_project as get_project_specs
         from esgvoc.apps.drs.generator import DrsGenerator
 
         generator = DrsGenerator(project)
 
-        # Extract relevant DRS term values from NetCDF attributes
-        # For CMIP6, we need specific attributes to build the dataset ID
-        drs_terms = []
+        # Get DRS attributes dynamically from esgvoc project specs
+        proj_specs = get_project_specs(project)
+        dataset_id_spec = proj_specs.drs_specs[DrsType.DATASET_ID]
+        drs_attrs = [part.source_collection for part in dataset_id_spec.parts]
 
-        # Common CMIP6 DRS attributes in NetCDF files
-        # Note: member_id might be stored as variant_label in some files
-        drs_attrs = [
-            "mip_era",
-            "activity_id",
-            "institution_id",
-            "source_id",
-            "experiment_id",
-            "member_id",
-            "variant_label",
-            "table_id",
-            "variable_id",
-            "grid_label",
-        ]
+        # Extract relevant DRS term values from NetCDF attributes
+        drs_terms = []
 
         for attr in drs_attrs:
             if attr in attrs:
@@ -232,6 +222,15 @@ def dataset_id(path: Path) -> str | None:
         if not drs_terms:
             Print.debug("dataset_id: No DRS terms found in NetCDF attributes")
             return None
+
+        # Add version from path if not already in terms
+        try:
+            version = extract_version(path)
+            if version and version not in ["latest", "files"]:
+                drs_terms.append(version)
+                Print.debug(f"dataset_id: Found version from path = {version}")
+        except ValueError:
+            Print.debug("dataset_id: No version found in path")
 
         Print.debug(f"dataset_id: Using DRS terms: {drs_terms}")
 

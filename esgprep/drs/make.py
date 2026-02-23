@@ -122,6 +122,9 @@ class Process(object):
                             **{"member_id": current_attrs["variant_label"]},
                         }
                     )
+                else:
+                    # Generic handling for other projects (cordex-cmip6, cmip7, etc.)
+                    drs_path = dg.generate_directory_from_mapping(current_attrs)
 
                 if len(drs_path.errors) != 0:
                     # Build detailed error message with all DRS errors
