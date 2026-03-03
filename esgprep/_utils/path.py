@@ -178,8 +178,11 @@ def get_terms(path: Path) -> dict:
 
 def dataset_id(path: Path) -> str | None:
     """
-    Build dataset identifier from NetCDF file using esgvoc DrsGenerator.
+    Build dataset identifier from DRS path structure using esgvoc DrsGenerator.
     Returns the dataset identifier string for the given path.
+
+    Extracts terms from the directory path parts (between DRS root and version)
+    and uses the DrsGenerator to build a valid dataset ID.
     """
     Print.debug(f"dataset_id: Processing path: {path}")
 
@@ -189,52 +192,52 @@ def dataset_id(path: Path) -> str | None:
         Print.debug(f"dataset_id: No project found for path: {path}")
         return None
 
-    # Get terms from NetCDF file
-    attrs = get_terms(path)
-    if not attrs:
-        Print.debug(f"dataset_id: No NetCDF attributes found for path: {path}")
-        return None
-
     try:
-        # Use esgvoc DrsGenerator to build dataset identifier
         from esgvoc.api import DrsType, get_project as get_project_specs
         from esgvoc.apps.drs.generator import DrsGenerator
 
-        generator = DrsGenerator(project)
+        # Extract version from path
+        version = extract_version(path)
+        Print.debug(f"dataset_id: Found version: {version}")
 
-        # Get DRS attributes dynamically from esgvoc project specs
-        proj_specs = get_project_specs(project)
-        dataset_id_spec = proj_specs.drs_specs[DrsType.DATASET_ID]
-        drs_attrs = [part.source_collection for part in dataset_id_spec.parts]
+        # Get path parts
+        parts = list(path.parts)
 
-        # Extract relevant DRS term values from NetCDF attributes
-        drs_terms = []
-
-        for attr in drs_attrs:
-            if attr in attrs:
-                value = attrs[attr]
-                # Handle space-separated values by taking the first one
-                if isinstance(value, str) and " " in value:
-                    value = value.split()[0]
-                drs_terms.append(str(value))
-                Print.debug(f"dataset_id: Found {attr} = {value}")
-
-        if not drs_terms:
-            Print.debug("dataset_id: No DRS terms found in NetCDF attributes")
+        # Find version index in path
+        try:
+            version_idx = parts.index(version)
+        except ValueError:
+            Print.debug(f"dataset_id: Version {version} not found in path parts")
             return None
 
-        # Add version from path if not already in terms
-        try:
-            version = extract_version(path)
-            if version and version not in ["latest", "files"]:
-                drs_terms.append(version)
-                Print.debug(f"dataset_id: Found version from path = {version}")
-        except ValueError:
-            Print.debug("dataset_id: No version found in path")
+        # Get number of DRS directory parts (excluding version) from the spec
+        # This tells us how many parts before the version belong to the DRS
+        proj_specs = get_project_specs(project)
+        dir_spec = proj_specs.drs_specs[DrsType.DIRECTORY]
+        num_dir_parts = len([p for p in dir_spec.parts if p.is_required]) - 1  # -1 for version
 
-        Print.debug(f"dataset_id: Using DRS terms: {drs_terms}")
+        # DRS starts at: version_idx - num_dir_parts (searching backwards from version)
+        drs_start_idx = version_idx - num_dir_parts
+        if drs_start_idx < 0:
+            Print.debug(f"dataset_id: Invalid DRS start index: {drs_start_idx}")
+            return None
 
-        # Generate dataset ID from bag of terms
+        # Extract DRS terms from directory parts
+        drs_terms = list(parts[drs_start_idx:version_idx])
+
+        # Add version (with and without v prefix for flexibility)
+        drs_terms.append(version)
+        if version.startswith('v'):
+            drs_terms.append(version[1:])
+
+        Print.debug(f"dataset_id: DRS terms from path: {drs_terms}")
+
+        if not drs_terms:
+            Print.debug("dataset_id: No DRS terms found in path")
+            return None
+
+        # Use DrsGenerator to build dataset ID from bag of terms
+        generator = DrsGenerator(project)
         report = generator.generate_dataset_id_from_bag_of_terms(drs_terms)
 
         Print.debug(

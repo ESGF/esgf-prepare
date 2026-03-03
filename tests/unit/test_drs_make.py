@@ -321,3 +321,64 @@ class TestDRSMake:
         # Check that some files were processed
         nc_files = list(cmip6_dir.rglob("*.nc"))
         assert len(nc_files) > 0
+
+    def test_make_cmip7_real_file(self, drs_test_structure):
+        """Test DRS creation with real CMIP7 file.
+
+        This test uses a real CMIP7 netCDF file to verify:
+        - Attribute name mapping (activity_id -> activity, source_id -> source, etc.)
+        - Filename parsing priority over global attributes
+        - Directory date derivation from creation_date
+        """
+        import shutil
+        from pathlib import Path
+
+        incoming_dir = drs_test_structure["incoming"] / "cmip7_incoming"
+        incoming_dir.mkdir(parents=True, exist_ok=True)
+        drs_root = drs_test_structure["root"]
+
+        # Copy real CMIP7 test file
+        cmip7_source = Path("tests/issue_release_3_0_2/flat_cmip7/tas_tmaxavg-h2m-hxy-u_mon_glb_g101_CNRM-ESM2-1e_piControl_r1i1p1f1_185001-185012.nc")
+        if cmip7_source.exists():
+            shutil.copy(cmip7_source, incoming_dir)
+        else:
+            pytest.skip("CMIP7 test file not found")
+
+        # Run DRS make with cmip7 project
+        args = get_default_make_args(incoming_dir, drs_root)
+        args.project = "cmip7"
+        args.version = "v20260217"
+        run(args)
+
+        # Validate DRS structure was created
+        # Expected path: MIP-DRS7/CMIP7/CMIP/CNRM-CERFACS/CNRM-ESM2-1e/piControl/r1i1p1f1/glb/mon/tas/tmaxavg-h2m-hxy-u/g101/v20260217
+        expected_drs_path = (
+            drs_root
+            / "MIP-DRS7"
+            / "CMIP7"
+            / "CMIP"
+            / "CNRM-CERFACS"
+            / "CNRM-ESM2-1e"
+            / "piControl"
+            / "r1i1p1f1"
+            / "glb"
+            / "mon"
+            / "tas"
+            / "tmaxavg-h2m-hxy-u"
+            / "g101"
+        )
+
+        # Check that the expected path exists
+        assert expected_drs_path.exists(), f"Expected DRS path does not exist: {expected_drs_path}"
+
+        # Check version directory exists
+        version_dir = expected_drs_path / "v20260217"
+        assert version_dir.exists(), f"Version directory does not exist: {version_dir}"
+
+        # Check that the file is in the version directory (as symlink)
+        nc_files = list(version_dir.glob("*.nc"))
+        assert len(nc_files) == 1, f"Expected 1 NC file in version dir, got {len(nc_files)}"
+
+        # Check latest symlink exists
+        latest_link = expected_drs_path / "latest"
+        assert latest_link.exists() or latest_link.is_symlink(), "Latest symlink should exist"

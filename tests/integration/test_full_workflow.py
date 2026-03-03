@@ -5,6 +5,8 @@ This test performs a full end-to-end workflow:
 1. Uses real NetCDF files to build DRS structure with esgdrs
 2. Generates mapfiles from the DRS structure with esgmapfile
 3. Validates the complete workflow including multihash support
+
+Tests are parameterized to run for multiple projects: cmip6, cmip7, cordex-cmip6
 """
 
 import tempfile
@@ -16,20 +18,61 @@ import pytest
 from esgprep._utils.checksum import detect_multihash_algo
 
 
+# Project configurations for parameterized tests
+PROJECT_CONFIGS = [
+    pytest.param(
+        {
+            "project": "cmip6",
+            "input_dir": "tests/fixtures/real_data/incoming",
+            "expected_root_dir": "CMIP6",
+        },
+        id="cmip6",
+    ),
+    pytest.param(
+        {
+            "project": "cmip7",
+            "input_dir": "tests/issue_release_3_0_2/flat_cmip7",
+            "expected_root_dir": "MIP-DRS7",
+        },
+        id="cmip7",
+    ),
+    pytest.param(
+        {
+            "project": "cordex-cmip6",
+            "input_dir": "tests/issue_release_3_0_2/flat_cordex_cmip6",
+            "expected_root_dir": "CORDEX-CMIP6",
+        },
+        id="cordex-cmip6",
+    ),
+]
+
+
 @pytest.mark.integration
 class TestFullWorkflow:
     """Full integration test using real data files."""
 
     @pytest.fixture
-    def workflow_setup(self, project_root):
+    def workflow_setup(self, project_root, request):
         """Set up the integration test environment."""
-        # Use real data if available, otherwise skip
-        real_data_dir = project_root / "tests" / "fixtures" / "real_data" / "incoming"
-        if not real_data_dir.exists():
-            pytest.skip("Real data directory not found - skipping integration test")
+        # Get project config from parameter if available, else use default
+        project_config = getattr(request, "param", {
+            "project": "cmip6",
+            "input_dir": "tests/fixtures/real_data/incoming",
+            "expected_root_dir": "CMIP6",
+        })
+
+        # Resolve input directory
+        input_dir = project_root / project_config["input_dir"]
+        if not input_dir.exists():
+            pytest.skip(f"Input directory not found: {input_dir}")
+
+        # Check for NC files
+        nc_files = list(input_dir.glob("*.nc"))
+        if len(nc_files) == 0:
+            pytest.skip(f"No NetCDF files found in {input_dir}")
 
         # Create temporary output directory
-        output_dir = Path(tempfile.mkdtemp(prefix="esgf_integration_"))
+        output_dir = Path(tempfile.mkdtemp(prefix=f"esgf_integration_{project_config['project']}_"))
 
         # Set up paths for DRS and mapfiles
         drs_output_dir = output_dir / "drs_structure"
@@ -39,33 +82,37 @@ class TestFullWorkflow:
         mapfiles_output_dir.mkdir(parents=True)
 
         yield {
-            "real_data_dir": real_data_dir,
+            "input_dir": input_dir,
             "output_dir": output_dir,
             "drs_output_dir": drs_output_dir,
             "mapfiles_output_dir": mapfiles_output_dir,
             "project_root": project_root,
+            "project": project_config["project"],
+            "expected_root_dir": project_config["expected_root_dir"],
         }
 
         # Cleanup - keep output for inspection during development
         # if output_dir.exists():
         #     shutil.rmtree(output_dir)
 
+    @pytest.mark.parametrize("workflow_setup", PROJECT_CONFIGS, indirect=True)
     def test_complete_drs_and_mapfile_workflow(self, workflow_setup):
         """Test the complete workflow: DRS building + mapfile generation."""
         setup = workflow_setup
 
-        # Check that we have real data files
-        assert setup["real_data_dir"].exists(), f"Real data directory not found: {setup['real_data_dir']}"
+        # Check that we have input data files
+        assert setup["input_dir"].exists(), f"Input directory not found: {setup['input_dir']}"
 
-        nc_files = list(setup["real_data_dir"].glob("*.nc"))
-        assert len(nc_files) > 0, "No NetCDF files found in real data directory"
+        nc_files = list(setup["input_dir"].glob("*.nc"))
+        assert len(nc_files) > 0, "No NetCDF files found in input directory"
 
+        print(f"\n=== Testing project: {setup['project']} ===")
         print(f"Found {len(nc_files)} NetCDF files for testing:")
         for f in nc_files:
             print(f"  - {f.name}")
 
         # Step 1: Build DRS structure using esgdrs
-        print("\n=== Step 1: Building DRS structure with esgdrs ===")
+        print(f"\n=== Step 1: Building DRS structure with esgdrs ({setup['project']}) ===")
 
         cmd = [
             sys.executable,
@@ -73,14 +120,14 @@ class TestFullWorkflow:
             "esgprep.esgdrs",
             "make",
             "--project",
-            "cmip6",
+            setup["project"],
             "--root",
             str(setup["drs_output_dir"]),
             "--max-processes",
             "2",
             "--link",  # Hard link files instead of moving them
             "upgrade",  # Action to perform
-            str(setup["real_data_dir"]),  # Directory to scan
+            str(setup["input_dir"]),  # Directory to scan
         ]
 
         print(f"Running command: {' '.join(cmd)}")
@@ -98,8 +145,8 @@ class TestFullWorkflow:
         assert result.returncode == 0, f"esgdrs make failed: {result.stderr}"
 
         # Verify DRS structure exists
-        cmip6_dir = setup["drs_output_dir"] / "CMIP6"
-        assert cmip6_dir.exists(), "CMIP6 directory not created in DRS structure"
+        project_dir = setup["drs_output_dir"] / setup["expected_root_dir"]
+        assert project_dir.exists(), f"{setup['expected_root_dir']} directory not created in DRS structure"
 
         # Find created NetCDF files in DRS structure
         drs_nc_files = list(setup["drs_output_dir"].rglob("*.nc"))
@@ -113,7 +160,7 @@ class TestFullWorkflow:
             print(f"  ... and {len(drs_nc_files) - 5} more files")
 
         # Step 2: Generate mapfiles using esgmapfile
-        print("\n=== Step 2: Generating mapfiles with esgmapfile ===")
+        print(f"\n=== Step 2: Generating mapfiles with esgmapfile ({setup['project']}) ===")
 
         cmd = [
             sys.executable,
@@ -121,7 +168,7 @@ class TestFullWorkflow:
             "esgprep.esgmapfile",
             "make",
             "--project",
-            "cmip6",
+            setup["project"],
             "--directory",
             str(setup["drs_output_dir"]),
             "--outdir",
@@ -155,7 +202,7 @@ class TestFullWorkflow:
             print(f"  - {mapfile.name}")
 
         # Step 3: Verify mapfile content
-        print("\n=== Step 3: Verifying mapfile content ===")
+        print(f"\n=== Step 3: Verifying mapfile content ({setup['project']}) ===")
 
         # Check each mapfile
         total_entries = 0
@@ -178,10 +225,6 @@ class TestFullWorkflow:
                 parts = line.split(" | ")
                 assert len(parts) >= 3, f"Invalid mapfile entry format in {mapfile.name} line {i + 1}"
 
-                # Verify dataset identifier format
-                # dataset_id = parts[0]
-                # assert "#" in dataset_id, f"Dataset ID should contain version in {mapfile.name}"
-
                 # Verify file path exists
                 file_path = parts[1]
                 assert Path(file_path).exists(), f"File path {file_path} does not exist"
@@ -203,7 +246,7 @@ class TestFullWorkflow:
         assert total_entries > 0, "No entries found in mapfiles"
 
         # Step 4: Test multihash algorithm detection
-        print("\n=== Step 4: Testing multihash algorithm detection ===")
+        print(f"\n=== Step 4: Testing multihash algorithm detection ({setup['project']}) ===")
 
         # Extract a multihash from one of the mapfiles
         with open(mapfiles[0], "r") as f:
@@ -223,21 +266,41 @@ class TestFullWorkflow:
             "Should detect sha2-256 algorithm from multihash"
         )
 
-        print("\n=== Integration test completed successfully! ===")
+        print(f"\n=== Integration test for {setup['project']} completed successfully! ===")
         print(f"Results saved in: {setup['output_dir']}")
         print(f"DRS structure: {setup['drs_output_dir']}")
         print(f"Mapfiles: {setup['mapfiles_output_dir']}")
 
+    @pytest.fixture
+    def workflow_setup_cmip6(self, project_root):
+        """Set up for CMIP6 tests (non-parameterized)."""
+        input_dir = project_root / "tests" / "fixtures" / "real_data" / "incoming"
+        if not input_dir.exists():
+            pytest.skip("Real data directory not found - skipping integration test")
+
+        output_dir = Path(tempfile.mkdtemp(prefix="esgf_integration_"))
+        drs_output_dir = output_dir / "drs_structure"
+        mapfiles_output_dir = output_dir / "mapfiles"
+
+        drs_output_dir.mkdir(parents=True)
+        mapfiles_output_dir.mkdir(parents=True)
+
+        yield {
+            "input_dir": input_dir,
+            "output_dir": output_dir,
+            "drs_output_dir": drs_output_dir,
+            "mapfiles_output_dir": mapfiles_output_dir,
+            "project_root": project_root,
+            "project": "cmip6",
+            "expected_root_dir": "CMIP6",
+        }
+
     @pytest.mark.slow
-    def test_workflow_with_different_checksum_algorithms(self, workflow_setup):
+    def test_workflow_with_different_checksum_algorithms(self, workflow_setup_cmip6):
         """Test the workflow with different checksum algorithms."""
-        setup = workflow_setup
+        setup = workflow_setup_cmip6
 
-        # Skip if no real data
-        if not setup["real_data_dir"].exists():
-            pytest.skip("Real data directory not found")
-
-        nc_files = list(setup["real_data_dir"].glob("*.nc"))
+        nc_files = list(setup["input_dir"].glob("*.nc"))
         if len(nc_files) == 0:
             pytest.skip("No NetCDF files found in real data directory")
 
@@ -248,14 +311,14 @@ class TestFullWorkflow:
             "esgprep.esgdrs",
             "make",
             "--project",
-            "cmip6",
+            setup["project"],
             "--root",
             str(setup["drs_output_dir"]),
             "--max-processes",
             "1",
             "--link",
             "upgrade",
-            str(setup["real_data_dir"]),
+            str(setup["input_dir"]),
         ]
 
         result = subprocess.run(
@@ -280,7 +343,7 @@ class TestFullWorkflow:
                 "esgprep.esgmapfile",
                 "make",
                 "--project",
-                "cmip6",
+                setup["project"],
                 "--directory",
                 str(setup["drs_output_dir"]),
                 "--outdir",
@@ -317,9 +380,9 @@ class TestFullWorkflow:
 
             print(f"  ✓ {algo} algorithm test passed")
 
-    def test_workflow_error_handling(self, workflow_setup):
+    def test_workflow_error_handling(self, workflow_setup_cmip6):
         """Test workflow error handling with invalid inputs."""
-        setup = workflow_setup
+        setup = workflow_setup_cmip6
 
         # Test DRS make with non-existent directory
         print("\n=== Testing error handling ===")
@@ -330,7 +393,7 @@ class TestFullWorkflow:
             "esgprep.esgdrs",
             "make",
             "--project",
-            "cmip6",
+            setup["project"],
             "--root",
             str(setup["drs_output_dir"]),
             "upgrade",
@@ -352,7 +415,7 @@ class TestFullWorkflow:
             "esgprep.esgmapfile",
             "make",
             "--project",
-            "cmip6",
+            setup["project"],
             "--directory",
             str(setup["drs_output_dir"]),
             "--outdir",

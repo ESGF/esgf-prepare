@@ -114,17 +114,53 @@ class Process(object):
             # Build directory structure.
             # DRS terms are validated during this step.
             try:
+                import esgvoc.api as ev
+                from esgvoc.apps.drs.validator import DrsValidator
+
                 dg = DrsGenerator(self.project)
+                dv = DrsValidator(self.project)
+
+                # Build mapping from netCDF field names to DRS collection names
+                # using attr_specs (e.g., activity_id -> activity, source_id -> source)
+                # Only use entries where specific_key is None (for DRS building, not validation)
+                proj_spec = ev.get_project(self.project)
+                attr_mapping = {}
+                for attr in proj_spec.attr_specs:
+                    specific_key = getattr(attr, 'specific_key', None)
+                    if attr.field_name and attr.field_name != attr.source_collection and specific_key is None:
+                        attr_mapping[attr.field_name] = attr.source_collection
+
+                # Translate netCDF attributes to DRS collection names
+                translated_attrs = {}
+                for k, v in current_attrs.items():
+                    new_key = attr_mapping.get(k, k)
+                    translated_attrs[new_key] = v
+
+                # Parse filename to extract DRS parts (filename values take priority)
+                # This handles cases where global attributes may have incorrect values
+                # but the filename is correct (e.g., variable_id=tasmax but filename has tas)
+                filename_result = dv.validate_file_name(source.name)
+                if filename_result.validated and filename_result.mapping_used:
+                    # Override global attributes with filename values
+                    for k, v in filename_result.mapping_used.items():
+                        translated_attrs[k] = v
+
+                # Derive directory_date from creation_date if needed (with v prefix for version format)
+                if "directory_date" not in translated_attrs and "creation_date" in translated_attrs:
+                    creation_date = translated_attrs["creation_date"]
+                    # Extract vYYYYMMDD from ISO format (e.g., 2026-02-17T15:13:53Z -> v20260217)
+                    translated_attrs["directory_date"] = "v" + creation_date[:10].replace("-", "")
+
                 if self.project == "cmip6":
                     drs_path = dg.generate_directory_from_mapping(
                         {
-                            **current_attrs,
-                            **{"member_id": current_attrs["variant_label"]},
+                            **translated_attrs,
+                            **{"member_id": translated_attrs.get("variant_label", current_attrs.get("variant_label"))},
                         }
                     )
                 else:
                     # Generic handling for other projects (cordex-cmip6, cmip7, etc.)
-                    drs_path = dg.generate_directory_from_mapping(current_attrs)
+                    drs_path = dg.generate_directory_from_mapping(translated_attrs)
 
                 if len(drs_path.errors) != 0:
                     # Build detailed error message with all DRS errors
