@@ -116,25 +116,41 @@ class Process(object):
             try:
                 import esgvoc.api as ev
                 from esgvoc.apps.drs.validator import DrsValidator
+                from esgvoc.apps.drs.report import DrsType
 
                 dg = DrsGenerator(self.project)
                 dv = DrsValidator(self.project)
 
-                # Build mapping from netCDF field names to DRS collection names
-                # using attr_specs (e.g., activity_id -> activity, source_id -> source)
-                # Only use entries where specific_key is None (for DRS building, not validation)
+                # Get project spec and DRS directory spec
                 proj_spec = ev.get_project(self.project)
-                attr_mapping = {}
+                dir_spec = proj_spec.drs_specs[DrsType.DIRECTORY]
+
+                # Get required collections from DRS spec
+                required_collections = [part.source_collection for part in dir_spec.parts]
+
+                # Build mapping: collection -> field_name from attr_specs
+                # If field_name is None, use source_collection as field_name
+                # Only use entries where specific_key is None (for DRS building, not validation)
+                collection_to_field = {}
                 for attr in proj_spec.attr_specs:
                     specific_key = getattr(attr, 'specific_key', None)
-                    if attr.field_name and attr.field_name != attr.source_collection and specific_key is None:
-                        attr_mapping[attr.field_name] = attr.source_collection
+                    if specific_key is None:
+                        field = attr.field_name if attr.field_name else attr.source_collection
+                        collection_to_field[attr.source_collection] = field
 
-                # Translate netCDF attributes to DRS collection names
+                # Build translated_attrs by reading ONLY the correct field for each required collection
+                # This avoids reading 'experiment' when we need 'experiment_id' mapped to 'experiment'
                 translated_attrs = {}
+                for collection in required_collections:
+                    field_name = collection_to_field.get(collection, collection)
+                    if field_name in current_attrs:
+                        translated_attrs[collection] = current_attrs[field_name]
+
+                # Also add any remaining attrs that might be needed (version, filename, creation_date, etc.)
+                # but skip: 1) already mapped collections, 2) field names used in mappings, 3) collection names
                 for k, v in current_attrs.items():
-                    new_key = attr_mapping.get(k, k)
-                    translated_attrs[new_key] = v
+                    if k not in translated_attrs and k not in collection_to_field.values() and k not in required_collections:
+                        translated_attrs[k] = v
 
                 # Parse filename to extract DRS parts (filename values take priority)
                 # This handles cases where global attributes may have incorrect values
@@ -145,11 +161,10 @@ class Process(object):
                     for k, v in filename_result.mapping_used.items():
                         translated_attrs[k] = v
 
-                # Derive directory_date from creation_date if needed (with v prefix for version format)
-                if "directory_date" not in translated_attrs and "creation_date" in translated_attrs:
-                    creation_date = translated_attrs["creation_date"]
-                    # Extract vYYYYMMDD from ISO format (e.g., 2026-02-17T15:13:53Z -> v20260217)
-                    translated_attrs["directory_date"] = "v" + creation_date[:10].replace("-", "")
+                # Set directory_date from version if required by DRS spec but not yet populated
+                # Only apply this for projects that have directory_date in their DRS spec
+                if "directory_date" in required_collections and "directory_date" not in translated_attrs:
+                    translated_attrs["directory_date"] = current_attrs.get("version")
 
                 if self.project == "cmip6":
                     drs_path = dg.generate_directory_from_mapping(
