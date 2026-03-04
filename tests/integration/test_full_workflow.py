@@ -54,6 +54,8 @@ class TestFullWorkflow:
     @pytest.fixture
     def workflow_setup(self, project_root, request):
         """Set up the integration test environment."""
+        import shutil
+
         # Get project config from parameter if available, else use default
         project_config = getattr(request, "param", {
             "project": "cmip6",
@@ -71,19 +73,26 @@ class TestFullWorkflow:
         if len(nc_files) == 0:
             pytest.skip(f"No NetCDF files found in {input_dir}")
 
-        # Create temporary output directory
-        output_dir = Path(tempfile.mkdtemp(prefix=f"esgf_integration_{project_config['project']}_"))
+        # Use persistent directories for both DRS and mapfiles in tests/issue_release_3_0_2/
+        base_output_dir = project_root / "tests" / "issue_release_3_0_2"
 
-        # Set up paths for DRS and mapfiles
-        drs_output_dir = output_dir / "drs_structure"
-        mapfiles_output_dir = output_dir / "mapfiles"
-
+        # DRS output directory
+        drs_output_dir = base_output_dir / "drs_output" / project_config["project"]
+        # Clean at START to ensure fresh output, but keep after test for inspection
+        if drs_output_dir.exists():
+            shutil.rmtree(drs_output_dir)
         drs_output_dir.mkdir(parents=True)
+
+        # Mapfiles output directory
+        mapfiles_output_dir = base_output_dir / "mapfiles" / project_config["project"]
+        # Clean at START to ensure fresh output, but keep after test for inspection
+        if mapfiles_output_dir.exists():
+            shutil.rmtree(mapfiles_output_dir)
         mapfiles_output_dir.mkdir(parents=True)
 
         yield {
             "input_dir": input_dir,
-            "output_dir": output_dir,
+            "output_dir": base_output_dir,
             "drs_output_dir": drs_output_dir,
             "mapfiles_output_dir": mapfiles_output_dir,
             "project_root": project_root,
@@ -91,9 +100,7 @@ class TestFullWorkflow:
             "expected_root_dir": project_config["expected_root_dir"],
         }
 
-        # Cleanup - keep output for inspection during development
-        # if output_dir.exists():
-        #     shutil.rmtree(output_dir)
+        # No cleanup - keep output for inspection after test
 
     @pytest.mark.parametrize("workflow_setup", PROJECT_CONFIGS, indirect=True)
     def test_complete_drs_and_mapfile_workflow(self, workflow_setup):
