@@ -73,10 +73,16 @@ class DuplicatedDataset(Exception):
     """
 
     def __init__(self, path, version):
+        self.path = path
+        self.version = version
         self.msg = "Dataset already exists"
         self.msg += f"\n<path: '{path}'>"
         self.msg += f"\n<version: '{version}'>"
         super(self.__class__, self).__init__(self.msg)
+
+    def __reduce__(self):
+        # Make exception picklable for multiprocessing
+        return (self.__class__, (self.path, self.version))
 
 
 class OlderUpgrade(Exception):

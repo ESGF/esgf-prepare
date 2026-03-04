@@ -190,6 +190,10 @@ class DRSTree(Tree):
     def append_path(self, key: str, what: str, value: dict) -> None:
         self.paths[key][what].append(value)
 
+    def add_duplicate(self, source) -> None:
+        """Add a duplicate file to the list for later removal."""
+        self.duplicates.append(source)
+
     def has_path(self, key: str) -> bool:
         return key in self.paths
 

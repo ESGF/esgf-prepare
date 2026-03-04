@@ -358,7 +358,7 @@ class Process(object):
                         mode="symlink",
                     )
                     if self.mode == "move":
-                        self.tree.duplicates.append(source)
+                        self.tree.add_duplicate(source)
 
             # Record entry for list() and uniqueness checkup.
             record = {"src": source, "dst": current_path, "is_duplicate": is_duplicate}

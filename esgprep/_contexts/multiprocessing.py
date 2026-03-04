@@ -35,6 +35,7 @@ class DRSTreeProxy(BaseProxy):
         "get_display_lengths",
         "add_path",
         "append_path",
+        "add_duplicate",
         "create_leaf",
         "has_path",
         "get_path",
@@ -57,6 +58,9 @@ class DRSTreeProxy(BaseProxy):
 
     def append_path(self, key, what, value):
         return self._callmethod("append_path", (key, what, value))
+
+    def add_duplicate(self, source):
+        return self._callmethod("add_duplicate", (source,))
 
     def create_leaf(self, nodes, label, src, mode, force=False):
         return self._callmethod("create_leaf", (nodes, label, src, mode, force))
