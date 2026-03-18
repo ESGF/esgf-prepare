@@ -11,7 +11,7 @@ import re
 import os
 from pathlib import Path
 
-from esgprep._utils.checksum import get_checksum
+from esgprep._utils.checksum import get_checksum, is_multihash_algo
 from esgprep.constants import FRAMES
 from esgprep.mapfile import build_mapfile_name, build_mapfile_entry, write
 from esgprep.mapfile.constants import SPINNER_DESC
@@ -128,6 +128,8 @@ class Process(object):
                 optional_attrs["checksum"] = get_checksum(
                     str(source), self.checksum_type, self.checksums_from
                 )
+                if not is_multihash_algo(self.checksum_type):
+                    optional_attrs["checksum_type"] = self.checksum_type.upper()
             optional_attrs["dataset_tech_notes"] = self.notes_url
             optional_attrs["dataset_tech_notes_title"] = self.notes_title
 
