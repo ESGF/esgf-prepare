@@ -200,14 +200,68 @@
             <span class="c1"># Build directory structure.</span>
             <span class="c1"># DRS terms are validated during this step.</span>
             <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ev</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.drs.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">DrsValidator</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.drs.report</span><span class="w"> </span><span class="kn">import</span> <span class="n">DrsType</span>
+
                 <span class="n">dg</span> <span class="o">=</span> <span class="n">DrsGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+                <span class="n">dv</span> <span class="o">=</span> <span class="n">DrsValidator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+
+                <span class="c1"># Get project spec and DRS directory spec</span>
+                <span class="n">proj_spec</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+                <span class="n">dir_spec</span> <span class="o">=</span> <span class="n">proj_spec</span><span class="o">.</span><span class="n">drs_specs</span><span class="p">[</span><span class="n">DrsType</span><span class="o">.</span><span class="n">DIRECTORY</span><span class="p">]</span>
+
+                <span class="c1"># Get required collections from DRS spec</span>
+                <span class="n">required_collections</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">source_collection</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">dir_spec</span><span class="o">.</span><span class="n">parts</span><span class="p">]</span>
+
+                <span class="c1"># Build mapping: collection -&gt; field_name from attr_specs</span>
+                <span class="c1"># If field_name is None, use source_collection as field_name</span>
+                <span class="c1"># Only use entries where specific_key is None (for DRS building, not validation)</span>
+                <span class="n">collection_to_field</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">proj_spec</span><span class="o">.</span><span class="n">attr_specs</span><span class="p">:</span>
+                    <span class="n">specific_key</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="s1">&#39;specific_key&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">specific_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">field</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">field_name</span> <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">field_name</span> <span class="k">else</span> <span class="n">attr</span><span class="o">.</span><span class="n">source_collection</span>
+                        <span class="n">collection_to_field</span><span class="p">[</span><span class="n">attr</span><span class="o">.</span><span class="n">source_collection</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span>
+
+                <span class="c1"># Build translated_attrs by reading ONLY the correct field for each required collection</span>
+                <span class="c1"># This avoids reading &#39;experiment&#39; when we need &#39;experiment_id&#39; mapped to &#39;experiment&#39;</span>
+                <span class="n">translated_attrs</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">collection</span> <span class="ow">in</span> <span class="n">required_collections</span><span class="p">:</span>
+                    <span class="n">field_name</span> <span class="o">=</span> <span class="n">collection_to_field</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">current_attrs</span><span class="p">:</span>
+                        <span class="n">translated_attrs</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_attrs</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
+
+                <span class="c1"># Also add any remaining attrs that might be needed (version, filename, creation_date, etc.)</span>
+                <span class="c1"># but skip: 1) already mapped collections, 2) field names used in mappings, 3) collection names</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">current_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">translated_attrs</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">collection_to_field</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">required_collections</span><span class="p">:</span>
+                        <span class="n">translated_attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+                <span class="c1"># Parse filename to extract DRS parts (filename values take priority)</span>
+                <span class="c1"># This handles cases where global attributes may have incorrect values</span>
+                <span class="c1"># but the filename is correct (e.g., variable_id=tasmax but filename has tas)</span>
+                <span class="n">filename_result</span> <span class="o">=</span> <span class="n">dv</span><span class="o">.</span><span class="n">validate_file_name</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">filename_result</span><span class="o">.</span><span class="n">validated</span> <span class="ow">and</span> <span class="n">filename_result</span><span class="o">.</span><span class="n">mapping_used</span><span class="p">:</span>
+                    <span class="c1"># Override global attributes with filename values</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">filename_result</span><span class="o">.</span><span class="n">mapping_used</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">translated_attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+                <span class="c1"># Set directory_date from version if required by DRS spec but not yet populated</span>
+                <span class="c1"># Only apply this for projects that have directory_date in their DRS spec</span>
+                <span class="k">if</span> <span class="s2">&quot;directory_date&quot;</span> <span class="ow">in</span> <span class="n">required_collections</span> <span class="ow">and</span> <span class="s2">&quot;directory_date&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">translated_attrs</span><span class="p">:</span>
+                    <span class="n">translated_attrs</span><span class="p">[</span><span class="s2">&quot;directory_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">==</span> <span class="s2">&quot;cmip6&quot;</span><span class="p">:</span>
                     <span class="n">drs_path</span> <span class="o">=</span> <span class="n">dg</span><span class="o">.</span><span class="n">generate_directory_from_mapping</span><span class="p">(</span>
                         <span class="p">{</span>
-                            <span class="o">**</span><span class="n">current_attrs</span><span class="p">,</span>
-                            <span class="o">**</span><span class="p">{</span><span class="s2">&quot;member_id&quot;</span><span class="p">:</span> <span class="n">current_attrs</span><span class="p">[</span><span class="s2">&quot;variant_label&quot;</span><span class="p">]},</span>
+                            <span class="o">**</span><span class="n">translated_attrs</span><span class="p">,</span>
+                            <span class="o">**</span><span class="p">{</span><span class="s2">&quot;member_id&quot;</span><span class="p">:</span> <span class="n">translated_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;variant_label&quot;</span><span class="p">,</span> <span class="n">current_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;variant_label&quot;</span><span class="p">))},</span>
                         <span class="p">}</span>
                     <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Generic handling for other projects (cordex-cmip6, cmip7, etc.)</span>
+                    <span class="n">drs_path</span> <span class="o">=</span> <span class="n">dg</span><span class="o">.</span><span class="n">generate_directory_from_mapping</span><span class="p">(</span><span class="n">translated_attrs</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">drs_path</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># Build detailed error message with all DRS errors</span>
@@ -390,7 +444,7 @@
                         <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;symlink&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;move&quot;</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">duplicates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">add_duplicate</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
 
             <span class="c1"># Record entry for list() and uniqueness checkup.</span>
             <span class="n">record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="s2">&quot;dst&quot;</span><span class="p">:</span> <span class="n">current_path</span><span class="p">,</span> <span class="s2">&quot;is_duplicate&quot;</span><span class="p">:</span> <span class="n">is_duplicate</span><span class="p">}</span>

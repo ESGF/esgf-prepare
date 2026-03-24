@@ -809,8 +809,10 @@ Returns a dictionary of DRS terms for the given path.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="esgprep._utils.path.dataset_id">
 <span class="sig-prename descclassname"><span class="pre">esgprep._utils.path.</span></span><span class="sig-name descname"><span class="pre">dataset_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/esgprep/_utils/path.html#dataset_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#esgprep._utils.path.dataset_id" title="Link to this definition"></a></dt>
-<dd><p>Build dataset identifier from NetCDF file using esgvoc DrsGenerator.
+<dd><p>Build dataset identifier from DRS path structure using esgvoc DrsGenerator.
 Returns the dataset identifier string for the given path.</p>
+<p>Extracts terms from the directory path parts (between DRS root and version)
+and uses the DrsGenerator to build a valid dataset ID.</p>
 </dd></dl>
 
 <p id="module-esgprep._utils.print.py"><span id="module-esgprep._utils.print"></span><em>Module author: Guillaume Levavasseur &lt;<a class="reference external" href="mailto:glipsl&#37;&#52;&#48;ipsl&#46;fr">glipsl<span>&#64;</span>ipsl<span>&#46;</span>fr</a>&gt;</em></p>
@@ -938,7 +940,7 @@ Default is no color (i.e., restore original color)</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esgprep._utils.print.Print.BUFFER">
-<span class="sig-name descname"><span class="pre">BUFFER</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Synchronized</span> <span class="pre">wrapper</span> <span class="pre">for</span> <span class="pre">c_wchar_p(140443376115456)&gt;</span></span><a class="headerlink" href="#esgprep._utils.print.Print.BUFFER" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">BUFFER</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Synchronized</span> <span class="pre">wrapper</span> <span class="pre">for</span> <span class="pre">c_wchar_p(140057509584672)&gt;</span></span><a class="headerlink" href="#esgprep._utils.print.Print.BUFFER" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

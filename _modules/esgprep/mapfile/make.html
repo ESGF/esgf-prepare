@@ -94,7 +94,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.checksum</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_checksum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.checksum</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_checksum</span><span class="p">,</span> <span class="n">is_multihash_algo</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FRAMES</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.mapfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_mapfile_name</span><span class="p">,</span> <span class="n">build_mapfile_entry</span><span class="p">,</span> <span class="n">write</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.mapfile.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SPINNER_DESC</span>
@@ -216,6 +216,8 @@
                 <span class="n">optional_attrs</span><span class="p">[</span><span class="s2">&quot;checksum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_checksum</span><span class="p">(</span>
                     <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksums_from</span>
                 <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_multihash_algo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span><span class="p">):</span>
+                    <span class="n">optional_attrs</span><span class="p">[</span><span class="s2">&quot;checksum_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
             <span class="n">optional_attrs</span><span class="p">[</span><span class="s2">&quot;dataset_tech_notes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_url</span>
             <span class="n">optional_attrs</span><span class="p">[</span><span class="s2">&quot;dataset_tech_notes_title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_title</span>
 

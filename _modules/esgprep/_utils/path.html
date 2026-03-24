@@ -299,8 +299,11 @@
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.dataset_id">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">dataset_id</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Build dataset identifier from NetCDF file using esgvoc DrsGenerator.</span>
+<span class="sd">    Build dataset identifier from DRS path structure using esgvoc DrsGenerator.</span>
 <span class="sd">    Returns the dataset identifier string for the given path.</span>
+
+<span class="sd">    Extracts terms from the directory path parts (between DRS root and version)</span>
+<span class="sd">    and uses the DrsGenerator to build a valid dataset ID.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Processing path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -310,53 +313,52 @@
         <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: No project found for path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="c1"># Get terms from NetCDF file</span>
-    <span class="n">attrs</span> <span class="o">=</span> <span class="n">get_terms</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">attrs</span><span class="p">:</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: No NetCDF attributes found for path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># Use esgvoc DrsGenerator to build dataset identifier</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">DrsType</span><span class="p">,</span> <span class="n">get_project</span> <span class="k">as</span> <span class="n">get_project_specs</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.drs.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">DrsGenerator</span>
 
-        <span class="n">generator</span> <span class="o">=</span> <span class="n">DrsGenerator</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+        <span class="c1"># Extract version from path</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">extract_version</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Found version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Extract relevant DRS term values from NetCDF attributes</span>
-        <span class="c1"># For CMIP6, we need specific attributes to build the dataset ID</span>
-        <span class="n">drs_terms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Get path parts</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span>
 
-        <span class="c1"># Common CMIP6 DRS attributes in NetCDF files</span>
-        <span class="c1"># Note: member_id might be stored as variant_label in some files</span>
-        <span class="n">drs_attrs</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;mip_era&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;activity_id&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;institution_id&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;source_id&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;experiment_id&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;member_id&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;variant_label&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;table_id&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;variable_id&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;grid_label&quot;</span><span class="p">,</span>
-        <span class="p">]</span>
-
-        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">drs_attrs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-                <span class="c1"># Handle space-separated values by taking the first one</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">drs_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
-                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Found </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">drs_terms</span><span class="p">:</span>
-            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;dataset_id: No DRS terms found in NetCDF attributes&quot;</span><span class="p">)</span>
+        <span class="c1"># Find version index in path</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">version_idx</span> <span class="o">=</span> <span class="n">parts</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Version </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> not found in path parts&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Using DRS terms: </span><span class="si">{</span><span class="n">drs_terms</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Get number of DRS directory parts (excluding version) from the spec</span>
+        <span class="c1"># This tells us how many parts before the version belong to the DRS</span>
+        <span class="n">proj_specs</span> <span class="o">=</span> <span class="n">get_project_specs</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+        <span class="n">dir_spec</span> <span class="o">=</span> <span class="n">proj_specs</span><span class="o">.</span><span class="n">drs_specs</span><span class="p">[</span><span class="n">DrsType</span><span class="o">.</span><span class="n">DIRECTORY</span><span class="p">]</span>
+        <span class="n">num_dir_parts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">dir_spec</span><span class="o">.</span><span class="n">parts</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_required</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># -1 for version</span>
 
-        <span class="c1"># Generate dataset ID from bag of terms</span>
+        <span class="c1"># DRS starts at: version_idx - num_dir_parts (searching backwards from version)</span>
+        <span class="n">drs_start_idx</span> <span class="o">=</span> <span class="n">version_idx</span> <span class="o">-</span> <span class="n">num_dir_parts</span>
+        <span class="k">if</span> <span class="n">drs_start_idx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Invalid DRS start index: </span><span class="si">{</span><span class="n">drs_start_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Extract DRS terms from directory parts</span>
+        <span class="n">drs_terms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="n">drs_start_idx</span><span class="p">:</span><span class="n">version_idx</span><span class="p">])</span>
+
+        <span class="c1"># Add version (with and without v prefix for flexibility)</span>
+        <span class="n">drs_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">):</span>
+            <span class="n">drs_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">version</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: DRS terms from path: </span><span class="si">{</span><span class="n">drs_terms</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">drs_terms</span><span class="p">:</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;dataset_id: No DRS terms found in path&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Use DrsGenerator to build dataset ID from bag of terms</span>
+        <span class="n">generator</span> <span class="o">=</span> <span class="n">DrsGenerator</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
         <span class="n">report</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">generate_dataset_id_from_bag_of_terms</span><span class="p">(</span><span class="n">drs_terms</span><span class="p">)</span>
 
         <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
