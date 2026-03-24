@@ -1,0 +1,72 @@
+netcdf orog_EUR-12_CNRM-ESM2-1_historical_r1i1p1f2_HCLIMcom-SMHI_HCLIM43-ALADIN_v1-r1_fx {
+dimensions:
+        x = 453 ;
+        y = 453 ;
+        nv = 4 ;
+variables:
+        double lon(y, x) ;
+                lon:standard_name = "longitude" ;
+                lon:long_name = "longitude" ;
+                lon:units = "degrees_east" ;
+        double lat(y, x) ;
+                lat:standard_name = "latitude" ;
+                lat:long_name = "latitude" ;
+                lat:units = "degrees_north" ;
+        double x(x) ;
+                x:standard_name = "projection_x_coordinate" ;
+                x:long_name = "X Coordinate Of Projection" ;
+                x:units = "m" ;
+                x:axis = "X" ;
+        double y(y) ;
+                y:standard_name = "projection_y_coordinate" ;
+                y:long_name = "Y Coordinate Of Projection" ;
+                y:units = "m" ;
+                y:axis = "Y" ;
+        int crs ;
+                crs:grid_mapping_name = "lambert_conformal_conic" ;
+                crs:standard_parallel = 49.5 ;
+                crs:longitude_of_central_meridian = 10.5 ;
+                crs:latitude_of_projection_origin = 49.5 ;
+                crs:false_easting = 2925000. ;
+                crs:false_northing = 2925000. ;
+                crs:earth_radius = 6371229. ;
+                crs:proj4 = "+proj=lcc +lat_1=49.500000 +lat_2=49.500000 +lat_0=49.500000 +lon_0=10.500000 +k_0=1.0 +x_0=2925000.000000 +y_0=2925000.000000 +a=6371229.000000 +b=6371229.000000" ;
+        float orog(y, x) ;
+                orog:_FillValue = 1.e+20f ;
+                orog:standard_name = "surface_altitude" ;
+                orog:long_name = "Surface Altitude" ;
+                orog:units = "m" ;
+                orog:cell_methods = "area: mean" ;
+                orog:coordinates = "lon lat" ;
+                orog:missing_value = 1.e+20f ;
+                orog:grid_mapping = "crs" ;
+
+// global attributes:
+                :Conventions = "CF-1.11" ;
+                :activity_id = "DD" ;
+                :contact = "rossby.cordex@smhi.se" ;
+                :domain = "Europe" ;
+                :domain_id = "EUR-12" ;
+                :driving_experiment = "all-forcing simulation of the recent past" ;
+                :driving_experiment_id = "historical" ;
+                :driving_institution_id = "CNRM-CERFACS" ;
+                :driving_source_id = "CNRM-ESM2-1" ;
+                :driving_variant_label = "r1i1p1f2" ;
+                :grid = "Lambert conic conformal with 12.5 km grid spacing" ;
+                :institution = "HARMONIE Climate Modelling Community (HCLIMcom) partner: Swedish Meteorological and Hydrological Institute (SMHI), Norrkoping, Sweden" ;
+                :institution_id = "HCLIMcom-SMHI" ;
+                :license = "https://cordex.org/data-access/cordex-cmip6-data/cordex-cmip6-terms-of-use" ;
+                :mip_era = "CMIP6" ;
+                :product = "model-output" ;
+                :references = "https://doi.org/10.5281/zenodo.11424180" ;
+                :source = "HARMONIE Climate model cycle 43 with ALADIN physics" ;
+                :source_id = "HCLIM43-ALADIN" ;
+                :source_type = "ARCM" ;
+                :version_realization = "v1-r1" ;
+                :frequency = "fx" ;
+                :variable_id = "orog" ;
+                :tracking_id = "hdl:21.14103/ea119daf-f5ff-4f2f-a81c-ab5c185d22f6" ;
+                :creation_date = "2024-10-04T08:15:04Z" ;
+                :project_id = "CORDEX-CMIP6" ;
+}
+

@@ -38,4 +38,5 @@ PID_PREFIXES = {
     "primavera": "hdl:21.14100",
     "cordex": "hdl:21.14103",
     "obs4mips": "hdl:21.14102",
+    "cmip7": "hdl:21.14107",
 }

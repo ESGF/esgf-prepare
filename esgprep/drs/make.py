@@ -114,14 +114,68 @@ class Process(object):
             # Build directory structure.
             # DRS terms are validated during this step.
             try:
+                import esgvoc.api as ev
+                from esgvoc.apps.drs.validator import DrsValidator
+                from esgvoc.apps.drs.report import DrsType
+
                 dg = DrsGenerator(self.project)
+                dv = DrsValidator(self.project)
+
+                # Get project spec and DRS directory spec
+                proj_spec = ev.get_project(self.project)
+                dir_spec = proj_spec.drs_specs[DrsType.DIRECTORY]
+
+                # Get required collections from DRS spec
+                required_collections = [part.source_collection for part in dir_spec.parts]
+
+                # Build mapping: collection -> field_name from attr_specs
+                # If field_name is None, use source_collection as field_name
+                # Only use entries where specific_key is None (for DRS building, not validation)
+                collection_to_field = {}
+                for attr in proj_spec.attr_specs:
+                    specific_key = getattr(attr, 'specific_key', None)
+                    if specific_key is None:
+                        field = attr.field_name if attr.field_name else attr.source_collection
+                        collection_to_field[attr.source_collection] = field
+
+                # Build translated_attrs by reading ONLY the correct field for each required collection
+                # This avoids reading 'experiment' when we need 'experiment_id' mapped to 'experiment'
+                translated_attrs = {}
+                for collection in required_collections:
+                    field_name = collection_to_field.get(collection, collection)
+                    if field_name in current_attrs:
+                        translated_attrs[collection] = current_attrs[field_name]
+
+                # Also add any remaining attrs that might be needed (version, filename, creation_date, etc.)
+                # but skip: 1) already mapped collections, 2) field names used in mappings, 3) collection names
+                for k, v in current_attrs.items():
+                    if k not in translated_attrs and k not in collection_to_field.values() and k not in required_collections:
+                        translated_attrs[k] = v
+
+                # Parse filename to extract DRS parts (filename values take priority)
+                # This handles cases where global attributes may have incorrect values
+                # but the filename is correct (e.g., variable_id=tasmax but filename has tas)
+                filename_result = dv.validate_file_name(source.name)
+                if filename_result.validated and filename_result.mapping_used:
+                    # Override global attributes with filename values
+                    for k, v in filename_result.mapping_used.items():
+                        translated_attrs[k] = v
+
+                # Set directory_date from version if required by DRS spec but not yet populated
+                # Only apply this for projects that have directory_date in their DRS spec
+                if "directory_date" in required_collections and "directory_date" not in translated_attrs:
+                    translated_attrs["directory_date"] = current_attrs.get("version")
+
                 if self.project == "cmip6":
                     drs_path = dg.generate_directory_from_mapping(
                         {
-                            **current_attrs,
-                            **{"member_id": current_attrs["variant_label"]},
+                            **translated_attrs,
+                            **{"member_id": translated_attrs.get("variant_label", current_attrs.get("variant_label"))},
                         }
                     )
+                else:
+                    # Generic handling for other projects (cordex-cmip6, cmip7, etc.)
+                    drs_path = dg.generate_directory_from_mapping(translated_attrs)
 
                 if len(drs_path.errors) != 0:
                     # Build detailed error message with all DRS errors
@@ -304,7 +358,7 @@ class Process(object):
                         mode="symlink",
                     )
                     if self.mode == "move":
-                        self.tree.duplicates.append(source)
+                        self.tree.add_duplicate(source)
 
             # Record entry for list() and uniqueness checkup.
             record = {"src": source, "dst": current_path, "is_duplicate": is_duplicate}

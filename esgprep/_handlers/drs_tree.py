@@ -58,9 +58,12 @@ class DRSLeaf(object):
         # --commands-file writes print statements ONLY in the submitted file
 
         # Make directory for destination path if not exist.
+        lines = []
+        
         if not Path(self.dst).exists():
             # Print mkdir command for both todo and actual execution
             line = f"{'mkdir -p'} {os.path.dirname(self.dst)}"
+            lines.append(line)
             print_cmd(line, quiet, todo_only)
 
             if not todo_only:
@@ -76,6 +79,7 @@ class DRSLeaf(object):
         # Unlink symbolic link if already exists.
         if self.mode == "symlink" and os.path.lexists(self.dst):
             line = f"{'rm -f'} {self.dst}"
+            lines.append(line)
             print_cmd(line, quiet, todo_only)
             if not todo_only:
                 os.remove(self.dst)
@@ -85,12 +89,16 @@ class DRSLeaf(object):
         if self.src:
             line += " " + str(self.src)
         line += " " + str(self.dst)
+        lines.append(line)
         print_cmd(line, quiet, todo_only)
         if not todo_only:
             if self.src:
                 UNIX_COMMAND[self.mode](self.src, self.dst)
             else:
                 UNIX_COMMAND[self.mode](self.dst)
+
+        return lines
+    
 
     def has_permissions(self, root):
         """
@@ -189,6 +197,10 @@ class DRSTree(Tree):
 
     def append_path(self, key: str, what: str, value: dict) -> None:
         self.paths[key][what].append(value)
+
+    def add_duplicate(self, source) -> None:
+        """Add a duplicate file to the list for later removal."""
+        self.duplicates.append(source)
 
     def has_path(self, key: str) -> bool:
         return key in self.paths
@@ -489,6 +501,8 @@ class DRSTree(Tree):
         Upgrades the whole DRS tree.
 
         """
+        lines = []
+        
         # Check permissions and migration availability before upgrade
         if not todo_only:
             for leaf in self.leaves():
@@ -506,11 +520,13 @@ class DRSTree(Tree):
 
         # Apply DRSLeaf action/migration.
         for leaf in self.leaves():
-            leaf.data.upgrade(quiet=quiet, todo_only=todo_only)
+            leaf_lines = leaf.data.upgrade(quiet=quiet, todo_only=todo_only)
+            lines.extend(leaf_lines)
 
         # Remove duplicates.
         for duplicate in self.duplicates:
             line = f"{'rm -f'} {duplicate}"
+            lines.append(line)
             print_cmd(line, quiet, todo_only)
             if not todo_only:
                 # Check src access.
@@ -521,12 +537,11 @@ class DRSTree(Tree):
 
         # Print info in case of commands file output.
         if todo_only and self.commands_file:
-            print(
-                "Command-lines to apply have been exported to {}".format(
-                    self.commands_file
-                )
-            )
-
+            with open(self.commands_file, "w") as comms_out:
+                for line in lines:
+                    comms_out.write(f"{line}\n")
+            print(f"Command-lines to apply have been exported to {self.commands_file}")
+            
         # Footer.
         print("".center(self.d_lengths[-1], "="))
 
