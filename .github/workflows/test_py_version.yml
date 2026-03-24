@@ -33,6 +33,9 @@ jobs:
       - name: add cmip7 CV
         run: uv run esgvoc config add cmip7
 
+      - name: add cordex-cmip6 CV
+        run: uv run esgvoc config add cordex-cmip6
+
       - name: Install CV with esgvoc
         run: uv run esgvoc install
 
