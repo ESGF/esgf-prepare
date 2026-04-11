@@ -17,7 +17,7 @@ jobs:
           - "3.11"
           - "3.12"
           - "3.13"
-    #     - "3.14"
+          - "3.14"
 
     runs-on: ubuntu-latest
 
@@ -26,6 +26,15 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+
+      - name: uv sync
+        run: uv sync
+
+      - name: add cmip7 CV
+        run: uv run esgvoc config add cmip7
+
+      - name: add cordex-cmip6 CV
+        run: uv run esgvoc config add cordex-cmip6
 
       - name: Install CV with esgvoc
         run: uv run esgvoc install

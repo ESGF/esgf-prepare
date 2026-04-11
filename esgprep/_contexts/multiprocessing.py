@@ -139,8 +139,8 @@ class MultiprocessingContext(BaseContext):
         self.checksums_from = self.set("checksums_from")
 
         # Checksums file takes priority on checksumming behavior setting.
-        if self.checksums_from:
-            self.no_checksum = True
+        if self.checksums_from and self.no_checksum:
+            self.no_checksum = False
             Print.warning('"--checksums-from" ignores "--no-checksum".')
 
         # Set multiprocessing configuration. Processes number is caped by cpu_count().
