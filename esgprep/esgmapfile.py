@@ -199,7 +199,7 @@ def get_args():
     make.add_argument(
         "--checksums-from",
         metavar="CHECKSUM_FILE",
-        type=ChecksumsReader,
+        action=ChecksumsReader,
         help=CHECKSUMS_FROM_HELP,
     )
     make.add_argument(
@@ -234,7 +234,7 @@ def get_args():
     group.add_argument(
         "--dataset-list",
         metavar="TXT_FILE",
-        type=DatasetsReader,
+        action=DatasetsReader,
         nargs="?",
         const=sys.stdin,
         help=DATASET_LIST_HELP,
