@@ -297,14 +297,12 @@ def get_checksum(ffp, checksum_type="sha256", checksums=None):
     2. Through a list of checksums in a dictionary way {file: checksum}.
 
     """
-    # Verify checksum dictionary.
-    if checksums:
-        # Verify file in dictionary keys.
-        if ffp in checksums:
-            # Verify checksum pattern.
-            if re.match(get_checksum_pattern(checksum_type), checksums[ffp]):
-                # Return pre-computed checksum.
-                return checksums[ffp]
+    # If pre-computed checksum with correct pattern exists in dictionary,
+    # then return it.
+    if (checksums
+        and ffp in checksums
+        and re.match(get_checksum_pattern(checksum_type), checksums[ffp])):
+        return checksums[ffp]
 
-    # Return computed checksum.
+    # Otherwise return computed checksum.
     return checksum(ffp, checksum_type)
