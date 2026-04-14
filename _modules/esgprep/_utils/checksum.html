@@ -400,16 +400,14 @@
 <span class="sd">    2. Through a list of checksums in a dictionary way {file: checksum}.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Verify checksum dictionary.</span>
-    <span class="k">if</span> <span class="n">checksums</span><span class="p">:</span>
-        <span class="c1"># Verify file in dictionary keys.</span>
-        <span class="k">if</span> <span class="n">ffp</span> <span class="ow">in</span> <span class="n">checksums</span><span class="p">:</span>
-            <span class="c1"># Verify checksum pattern.</span>
-            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">get_checksum_pattern</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">),</span> <span class="n">checksums</span><span class="p">[</span><span class="n">ffp</span><span class="p">]):</span>
-                <span class="c1"># Return pre-computed checksum.</span>
-                <span class="k">return</span> <span class="n">checksums</span><span class="p">[</span><span class="n">ffp</span><span class="p">]</span>
+    <span class="c1"># If pre-computed checksum with correct pattern exists in dictionary,</span>
+    <span class="c1"># then return it.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">checksums</span>
+        <span class="ow">and</span> <span class="n">ffp</span> <span class="ow">in</span> <span class="n">checksums</span>
+        <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">get_checksum_pattern</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">),</span> <span class="n">checksums</span><span class="p">[</span><span class="n">ffp</span><span class="p">])):</span>
+        <span class="k">return</span> <span class="n">checksums</span><span class="p">[</span><span class="n">ffp</span><span class="p">]</span>
 
-    <span class="c1"># Return computed checksum.</span>
+    <span class="c1"># Otherwise return computed checksum.</span>
     <span class="k">return</span> <span class="n">checksum</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span></div>
 
 </pre></div>

@@ -284,7 +284,7 @@
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--checksums-from&quot;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;CHECKSUM_FILE&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">ChecksumsReader</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">ChecksumsReader</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">CHECKSUMS_FROM_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -319,7 +319,7 @@
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--dataset-list&quot;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;TXT_FILE&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">DatasetsReader</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">DatasetsReader</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
         <span class="n">const</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">DATASET_LIST_HELP</span><span class="p">,</span>
