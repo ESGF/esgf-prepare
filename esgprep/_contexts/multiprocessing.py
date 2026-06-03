@@ -204,9 +204,9 @@ class MultiprocessingContext(BaseContext):
         except RuntimeError as e:
             if "universe connection is not initialized" in str(e):
                 Print.error("Controlled vocabularies are not initialized.")
-                Print.error("Please run: esgvoc install")
+                Print.error("Please run: esgvoc use <project>@latest")
                 Print.error(
-                    "This command downloads ESGF project vocabularies and builds local databases."
+                    "This command downloads pre-built vocabulary databases."
                 )
                 raise SystemExit(1)
             else:
@@ -220,9 +220,9 @@ class MultiprocessingContext(BaseContext):
                 Print.error(
                     "Controlled vocabulary databases are incomplete or corrupted."
                 )
-                Print.error("Please run: esgvoc install")
+                Print.error("Please run: esgvoc use <project>@latest")
                 Print.error(
-                    "This will rebuild the databases from the latest vocabularies."
+                    "This will re-download the pre-built databases."
                 )
                 raise SystemExit(1)
             elif "institution" not in str(e):

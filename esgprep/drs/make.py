@@ -108,6 +108,24 @@ class Process(object):
                 # to get the original error messages
                 Print.debug(f"Project detection failed: {e}")
 
+            # Pre-validate NetCDF global attributes against controlled vocabulary.
+            try:
+                from esgvoc.apps.ncattvalid import GAValidator
+
+                ga = GAValidator(self.project)
+                ga_report = ga.validate(current_attrs, filename=source.name)
+                if not ga_report.is_valid:
+                    error_lines = []
+                    for err in ga_report.errors:
+                        error_lines.append(f"  - {err.name} = {err.value!r}: {err.message}")
+                    for m in ga_report.missing:
+                        error_lines.append(f"  - {m}: required attribute is missing")
+                    Print.warning(
+                        f"Attribute validation issues for {source.name}:\n" + "\n".join(error_lines)
+                    )
+            except Exception as e:
+                Print.debug(f"GAValidator pre-validation skipped: {e}")
+
             # Instantiate file as no duplicate.
             is_duplicate = False
 
@@ -129,14 +147,15 @@ class Process(object):
                 required_collections = [part.source_collection for part in dir_spec.parts]
 
                 # Build mapping: collection -> field_name from attr_specs
-                # If field_name is None, use source_collection as field_name
-                # Only use entries where specific_key is None (for DRS building, not validation)
+                # Only use the PRIMARY mapping (where attr_field_name is None),
+                # meaning the NetCDF attribute name matches the collection name.
+                # Entries with attr_field_name set are aliases (e.g. parent_activity_id)
+                # and must not override the primary mapping.
                 collection_to_field = {}
                 for attr in proj_spec.attr_specs:
-                    specific_key = getattr(attr, 'specific_key', None)
-                    if specific_key is None:
-                        field = attr.field_name if attr.field_name else attr.source_collection
-                        collection_to_field[attr.source_collection] = field
+                    source_collection_key = getattr(attr, 'source_collection_key', None)
+                    if source_collection_key is None and attr.attr_field_name is None:
+                        collection_to_field[attr.source_collection] = attr.source_collection
 
                 # Build translated_attrs by reading ONLY the correct field for each required collection
                 # This avoids reading 'experiment' when we need 'experiment_id' mapped to 'experiment'

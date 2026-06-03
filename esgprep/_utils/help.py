@@ -45,14 +45,6 @@ PROGRAM_DESC = {
 {}
 
 {}""".format(TITLE, INTRO, URL, DEFAULT),
-    "checkvocab": """
-{}
-
-{} In the case that your data already follows the appropriate directory structure, you may want to check that all values of each facet are correctly declared in the "esg.<project_id>.ini" sections. "esgcheckvocab" allows you to easily check the configuration file attributes by scanning your data tree or give (a list of) dataset identifiers. It requires that your directory structure or dataset format strictly follows the project Data Reference Syntax (DRS) including the dataset version.
-
-{}
-
-{}""".format(TITLE, INTRO, URL, DEFAULT),
     "mapfile": """
 {}
 
@@ -105,9 +97,6 @@ If not, all projects within an authority are fetched.
 """,
     "fetchtables": """One or more lower-cased project name(s).
 If not, all "*-cmor-tables" contents are fetched.
-
-""",
-    "checkvocab": """Required lower-cased project name.
 
 """,
     "drs": """Required lower-cased project name.
@@ -172,9 +161,6 @@ TAG_REGEX_HELP = """Fetch from all GitHub tags matching the specified regex.
 """
 
 DIRECTORY_HELP = {
-    "checkvocab": """One or more directories to recursively scan. Unix wildcards are allowed.
-
-""",
     "drs": """One or more directories to recursively scan. Unix wildcards are allowed.
 
 """,
@@ -201,11 +187,6 @@ INCLUDE_FILE_HELP = {
     "fetchtables": """Filter files matching the regular expression.
 Duplicate the flag to set several filters.
 Default includes all regular files.
-
-""",
-    "checkvocab": """Filter files matching the regular expression.
-Duplicate the flag to set several filters.
-Default includes all netCDF files.
 
 """,
     "mapfile": """Filter files matching the regular expression.

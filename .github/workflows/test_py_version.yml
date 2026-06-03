@@ -30,14 +30,14 @@ jobs:
       - name: uv sync
         run: uv sync
 
-      - name: add cmip7 CV
-        run: uv run esgvoc config add cmip7
+      - name: Activate cmip6 vocabulary database
+        run: uv run esgvoc use cmip6@latest
 
-      - name: add cordex-cmip6 CV
-        run: uv run esgvoc config add cordex-cmip6
+      - name: Activate cmip7 vocabulary database
+        run: uv run esgvoc use cmip7@latest
 
-      - name: Install CV with esgvoc
-        run: uv run esgvoc install
+      - name: Activate cordex-cmip6 vocabulary database
+        run: uv run esgvoc use cordex-cmip6@latest
 
       - name: runs tests
         run: uv run --python ${{ matrix.python-version }} pytest
