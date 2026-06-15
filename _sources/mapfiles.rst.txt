@@ -50,7 +50,7 @@ directory is used.
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/
 
 Specify checksum algorithm
 **************************
