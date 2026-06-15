@@ -155,8 +155,8 @@ class TestFullWorkflow:
             assert result.returncode != 0, (
                 "cmip7 test files should fail DRS generation due to CV mismatches"
             )
-            assert "DRS generation failed" in result.stdout, (
-                "Expected DRS generation error messages in output"
+            assert "Number of error(s):" in result.stdout, (
+                "Expected error count in output"
             )
             print(f"\n=== cmip7: CV errors correctly detected, skipping remaining steps ===")
             return
