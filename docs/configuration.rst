@@ -50,10 +50,10 @@ For ``esgmapfile``, you can specify the checksum algorithm using the ``--checksu
 .. code-block:: bash
 
     # Standard algorithm (legacy, for compatibility)
-    $> esgmapfile make --project PROJECT_ID --checksum-type sha256 /PATH/TO/SCAN/
+    $> esgmapfile make --project PROJECT_ID --checksum-type sha256 --directory /PATH/TO/SCAN/
 
     # Multihash algorithm (recommended for new data)
-    $> esgmapfile make --project PROJECT_ID --checksum-type sha2-256 /PATH/TO/SCAN/
+    $> esgmapfile make --project PROJECT_ID --checksum-type sha2-256 --directory /PATH/TO/SCAN/
 
 Supported algorithms include:
 

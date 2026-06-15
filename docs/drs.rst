@@ -58,14 +58,14 @@ lists each dataset with:
 
 .. code-block:: bash
 
-    $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/
+    $> esgdrs make list --project PROJECT_ID /PATH/TO/SCAN/
 
 ``esgdrs`` doesn't have filter arguments as ``esgmapfile``. It only support non-hidden netCDF files. Nevertheless,
 to ignore some files your can submit a list of files to ignore during data discovery:
 
 .. code-block:: bash
 
-    $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/ --ignore-from-incoming /PATH/TO/LIST/OF/FILES/TO/IGNORE
+    $> esgdrs make list --project PROJECT_ID /PATH/TO/SCAN/ --ignore-from-incoming /PATH/TO/LIST/OF/FILES/TO/IGNORE
 
 .. note:: Each run also produces a temporary file which stores the scan results to be used by next subcommands avoiding
    to rescan a lot of files.
@@ -79,8 +79,8 @@ used, only the last value will be considered.
 
 .. code-block:: bash
 
-    $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/ --set-value FACET_KEY=VALUE
-    $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/ --set-value FACET_KEY1=VALUE1 --set-value FACET_KEY2=VALUE2
+    $> esgdrs make list --project PROJECT_ID /PATH/TO/SCAN/ --set-value FACET_KEY=VALUE
+    $> esgdrs make list --project PROJECT_ID /PATH/TO/SCAN/ --set-value FACET_KEY1=VALUE1 --set-value FACET_KEY2=VALUE2
 
 .. note:: For instance, the ``product`` facet in CMIP5 project is not part of the filename and is often set to
     ``output`` in CMIP5 NetCDF global attributes however it should be ``output1`` or ``output2``. Consequently, you can
@@ -94,8 +94,8 @@ particular NetCDF attribute can be enforced for the whole scan.
 
 .. code-block:: bash
 
-    $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/ --set-key FACET_KEY=ATTRIBUTE
-    $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/ --set-key FACET_KEY1=ATTRIBUTE1 --set-value FACET_KEY2=ATTRIBUTE2
+    $> esgdrs make list --project PROJECT_ID /PATH/TO/SCAN/ --set-key FACET_KEY=ATTRIBUTE
+    $> esgdrs make list --project PROJECT_ID /PATH/TO/SCAN/ --set-key FACET_KEY1=ATTRIBUTE1 --set-value FACET_KEY2=ATTRIBUTE2
 
 .. note:: For instance, the ``institute`` facet in CORDEX project is not part of the filename and corresponds to the
     ``institute_id`` NetCDF global attribute. Consequently, you can use ``--set-key institute=institute_id``.
@@ -107,7 +107,7 @@ The upgraded version can be set using ``--version YYYYMMDD`` instead of the curr
 
 .. code-block:: bash
 
-    $> esgdrs list --project PROJECT_ID /PATH/TO/SCAN/ --version YYYYMMDD
+    $> esgdrs make list --project PROJECT_ID /PATH/TO/SCAN/ --version YYYYMMDD
 
 Visualize the excepted DRS tree
 *******************************
@@ -120,7 +120,7 @@ symbolic links skeleton that avoid to duplicate files between two versions.
 
 .. code-block:: bash
 
-    $> esgdrs tree --project PROJECT_ID /PATH/TO/SCAN/
+    $> esgdrs make tree --project PROJECT_ID /PATH/TO/SCAN/
 
 .. warning:: Some miscellaneous characters could appear due to wrong encoding configuration. To see ASCII characters,
     choose another utf-8 font in your console setup.
@@ -132,7 +132,7 @@ By default, the DRS tree is built from your current directory. This can be chang
 
 .. code-block:: bash
 
-    $> esgdrs tree --project PROJECT_ID /PATH/TO/SCAN/ --root /PATH/TO/MY_ROOT
+    $> esgdrs make tree --project PROJECT_ID /PATH/TO/SCAN/ --root /PATH/TO/MY_ROOT
 
 .. warning:: The DRS tree is automatically rebuilt from the project level. Be careful to not submit a root path
     including the project.
@@ -146,13 +146,13 @@ DRS tree. At this step, no file are moved or copy to the final DRS.
 
 .. code-block:: bash
 
-    $> esgdrs todo --project PROJECT_ID /PATH/TO/SCAN/
+    $> esgdrs make todo --project PROJECT_ID /PATH/TO/SCAN/
 
 Those Unix command-lines can also be written into a file for further process:
 
 .. code-block:: bash
 
-    $> esgdrs todo --project PROJECT_ID /PATH/TO/SCAN/ --commands-file /PATH/TO/COMMANDS.txt
+    $> esgdrs make todo --project PROJECT_ID /PATH/TO/SCAN/ --commands-file /PATH/TO/COMMANDS.txt
 
 .. note:: Only the commands statements are written to the file. This is not a logfile.
 
@@ -161,7 +161,7 @@ To overwrite existing file:
 
 .. code-block:: bash
 
-    $> esgdrs todo --project PROJECT_ID /PATH/TO/SCAN/ --commands-file /PATH/TO/COMMANDS.txt --overwrite-commands-file
+    $> esgdrs make todo --project PROJECT_ID /PATH/TO/SCAN/ --commands-file /PATH/TO/COMMANDS.txt --overwrite-commands-file
 
 .. warning:: The ``drs`` action is also able to remove incoming files in some particular case
    (see ``--upgrade-from-latest`` and ``--ignore-from-latest`` options).
@@ -177,9 +177,9 @@ for the dataset versioning.
 
 .. code-block:: bash
 
-    $> esgdrs todo --project PROJECT_ID /PATH/TO/SCAN/ --copy
-    $> esgdrs todo --project PROJECT_ID /PATH/TO/SCAN/ --link
-    $> esgdrs todo --project PROJECT_ID /PATH/TO/SCAN/ --symlink
+    $> esgdrs make todo --project PROJECT_ID /PATH/TO/SCAN/ --copy
+    $> esgdrs make todo --project PROJECT_ID /PATH/TO/SCAN/ --link
+    $> esgdrs make todo --project PROJECT_ID /PATH/TO/SCAN/ --symlink
 
 .. warning:: ``esgdrs`` temporarily stores the result of the ``list`` action to quickly generate the DRS tree
     afterwards. This requires to strictly submit the same arguments from the ``list`` action to the following ones.
@@ -193,7 +193,7 @@ It applies the Unix commands listed by ``todo`` action to generated the DRS tree
 
 .. code-block:: bash
 
-    $> esgdrs upgrade --project PROJECT_ID /PATH/TO/SCAN/
+    $> esgdrs make upgrade --project PROJECT_ID /PATH/TO/SCAN/
 
 Run the DRS upgrade from the latest version
 *******************************************
@@ -213,7 +213,7 @@ The option ``--upgrade-from-latest`` allows you to toggle to method *(b)*:
 
 .. code-block:: bash
 
-    $> esgdrs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --upgrade-from-latest
+    $> esgdrs make upgrade --project PROJECT_ID /PATH/TO/SCAN/ --upgrade-from-latest
 
 By construction, method *(b)* might not support to simply delete a file between versions, rather than modifying it.
 The associated flag ``--ignore-from-latest`` allows you to submit a list of filenames to ignore during the version
@@ -221,7 +221,7 @@ upgrade (i.e., files to be deleted between versions).
 
 .. code-block:: bash
 
-    $> esgdrs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --ignore-from-latest /PATH/TO/FILENAMES.TXT
+    $> esgdrs make upgrade --project PROJECT_ID /PATH/TO/SCAN/ --ignore-from-latest /PATH/TO/FILENAMES.TXT
 
 .. warning:: If ``--ignore-from-latest`` is submitted, ``--upgrade-from-latest`` is set to ``True`` by default.
 
@@ -238,7 +238,7 @@ To force the rescan in any case:
 
 .. code-block:: bash
 
-    $> esgdrs upgrade --project PROJECT_ID /PATH/TO/SCAN/ --rescan
+    $> esgdrs make upgrade --project PROJECT_ID /PATH/TO/SCAN/ --rescan
 
 
 Exit status
