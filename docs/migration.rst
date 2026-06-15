@@ -148,7 +148,7 @@ Dependency Changes
 
 **New dependencies:**
 
- * ``esgvoc`` >= 2.2.1 - Controlled vocabulary and configuration management
+ * ``esgvoc`` >= 4.1.1 - Controlled vocabulary and configuration management
  * ``python-levenshtein`` >= 0.27.1 - Enhanced string matching
  * Updated versions of ``numpy``, ``netCDF4``, and other core libraries
 

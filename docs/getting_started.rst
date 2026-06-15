@@ -40,20 +40,21 @@ Before starting, ensure you have:
     $ esgmapfile --version
     esgmapfile (from esgprep v3.0.0)
 
-.. important:: **Initialize Controlled Vocabularies**
+.. important:: **Activate Controlled Vocabulary Databases**
 
-   Before using ``esgprep`` for the first time, you must initialize the controlled vocabularies:
+   Before using ``esgprep`` for the first time, you must activate the vocabulary databases for your projects:
 
    .. code-block:: bash
 
-       $ esgvoc install
+       $ esgvoc use cmip6@latest
+       $ esgvoc use cordex-cmip6@latest
 
-   This downloads ESGF project vocabularies and builds local databases. The installation may take a few minutes.
+   This downloads pre-built vocabulary databases. You can see available projects with ``esgvoc status``.
 
    **What happens if you skip this?** You'll see an error like:
    ``RuntimeError: universe connection is not initialized``
 
-   **Keep your vocabularies updated:** Run ``esgvoc install`` periodically to get the latest controlled
+   **Keep your vocabularies updated:** Run ``esgvoc use <project>@latest`` periodically to get the latest controlled
    vocabulary updates from ESGF projects. This ensures you can work with newly added experiments, models,
    or updated facet values.
 

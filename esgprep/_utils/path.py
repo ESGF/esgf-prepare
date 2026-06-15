@@ -137,19 +137,42 @@ def get_project(path) -> str | None:
     """
     # Get all scopes within the loaded authority.
     scopes = set(ev.get_all_projects())
+
+    if not scopes:
+        Print.error(
+            "No esgvoc vocabulary databases found. "
+            "Please install at least one project snapshot, e.g.: esgvoc use cordex-cmip6@latest"
+        )
+        return None
+
     # Find intersection between scopes list and path parts.
     project = set(Path(str(path).lower()).parts).intersection(scopes)
 
     # Ensure only one project code matched.
     if len(project) == 1:
-        return project.pop()
+        project_id = project.pop()
+        db_info = ev.get_active_database_info(project_id)
+        if db_info:
+            Print.debug(
+                f"Using vocabulary database for '{project_id}': "
+                f"version={db_info['version']}, source={db_info['source']}"
+            )
+        return project_id
 
     elif len(project) == 0:
-        Print.debug(f"No project code found: {path}")
+        Print.warning(
+            f"No project code found in path: {path}\n"
+            f"  Installed vocabulary databases: {sorted(scopes)}\n"
+            f"  None of these matched any part of the path. "
+            f"Make sure the correct project snapshot is installed (e.g.: esgvoc use <project>@latest)"
+        )
         return None
 
     else:
-        Print.debug(f"Unable to match one project code: {path}")
+        Print.warning(
+            f"Multiple project codes found in path: {sorted(project)} for {path}\n"
+            f"  Unable to determine which project to use."
+        )
         return None
 
 

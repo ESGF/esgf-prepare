@@ -76,10 +76,12 @@ class Process(object):
 
             # Check dataset identifier is not None.
             if not identifier:
-                Print.debug(
-                    f"Process.__call__: Dataset identifier is None for source: {source}"
-                )
-                return False
+                with self.lock:
+                    self.errors.value += 1
+                    Print.warning(
+                        f"Unable to build dataset identifier from DRS path: {source}"
+                    )
+                return None
 
             # Split identifier into name & version.
             # For DRS structure, version is in the path, not the identifier.
