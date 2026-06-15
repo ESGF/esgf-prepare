@@ -13,7 +13,7 @@ from datetime import datetime
 
 # Program version
 # Remember to change VERSION_DATE below when updating
-VERSION = "3.0.0"
+VERSION = "3.2.0"
 
 # Date
 VERSION_DATE = datetime.now().strftime("%Y-%d-%m")
