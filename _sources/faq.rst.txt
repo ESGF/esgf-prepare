@@ -93,11 +93,11 @@ Version 3.0 has significant changes from 2.x:
 
        $ pip install --upgrade esgprep
 
-2. **Install controlled vocabularies:**
+2. **Activate controlled vocabulary databases:**
 
    .. code-block:: bash
 
-       $ esgvoc install
+       $ esgvoc use cmip6@latest
 
 3. **Update your scripts:**
 
@@ -180,7 +180,7 @@ If your project isn't in the vocabulary:
    .. code-block:: bash
 
        $ pip install --upgrade esgvoc
-       $ esgvoc install
+       $ esgvoc use <project>@latest
 
 2. **Verify the project name** (check spelling, case)
 
@@ -345,11 +345,11 @@ Why is my project not recognized?
 
 **Solutions:**
 
-1. Initialize vocabularies (required after installation):
+1. Activate vocabulary databases (required after installation):
 
    .. code-block:: bash
 
-       $ esgvoc install
+       $ esgvoc use cmip6@latest
 
 2. Check spelling (case-sensitive):
 
@@ -366,7 +366,7 @@ Why is my project not recognized?
    .. code-block:: bash
 
        $ pip install --upgrade esgvoc
-       $ esgvoc install
+       $ esgvoc use <project>@latest
 
 4. List available projects:
 
@@ -403,7 +403,7 @@ What if I get facet validation errors?
    .. code-block:: bash
 
        $ pip install --upgrade esgvoc
-       $ esgvoc install
+       $ esgvoc use <project>@latest
 
 4. **Override temporarily** (use with caution):
 
@@ -448,7 +448,7 @@ What changed from version 2.x?
 Major changes in v3.0:
 
 1. **esgfetchini removed** - Configuration now handled by ``esgvoc``
-2. **esgvoc required** - Must run ``esgvoc install`` before first use
+2. **esgvoc required** - Must run ``esgvoc use <project>@latest`` before first use
 3. **Python 3.12+ required** - Older Python versions not supported
 4. **Command structure** - Some subcommands reorganized
 5. **Mapfile format** - Version separator changed from ``#`` to ``.v``
@@ -468,11 +468,11 @@ library:
     # Old way (v2.x) - NO LONGER NEEDED
     $ esgfetchini
 
-    # New way (v3.0)
-    $ esgvoc install
+    # New way (v3.0+)
+    $ esgvoc use cmip6@latest
 
 The ``esgvoc`` library manages controlled vocabularies and project
-definitions automatically.
+definitions automatically via pre-built versioned databases.
 
 
 Do my old scripts still work?
@@ -488,7 +488,7 @@ Most scripts will work with minor modifications:
        esgfetchini
 
        # Add this once (or in setup)
-       esgvoc install
+       esgvoc use cmip6@latest
 
 2. **Check command syntax:**
 

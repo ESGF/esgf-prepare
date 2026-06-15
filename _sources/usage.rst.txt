@@ -4,17 +4,17 @@
 Generic usage
 =============
 
-.. important:: **REQUIRED FIRST STEP:** Before using any ``esgdrs`` or ``esgmapfile`` commands, you must install the controlled vocabularies:
+.. important:: **REQUIRED FIRST STEP:** Before using any ``esgdrs`` or ``esgmapfile`` commands, you must activate the vocabulary databases:
 
    .. code-block:: bash
 
-      esgvoc install
+      esgvoc use cmip6@latest
       # OR if using uv:
-      uv run esgvoc install
+      uv run esgvoc use cmip6@latest
 
    Without this step, all commands will fail with: ``RuntimeError: universe connection is not initialized``
 
-   **Keep vocabularies updated:** Run ``esgvoc install`` regularly to update your local controlled vocabularies
+   **Keep vocabularies updated:** Run ``esgvoc use <project>@latest`` regularly to update your local controlled vocabularies
    with the latest changes from ESGF projects. Outdated vocabularies may cause validation failures.
 
    See :ref:`installation` for more details, or visit the

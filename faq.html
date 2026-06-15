@@ -243,8 +243,8 @@ install a newer Python.</p>
 </pre></div>
 </div>
 </li>
-<li><p><strong>Install controlled vocabularies:</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>install
+<li><p><strong>Activate controlled vocabulary databases:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 </pre></div>
 </div>
 </li>
@@ -320,7 +320,7 @@ controlled vocabularies. Common values:</p>
 <ol class="arabic">
 <li><p><strong>Check for updates:</strong></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>esgvoc
-$<span class="w"> </span>esgvoc<span class="w"> </span>install
+$<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>&lt;project&gt;@latest
 </pre></div>
 </div>
 </li>
@@ -477,8 +477,8 @@ ESGF publication and data integrity verification.</p>
 </div>
 <p><strong>Solutions:</strong></p>
 <ol class="arabic">
-<li><p>Initialize vocabularies (required after installation):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>install
+<li><p>Activate vocabulary databases (required after installation):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 </pre></div>
 </div>
 </li>
@@ -493,7 +493,7 @@ $<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </sp
 </li>
 <li><p>Update esgvoc:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>esgvoc
-$<span class="w"> </span>esgvoc<span class="w"> </span>install
+$<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>&lt;project&gt;@latest
 </pre></div>
 </div>
 </li>
@@ -524,7 +524,7 @@ $<span class="w"> </span>esgvoc<span class="w"> </span>install
 </li>
 <li><p><strong>If the value should be valid</strong>, update esgvoc:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>esgvoc
-$<span class="w"> </span>esgvoc<span class="w"> </span>install
+$<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>&lt;project&gt;@latest
 </pre></div>
 </div>
 </li>
@@ -567,7 +567,7 @@ $<span class="w"> </span>esgvoc<span class="w"> </span>install
 <p>Major changes in v3.0:</p>
 <ol class="arabic simple">
 <li><p><strong>esgfetchini removed</strong> - Configuration now handled by <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code></p></li>
-<li><p><strong>esgvoc required</strong> - Must run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> before first use</p></li>
+<li><p><strong>esgvoc required</strong> - Must run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span> <span class="pre">&lt;project&gt;&#64;latest</span></code> before first use</p></li>
 <li><p><strong>Python 3.12+ required</strong> - Older Python versions not supported</p></li>
 <li><p><strong>Command structure</strong> - Some subcommands reorganized</p></li>
 <li><p><strong>Mapfile format</strong> - Version separator changed from <code class="docutils literal notranslate"><span class="pre">#</span></code> to <code class="docutils literal notranslate"><span class="pre">.v</span></code></p></li>
@@ -582,12 +582,12 @@ library:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Old way (v2.x) - NO LONGER NEEDED</span>
 $<span class="w"> </span>esgfetchini
 
-<span class="c1"># New way (v3.0)</span>
-$<span class="w"> </span>esgvoc<span class="w"> </span>install
+<span class="c1"># New way (v3.0+)</span>
+$<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">esgvoc</span></code> library manages controlled vocabularies and project
-definitions automatically.</p>
+definitions automatically via pre-built versioned databases.</p>
 </section>
 <section id="do-my-old-scripts-still-work">
 <h3><a class="toc-backref" href="#id26" role="doc-backlink">Do my old scripts still work?</a><a class="headerlink" href="#do-my-old-scripts-still-work" title="Link to this heading"></a></h3>
@@ -598,7 +598,7 @@ definitions automatically.</p>
 esgfetchini
 
 <span class="c1"># Add this once (or in setup)</span>
-esgvoc<span class="w"> </span>install
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 </pre></div>
 </div>
 </li>

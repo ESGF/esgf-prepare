@@ -161,10 +161,12 @@
 
             <span class="c1"># Check dataset identifier is not None.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">identifier</span><span class="p">:</span>
-                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Process.__call__: Dataset identifier is None for source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-                <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Unable to build dataset identifier from DRS path: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
 
             <span class="c1"># Split identifier into name &amp; version.</span>
             <span class="c1"># For DRS structure, version is in the path, not the identifier.</span>

@@ -13,20 +13,25 @@ Installation from PyPI
 
    pip install esgprep
 
-.. important:: **REQUIRED:** After installing ``esgprep``, you must initialize the controlled vocabularies:
+.. important:: **REQUIRED:** After installing ``esgprep``, you must activate the controlled vocabulary databases for each project you need:
 
    .. code-block:: bash
 
-      esgvoc install
+      esgvoc use cmip6@latest
+      esgvoc use cordex-cmip6@latest
 
-   This command downloads ESGF project vocabularies from GitHub and builds local databases.
+   This command downloads pre-built vocabulary databases for the specified project.
    Without this step, ``esgdrs`` and ``esgmapfile`` commands will fail with an error.
 
-   The installation downloads approximately 100MB of data and may take a few minutes depending on your connection.
-
-   **IMPORTANT:** Run ``esgvoc install`` periodically to update your local vocabularies with the latest
+   **IMPORTANT:** Run ``esgvoc use <project>@latest`` periodically to update your local vocabularies with the latest
    controlled vocabulary changes from ESGF projects. Outdated vocabularies may cause validation errors
    or prevent recognition of newly added facets, experiments, or models.
+
+   To see available projects and installed versions:
+
+   .. code-block:: bash
+
+      esgvoc status
 
    For more information about controlled vocabularies management, see the
    `esgvoc documentation <https://esgf.github.io/esgf-vocab/index.html>`_.
@@ -47,11 +52,11 @@ Installation from GitHub
 
    pip install -e .
 
-3. Initialize the controlled vocabularies:
+3. Activate the controlled vocabulary databases for your projects:
 
 .. code-block:: bash
 
-   esgvoc install
+   esgvoc use cmip6@latest
 
 4. The ``esgdrs`` and ``esgmapfile`` command-lines are now available.
 
@@ -68,8 +73,8 @@ For a faster and more modern Python package manager, you can use `uv <https://gi
     # Create a virtual environment and install esgprep
     uv sync
 
-    # Initialize controlled vocabularies
-    uv run esgvoc install
+    # Activate controlled vocabulary databases
+    uv run esgvoc use cmip6@latest
 
 .. tip:: **Activate the virtual environment** to avoid prefixing every command with ``uv run``:
 
@@ -79,7 +84,7 @@ For a faster and more modern Python package manager, you can use `uv <https://gi
        source .venv/bin/activate
 
        # Now all commands work directly
-       esgvoc install
+       esgvoc use cmip6@latest
        esgdrs --version
        esgmapfile --version
 
@@ -101,7 +106,7 @@ Dependencies and requirements
 
 ``esgprep`` uses standard Python libraries and the following external packages:
 
- * `esgvoc <https://pypi.org/project/esgvoc/>`_ >= 2.2.1 - ESGF controlled vocabulary and configuration handler (replaces ESGConfigParser)
+ * `esgvoc <https://pypi.org/project/esgvoc/>`_ >= 4.1.1 - ESGF controlled vocabulary and configuration handler (replaces ESGConfigParser)
  * `fuzzywuzzy <https://pypi.org/project/fuzzywuzzy/>`_ >= 0.18.0 - Fuzzy string matching
  * `hurry.filesize <https://pypi.org/project/hurry.filesize/>`_ >= 0.9 - Human-readable file sizes
  * `lockfile <https://pypi.org/project/lockfile/>`_ >= 0.12.2 - File locking

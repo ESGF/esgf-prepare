@@ -4,17 +4,17 @@
 Generate mapfile for ESGF publication
 =====================================
 
-.. important:: **PREREQUISITE:** Before using ``esgmapfile``, you must install the controlled vocabularies:
+.. important:: **PREREQUISITE:** Before using ``esgmapfile``, you must activate the vocabulary databases:
 
    .. code-block:: bash
 
-      esgvoc install
+      esgvoc use cmip6@latest
       # OR if using uv:
-      uv run esgvoc install
+      uv run esgvoc use cmip6@latest
 
    Without this step, ``esgmapfile`` commands will fail with: ``RuntimeError: universe connection is not initialized``
 
-   **Keep vocabularies updated:** Run ``esgvoc install`` periodically to get the latest controlled vocabulary
+   **Keep vocabularies updated:** Run ``esgvoc use <project>@latest`` periodically to get the latest controlled vocabulary
    updates from ESGF projects, ensuring compatibility with new experiments, models, and facet values.
 
    See :ref:`installation` for more details, or visit the

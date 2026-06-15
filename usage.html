@@ -99,14 +99,14 @@
 <span id="usage"></span><h1>Generic usage<a class="headerlink" href="#generic-usage" title="Link to this heading"></a></h1>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p><strong>REQUIRED FIRST STEP:</strong> Before using any <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> or <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> commands, you must install the controlled vocabularies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>install
+<p><strong>REQUIRED FIRST STEP:</strong> Before using any <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> or <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> commands, you must activate the vocabulary databases:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 <span class="c1"># OR if using uv:</span>
-uv<span class="w"> </span>run<span class="w"> </span>esgvoc<span class="w"> </span>install
+uv<span class="w"> </span>run<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 </pre></div>
 </div>
 <p>Without this step, all commands will fail with: <code class="docutils literal notranslate"><span class="pre">RuntimeError:</span> <span class="pre">universe</span> <span class="pre">connection</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">initialized</span></code></p>
-<p><strong>Keep vocabularies updated:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> regularly to update your local controlled vocabularies
+<p><strong>Keep vocabularies updated:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span> <span class="pre">&lt;project&gt;&#64;latest</span></code> regularly to update your local controlled vocabularies
 with the latest changes from ESGF projects. Outdated vocabularies may cause validation failures.</p>
 <p>See <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> for more details, or visit the
 <a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a> for advanced vocabulary management.</p>

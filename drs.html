@@ -105,14 +105,14 @@ publication, placing files in the DRS directory structure, and to manage multipl
 in a way that minimises disk usage.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p><strong>PREREQUISITE:</strong> Before using <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code>, you must install the controlled vocabularies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>install
+<p><strong>PREREQUISITE:</strong> Before using <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code>, you must activate the vocabulary databases:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 <span class="c1"># OR if using uv:</span>
-uv<span class="w"> </span>run<span class="w"> </span>esgvoc<span class="w"> </span>install
+uv<span class="w"> </span>run<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 </pre></div>
 </div>
 <p>Without this step, <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> commands will fail with: <code class="docutils literal notranslate"><span class="pre">RuntimeError:</span> <span class="pre">universe</span> <span class="pre">connection</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">initialized</span></code></p>
-<p><strong>Keep vocabularies updated:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> periodically to get the latest controlled vocabulary
+<p><strong>Keep vocabularies updated:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span> <span class="pre">&lt;project&gt;&#64;latest</span></code> periodically to get the latest controlled vocabulary
 updates from ESGF projects, ensuring compatibility with new experiments, models, and facet values.</p>
 <p>See <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> for more details, or visit the
 <a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a> for advanced vocabulary management.</p>

@@ -140,15 +140,16 @@ esgmapfile<span class="w"> </span><span class="o">(</span>from<span class="w"> <
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p><strong>Initialize Controlled Vocabularies</strong></p>
-<p>Before using <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> for the first time, you must initialize the controlled vocabularies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>install
+<p><strong>Activate Controlled Vocabulary Databases</strong></p>
+<p>Before using <code class="docutils literal notranslate"><span class="pre">esgprep</span></code> for the first time, you must activate the vocabulary databases for your projects:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
+$<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>cordex-cmip6@latest
 </pre></div>
 </div>
-<p>This downloads ESGF project vocabularies and builds local databases. The installation may take a few minutes.</p>
+<p>This downloads pre-built vocabulary databases. You can see available projects with <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">status</span></code>.</p>
 <p><strong>What happens if you skip this?</strong> You’ll see an error like:
 <code class="docutils literal notranslate"><span class="pre">RuntimeError:</span> <span class="pre">universe</span> <span class="pre">connection</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">initialized</span></code></p>
-<p><strong>Keep your vocabularies updated:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> periodically to get the latest controlled
+<p><strong>Keep your vocabularies updated:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span> <span class="pre">&lt;project&gt;&#64;latest</span></code> periodically to get the latest controlled
 vocabulary updates from ESGF projects. This ensures you can work with newly added experiments, models,
 or updated facet values.</p>
 <p>For more details about controlled vocabularies, see the <a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a>.</p>

@@ -102,16 +102,20 @@
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p><strong>REQUIRED:</strong> After installing <code class="docutils literal notranslate"><span class="pre">esgprep</span></code>, you must initialize the controlled vocabularies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>install
+<p><strong>REQUIRED:</strong> After installing <code class="docutils literal notranslate"><span class="pre">esgprep</span></code>, you must activate the controlled vocabulary databases for each project you need:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
+esgvoc<span class="w"> </span>use<span class="w"> </span>cordex-cmip6@latest
 </pre></div>
 </div>
-<p>This command downloads ESGF project vocabularies from GitHub and builds local databases.
+<p>This command downloads pre-built vocabulary databases for the specified project.
 Without this step, <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> and <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> commands will fail with an error.</p>
-<p>The installation downloads approximately 100MB of data and may take a few minutes depending on your connection.</p>
-<p><strong>IMPORTANT:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">install</span></code> periodically to update your local vocabularies with the latest
+<p><strong>IMPORTANT:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span> <span class="pre">&lt;project&gt;&#64;latest</span></code> periodically to update your local vocabularies with the latest
 controlled vocabulary changes from ESGF projects. Outdated vocabularies may cause validation errors
 or prevent recognition of newly added facets, experiments, or models.</p>
+<p>To see available projects and installed versions:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>status
+</pre></div>
+</div>
 <p>For more information about controlled vocabularies management, see the
 <a class="reference external" href="https://esgf.github.io/esgf-vocab/index.html">esgvoc documentation</a>.</p>
 </div>
@@ -132,9 +136,9 @@ or prevent recognition of newly added facets, experiments, or models.</p>
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li><p>Initialize the controlled vocabularies:</p></li>
+<li><p>Activate the controlled vocabulary databases for your projects:</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>install
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
@@ -150,8 +154,8 @@ curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/in
 <span class="c1"># Create a virtual environment and install esgprep</span>
 uv<span class="w"> </span>sync
 
-<span class="c1"># Initialize controlled vocabularies</span>
-uv<span class="w"> </span>run<span class="w"> </span>esgvoc<span class="w"> </span>install
+<span class="c1"># Activate controlled vocabulary databases</span>
+uv<span class="w"> </span>run<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 </pre></div>
 </div>
 <div class="admonition tip">
@@ -161,7 +165,7 @@ uv<span class="w"> </span>run<span class="w"> </span>esgvoc<span class="w"> </sp
 <span class="nb">source</span><span class="w"> </span>.venv/bin/activate
 
 <span class="c1"># Now all commands work directly</span>
-esgvoc<span class="w"> </span>install
+esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 esgdrs<span class="w"> </span>--version
 esgmapfile<span class="w"> </span>--version
 
@@ -189,7 +193,7 @@ deactivate
 <p><code class="docutils literal notranslate"><span class="pre">esgprep</span></code> uses standard Python libraries and the following external packages:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><a class="reference external" href="https://pypi.org/project/esgvoc/">esgvoc</a> &gt;= 2.2.1 - ESGF controlled vocabulary and configuration handler (replaces ESGConfigParser)</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/esgvoc/">esgvoc</a> &gt;= 4.1.1 - ESGF controlled vocabulary and configuration handler (replaces ESGConfigParser)</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/fuzzywuzzy/">fuzzywuzzy</a> &gt;= 0.18.0 - Fuzzy string matching</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/hurry.filesize/">hurry.filesize</a> &gt;= 0.9 - Human-readable file sizes</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/lockfile/">lockfile</a> &gt;= 0.12.2 - File locking</p></li>
