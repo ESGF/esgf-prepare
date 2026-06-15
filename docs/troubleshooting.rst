@@ -38,10 +38,10 @@ The specified project is not in the installed controlled vocabularies.
    .. code-block:: bash
 
        # Correct
-       $> esgdrs list --project cmip7 /data/
+       $> esgdrs make list --project cmip7 /data/
 
        # Wrong (uppercase)
-       $> esgdrs list --project CMIP7 /data/
+       $> esgdrs make list --project CMIP7 /data/
 
 3. Update esgvoc to get new projects:
 
@@ -115,7 +115,7 @@ The NetCDF file contains a facet value not recognized by the controlled vocabula
 
    .. code-block:: bash
 
-       $> esgdrs list --project cmip7 \
+       $> esgdrs make list --project cmip7 \
                       --set-value experiment=historical \
                       /data/
 
@@ -153,7 +153,7 @@ The NetCDF file is missing required global attributes for DRS construction.
 
    .. code-block:: bash
 
-       $> esgdrs list --project cmip7 \
+       $> esgdrs make list --project cmip7 \
                       --set-value mip_era=CMIP7 \
                       --set-value activity=CMIP \
                       /data/
@@ -183,7 +183,7 @@ Insufficient permissions to write to the target directory.
 
    .. code-block:: bash
 
-       $> esgdrs upgrade --project cmip7 --root ~/my_data /incoming/
+       $> esgdrs make upgrade --project cmip7 --root ~/my_data /incoming/
 
 3. Create the directory with proper permissions:
 
@@ -211,7 +211,7 @@ The filesystem doesn't support symlinks (e.g., some network filesystems, Windows
 
    .. code-block:: bash
 
-       $> esgdrs upgrade --project cmip7 --root /data --copy /incoming/
+       $> esgdrs make upgrade --project cmip7 --root /data --copy /incoming/
 
 2. Use a filesystem that supports symlinks (ext4, xfs, etc.)
 
@@ -289,16 +289,16 @@ Slow file scanning
    .. code-block:: bash
 
        # Instead of scanning all data
-       $> esgdrs list --project cmip7 /data/
+       $> esgdrs make list --project cmip7 /data/
 
        # Scan specific subdirectory
-       $> esgdrs list --project cmip7 /data/MIP-DRS7/CMIP7/CMIP/IPSL/
+       $> esgdrs make list --project cmip7 /data/MIP-DRS7/CMIP7/CMIP/IPSL/
 
 2. Use include/exclude filters:
 
    .. code-block:: bash
 
-       $> esgdrs list --project cmip7 \
+       $> esgdrs make list --project cmip7 \
                       --include-file '^.*tas.*\.nc$' \
                       /data/
 
@@ -367,7 +367,7 @@ A dataset with the same ID already exists in the target directory.
 
    .. code-block:: bash
 
-       $> esgdrs upgrade --project cmip7 \
+       $> esgdrs make upgrade --project cmip7 \
                          --root /data \
                          --upgrade-from-latest \
                          /incoming/
@@ -400,7 +400,7 @@ Original files in ``files/`` directory were moved or deleted.
 
    .. code-block:: bash
 
-       $> esgdrs upgrade --project cmip7 --root /data /path/to/original/files/
+       $> esgdrs make upgrade --project cmip7 --root /data /path/to/original/files/
 
 3. Update the ``latest`` symlink:
 
@@ -419,7 +419,7 @@ Enable verbose output for debugging:
 
 .. code-block:: bash
 
-    $> esgdrs list --project cmip7 --debug /data/
+    $> esgdrs make list --project cmip7 --debug /data/
 
 Check esgvoc status
 ^^^^^^^^^^^^^^^^^^^
