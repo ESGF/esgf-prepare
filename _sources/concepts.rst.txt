@@ -293,7 +293,7 @@ They serve as the input to the ESGF publication gateway.
 
 .. code-block:: bash
 
-    $> esgmapfile make --project cmip7 /data/MIP-DRS7/
+    $> esgmapfile make --project cmip7 --directory /data/MIP-DRS7/
 
 **Output location:**
 By default, mapfiles are written to the current directory with naming pattern:
@@ -356,7 +356,7 @@ The ``esgvoc`` library provides vocabulary access for ``esgprep``.
 
 .. code-block:: text
 
-    $> esgdrs list --project cmip7 /data/
+    $> esgdrs make list --project cmip7 /data/
     ERROR: Invalid value 'invalid_experiment' for facet 'experiment'
     Valid values: historical, 1pctCO2-bgc, esm-flat10, ...
 

@@ -134,10 +134,10 @@ data.</p>
 more robust for long-term data integrity verification.</p>
 <p>For <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code>, you can specify the checksum algorithm using the <code class="docutils literal notranslate"><span class="pre">--checksum-type</span></code> option:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standard algorithm (legacy, for compatibility)</span>
-$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--checksum-type<span class="w"> </span>sha256<span class="w"> </span>/PATH/TO/SCAN/
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--checksum-type<span class="w"> </span>sha256<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/
 
 <span class="c1"># Multihash algorithm (recommended for new data)</span>
-$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--checksum-type<span class="w"> </span>sha2-256<span class="w"> </span>/PATH/TO/SCAN/
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--checksum-type<span class="w"> </span>sha2-256<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/
 </pre></div>
 </div>
 <p>Supported algorithms include:</p>

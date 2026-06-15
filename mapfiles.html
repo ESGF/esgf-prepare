@@ -173,8 +173,8 @@ hashlib algorithms and multihash algorithms using the <code class="docutils lite
 </ul>
 </dd>
 </dl>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--checksum-type<span class="w"> </span>sha256
-$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--checksum-type<span class="w"> </span>sha2-256
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--checksum-type<span class="w"> </span>sha256
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--checksum-type<span class="w"> </span>sha2-256
 </pre></div>
 </div>
 <div class="admonition note">
@@ -187,7 +187,7 @@ ESGF data publication.</p>
 <section id="mapfile-without-files-checksums">
 <h2>Mapfile without files checksums<a class="headerlink" href="#mapfile-without-files-checksums" title="Link to this heading"></a></h2>
 <p>Because checksumming can be time consuming, <code class="docutils literal notranslate"><span class="pre">--no-checksum</span></code> allows you to skip checksum computation in your mapfile(s).</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--no-checksum
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--no-checksum
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -199,7 +199,7 @@ ESGF data publication.</p>
 <h2>Mapfile with pre-calculated checksums<a class="headerlink" href="#mapfile-with-pre-calculated-checksums" title="Link to this heading"></a></h2>
 <p>If your file checksums have been already calculated, you can submit a file to <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> with the checksums
 list. This checksum file must have the same format as the output of the UNIX command-lines “*sum”.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--checksums-from<span class="w"> </span>/PATH/TO/CHECKSUMS/FILE
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--checksums-from<span class="w"> </span>/PATH/TO/CHECKSUMS/FILE
 </pre></div>
 </div>
 <div class="admonition note">
@@ -210,7 +210,7 @@ match the format in the checksums file.</p>
 </section>
 <section id="mapfile-without-drs-versions">
 <h2>Mapfile without DRS versions<a class="headerlink" href="#mapfile-without-drs-versions" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--no-version
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--no-version
 </pre></div>
 </div>
 </section>
@@ -221,9 +221,9 @@ can be specified for the output mapfile(s) name using several tokens. Substrings
 <code class="docutils literal notranslate"><span class="pre">{job_id}</span></code> or <code class="docutils literal notranslate"><span class="pre">{date}</span></code> (in YYYYDDMM) will be substituted where found. If <code class="docutils literal notranslate"><span class="pre">{dataset_id}</span></code> is not present in mapfile
 name, then all datasets will be written to a single mapfile, overriding the default behavior of producing ONE mapfile
 PER dataset.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--mapfile<span class="w"> </span><span class="o">{</span>dataset_id<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
-$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--mapfile<span class="w"> </span><span class="o">{</span>date<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
-$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--mapfile<span class="w"> </span>MY_MAPFILE.<span class="o">{</span>version<span class="o">}</span>.<span class="o">{</span>date<span class="o">}</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--mapfile<span class="w"> </span><span class="o">{</span>dataset_id<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--mapfile<span class="w"> </span><span class="o">{</span>date<span class="o">}</span>.<span class="o">{</span>job_id<span class="o">}</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--mapfile<span class="w"> </span>MY_MAPFILE.<span class="o">{</span>version<span class="o">}</span>.<span class="o">{</span>date<span class="o">}</span>
 </pre></div>
 </div>
 </section>
@@ -235,30 +235,30 @@ changed by submitting an output directory for your mapfiles.</p>
 file(s) (see <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">Configuration</span></a>). In the same way as the <code class="docutils literal notranslate"><span class="pre">directory_format</span></code> it defines a tree depending on the
 facets. Each mapfile is then written into the corresponding output directory. This <code class="docutils literal notranslate"><span class="pre">mapfile_drs</span></code> directory structure
 will be added to the output directory if submitted.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--outdir<span class="w"> </span>/PATH/TO/MY_MAPFILES/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--outdir<span class="w"> </span>/PATH/TO/MY_MAPFILES/
 </pre></div>
 </div>
 <p>The output directory is cleaned up prior to mapfile process to avoid uncompleted mapfiles. In the case of several
 <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> instances run with the same output directory it is recommended to disable the cleanup:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--no-cleanup
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--no-cleanup
 </pre></div>
 </div>
 </section>
 <section id="walking-through-latest-directories-only">
 <h2>Walking through <em>latest</em> directories only<a class="headerlink" href="#walking-through-latest-directories-only" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--latest-symlink
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--latest-symlink
 </pre></div>
 </div>
 </section>
 <section id="walking-through-a-particular-version-only">
 <h2>Walking through a particular version only<a class="headerlink" href="#walking-through-a-particular-version-only" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--version<span class="w"> </span>VERSION
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--version<span class="w"> </span>VERSION
 </pre></div>
 </div>
 </section>
 <section id="walking-through-all-versions">
 <h2>Walking through all versions<a class="headerlink" href="#walking-through-all-versions" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--all-versions
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--all-versions
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -268,7 +268,7 @@ will be added to the output directory if submitted.</p>
 </section>
 <section id="add-technical-notes">
 <h2>Add technical notes<a class="headerlink" href="#add-technical-notes" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--tech-notes-url<span class="w"> </span>URL<span class="w"> </span>--tech-notes-title<span class="w"> </span>TITLE
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--tech-notes-url<span class="w"> </span>URL<span class="w"> </span>--tech-notes-title<span class="w"> </span>TITLE
 </pre></div>
 </div>
 </section>

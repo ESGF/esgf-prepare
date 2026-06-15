@@ -117,8 +117,8 @@ Vocabulary checking is now automatic when using ``esgdrs`` or ``esgmapfile``:
 .. code-block:: bash
 
     # Vocabulary is automatically validated during processing
-    $> esgdrs list --project cmip6 /path/to/data/
-    $> esgmapfile make --project cmip6 /path/to/data/
+    $> esgdrs make list --project cmip6 /path/to/data/
+    $> esgmapfile make --project cmip6 --directory /path/to/data/
 
 **What happens behind the scenes:**
 

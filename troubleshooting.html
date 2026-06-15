@@ -183,10 +183,10 @@ The specified project is not in the installed controlled vocabularies.</p>
 </li>
 <li><p>Verify spelling (project names are case-sensitive):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Correct</span>
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/data/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/data/
 
 <span class="c1"># Wrong (uppercase)</span>
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>CMIP7<span class="w"> </span>/data/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>CMIP7<span class="w"> </span>/data/
 </pre></div>
 </div>
 </li>
@@ -247,7 +247,7 @@ The NetCDF file contains a facet value not recognized by the controlled vocabula
 </div>
 </li>
 <li><p>Override with a valid value (if appropriate):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
 <span class="w">               </span>--set-value<span class="w"> </span><span class="nv">experiment</span><span class="o">=</span>historical<span class="w"> </span><span class="se">\</span>
 <span class="w">               </span>/data/
 </pre></div>
@@ -281,7 +281,7 @@ The NetCDF file is missing required global attributes for DRS construction.</p>
 </ul>
 </li>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">--set-value</span></code> to provide missing attributes:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
 <span class="w">               </span>--set-value<span class="w"> </span><span class="nv">mip_era</span><span class="o">=</span>CMIP7<span class="w"> </span><span class="se">\</span>
 <span class="w">               </span>--set-value<span class="w"> </span><span class="nv">activity</span><span class="o">=</span>CMIP<span class="w"> </span><span class="se">\</span>
 <span class="w">               </span>/data/
@@ -306,7 +306,7 @@ Insufficient permissions to write to the target directory.</p>
 </div>
 </li>
 <li><p>Use a directory where you have write access:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>~/my_data<span class="w"> </span>/incoming/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>~/my_data<span class="w"> </span>/incoming/
 </pre></div>
 </div>
 </li>
@@ -329,7 +329,7 @@ The filesystem doesn’t support symlinks (e.g., some network filesystems, Windo
 <p><strong>Solutions:</strong></p>
 <ol class="arabic">
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">--copy</span></code> instead of <code class="docutils literal notranslate"><span class="pre">--link</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>/data<span class="w"> </span>--copy<span class="w"> </span>/incoming/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>/data<span class="w"> </span>--copy<span class="w"> </span>/incoming/
 </pre></div>
 </div>
 </li>
@@ -397,15 +397,15 @@ Process uses excessive RAM or gets killed.</p>
 <ol class="arabic">
 <li><p>Be more specific with paths:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instead of scanning all data</span>
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/data/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/data/
 
 <span class="c1"># Scan specific subdirectory</span>
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/data/MIP-DRS7/CMIP7/CMIP/IPSL/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/data/MIP-DRS7/CMIP7/CMIP/IPSL/
 </pre></div>
 </div>
 </li>
 <li><p>Use include/exclude filters:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
 <span class="w">               </span>--include-file<span class="w"> </span><span class="s1">&#39;^.*tas.*\.nc$&#39;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">               </span>/data/
 </pre></div>
@@ -459,7 +459,7 @@ A dataset with the same ID already exists in the target directory.</p>
 <p><strong>Solutions:</strong></p>
 <ol class="arabic">
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">--upgrade-from-latest</span></code> to create a new version:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
 <span class="w">                  </span>--root<span class="w"> </span>/data<span class="w"> </span><span class="se">\</span>
 <span class="w">                  </span>--upgrade-from-latest<span class="w"> </span><span class="se">\</span>
 <span class="w">                  </span>/incoming/
@@ -487,7 +487,7 @@ Original files in <code class="docutils literal notranslate"><span class="pre">f
 </div>
 </li>
 <li><p>Recreate the DRS structure from original files:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>/data<span class="w"> </span>/path/to/original/files/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>/data<span class="w"> </span>/path/to/original/files/
 </pre></div>
 </div>
 </li>
@@ -504,7 +504,7 @@ Original files in <code class="docutils literal notranslate"><span class="pre">f
 <section id="debug-mode">
 <h3><a class="toc-backref" href="#id20" role="doc-backlink">Debug mode</a><a class="headerlink" href="#debug-mode" title="Link to this heading"></a></h3>
 <p>Enable verbose output for debugging:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--debug<span class="w"> </span>/data/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--debug<span class="w"> </span>/data/
 </pre></div>
 </div>
 </section>

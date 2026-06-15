@@ -36,7 +36,7 @@ First, check what datasets will be created:
 
 .. code-block:: bash
 
-    $> esgdrs list --project cmip7 /incoming/
+    $> esgdrs make list --project cmip7 /incoming/
 
 Expected output:
 
@@ -58,7 +58,7 @@ See how files will be organized:
 
 .. code-block:: bash
 
-    $> esgdrs tree --project cmip7 /incoming/
+    $> esgdrs make tree --project cmip7 /incoming/
 
 Expected output:
 
@@ -93,7 +93,7 @@ Create the directory structure using symlinks (recommended to save disk space):
 
 .. code-block:: bash
 
-    $> esgdrs upgrade --project cmip7 --root /data --link /incoming/
+    $> esgdrs make upgrade --project cmip7 --root /data --link /incoming/
 
 .. note::
    Use ``--link`` to create symlinks instead of copying files. This saves disk space
@@ -106,7 +106,7 @@ Create mapfiles for ESGF publication:
 
 .. code-block:: bash
 
-    $> esgmapfile make --project cmip7 /data/MIP-DRS7/
+    $> esgmapfile make --project cmip7 --directory /data/MIP-DRS7/
 
 Output files:
 
@@ -145,7 +145,7 @@ Step 1: List datasets
 
 .. code-block:: bash
 
-    $> esgdrs list --project cordex-cmip6 /incoming/
+    $> esgdrs make list --project cordex-cmip6 /incoming/
 
 Expected output:
 
@@ -163,17 +163,17 @@ Step 2: Preview and apply DRS
 .. code-block:: bash
 
     # Preview structure
-    $> esgdrs tree --project cordex-cmip6 /incoming/
+    $> esgdrs make tree --project cordex-cmip6 /incoming/
 
     # Apply structure
-    $> esgdrs upgrade --project cordex-cmip6 --root /data --link /incoming/
+    $> esgdrs make upgrade --project cordex-cmip6 --root /data --link /incoming/
 
 Step 3: Generate mapfiles
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
-    $> esgmapfile make --project cordex-cmip6 /data/CORDEX/
+    $> esgmapfile make --project cordex-cmip6 --directory /data/CORDEX/
 
 
 Key Differences Between Projects
@@ -222,7 +222,7 @@ This option reuses unchanged files from the previous version:
 
 .. code-block:: bash
 
-    $> esgdrs upgrade --project cmip7 \
+    $> esgdrs make upgrade --project cmip7 \
                       --root /data \
                       --link \
                       --upgrade-from-latest \
@@ -251,7 +251,7 @@ Generate mapfiles for the new version:
 
 .. code-block:: bash
 
-    $> esgmapfile make --project cmip7 --latest /data/MIP-DRS7/
+    $> esgmapfile make --project cmip7 --latest-symlink --directory /data/MIP-DRS7/
 
 
 Testing Before Production
@@ -268,15 +268,15 @@ Always test your workflow before modifying production data:
     cp /incoming/tas_*.nc /tmp/esgprep_test/
 
     # Test the workflow
-    $> esgdrs list --project cmip7 /tmp/esgprep_test/
-    $> esgdrs tree --project cmip7 /tmp/esgprep_test/
-    $> esgdrs upgrade --project cmip7 --root /tmp/test_output --link /tmp/esgprep_test/
+    $> esgdrs make list --project cmip7 /tmp/esgprep_test/
+    $> esgdrs make tree --project cmip7 /tmp/esgprep_test/
+    $> esgdrs make upgrade --project cmip7 --root /tmp/test_output --link /tmp/esgprep_test/
 
     # Verify structure
     tree /tmp/test_output/
 
     # Generate test mapfiles
-    $> esgmapfile make --project cmip7 /tmp/test_output/
+    $> esgmapfile make --project cmip7 --directory /tmp/test_output/
 
     # Review mapfiles
     cat *.map
@@ -303,7 +303,7 @@ For large files, pre-calculating checksums can save time:
     # Use pre-calculated checksums
     $> esgmapfile make --project cmip7 \
                        --checksums-from checksums.txt \
-                       /data/MIP-DRS7/
+                       --directory /data/MIP-DRS7/
 
 Optimize multiprocessing
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -315,7 +315,7 @@ Adjust the number of processes based on your system:
     # Use 8 processes (default is 4)
     $> esgmapfile make --project cmip7 \
                        --max-processes 8 \
-                       /data/MIP-DRS7/
+                       --directory /data/MIP-DRS7/
 
 .. tip::
    For I/O-bound operations (reading many files), more processes may not help.

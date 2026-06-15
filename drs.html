@@ -151,12 +151,12 @@ lists each dataset with:</p>
 <li><p>the number of related incoming files,</p></li>
 <li><p>the total size of the upgraded dataset (i.e., the sum of all incoming files related to this upgrade).</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> doesn’t have filter arguments as <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code>. It only support non-hidden netCDF files. Nevertheless,
 to ignore some files your can submit a list of files to ignore during data discovery:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--ignore-from-incoming<span class="w"> </span>/PATH/TO/LIST/OF/FILES/TO/IGNORE
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--ignore-from-incoming<span class="w"> </span>/PATH/TO/LIST/OF/FILES/TO/IGNORE
 </pre></div>
 </div>
 <div class="admonition note">
@@ -170,8 +170,8 @@ to rescan a lot of files.</p>
 <p>In some cases, a DRS facet value cannot be properly deduces from the above sources. To solve this issue, a facet value
 can be set for the whole scan. By duplicating the flag several facet value can be enforced. If the same facet key is
 used, only the last value will be considered.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY</span><span class="o">=</span>VALUE
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY1</span><span class="o">=</span>VALUE1<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY2</span><span class="o">=</span>VALUE2
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY</span><span class="o">=</span>VALUE
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY1</span><span class="o">=</span>VALUE1<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY2</span><span class="o">=</span>VALUE2
 </pre></div>
 </div>
 <div class="admonition note">
@@ -185,8 +185,8 @@ use <code class="docutils literal notranslate"><span class="pre">--set-value</sp
 <h2>Enforce a facet mapping<a class="headerlink" href="#enforce-a-facet-mapping" title="Link to this heading"></a></h2>
 <p>Based on the same schema of the <code class="docutils literal notranslate"><span class="pre">--set-value</span></code> argument, the mapping between a (list of) facet key and a (list of)
 particular NetCDF attribute can be enforced for the whole scan.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-key<span class="w"> </span><span class="nv">FACET_KEY</span><span class="o">=</span>ATTRIBUTE
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-key<span class="w"> </span><span class="nv">FACET_KEY1</span><span class="o">=</span>ATTRIBUTE1<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY2</span><span class="o">=</span>ATTRIBUTE2
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-key<span class="w"> </span><span class="nv">FACET_KEY</span><span class="o">=</span>ATTRIBUTE
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--set-key<span class="w"> </span><span class="nv">FACET_KEY1</span><span class="o">=</span>ATTRIBUTE1<span class="w"> </span>--set-value<span class="w"> </span><span class="nv">FACET_KEY2</span><span class="o">=</span>ATTRIBUTE2
 </pre></div>
 </div>
 <div class="admonition note">
@@ -198,7 +198,7 @@ $&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> 
 <section id="set-up-the-version-upgrade">
 <h2>Set up the version upgrade<a class="headerlink" href="#set-up-the-version-upgrade" title="Link to this heading"></a></h2>
 <p>The upgraded version can be set using <code class="docutils literal notranslate"><span class="pre">--version</span> <span class="pre">YYYYMMDD</span></code> instead of the current date (the default).</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--version<span class="w"> </span>YYYYMMDD
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--version<span class="w"> </span>YYYYMMDD
 </pre></div>
 </div>
 </section>
@@ -209,7 +209,7 @@ $&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> 
 <span class="pre">versions</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">&quot;latest&quot;</span> <span class="pre">symlinks</span> <span class="pre">are</span> <span class="pre">displayed</span> <span class="pre">as</span> <span class="pre">it</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">generated</span> <span class="pre">on</span> <span class="pre">your</span> <span class="pre">filesystem.</span> <span class="pre">Indeed,</span> <span class="pre">in</span> <span class="pre">order</span> <span class="pre">to</span> <span class="pre">save</span>
 <span class="pre">disk</span> <span class="pre">space,</span> <span class="pre">the</span> <span class="pre">scanned</span> <span class="pre">files</span> <span class="pre">are</span> <span class="pre">moved</span> <span class="pre">into</span> <span class="pre">``files/dYYYYMMDD</span></code> folders. The <code class="docutils literal notranslate"><span class="pre">vYYYYMMDD</span></code> has a
 symbolic links skeleton that avoid to duplicate files between two versions.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -221,7 +221,7 @@ choose another utf-8 font in your console setup.</p>
 <section id="set-up-a-root-directory">
 <h2>Set up a root directory<a class="headerlink" href="#set-up-a-root-directory" title="Link to this heading"></a></h2>
 <p>By default, the DRS tree is built from your current directory. This can be changed by submitting a root path.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--root<span class="w"> </span>/PATH/TO/MY_ROOT
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--root<span class="w"> </span>/PATH/TO/MY_ROOT
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -235,11 +235,11 @@ including the project.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">todo</span></code> action allows to check deeper which Unix commands would be run on the filesystem in order to upgrade
 the datasets versions. It can be seen as a dry-run to check which unix commands should be apply to build the expected
 DRS tree. At this step, no file are moved or copy to the final DRS.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
 </pre></div>
 </div>
 <p>Those Unix command-lines can also be written into a file for further process:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--commands-file<span class="w"> </span>/PATH/TO/COMMANDS.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--commands-file<span class="w"> </span>/PATH/TO/COMMANDS.txt
 </pre></div>
 </div>
 <div class="admonition note">
@@ -248,7 +248,7 @@ DRS tree. At this step, no file are moved or copy to the final DRS.</p>
 </div>
 <p>By default another <code class="docutils literal notranslate"><span class="pre">esgdrs</span> <span class="pre">todo</span></code> run will append new command-lines to the file (if exists).
 To overwrite existing file:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--commands-file<span class="w"> </span>/PATH/TO/COMMANDS.txt<span class="w"> </span>--overwrite-commands-file
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--commands-file<span class="w"> </span>/PATH/TO/COMMANDS.txt<span class="w"> </span>--overwrite-commands-file
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -264,9 +264,9 @@ Default is to move the files from the incoming path to the root directory. Use <
 <code class="docutils literal notranslate"><span class="pre">--link</span></code> to make hard links or <code class="docutils literal notranslate"><span class="pre">--symlink</span></code> to make symbolic links from the incoming path. We recommend to use
 <code class="docutils literal notranslate"><span class="pre">--link</span></code> and remove the incoming directory after DRS checking. This doesn’t affect the symbolic link skeleton used
 for the dataset versioning.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--copy
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--link
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--symlink
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--copy
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--link
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>todo<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--symlink
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -280,7 +280,7 @@ If not, the incoming files are automatically scan again.</p>
 <h2>Run the DRS upgrade<a class="headerlink" href="#run-the-drs-upgrade" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">upgrade</span></code> action automatically places your MIP-compliant netCDF files into the DRS directory structure.
 It applies the Unix commands listed by <code class="docutils literal notranslate"><span class="pre">todo</span></code> action to generated the DRS tree displayed by <code class="docutils literal notranslate"><span class="pre">tree</span></code> action.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
 </pre></div>
 </div>
 </section>
@@ -297,13 +297,13 @@ incoming directory (or directories) only the files which are modified in the new
 incoming is considered to be the same as in the previous version, and a symlink is created accordingly.</p>
 </div></blockquote>
 <p>The option <code class="docutils literal notranslate"><span class="pre">--upgrade-from-latest</span></code> allows you to toggle to method <em>(b)</em>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--upgrade-from-latest
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--upgrade-from-latest
 </pre></div>
 </div>
 <p>By construction, method <em>(b)</em> might not support to simply delete a file between versions, rather than modifying it.
 The associated flag <code class="docutils literal notranslate"><span class="pre">--ignore-from-latest</span></code> allows you to submit a list of filenames to ignore during the version
 upgrade (i.e., files to be deleted between versions).</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--ignore-from-latest<span class="w"> </span>/PATH/TO/FILENAMES.TXT
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--ignore-from-latest<span class="w"> </span>/PATH/TO/FILENAMES.TXT
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -322,7 +322,7 @@ the upgrade.</p>
 then read to skip data scan when other actions (i.e., <code class="docutils literal notranslate"><span class="pre">tree</span></code>, <code class="docutils literal notranslate"><span class="pre">todo</span></code> or <code class="docutils literal notranslate"><span class="pre">upgrad</span></code>) are invoked, except if key
 options have been changed from the previous <code class="docutils literal notranslate"><span class="pre">list</span></code> call. In such a case the scan is redone automatically.
 To force the rescan in any case:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--rescan
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--rescan
 </pre></div>
 </div>
 </section>

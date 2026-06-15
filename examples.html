@@ -171,7 +171,7 @@ climate model experiments. This example demonstrates preparing CMIP7 data for ES
 <section id="step-1-list-datasets">
 <h3><a class="toc-backref" href="#id6" role="doc-backlink">Step 1: List datasets</a><a class="headerlink" href="#step-1-list-datasets" title="Link to this heading"></a></h3>
 <p>First, check what datasets will be created:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/incoming/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/incoming/
 </pre></div>
 </div>
 <p>Expected output:</p>
@@ -189,7 +189,7 @@ Files: 1, Size: 1.8 GB, Version: v20250120
 <section id="step-2-preview-the-drs-structure">
 <h3><a class="toc-backref" href="#id7" role="doc-backlink">Step 2: Preview the DRS structure</a><a class="headerlink" href="#step-2-preview-the-drs-structure" title="Link to this heading"></a></h3>
 <p>See how files will be organized:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/incoming/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/incoming/
 </pre></div>
 </div>
 <p>Expected output:</p>
@@ -220,7 +220,7 @@ Files: 1, Size: 1.8 GB, Version: v20250120
 <section id="step-3-apply-the-drs-structure">
 <h3><a class="toc-backref" href="#id8" role="doc-backlink">Step 3: Apply the DRS structure</a><a class="headerlink" href="#step-3-apply-the-drs-structure" title="Link to this heading"></a></h3>
 <p>Create the directory structure using symlinks (recommended to save disk space):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>/data<span class="w"> </span>--link<span class="w"> </span>/incoming/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>/data<span class="w"> </span>--link<span class="w"> </span>/incoming/
 </pre></div>
 </div>
 <div class="admonition note">
@@ -232,7 +232,7 @@ and allows the original files to remain in place.</p>
 <section id="step-4-generate-mapfiles">
 <h3><a class="toc-backref" href="#id9" role="doc-backlink">Step 4: Generate mapfiles</a><a class="headerlink" href="#step-4-generate-mapfiles" title="Link to this heading"></a></h3>
 <p>Create mapfiles for ESGF publication:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/data/MIP-DRS7/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--directory<span class="w"> </span>/data/MIP-DRS7/
 </pre></div>
 </div>
 <p>Output files:</p>
@@ -262,7 +262,7 @@ regional climate projections. This example shows preparing CORDEX-CMIP6 data.</p
 </section>
 <section id="id2">
 <h3><a class="toc-backref" href="#id12" role="doc-backlink">Step 1: List datasets</a><a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>/incoming/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>/incoming/
 </pre></div>
 </div>
 <p>Expected output:</p>
@@ -277,16 +277,16 @@ Files: 1, Size: 380 MB, Version: v20250120
 <section id="step-2-preview-and-apply-drs">
 <h3><a class="toc-backref" href="#id13" role="doc-backlink">Step 2: Preview and apply DRS</a><a class="headerlink" href="#step-2-preview-and-apply-drs" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Preview structure</span>
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>/incoming/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>/incoming/
 
 <span class="c1"># Apply structure</span>
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>--root<span class="w"> </span>/data<span class="w"> </span>--link<span class="w"> </span>/incoming/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>--root<span class="w"> </span>/data<span class="w"> </span>--link<span class="w"> </span>/incoming/
 </pre></div>
 </div>
 </section>
 <section id="step-3-generate-mapfiles">
 <h3><a class="toc-backref" href="#id14" role="doc-backlink">Step 3: Generate mapfiles</a><a class="headerlink" href="#step-3-generate-mapfiles" title="Link to this heading"></a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>/data/CORDEX/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cordex-cmip6<span class="w"> </span>--directory<span class="w"> </span>/data/CORDEX/
 </pre></div>
 </div>
 </section>
@@ -339,7 +339,7 @@ $&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w
 <section id="using-upgrade-from-latest">
 <h3><a class="toc-backref" href="#id18" role="doc-backlink">Using –upgrade-from-latest</a><a class="headerlink" href="#using-upgrade-from-latest" title="Link to this heading"></a></h3>
 <p>This option reuses unchanged files from the previous version:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
 <span class="w">                  </span>--root<span class="w"> </span>/data<span class="w"> </span><span class="se">\</span>
 <span class="w">                  </span>--link<span class="w"> </span><span class="se">\</span>
 <span class="w">                  </span>--upgrade-from-latest<span class="w"> </span><span class="se">\</span>
@@ -364,7 +364,7 @@ $&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w
 </pre></div>
 </div>
 <p>Generate mapfiles for the new version:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--latest<span class="w"> </span>/data/MIP-DRS7/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--latest-symlink<span class="w"> </span>--directory<span class="w"> </span>/data/MIP-DRS7/
 </pre></div>
 </div>
 </section>
@@ -379,15 +379,15 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>/tmp/esgprep_test
 cp<span class="w"> </span>/incoming/tas_*.nc<span class="w"> </span>/tmp/esgprep_test/
 
 <span class="c1"># Test the workflow</span>
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/tmp/esgprep_test/
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/tmp/esgprep_test/
-$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>/tmp/test_output<span class="w"> </span>--link<span class="w"> </span>/tmp/esgprep_test/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/tmp/esgprep_test/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>tree<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/tmp/esgprep_test/
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--root<span class="w"> </span>/tmp/test_output<span class="w"> </span>--link<span class="w"> </span>/tmp/esgprep_test/
 
 <span class="c1"># Verify structure</span>
 tree<span class="w"> </span>/tmp/test_output/
 
 <span class="c1"># Generate test mapfiles</span>
-$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>/tmp/test_output/
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span>--directory<span class="w"> </span>/tmp/test_output/
 
 <span class="c1"># Review mapfiles</span>
 cat<span class="w"> </span>*.map
@@ -409,7 +409,7 @@ find<span class="w"> </span>/incoming<span class="w"> </span>-name<span class="w
 <span class="c1"># Use pre-calculated checksums</span>
 $&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
 <span class="w">                   </span>--checksums-from<span class="w"> </span>checksums.txt<span class="w"> </span><span class="se">\</span>
-<span class="w">                   </span>/data/MIP-DRS7/
+<span class="w">                   </span>--directory<span class="w"> </span>/data/MIP-DRS7/
 </pre></div>
 </div>
 </section>
@@ -419,7 +419,7 @@ $&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use 8 processes (default is 4)</span>
 $&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
 <span class="w">                   </span>--max-processes<span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="se">\</span>
-<span class="w">                   </span>/data/MIP-DRS7/
+<span class="w">                   </span>--directory<span class="w"> </span>/data/MIP-DRS7/
 </pre></div>
 </div>
 <div class="admonition tip">

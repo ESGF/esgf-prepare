@@ -73,8 +73,8 @@ hashlib algorithms and multihash algorithms using the ``--checksum-type`` option
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --checksum-type sha256
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --checksum-type sha2-256
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --checksum-type sha256
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --checksum-type sha2-256
 
 .. note:: Multihash is a self-describing hash format that includes the algorithm identifier and hash length in the
     output. This makes it more robust for long-term data integrity verification and is the recommended format for
@@ -87,7 +87,7 @@ Because checksumming can be time consuming, ``--no-checksum`` allows you to skip
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-checksum
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --no-checksum
 
 .. warning:: Checksums are strongly recommended for data integrity verification and ESGF publication requirements.
 
@@ -99,7 +99,7 @@ list. This checksum file must have the same format as the output of the UNIX com
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --checksums-from /PATH/TO/CHECKSUMS/FILE
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --checksums-from /PATH/TO/CHECKSUMS/FILE
 
 .. note:: In the case of unfound checksums, it falls back to compute the checksum as normal. The checksum type must
     match the format in the checksums file.
@@ -109,7 +109,7 @@ Mapfile without DRS versions
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-version
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --no-version
 
 Mapfile name using tokens
 *************************
@@ -122,9 +122,9 @@ PER dataset.
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --mapfile {dataset_id}.{job_id}
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --mapfile {date}.{job_id}
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --mapfile MY_MAPFILE.{version}.{date}
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --mapfile {dataset_id}.{job_id}
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --mapfile {date}.{job_id}
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --mapfile MY_MAPFILE.{version}.{date}
 
 Organize your mapfiles
 **********************
@@ -139,35 +139,35 @@ will be added to the output directory if submitted.
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --outdir /PATH/TO/MY_MAPFILES/
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --outdir /PATH/TO/MY_MAPFILES/
 
 The output directory is cleaned up prior to mapfile process to avoid uncompleted mapfiles. In the case of several
 ``esgmapfile`` instances run with the same output directory it is recommended to disable the cleanup:
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --no-cleanup
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --no-cleanup
 
 Walking through *latest* directories only
 *****************************************
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --latest-symlink
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --latest-symlink
 
 Walking through a particular version only
 *****************************************
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --version VERSION
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --version VERSION
 
 Walking through all versions
 ****************************
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --all-versions
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --all-versions
 
 .. warning:: This disables ``--no-version``.
 
@@ -176,7 +176,7 @@ Add technical notes
 
 .. code-block:: bash
 
-    $> esgmapfile make --project PROJECT_ID /PATH/TO/SCAN/ --tech-notes-url URL --tech-notes-title TITLE
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --tech-notes-url URL --tech-notes-title TITLE
 
 Show the expected mapfile name and path
 ***************************************
