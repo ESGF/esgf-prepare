@@ -173,7 +173,8 @@ class MissingCVdata(Exception):
     """
 
     def __init__(self, authority, project):
-        self.msg = 'Unable to find/load CV -- Please use "esgfetchcv".'
+        self.msg = "Unable to find/load controlled vocabularies."
+        self.msg += "\nPlease install the required vocabulary database: esgvoc use <project>@latest"
         self.msg += f"\n<authority: '{authority}'>"
         self.msg += f"\n<project: '{project}'>"
         super(self.__class__, self).__init__(self.msg)

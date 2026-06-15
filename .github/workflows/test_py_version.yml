@@ -28,16 +28,16 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: uv sync
-        run: uv sync
+        run: uv sync --python ${{ matrix.python-version }}
 
       - name: Activate cmip6 vocabulary database
-        run: uv run esgvoc use cmip6@latest
+        run: uv run --python ${{ matrix.python-version }} esgvoc use cmip6@latest
 
       - name: Activate cmip7 vocabulary database
-        run: uv run esgvoc use cmip7@latest
+        run: uv run --python ${{ matrix.python-version }} esgvoc use cmip7@latest
 
       - name: Activate cordex-cmip6 vocabulary database
-        run: uv run esgvoc use cordex-cmip6@latest
+        run: uv run --python ${{ matrix.python-version }} esgvoc use cordex-cmip6@latest
 
-      - name: runs tests
+      - name: Run tests
         run: uv run --python ${{ matrix.python-version }} pytest

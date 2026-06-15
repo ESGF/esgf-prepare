@@ -29,14 +29,6 @@ DEFAULT = COLOR("white").italic(
 )
 
 PROGRAM_DESC = {
-    "fetchcv": """
-{}
-
-{} "esgprep" uses the "esgvoc" library to deal with Controlled Vocabularies and Data Reference Syntax validation for the corresponding project.
-
-{}
-
-{}""".format(TITLE, INTRO, URL, DEFAULT),
     "drs": """
 {}
 
@@ -91,10 +83,6 @@ VERBOSE_HELP = """Debug mode. It disables progress bars and print verbose proces
 SUBCOMMANDS = COLOR("red")("""Subcommands""")
 
 PROJECT_HELP = {
-    "fetchcv": """One or more lower-cased project name(s).
-If not, all projects within an authority are fetched.
-
-""",
     "fetchtables": """One or more lower-cased project name(s).
 If not, all "*-cmor-tables" contents are fetched.
 
