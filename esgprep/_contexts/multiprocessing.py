@@ -197,43 +197,38 @@ class MultiprocessingContext(BaseContext):
     def __enter__(self):
         super(MultiprocessingContext, self).__enter__()
 
-        # Load project CV.
+        # Check project CV is available.
         Print.info("Loading CV")
         try:
-            assert "institution" in ev.get_all_data_descriptors_in_universe()
-        except RuntimeError as e:
-            if "universe connection is not initialized" in str(e):
-                Print.error("Controlled vocabularies are not initialized.")
-                Print.error("Please run: esgvoc use <project>@latest")
+            active_projects = ev.get_all_projects()
+            if not active_projects:
+                Print.error("No vocabulary databases are installed or active.")
+                Print.error(f"Please run: esgvoc use {self.project}@latest")
                 Print.error(
                     "This command downloads pre-built vocabulary databases."
                 )
                 raise SystemExit(1)
-            else:
-                raise
-        except AssertionError:
-            raise MissingCVdata("esgvoc", "na")
+            if self.project not in active_projects:
+                Print.error(
+                    f"Vocabulary database for project '{self.project}' is not installed or active."
+                )
+                Print.error(f"Please run: esgvoc use {self.project}@latest")
+                Print.error(
+                    "This command downloads pre-built vocabulary databases."
+                )
+                raise SystemExit(1)
+        except SystemExit:
+            raise
         except Exception as e:
             error_msg = str(e)
-            if "not installed or active" in error_msg:
-                Print.error(
-                    "Vocabulary database is not installed or active."
-                )
-                Print.error("Please run: esgvoc use <project>@latest")
-                Print.error(
-                    "This command downloads pre-built vocabulary databases."
-                )
-                raise SystemExit(1)
-            elif "no such table" in error_msg or "OperationalError" in str(
+            if "no such table" in error_msg or "OperationalError" in str(
                 type(e).__name__
             ):
                 Print.error(
                     "Controlled vocabulary databases are incomplete or corrupted."
                 )
-                Print.error("Please run: esgvoc use <project>@latest")
-                Print.error(
-                    "This will re-download the pre-built databases."
-                )
+                Print.error(f"Please run: esgvoc use {self.project}@latest")
+                Print.error("This will re-download the pre-built databases.")
                 raise SystemExit(1)
             else:
                 raise
