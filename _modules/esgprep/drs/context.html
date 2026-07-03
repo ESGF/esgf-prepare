@@ -184,8 +184,11 @@
         <span class="c1"># Check if --commands-file argument specifies existing file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_commands_file</span><span class="p">()</span>
 
-        <span class="c1"># Instantiate data collector.</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;latest&quot;</span><span class="p">]:</span>
+        <span class="c1"># Use retry file if provided, bypassing normal collection.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">retry_from</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_retry_paths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_from</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;latest&quot;</span><span class="p">]:</span>
             <span class="c1"># The input source is a list directories.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">Collector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
 

@@ -144,9 +144,13 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_cleanup</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
 
+        <span class="c1"># Use retry file if provided, bypassing normal collection.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">retry_from</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_retry_paths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_from</span><span class="p">)</span>
+
         <span class="c1"># Instantiate data collector.</span>
         <span class="c1"># The input source is a list directories.</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">:</span>
             <span class="c1"># Instantiate file collector to walk through the tree.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">DRSPathCollector</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
 
