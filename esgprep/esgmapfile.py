@@ -39,6 +39,7 @@ from esgprep._utils.help import (
     PROGRAM_DESC,
     PROJECT_HELP,
     QUIET_HELP,
+    RETRY_FROM_HELP,
     SET_VERSION_HELP,
     SUBCOMMANDS,
     TECH_NOTES_TITLE_HELP,
@@ -210,6 +211,13 @@ def get_args():
     )
     make.add_argument(
         "--no-cleanup", action="store_true", default=False, help=NO_CLEANUP_HELP
+    )
+    make.add_argument(
+        "--retry-from",
+        metavar="FILE",
+        type=str,
+        default=None,
+        help=RETRY_FROM_HELP,
     )
 
     # Subparser for "esgmapfile show"

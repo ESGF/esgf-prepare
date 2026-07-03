@@ -129,7 +129,7 @@ def get_args():
         parents=[parent],
     )
     make.add_argument(
-        "directory", action=DirectoryChecker, nargs="+", help=help.DIRECTORY_HELP["drs"]
+        "directory", action=DirectoryChecker, nargs="*", help=help.DIRECTORY_HELP["drs"]
     )
     make.add_argument(
         "--root",
@@ -161,6 +161,13 @@ def get_args():
     )
     make.add_argument(
         "--rescan", action="store_true", default=False, help=help.RESCAN_HELP
+    )
+    make.add_argument(
+        "--retry-from",
+        metavar="FILE",
+        type=str,
+        default=None,
+        help=help.RETRY_FROM_HELP,
     )
     make.add_argument(
         "--commands-file", metavar="TXT_FILE", type=str, help=help.COMMANDS_FILE_HELP
@@ -298,6 +305,10 @@ def main():
     if not args.cmd:
         parser.print_help()
         return
+
+    # Validate that esgdrs make has at least a directory or --retry-from.
+    if args.cmd == "make" and not args.directory and not getattr(args, "retry_from", None):
+        parser.error("esgdrs make requires either a directory or --retry-from")
 
     # Add program name as argument.
     setattr(args, "prog", parser.prog)

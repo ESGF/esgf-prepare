@@ -98,8 +98,11 @@ class ProcessingContext(MultiprocessingContext):
         # Check if --commands-file argument specifies existing file
         self.check_commands_file()
 
-        # Instantiate data collector.
-        if self.cmd not in ["remove", "latest"]:
+        # Use retry file if provided, bypassing normal collection.
+        if self.retry_from:
+            self.sources = self.load_retry_paths(self.retry_from)
+
+        elif self.cmd not in ["remove", "latest"]:
             # The input source is a list directories.
             self.sources = Collector(sources=self.directory)
 
