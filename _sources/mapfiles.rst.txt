@@ -12,7 +12,7 @@ Generate mapfile for ESGF publication
       # OR if using uv:
       uv run esgvoc use cmip6@latest
 
-   Without this step, ``esgmapfile`` commands will fail with: ``RuntimeError: universe connection is not initialized``
+   Without this step, ``esgmapfile`` commands will fail with: ``Vocabulary database for project '<project>' is not installed or active.``
 
    **Keep vocabularies updated:** Run ``esgvoc use <project>@latest`` periodically to get the latest controlled vocabulary
    updates from ESGF projects, ensuring compatibility with new experiments, models, and facet values.
@@ -215,6 +215,24 @@ In the case of ``--dataset-list`` if no file submitted, the standard input is us
 .. note:: Print only mapfile basename instead of the mapfile full path adding ``--basename`` flag.
 
 .. note:: To only print the result without any other info use ``--quiet`` flag.
+
+Retry failed files
+******************
+
+When processing large batches, some files may fail while others succeed. ``esgmapfile`` automatically writes the
+paths of failed files to a ``.esgprep_failed.txt`` file in the output directory. You can then fix the problematic
+files and re-run only the failures using ``--retry-from``:
+
+.. code-block:: bash
+
+    # Initial run — some files fail
+    $> esgmapfile make --project PROJECT_ID --directory /PATH/TO/SCAN/ --outdir /PATH/TO/MAPFILES/
+
+    # Fix the problematic files, then retry only the failures
+    $> esgmapfile make --project PROJECT_ID --retry-from /PATH/TO/MAPFILES/.esgprep_failed.txt --outdir /PATH/TO/MAPFILES/
+
+.. note:: The ``.esgprep_failed.txt`` file is only generated when errors occur. Each new run with failures
+    overwrites the previous file. Paths that no longer exist are automatically skipped with a warning.
 
 Exit status
 ***********

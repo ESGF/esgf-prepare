@@ -60,6 +60,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade">Run the DRS upgrade</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-the-drs-upgrade-from-the-latest-version">Run the DRS upgrade from the latest version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#rescanning-data">Rescanning data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#retry-failed-files">Retry failed files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
@@ -111,7 +112,7 @@ in a way that minimises disk usage.</p>
 uv<span class="w"> </span>run<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 </pre></div>
 </div>
-<p>Without this step, <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> commands will fail with: <code class="docutils literal notranslate"><span class="pre">RuntimeError:</span> <span class="pre">universe</span> <span class="pre">connection</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">initialized</span></code></p>
+<p>Without this step, <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> commands will fail with: <code class="docutils literal notranslate"><span class="pre">Vocabulary</span> <span class="pre">database</span> <span class="pre">for</span> <span class="pre">project</span> <span class="pre">'&lt;project&gt;'</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">installed</span> <span class="pre">or</span> <span class="pre">active.</span></code></p>
 <p><strong>Keep vocabularies updated:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span> <span class="pre">&lt;project&gt;&#64;latest</span></code> periodically to get the latest controlled vocabulary
 updates from ESGF projects, ensuring compatibility with new experiments, models, and facet values.</p>
 <p>See <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> for more details, or visit the
@@ -324,6 +325,24 @@ options have been changed from the previous <code class="docutils literal notran
 To force the rescan in any case:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>upgrade<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--rescan
 </pre></div>
+</div>
+</section>
+<section id="retry-failed-files">
+<h2>Retry failed files<a class="headerlink" href="#retry-failed-files" title="Link to this heading"></a></h2>
+<p>When processing large batches, some files may fail while others succeed. <code class="docutils literal notranslate"><span class="pre">esgdrs</span></code> automatically writes the
+paths of failed files to a <code class="docutils literal notranslate"><span class="pre">.esgprep_failed.txt</span></code> file. You can then fix the problematic files and re-run only
+the failures using <code class="docutils literal notranslate"><span class="pre">--retry-from</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initial run — some files fail</span>
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>/PATH/TO/SCAN/
+
+<span class="c1"># Fix the problematic files, then retry only the failures</span>
+$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--retry-from<span class="w"> </span>/PATH/TO/.esgprep_failed.txt
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.esgprep_failed.txt</span></code> file is only generated when errors occur. Each new run with failures
+overwrites the previous file. Paths that no longer exist are automatically skipped with a warning.</p>
 </div>
 </section>
 <section id="exit-status">

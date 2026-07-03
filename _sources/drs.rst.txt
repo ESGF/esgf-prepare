@@ -17,7 +17,7 @@ in a way that minimises disk usage.
       # OR if using uv:
       uv run esgvoc use cmip6@latest
 
-   Without this step, ``esgdrs`` commands will fail with: ``RuntimeError: universe connection is not initialized``
+   Without this step, ``esgdrs`` commands will fail with: ``Vocabulary database for project '<project>' is not installed or active.``
 
    **Keep vocabularies updated:** Run ``esgvoc use <project>@latest`` periodically to get the latest controlled vocabulary
    updates from ESGF projects, ensuring compatibility with new experiments, models, and facet values.
@@ -240,6 +240,24 @@ To force the rescan in any case:
 
     $> esgdrs make upgrade --project PROJECT_ID /PATH/TO/SCAN/ --rescan
 
+
+Retry failed files
+******************
+
+When processing large batches, some files may fail while others succeed. ``esgdrs`` automatically writes the
+paths of failed files to a ``.esgprep_failed.txt`` file. You can then fix the problematic files and re-run only
+the failures using ``--retry-from``:
+
+.. code-block:: bash
+
+    # Initial run — some files fail
+    $> esgdrs make list --project PROJECT_ID /PATH/TO/SCAN/
+
+    # Fix the problematic files, then retry only the failures
+    $> esgdrs make list --project PROJECT_ID --retry-from /PATH/TO/.esgprep_failed.txt
+
+.. note:: The ``.esgprep_failed.txt`` file is only generated when errors occur. Each new run with failures
+    overwrites the previous file. Paths that no longer exist are automatically skipped with a warning.
 
 Exit status
 ***********

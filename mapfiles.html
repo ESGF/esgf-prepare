@@ -62,6 +62,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#walking-through-all-versions">Walking through all versions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#add-technical-notes">Add technical notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#show-the-expected-mapfile-name-and-path">Show the expected mapfile name and path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#retry-failed-files">Retry failed files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exit-status">Exit status</a></li>
 </ul>
 </li>
@@ -108,7 +109,7 @@
 uv<span class="w"> </span>run<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </span>cmip6@latest
 </pre></div>
 </div>
-<p>Without this step, <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> commands will fail with: <code class="docutils literal notranslate"><span class="pre">RuntimeError:</span> <span class="pre">universe</span> <span class="pre">connection</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">initialized</span></code></p>
+<p>Without this step, <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> commands will fail with: <code class="docutils literal notranslate"><span class="pre">Vocabulary</span> <span class="pre">database</span> <span class="pre">for</span> <span class="pre">project</span> <span class="pre">'&lt;project&gt;'</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">installed</span> <span class="pre">or</span> <span class="pre">active.</span></code></p>
 <p><strong>Keep vocabularies updated:</strong> Run <code class="docutils literal notranslate"><span class="pre">esgvoc</span> <span class="pre">use</span> <span class="pre">&lt;project&gt;&#64;latest</span></code> periodically to get the latest controlled vocabulary
 updates from ESGF projects, ensuring compatibility with new experiments, models, and facet values.</p>
 <p>See <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> for more details, or visit the
@@ -313,6 +314,24 @@ You can show the mapfiles full path to be generated from:</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>To only print the result without any other info use <code class="docutils literal notranslate"><span class="pre">--quiet</span></code> flag.</p>
+</div>
+</section>
+<section id="retry-failed-files">
+<h2>Retry failed files<a class="headerlink" href="#retry-failed-files" title="Link to this heading"></a></h2>
+<p>When processing large batches, some files may fail while others succeed. <code class="docutils literal notranslate"><span class="pre">esgmapfile</span></code> automatically writes the
+paths of failed files to a <code class="docutils literal notranslate"><span class="pre">.esgprep_failed.txt</span></code> file in the output directory. You can then fix the problematic
+files and re-run only the failures using <code class="docutils literal notranslate"><span class="pre">--retry-from</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initial run — some files fail</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--directory<span class="w"> </span>/PATH/TO/SCAN/<span class="w"> </span>--outdir<span class="w"> </span>/PATH/TO/MAPFILES/
+
+<span class="c1"># Fix the problematic files, then retry only the failures</span>
+$&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>PROJECT_ID<span class="w"> </span>--retry-from<span class="w"> </span>/PATH/TO/MAPFILES/.esgprep_failed.txt<span class="w"> </span>--outdir<span class="w"> </span>/PATH/TO/MAPFILES/
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.esgprep_failed.txt</span></code> file is only generated when errors occur. Each new run with failures
+overwrites the previous file. Paths that no longer exist are automatically skipped with a warning.</p>
 </div>
 </section>
 <section id="exit-status">
