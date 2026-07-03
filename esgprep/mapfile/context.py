@@ -59,9 +59,13 @@ class ProcessingContext(MultiprocessingContext):
         if not self.no_cleanup:
             self.clean()
 
+        # Use retry file if provided, bypassing normal collection.
+        if self.retry_from:
+            self.sources = self.load_retry_paths(self.retry_from)
+
         # Instantiate data collector.
         # The input source is a list directories.
-        if self.directory:
+        elif self.directory:
             # Instantiate file collector to walk through the tree.
             self.sources = DRSPathCollector(sources=self.directory)
 

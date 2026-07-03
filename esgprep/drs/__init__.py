@@ -69,13 +69,16 @@ def run(args):
 
     # Instantiate processing context.
     with ProcessingContext(args) as ctx:
+        # Collect sources as a list (needed for failed paths tracking).
+        sources_list = list(ctx.sources)
+
         # Disable file scan if a previous DRS tree have generated using same context and no "list" action.
         if do_scanning(ctx):
             # Instantiate the runner.
             r = Runner(ctx.processes)
 
             # Get runner results.
-            results = r.run(ctx.sources, ctx)
+            results = r.run(sources_list, ctx)
 
             # Final print.
             msg = f"\r{' ' * ctx.msg_length.value}"
@@ -96,7 +99,7 @@ def run(args):
             ctx.rescan = True
             # Perform fresh scan using the same logic as the main scan
             r = Runner(ctx.processes)
-            results = r.run(ctx.sources, ctx)
+            results = r.run(sources_list, ctx)
             msg = f"\r{' ' * ctx.msg_length.value}"
             Print.progress(msg)
             msg = f"\r{COLORS.OKBLUE(SPINNER_DESC)} {FINAL_FRAME} {FINAL_STATUS}\n"
@@ -110,6 +113,10 @@ def run(args):
 
         # Number of success (excluding errors/skipped files).
         ctx.success = len(list(filter(None, results)))
+
+        # Write failed paths for retry.
+        outdir = ctx.directory[0] if ctx.directory else os.getcwd()
+        ctx.write_failed_paths(sources_list, results, outdir)
 
         # Rollback --commands-file value to command-line argument in any case
         ctx.tree.commands_file = ctx.commands_file

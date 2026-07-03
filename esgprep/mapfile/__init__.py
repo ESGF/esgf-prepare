@@ -99,8 +99,11 @@ def run(args):
         # Instantiate the runner.
         r = Runner(ctx.processes)
 
+        # Collect sources as a list (needed for failed paths tracking).
+        sources_list = list(ctx.sources)
+
         # Get results.
-        results = r.run(ctx.sources, ctx)
+        results = r.run(sources_list, ctx)
 
         # Final print.
         msg = "\r{}".format(" " * ctx.msg_length.value)
@@ -121,6 +124,9 @@ def run(args):
 
         # Number of generated mapfiles.
         ctx.nbmap = len(list(filter(None, set(results))))
+
+        # Write failed paths for retry.
+        ctx.write_failed_paths(sources_list, results, ctx.outdir)
 
         # Evaluate the list of results triggering action.
         if any(results):

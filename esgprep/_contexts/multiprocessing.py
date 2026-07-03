@@ -16,6 +16,7 @@ from importlib import import_module
 from multiprocessing import Lock, Pool
 from multiprocessing.managers import BaseProxy, SyncManager
 from multiprocessing.sharedctypes import Value
+from pathlib import Path
 
 import esgvoc.api as ev
 
@@ -24,6 +25,8 @@ from esgprep._exceptions import InvalidChecksumType, MissingCVdata
 from esgprep._handlers.drs_tree import DRSTree
 from esgprep._utils.print import COLORS, Print
 import os
+
+FAILED_PATHS_FILENAME = ".esgprep_failed.txt"
 
 
 class Manager(SyncManager):
@@ -181,6 +184,9 @@ class MultiprocessingContext(BaseContext):
             self.msg_length = Value("i", 0)
             self.lock = Lock()
 
+        # Set retry-from file path.
+        self.retry_from = self.set("retry_from")
+
         # Discover a specified DRS version number.
         self.version = self.set("version")
 
@@ -197,43 +203,38 @@ class MultiprocessingContext(BaseContext):
     def __enter__(self):
         super(MultiprocessingContext, self).__enter__()
 
-        # Load project CV.
+        # Check project CV is available.
         Print.info("Loading CV")
         try:
-            assert "institution" in ev.get_all_data_descriptors_in_universe()
-        except RuntimeError as e:
-            if "universe connection is not initialized" in str(e):
-                Print.error("Controlled vocabularies are not initialized.")
-                Print.error("Please run: esgvoc use <project>@latest")
+            active_projects = ev.get_all_projects()
+            if not active_projects:
+                Print.error("No vocabulary databases are installed or active.")
+                Print.error(f"Please run: esgvoc use {self.project}@latest")
                 Print.error(
                     "This command downloads pre-built vocabulary databases."
                 )
                 raise SystemExit(1)
-            else:
-                raise
-        except AssertionError:
-            raise MissingCVdata("esgvoc", "na")
+            if self.project not in active_projects:
+                Print.error(
+                    f"Vocabulary database for project '{self.project}' is not installed or active."
+                )
+                Print.error(f"Please run: esgvoc use {self.project}@latest")
+                Print.error(
+                    "This command downloads pre-built vocabulary databases."
+                )
+                raise SystemExit(1)
+        except SystemExit:
+            raise
         except Exception as e:
             error_msg = str(e)
-            if "not installed or active" in error_msg:
-                Print.error(
-                    "Vocabulary database is not installed or active."
-                )
-                Print.error("Please run: esgvoc use <project>@latest")
-                Print.error(
-                    "This command downloads pre-built vocabulary databases."
-                )
-                raise SystemExit(1)
-            elif "no such table" in error_msg or "OperationalError" in str(
+            if "no such table" in error_msg or "OperationalError" in str(
                 type(e).__name__
             ):
                 Print.error(
                     "Controlled vocabulary databases are incomplete or corrupted."
                 )
-                Print.error("Please run: esgvoc use <project>@latest")
-                Print.error(
-                    "This will re-download the pre-built databases."
-                )
+                Print.error(f"Please run: esgvoc use {self.project}@latest")
+                Print.error("This will re-download the pre-built databases.")
                 raise SystemExit(1)
             else:
                 raise
@@ -310,6 +311,55 @@ class MultiprocessingContext(BaseContext):
                 raise InvalidChecksumType(checksum_type)
 
         return checksum_type
+
+    @staticmethod
+    def write_failed_paths(sources, results, outdir):
+        """
+        Write failed source paths to a file for later retry.
+        Called from the main process after the pool has finished.
+
+        """
+        failed = [src for src, res in zip(sources, results) if res is None]
+        if not failed:
+            return None
+        failed_file = Path(outdir) / FAILED_PATHS_FILENAME
+        with open(failed_file, "w") as f:
+            for src in failed:
+                f.write(f"{src}\n")
+        Print.warning(
+            f"{len(failed)} failed path(s) written to {failed_file}"
+        )
+        Print.warning(
+            "To retry failed files only, run again with: --retry-from "
+            f"{failed_file}"
+        )
+        return failed_file
+
+    @staticmethod
+    def load_retry_paths(retry_file):
+        """
+        Load source paths from a retry file.
+
+        """
+        retry_path = Path(retry_file)
+        if not retry_path.is_file():
+            Print.error(f"Retry file not found: {retry_file}")
+            raise SystemExit(1)
+        paths = []
+        with open(retry_path) as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    p = Path(line)
+                    if not p.exists():
+                        Print.warning(f"Path no longer exists, skipping: {p}")
+                    else:
+                        paths.append(p)
+        if not paths:
+            Print.error("No valid paths found in retry file.")
+            raise SystemExit(1)
+        Print.info(f"Retrying {len(paths)} previously failed path(s)")
+        return paths
 
 
 class Runner(object):
