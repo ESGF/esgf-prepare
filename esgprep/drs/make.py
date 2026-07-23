@@ -146,16 +146,30 @@ class Process(object):
                 # Get required collections from DRS spec
                 required_collections = [part.source_collection for part in dir_spec.parts]
 
-                # Build mapping: collection -> field_name from attr_specs
-                # Only use the PRIMARY mapping (where attr_field_name is None),
-                # meaning the NetCDF attribute name matches the collection name.
-                # Entries with attr_field_name set are aliases (e.g. parent_activity_id)
-                # and must not override the primary mapping.
+                # Build mapping: collection -> netCDF attribute name from attr_specs.
+                # For each collection, we want the primary netCDF attribute name:
+                #  - attr_field_name gives the actual netCDF header key (e.g. "activity_id")
+                #  - When attr_field_name is None, the attribute name equals the collection name
+                # We skip aliases (parent_*, description) and compound entries (source_collection_key set).
                 collection_to_field = {}
                 for attr in proj_spec.attr_specs:
-                    source_collection_key = getattr(attr, 'source_collection_key', None)
-                    if source_collection_key is None and attr.attr_field_name is None:
-                        collection_to_field[attr.source_collection] = attr.source_collection
+                    sc = attr.source_collection
+                    if sc is None:
+                        continue
+                    if getattr(attr, 'source_collection_key', None) is not None:
+                        continue
+                    afn = attr.attr_field_name
+                    if afn is not None and afn.startswith("parent_"):
+                        continue
+                    field = afn if afn is not None else sc
+                    # Prefer the _id form over bare collection name or description
+                    if sc not in collection_to_field or field.endswith("_id"):
+                        collection_to_field[sc] = field
+
+                # Apply --set-key overrides (e.g. --set-key activity=activity_id)
+                if self.set_keys:
+                    for collection, field_name in self.set_keys.items():
+                        collection_to_field[collection] = field_name
 
                 # Build translated_attrs by reading ONLY the correct field for each required collection
                 # This avoids reading 'experiment' when we need 'experiment_id' mapped to 'experiment'
@@ -184,6 +198,15 @@ class Process(object):
                 # Only apply this for projects that have directory_date in their DRS spec
                 if "directory_date" in required_collections and "directory_date" not in translated_attrs:
                     translated_attrs["directory_date"] = current_attrs.get("version")
+
+                # Apply --set-value overrides (e.g. --set-value activity=CMIP)
+                # Skip "version" — it is injected internally by context.py and
+                # handled separately by the DRS tree versioning logic.
+                if self.set_values:
+                    for key, value in self.set_values.items():
+                        if key == "version":
+                            continue
+                        translated_attrs[key] = value
 
                 if self.project == "cmip6":
                     drs_path = dg.generate_directory_from_mapping(

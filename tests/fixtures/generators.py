@@ -334,6 +334,92 @@ def create_files_different_members(
     return file_paths
 
 
+def create_cmip7_file(
+    directory,
+    variable_id="tas",
+    branding_suffix="tavg-h2m-hxy-u",
+    frequency="day",
+    region="glb",
+    grid_label="g101",
+    source_id="CNRM-ESM2-1e",
+    experiment_id="piControl",
+    institution_id="CNRM-CERFACS",
+    variant_label="r1i1p1f1",
+    time_range=(185001, 185012),
+):
+    """
+    Create a synthetic CMIP7 NetCDF file with CV-compliant attributes and filename.
+
+    Returns:
+        Path to the created file.
+    """
+    directory = Path(directory)
+    directory.mkdir(exist_ok=True, parents=True)
+
+    # CMIP7 filename: {variable}_{branding_suffix}_{frequency}_{region}_{grid_label}_{source}_{experiment}_{variant_label}_{time_range}.nc
+    time_start, time_end = time_range
+    filename = (
+        f"{variable_id}_{branding_suffix}_{frequency}_{region}_{grid_label}"
+        f"_{source_id}_{experiment_id}_{variant_label}"
+        f"_{time_start}-{time_end}.nc"
+    )
+    file_path = directory / filename
+
+    time_size = 10  # arbitrary small size for synthetic data
+    ds = netCDF4.Dataset(file_path, "w", format="NETCDF4")
+
+    ds.createDimension("time", time_size)
+    ds.createDimension("lat", 5)
+    ds.createDimension("lon", 5)
+
+    times = ds.createVariable("time", "f8", ("time",))
+    lats = ds.createVariable("lat", "f4", ("lat",))
+    lons = ds.createVariable("lon", "f4", ("lon",))
+    temp = ds.createVariable(variable_id, "f4", ("time", "lat", "lon"))
+
+    times[:] = np.arange(time_size)
+    lats[:] = np.arange(5)
+    lons[:] = np.arange(5)
+    np.random.seed(42)
+    temp[:] = np.random.rand(time_size, 5, 5)
+
+    # CMIP7 global attributes — values must be CV-compliant
+    ds.Conventions = "CF-1.12"
+    ds.activity_id = "CMIP"
+    ds.branded_variable = f"{variable_id}_{branding_suffix}"
+    ds.branding_suffix = branding_suffix
+    ds.creation_date = "2025-04-01T00:00:00Z"
+    ds.data_specs_version = "MIP-DS7.0.0.0"
+    ds.drs_specs = "MIP-DRS7"
+    ds.experiment = "Pre-industrial control"
+    ds.experiment_id = experiment_id
+    ds.external_variables = "areacella"
+    ds.forcing_index = "f1"
+    ds.frequency = frequency
+    ds.grid_label = grid_label
+    ds.horizontal_label = "hxy"
+    ds.initialization_index = "i1"
+    ds.institution = "Centre National de Recherches Meteorologiques, CERFACS"
+    ds.institution_id = institution_id
+    ds.license_id = "CC-BY-4.0"
+    ds.mip_era = "CMIP7"
+    ds.nominal_resolution = "250 km"
+    ds.physics_index = "p1"
+    ds.product = "model-output"
+    ds.realization_index = "r1"
+    ds.realm = "atmos"
+    ds.region = region
+    ds.source_id = source_id
+    ds.temporal_label = "tavg"
+    ds.tracking_id = generate_fake_tracking_id()
+    ds.variable_id = variable_id
+    ds.variant_label = variant_label
+    ds.vertical_label = "h2m"
+
+    ds.close()
+    return file_path
+
+
 def create_version_specific_files(directory, version_dirs, model_id=0):
     """
     Create files for testing version upgrades with specific changes.
