@@ -121,7 +121,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;all_versions&quot;</span><span class="p">)</span>
 
         <span class="c1"># Set DRS facet value mapping.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;set_values&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+        <span class="c1"># --set-value produces a list of (key, value) tuples via argparse append action.</span>
+        <span class="n">raw_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;set_value&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">raw_values</span><span class="p">)</span> <span class="k">if</span> <span class="n">raw_values</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">()</span>
 
         <span class="c1"># Update DRS facet value mapping with version.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
@@ -129,7 +131,9 @@
         <span class="p">)</span>  <span class="c1"># Lo change dataset-version to version</span>
 
         <span class="c1"># Set DRS facet key mapping.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;set_keys&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+        <span class="c1"># --set-key produces a list of (key, value) tuples via argparse append action.</span>
+        <span class="n">raw_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;set_key&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_keys</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">raw_keys</span><span class="p">)</span> <span class="k">if</span> <span class="n">raw_keys</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">()</span>
 
         <span class="c1"># Set upgrade behavior.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">upgrade_from_latest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;upgrade_from_latest&quot;</span><span class="p">)</span>
