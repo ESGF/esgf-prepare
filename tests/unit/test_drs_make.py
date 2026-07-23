@@ -532,3 +532,76 @@ class TestCMIP7CollectionMapping:
 
         validator = DRSValidator(expected_drs_path)
         assert validator.validate_all(upgrade_from_latest=False, verbose=False)
+
+    def test_set_value_overrides_attribute(self, drs_test_structure):
+        """Test that --set-value overrides a DRS facet value."""
+        incoming_dir = drs_test_structure["incoming"] / "cmip6_set_value"
+        drs_root = drs_test_structure["root"]
+
+        create_files_different_variables(incoming_dir, count=1)
+
+        args = get_default_make_args(incoming_dir, drs_root)
+        # --set-value experiment_id=piControl produces a list of tuples via argparse
+        args.set_value = [("experiment_id", "piControl")]
+
+        run(args)
+
+        # The DRS path should use the overridden value
+        expected_drs_path = (
+            drs_root
+            / "CMIP6"
+            / "CMIP"
+            / "IPSL"
+            / "IPSL-CM6A-LR"
+            / "piControl"
+            / "r1i1p1f1"
+            / "day"
+            / "tas"
+            / "gn"
+        )
+
+        validator = DRSValidator(expected_drs_path)
+        assert validator.validate_all(upgrade_from_latest=False, verbose=False)
+
+    def test_set_key_overrides_mapping(self, drs_test_structure):
+        """Test that --set-key overrides the collection-to-field mapping."""
+        incoming_dir = drs_test_structure["incoming"] / "cmip7_set_key"
+        incoming_dir.mkdir(parents=True, exist_ok=True)
+        drs_root = drs_test_structure["root"]
+
+        # Create a CMIP7 file and add a custom attribute
+        import netCDF4
+
+        file_path = create_cmip7_file(incoming_dir)
+
+        ds = netCDF4.Dataset(file_path, "a")
+        ds.my_custom_activity = "CMIP"
+        ds.close()
+
+        args = get_default_make_args(incoming_dir, drs_root)
+        args.project = "cmip7"
+        args.version = "v20250401"
+        # --set-key activity=my_custom_activity produces a list of tuples via argparse
+        args.set_key = [("activity", "my_custom_activity")]
+
+        run(args)
+
+        # Should still produce the correct DRS with activity=CMIP
+        expected_drs_path = (
+            drs_root
+            / "MIP-DRS7"
+            / "CMIP7"
+            / "CMIP"
+            / "CNRM-CERFACS"
+            / "CNRM-ESM2-1e"
+            / "piControl"
+            / "r1i1p1f1"
+            / "glb"
+            / "day"
+            / "tas"
+            / "tavg-h2m-hxy-u"
+            / "g101"
+        )
+
+        validator = DRSValidator(expected_drs_path)
+        assert validator.validate_all(upgrade_from_latest=False, verbose=False)

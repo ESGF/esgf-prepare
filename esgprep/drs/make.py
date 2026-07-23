@@ -166,6 +166,11 @@ class Process(object):
                     if sc not in collection_to_field or field.endswith("_id"):
                         collection_to_field[sc] = field
 
+                # Apply --set-key overrides (e.g. --set-key activity=activity_id)
+                if self.set_keys:
+                    for collection, field_name in self.set_keys.items():
+                        collection_to_field[collection] = field_name
+
                 # Build translated_attrs by reading ONLY the correct field for each required collection
                 # This avoids reading 'experiment' when we need 'experiment_id' mapped to 'experiment'
                 translated_attrs = {}
@@ -193,6 +198,15 @@ class Process(object):
                 # Only apply this for projects that have directory_date in their DRS spec
                 if "directory_date" in required_collections and "directory_date" not in translated_attrs:
                     translated_attrs["directory_date"] = current_attrs.get("version")
+
+                # Apply --set-value overrides (e.g. --set-value activity=CMIP)
+                # Skip "version" — it is injected internally by context.py and
+                # handled separately by the DRS tree versioning logic.
+                if self.set_values:
+                    for key, value in self.set_values.items():
+                        if key == "version":
+                            continue
+                        translated_attrs[key] = value
 
                 if self.project == "cmip6":
                     drs_path = dg.generate_directory_from_mapping(

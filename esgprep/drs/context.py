@@ -35,7 +35,9 @@ class ProcessingContext(MultiprocessingContext):
         self.all = self.set("all_versions")
 
         # Set DRS facet value mapping.
-        self.set_values = self.set("set_values", dict())
+        # --set-value produces a list of (key, value) tuples via argparse append action.
+        raw_values = self.set("set_value", None)
+        self.set_values = dict(raw_values) if raw_values else dict()
 
         # Update DRS facet value mapping with version.
         self.set_values.update(
@@ -43,7 +45,9 @@ class ProcessingContext(MultiprocessingContext):
         )  # Lo change dataset-version to version
 
         # Set DRS facet key mapping.
-        self.set_keys = self.set("set_keys", dict())
+        # --set-key produces a list of (key, value) tuples via argparse append action.
+        raw_keys = self.set("set_key", None)
+        self.set_keys = dict(raw_keys) if raw_keys else dict()
 
         # Set upgrade behavior.
         self.upgrade_from_latest = self.set("upgrade_from_latest")
