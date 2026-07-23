@@ -15,6 +15,7 @@ from tests.fixtures.generators import (
     create_files_different_times,
     create_files_different_members,
     create_files_different_models,
+    create_cmip7_file,
 )
 from tests.fixtures.validators import DRSValidator
 # TODO : fix all
@@ -325,10 +326,10 @@ class TestDRSMake:
     def test_make_cmip7_real_file(self, drs_test_structure):
         """Test DRS creation with real CMIP7 file.
 
-        The CMIP7 test files contain attribute values that are not yet recognized
-        by the current esgvoc CMIP7 controlled vocabulary (e.g. institution 'CNRM'
-        is not compliant, 'activity' term is missing). This test verifies that the
-        DRS generation correctly reports these CV errors via a non-zero exit code.
+        Uses a real CMIP7 file with CV-compliant attributes (CNRM-CERFACS,
+        CNRM-ESM2-1e, piControl). DRS generation should succeed now that the
+        collection-to-field mapping correctly handles attr_field_name (e.g.
+        activity_id -> activity).
         """
         import shutil
         from pathlib import Path
@@ -344,15 +345,190 @@ class TestDRSMake:
         else:
             pytest.skip("CMIP7 test file not found")
 
-        # Run DRS make with cmip7 project — expect CV validation errors
         args = get_default_make_args(incoming_dir, drs_root)
         args.project = "cmip7"
         args.version = "v20260217"
 
-        with pytest.raises(SystemExit) as exc_info:
-            run(args)
+        run(args)
 
-        # The exit code equals the number of files that failed (1 file = exit code 1)
-        assert exc_info.value.code == 1, (
-            f"Expected exit code 1 (CV errors for cmip7 test file), got {exc_info.value.code}"
+        # Verify DRS structure was created
+        expected_drs_path = (
+            drs_root
+            / "MIP-DRS7"
+            / "CMIP7"
+            / "CMIP"
+            / "CNRM-CERFACS"
+            / "CNRM-ESM2-1e"
+            / "piControl"
+            / "r1i1p1f1"
+            / "glb"
+            / "mon"
+            / "tas"
+            / "tmaxavg-h2m-hxy-u"
+            / "g101"
         )
+
+        validator = DRSValidator(expected_drs_path)
+        assert validator.validate_all(upgrade_from_latest=False, verbose=False)
+
+
+class TestCMIP7CollectionMapping:
+    """Test that the collection-to-field mapping correctly handles CMIP7 attr_specs.
+
+    In CMIP7, netCDF attributes use _id suffixed names (e.g. activity_id) while
+    DRS collections use the bare names (e.g. activity). The mapping must translate
+    between these so that DRS generation can find the right values.
+    """
+
+    def test_cmip7_mapping_covers_required_collections(self):
+        """Verify the mapping logic produces entries for all required CMIP7 DRS collections."""
+        import esgvoc.api as ev
+        from esgvoc.apps.drs.report import DrsType
+
+        proj = ev.get_project("cmip7")
+        dir_spec = proj.drs_specs[DrsType.DIRECTORY]
+        required = [p.source_collection for p in dir_spec.parts]
+
+        # Reproduce the mapping logic from make.py
+        collection_to_field = {}
+        for attr in proj.attr_specs:
+            sc = attr.source_collection
+            if sc is None:
+                continue
+            if getattr(attr, "source_collection_key", None) is not None:
+                continue
+            afn = attr.attr_field_name
+            if afn is not None and afn.startswith("parent_"):
+                continue
+            field = afn if afn is not None else sc
+            if sc not in collection_to_field or field.endswith("_id"):
+                collection_to_field[sc] = field
+
+        # directory_date and compound fields (variable, branding_suffix) are handled
+        # separately — they are not expected in this mapping
+        separately_handled = {"directory_date", "variable", "branding_suffix"}
+        expected_mapped = [r for r in required if r not in separately_handled]
+
+        missing = [r for r in expected_mapped if r not in collection_to_field]
+        assert missing == [], (
+            f"Required DRS collections missing from mapping: {missing}. "
+            f"Mapping has: {collection_to_field}"
+        )
+
+    def test_cmip7_mapping_prefers_id_over_description(self):
+        """Verify that _id attributes are preferred over description aliases."""
+        import esgvoc.api as ev
+
+        proj = ev.get_project("cmip7")
+
+        collection_to_field = {}
+        for attr in proj.attr_specs:
+            sc = attr.source_collection
+            if sc is None:
+                continue
+            if getattr(attr, "source_collection_key", None) is not None:
+                continue
+            afn = attr.attr_field_name
+            if afn is not None and afn.startswith("parent_"):
+                continue
+            field = afn if afn is not None else sc
+            if sc not in collection_to_field or field.endswith("_id"):
+                collection_to_field[sc] = field
+
+        # These must map to _id form, not the bare description form
+        assert collection_to_field["activity"] == "activity_id"
+        assert collection_to_field["institution"] == "institution_id"
+        assert collection_to_field["source"] == "source_id"
+        assert collection_to_field["experiment"] == "experiment_id"
+
+    def test_cmip7_mapping_excludes_parent_aliases(self):
+        """Verify parent_* aliases don't override primary mappings."""
+        import esgvoc.api as ev
+
+        proj = ev.get_project("cmip7")
+
+        collection_to_field = {}
+        for attr in proj.attr_specs:
+            sc = attr.source_collection
+            if sc is None:
+                continue
+            if getattr(attr, "source_collection_key", None) is not None:
+                continue
+            afn = attr.attr_field_name
+            if afn is not None and afn.startswith("parent_"):
+                continue
+            field = afn if afn is not None else sc
+            if sc not in collection_to_field or field.endswith("_id"):
+                collection_to_field[sc] = field
+
+        # None of the mapped values should be parent_* aliases
+        for sc, field in collection_to_field.items():
+            assert not field.startswith("parent_"), (
+                f"collection '{sc}' mapped to parent alias '{field}'"
+            )
+
+    def test_cmip6_mapping_still_works(self):
+        """Verify the new mapping logic doesn't break CMIP6."""
+        import esgvoc.api as ev
+        from esgvoc.apps.drs.report import DrsType
+
+        proj = ev.get_project("cmip6")
+        dir_spec = proj.drs_specs[DrsType.DIRECTORY]
+        required = [p.source_collection for p in dir_spec.parts]
+
+        collection_to_field = {}
+        for attr in proj.attr_specs:
+            sc = attr.source_collection
+            if sc is None:
+                continue
+            if getattr(attr, "source_collection_key", None) is not None:
+                continue
+            afn = attr.attr_field_name
+            if afn is not None and afn.startswith("parent_"):
+                continue
+            field = afn if afn is not None else sc
+            if sc not in collection_to_field or field.endswith("_id"):
+                collection_to_field[sc] = field
+
+        # version and member_id are handled separately in CMIP6
+        separately_handled = {"version", "member_id"}
+        expected_mapped = [r for r in required if r not in separately_handled]
+
+        missing = [r for r in expected_mapped if r not in collection_to_field]
+        assert missing == [], (
+            f"CMIP6 collections missing from mapping: {missing}"
+        )
+
+    def test_make_cmip7_synthetic_file(self, drs_test_structure):
+        """Test end-to-end DRS creation with a synthetic CMIP7 file."""
+        incoming_dir = drs_test_structure["incoming"] / "cmip7_synthetic"
+        incoming_dir.mkdir(parents=True, exist_ok=True)
+        drs_root = drs_test_structure["root"]
+
+        create_cmip7_file(incoming_dir)
+
+        args = get_default_make_args(incoming_dir, drs_root)
+        args.project = "cmip7"
+        args.version = "v20250401"
+
+        run(args)
+
+        # Verify the DRS directory was created with the expected structure
+        expected_drs_path = (
+            drs_root
+            / "MIP-DRS7"
+            / "CMIP7"
+            / "CMIP"
+            / "CNRM-CERFACS"
+            / "CNRM-ESM2-1e"
+            / "piControl"
+            / "r1i1p1f1"
+            / "glb"
+            / "day"
+            / "tas"
+            / "tavg-h2m-hxy-u"
+            / "g101"
+        )
+
+        validator = DRSValidator(expected_drs_path)
+        assert validator.validate_all(upgrade_from_latest=False, verbose=False)
