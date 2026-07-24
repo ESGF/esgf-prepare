@@ -275,11 +275,10 @@
         <span class="k">return</span> <span class="n">project_id</span>
 
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">project</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;No project code found in path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;  Installed vocabulary databases: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">scopes</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;  None of these matched any part of the path. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Make sure the correct project snapshot is installed (e.g.: esgvoc use &lt;project&gt;@latest)&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  None of these matched any part of the path.&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
