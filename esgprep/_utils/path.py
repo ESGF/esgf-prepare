@@ -160,11 +160,10 @@ def get_project(path) -> str | None:
         return project_id
 
     elif len(project) == 0:
-        Print.warning(
+        Print.debug(
             f"No project code found in path: {path}\n"
             f"  Installed vocabulary databases: {sorted(scopes)}\n"
-            f"  None of these matched any part of the path. "
-            f"Make sure the correct project snapshot is installed (e.g.: esgvoc use <project>@latest)"
+            f"  None of these matched any part of the path."
         )
         return None
 
