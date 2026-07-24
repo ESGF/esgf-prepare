@@ -328,8 +328,13 @@ class TestGetProject:
         assert "No esgvoc vocabulary databases found" in output
         assert "esgvoc use" in output
 
-    def test_get_project_no_match_lists_installed(self, capfd):
-        """Test that get_project lists installed DBs when no project matches the path."""
+    def test_get_project_no_match_returns_none(self):
+        """Test that get_project returns None when no project matches the path.
+
+        No warning is emitted — the message is debug-level because callers
+        (e.g. DRSPathCollector) handle None gracefully and may find the
+        project deeper in the directory tree.
+        """
         path = Path("/mnt/data/CORDEX-CMIP6/DD/EUR-12/file.nc")
 
         # Simulate having cmip6 and cmip7 installed but NOT cordex-cmip6
@@ -337,13 +342,6 @@ class TestGetProject:
             result = get_project(path)
 
         assert result is None
-
-        captured = capfd.readouterr()
-        output = captured.out + captured.err
-        assert "No project code found in path" in output
-        assert "cmip6" in output
-        assert "cmip7" in output
-        assert "esgvoc use <project>@latest" in output
 
     def test_get_project_match_logs_db_version(self, capfd):
         """Test that get_project logs the vocabulary DB version when a project is found."""
