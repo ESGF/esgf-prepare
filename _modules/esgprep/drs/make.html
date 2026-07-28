@@ -141,6 +141,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_latest</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ignore_from_latest</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_incoming</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ignore_from_incoming</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">project</span>
+        <span class="c1"># Build the set of attribute names whose spec type is &quot;string_array&quot;</span>
+        <span class="c1"># (space-separated lists like activity_id, realm, source_type, …).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_array_attrs</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">projects</span>
+            <span class="n">project_specs</span> <span class="o">=</span> <span class="n">projects</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">project_specs</span> <span class="ow">and</span> <span class="n">project_specs</span><span class="o">.</span><span class="n">attr_specs</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">project_specs</span><span class="o">.</span><span class="n">attr_specs</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">attr_field_value_type</span> <span class="o">==</span> <span class="s2">&quot;string_array&quot;</span><span class="p">:</span>
+                        <span class="n">name</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">attr_field_name</span> <span class="ow">or</span> <span class="n">spec</span><span class="o">.</span><span class="n">source_collection</span>
+                        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_string_array_attrs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -163,9 +177,13 @@
 
             <span class="c1"># Get current netcdf file attributes.</span>
             <span class="n">current_attrs</span> <span class="o">=</span> <span class="n">get_ncattrs</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-            <span class="c1"># # If attribute value is a separated list, pick up the first item as facet value</span>
+            <span class="c1"># For attributes whose spec type is &quot;string_array&quot; (space-separated</span>
+            <span class="c1"># list, e.g. activity_id, realm), pick up the first item as facet</span>
+            <span class="c1"># value.  Other attributes are left intact so that values like</span>
+            <span class="c1"># &quot;100 km&quot; or &quot;days since 1850-01-01&quot; are not truncated.</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">current_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">current_attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># mainly for activity_id</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_string_array_attrs</span><span class="p">:</span>
+                    <span class="n">current_attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="c1"># Add filename to attributes.</span>
             <span class="n">current_attrs</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span>
