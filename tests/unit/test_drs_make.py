@@ -605,3 +605,125 @@ class TestCMIP7CollectionMapping:
 
         validator = DRSValidator(expected_drs_path)
         assert validator.validate_all(upgrade_from_latest=False, verbose=False)
+
+
+class TestStringArrayAttrSplitting:
+    """Test that only string_array attributes are split, not scalar multi-word values.
+
+    Regression tests for issue #120: attributes like nominal_resolution ("100 km")
+    and parent_time_units ("days since 1850-01-01") were truncated to their first
+    word because make.py applied .split()[0] to ALL attributes instead of only
+    those whose spec type is "string_array".
+    """
+
+    def test_string_array_attrs_loaded_from_spec(self):
+        """Verify string_array attrs are correctly identified from the project's attr_specs."""
+        import esgvoc.api as ev
+
+        for project_id in ("cmip6", "cmip6plus"):
+            proj = ev.get_project(project_id)
+            if proj is None or proj.attr_specs is None:
+                pytest.skip(f"project {project_id} not available")
+
+            string_array_names = set()
+            for spec in proj.attr_specs:
+                if spec.attr_field_value_type == "string_array":
+                    name = spec.attr_field_name or spec.source_collection
+                    if name:
+                        string_array_names.add(name)
+
+            # activity_id is a known space-separated list
+            assert "activity_id" in string_array_names, (
+                f"{project_id}: activity_id should be string_array"
+            )
+            # scalar attributes must NOT appear
+            assert "experiment_id" not in string_array_names, (
+                f"{project_id}: experiment_id should NOT be string_array"
+            )
+            assert "nominal_resolution" not in string_array_names, (
+                f"{project_id}: nominal_resolution should NOT be string_array"
+            )
+
+    def test_multiword_scalar_attrs_not_truncated(self, drs_test_structure):
+        """Verify that multi-word scalar attributes survive DRS processing intact.
+
+        Creates a CMIP6 file with attributes containing spaces (like real
+        CMIP6Plus files have) and checks they are passed to GAValidator
+        without truncation.
+        """
+        import netCDF4
+        from unittest.mock import patch
+
+        incoming_dir = drs_test_structure["incoming"] / "scalar_attrs"
+        incoming_dir.mkdir(parents=True, exist_ok=True)
+        drs_root = drs_test_structure["root"]
+
+        # Create a CMIP6 file with multi-word scalar attributes
+        create_files_different_variables(incoming_dir, count=1)
+        nc_file = list(incoming_dir.glob("*.nc"))[0]
+
+        ds = netCDF4.Dataset(nc_file, "a")
+        ds.nominal_resolution = "100 km"
+        ds.parent_time_units = "days since 1850-01-01"
+        ds.close()
+
+        # Patch GAValidator to capture what attributes it receives
+        captured_attrs = {}
+
+        try:
+            from esgvoc.apps.ncattvalid import GAValidator
+            original_validate = GAValidator.validate
+        except ImportError:
+            pytest.skip("esgvoc.apps.ncattvalid not available")
+
+        def spy_validate(self, attributes, **kwargs):
+            captured_attrs.update(attributes)
+            return original_validate(self, attributes, **kwargs)
+
+        with patch.object(GAValidator, "validate", spy_validate):
+            args = get_default_make_args(incoming_dir, drs_root)
+            run(args)
+
+        # Multi-word scalars must not be truncated
+        assert captured_attrs.get("nominal_resolution") == "100 km", (
+            f"nominal_resolution was truncated to {captured_attrs.get('nominal_resolution')!r}"
+        )
+        assert captured_attrs.get("parent_time_units") == "days since 1850-01-01", (
+            f"parent_time_units was truncated to {captured_attrs.get('parent_time_units')!r}"
+        )
+
+    def test_string_array_attr_is_split_for_drs(self, drs_test_structure):
+        """Verify that string_array attributes (e.g. activity_id) ARE still split for DRS."""
+        import netCDF4
+
+        incoming_dir = drs_test_structure["incoming"] / "array_attrs"
+        incoming_dir.mkdir(parents=True, exist_ok=True)
+        drs_root = drs_test_structure["root"]
+
+        # Create a CMIP6 file with a multi-value activity_id
+        create_files_different_variables(incoming_dir, count=1)
+        nc_file = list(incoming_dir.glob("*.nc"))[0]
+
+        ds = netCDF4.Dataset(nc_file, "a")
+        ds.activity_id = "CMIP ScenarioMIP"  # space-separated list
+        ds.close()
+
+        args = get_default_make_args(incoming_dir, drs_root)
+        run(args)
+
+        # The DRS path should use "CMIP" (first token), not "CMIP ScenarioMIP"
+        expected_drs_path = (
+            drs_root
+            / "CMIP6"
+            / "CMIP"  # first value of the split activity_id
+            / "IPSL"
+            / "IPSL-CM6A-LR"
+            / "historical"
+            / "r1i1p1f1"
+            / "day"
+            / "tas"
+            / "gn"
+        )
+
+        validator = DRSValidator(expected_drs_path)
+        assert validator.validate_all(upgrade_from_latest=False, verbose=False)
