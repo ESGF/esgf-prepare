@@ -55,6 +55,20 @@ class Process(object):
         self.ignore_from_latest = ctx.ignore_from_latest
         self.ignore_from_incoming = ctx.ignore_from_incoming
         self.project = ctx.project
+        # Build the set of attribute names whose spec type is "string_array"
+        # (space-separated lists like activity_id, realm, source_type, …).
+        self._string_array_attrs: set[str] = set()
+        try:
+            from esgvoc.api import projects
+            project_specs = projects.get_project(self.project)
+            if project_specs and project_specs.attr_specs:
+                for spec in project_specs.attr_specs:
+                    if spec.attr_field_value_type == "string_array":
+                        name = spec.attr_field_name or spec.source_collection
+                        if name:
+                            self._string_array_attrs.add(name)
+        except Exception:
+            pass
 
     def __call__(self, source):
         """
@@ -77,9 +91,13 @@ class Process(object):
 
             # Get current netcdf file attributes.
             current_attrs = get_ncattrs(source)
-            # # If attribute value is a separated list, pick up the first item as facet value
+            # For attributes whose spec type is "string_array" (space-separated
+            # list, e.g. activity_id, realm), pick up the first item as facet
+            # value.  Other attributes are left intact so that values like
+            # "100 km" or "days since 1850-01-01" are not truncated.
             for k, v in current_attrs.items():
-                current_attrs[k] = str(v).split()[0]  # mainly for activity_id
+                if k in self._string_array_attrs:
+                    current_attrs[k] = str(v).split()[0]
 
             # Add filename to attributes.
             current_attrs["filename"] = source.name
