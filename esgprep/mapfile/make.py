@@ -38,6 +38,7 @@ class Process(object):
         self.checksum_type = ctx.checksum_type
         self.notes_url = ctx.notes_url
         self.notes_title = ctx.notes_title
+        self.output_depth = ctx.output_depth
         self.progress = ctx.progress
         self.msg_length = ctx.msg_length
         self.lock = ctx.lock
@@ -109,13 +110,9 @@ class Process(object):
 
             # Build mapfile directory.
             outdir = Path(self.outdir).resolve(strict=False)
-            # try:
-            #     outdir = outdir.joinpath(self.cfg.get(section='config:{}'.format(get_project(source)),
-            #                                           option='mapfile_drs',
-            #                                           vars=get_terms(source)))
-            #
-            # except:
-            #     pass
+
+            # Add subdirectories below outdir
+            outdir = outdir.joinpath(*outfile.name.split(".")[:self.output_depth])
 
             # Build full mapfile path.
             outpath = outdir.joinpath(outfile)
