@@ -42,7 +42,9 @@ class MultilineFormatter(argparse.RawTextHelpFormatter):
         # stty fails if stdin is not a terminal.
         # But also check stdout, so that when writing to a file
         # behaviour is independent of terminal device.
-        if sys.stdin.isatty() and sys.stdout.isatty():
+        if (sys.stdin is not None and sys.stdin.isatty()
+            and sys.stdout is not None and sys.stdout.isatty()):
+
             try:
                 _, columns = os.popen("stty size", "r").read().split()
             except ValueError:
