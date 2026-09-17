@@ -11,6 +11,27 @@ requires-python = ">=3.10"
 maintainers = [
     { name = "Guillaume Levavasseur", email = "glipsl@ipsl.fr" },
 ]
+
+keywords = [
+    "ESGF",
+    "climate data",
+    "data preparation",
+    "data publication",
+    "DRS",
+]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: System Administrators",
+    "Natural Language :: English",
+    "Operating System :: Unix",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+
 dependencies = [
     "esgvoc>=4.1.1",
     "fuzzywuzzy>=0.18.0",
