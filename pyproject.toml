@@ -5,9 +5,12 @@ build-backend = "hatchling.build"
 [project]
 name = "esgprep"
 version = "3.3.3"
-description = "Add your description here"
+description = "Toolbox to prepare data for ESGF publication"
 readme = "README.md"
 requires-python = ">=3.10"
+maintainers = [
+    { name = "Guillaume Levavasseur", email = "glipsl@ipsl.fr" },
+]
 dependencies = [
     "esgvoc>=4.1.1",
     "fuzzywuzzy>=0.18.0",
@@ -19,6 +22,11 @@ dependencies = [
     "requests>=2.32.3",
     "treelib>=1.7.1",
 ]
+
+[project.urls]
+Documentation = "https://esgf.github.io/esgf-prepare/"
+Repository = "https://github.com/ESGF/esgf-prepare"
+Issues = "https://github.com/ESGF/esgf-prepare/issues"
 
 [tool.hatch.build]
 sources = ["."]
