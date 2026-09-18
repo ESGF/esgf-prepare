@@ -7,9 +7,10 @@ name = "esgprep"
 version = "3.3.3"
 description = "Toolbox to prepare data for ESGF publication"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 maintainers = [
     { name = "Guillaume Levavasseur", email = "glipsl@ipsl.fr" },
+    { name = "Laurent Troussellier", email = "laurent.troussellier@ipsl.fr" },
 ]
 
 keywords = [
@@ -29,6 +30,9 @@ classifiers = [
     "Operating System :: Unix",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering",
 ]
 
@@ -62,8 +66,8 @@ path = "esgprep/__init__.py"
 dev = [
     "jupyter-console>=6.6.3",
     "pytest>=8.3.5",
-    "sphinx>=8.2.3; python_version >= '3.11'",
-    "sphinx-rtd-theme>=3.0.2; python_version >= '3.11'",
+    "sphinx>=8.2.3",
+    "sphinx-rtd-theme>=3.0.2",
     "ty>=0.0.16",
 ]
 [project.scripts]
