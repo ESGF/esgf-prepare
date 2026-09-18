@@ -83,14 +83,14 @@
   <h1>Source code for esgprep._utils.parser</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">.. module:: esgprep._utils.parser.py</span>
 <span class="sd">   :platform: Unix</span>
 <span class="sd">   :synopsis: Command-line parser utilities.</span>
 
 <span class="sd">.. moduleauthor:: Guillaume Levavasseur &lt;glipsl@ipsl.fr&gt;</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -105,17 +105,17 @@
 <div class="viewcode-block" id="CustomArgumentParser">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.CustomArgumentParser">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomArgumentParser</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Custom argument parser class.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="CustomArgumentParser.error">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.CustomArgumentParser.error">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="c1"># Change exist status in case of wrong arguments.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print_usage</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">gettext</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="si">}</span><span class="s2">: error: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">gettext</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="si">}</span><span class="s2">: error: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">))</span></div>
 </div>
 
 
@@ -123,10 +123,10 @@
 <div class="viewcode-block" id="MultilineFormatter">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.MultilineFormatter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MultilineFormatter</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawTextHelpFormatter</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Custom formatter class.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog</span><span class="p">,</span> <span class="n">default_columns</span><span class="o">=</span><span class="mi">120</span><span class="p">):</span>
         <span class="c1"># Overload the HelpFormatter class.</span>
@@ -135,7 +135,7 @@
         <span class="c1"># behaviour is independent of terminal device.</span>
         <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">isatty</span><span class="p">()</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">_</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;stty size&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">"stty size"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="n">columns</span> <span class="o">=</span> <span class="n">default_columns</span>
         <span class="k">else</span><span class="p">:</span>
@@ -147,15 +147,15 @@
 <div class="viewcode-block" id="MultilineFormatter.add_arguments">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.MultilineFormatter.add_arguments">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort optional arguments alphabetically while keeping positional arguments first.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sort optional arguments alphabetically while keeping positional arguments first."""</span>
 
         <span class="c1"># Helper function to get sort key for any action</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">get_sort_key</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">action</span><span class="o">.</span><span class="n">option_strings</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">return</span> <span class="s2">""</span>
             <span class="c1"># Sort by shortest option string, removing leading dashes for comparison</span>
             <span class="n">shortest</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">option_strings</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">shortest</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">shortest</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
         <span class="c1"># Separate positional and optional arguments</span>
         <span class="n">positional_actions</span> <span class="o">=</span> <span class="p">[]</span>
@@ -172,12 +172,12 @@
         <span class="n">help_actions</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">a</span>
             <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">optional_actions</span>
-            <span class="k">if</span> <span class="s2">&quot;-h&quot;</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">option_strings</span> <span class="ow">or</span> <span class="s2">&quot;--help&quot;</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">option_strings</span>
+            <span class="k">if</span> <span class="s2">"-h"</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">option_strings</span> <span class="ow">or</span> <span class="s2">"--help"</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">option_strings</span>
         <span class="p">]</span>
         <span class="n">other_actions</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">a</span>
             <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">optional_actions</span>
-            <span class="k">if</span> <span class="s2">&quot;-h&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">option_strings</span> <span class="ow">and</span> <span class="s2">&quot;--help&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">option_strings</span>
+            <span class="k">if</span> <span class="s2">"-h"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">option_strings</span> <span class="ow">and</span> <span class="s2">"--help"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">option_strings</span>
         <span class="p">]</span>
 
         <span class="n">other_actions</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">get_sort_key</span><span class="p">)</span>
@@ -190,18 +190,18 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_format_actions_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort actions in usage line as well.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sort actions in usage line as well."""</span>
 
         <span class="c1"># Helper function to get sort key for any action</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">get_sort_key</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">action</span><span class="o">.</span><span class="n">option_strings</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">return</span> <span class="s2">""</span>
             <span class="n">shortest</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">option_strings</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">shortest</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">shortest</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
         <span class="c1"># Sort actions within each group by temporarily modifying the group</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="s2">&quot;_group_actions&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="s2">"_group_actions"</span><span class="p">):</span>
                 <span class="n">group</span><span class="o">.</span><span class="n">_group_actions</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">_group_actions</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">get_sort_key</span><span class="p">)</span>
 
         <span class="c1"># Sort non-grouped actions</span>
@@ -214,10 +214,10 @@
 <div class="viewcode-block" id="DirectoryChecker">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.DirectoryChecker">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DirectoryChecker</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Action class to check a directory.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -230,16 +230,16 @@
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.DirectoryChecker.directory_checker">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">directory_checker</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Verify a directory exists.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Normalize path.</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
         <span class="c1"># Catch no such directory error.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No such directory: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"No such directory: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Return path.</span>
@@ -251,10 +251,10 @@
 <div class="viewcode-block" id="ConfigFileLoader">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.ConfigFileLoader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ConfigFileLoader</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Configuration file action class.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">checked_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -264,28 +264,28 @@
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.ConfigFileLoader.load">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Loads configuration file parser.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Normalize path.</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
         <span class="c1"># Catch no such file error.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No such directory: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"No such directory: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Check existing esg.ini</span>
-        <span class="c1"># if &#39;esg.ini&#39; not in os.listdir(path):</span>
-        <span class="c1">#   msg = &#39;&quot;esg.ini not found in {}&#39;.format(path)</span>
+        <span class="c1"># if 'esg.ini' not in os.listdir(path):</span>
+        <span class="c1">#   msg = '"esg.ini not found in {}'.format(path)</span>
         <span class="c1">#     raise argparse.ArgumentTypeError(msg)</span>
 
         <span class="c1"># Instantiate configuration parser.</span>
         <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
 
         <span class="c1"># Load configuration.</span>
-        <span class="c1"># cfg.read(os.path.join(path, &#39;esg.ini&#39;))</span>
+        <span class="c1"># cfg.read(os.path.join(path, 'esg.ini'))</span>
 
         <span class="c1"># Return configuration parser.</span>
         <span class="k">return</span> <span class="n">cfg</span></div>
@@ -296,11 +296,11 @@
 <div class="viewcode-block" id="ChecksumsReader">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.ChecksumsReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ChecksumsReader</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Action class to read a checksum file similar to any checksum client output.</span>
 <span class="sd">    Returns a dictionary where (key: value) pairs respectively are the file path and its checksum.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">checked_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -310,16 +310,16 @@
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.ChecksumsReader.read">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads checksum list.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Normalize path.</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
         <span class="c1"># Catch no such file error.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No such file: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"No such file: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Instantiate checksum dictionary.</span>
@@ -342,11 +342,11 @@
 <div class="viewcode-block" id="DatasetsReader">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.DatasetsReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DatasetsReader</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Action class to read a dataset identifier list from a simple text file.</span>
 <span class="sd">    Returns a list of identifiers.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">checked_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -356,16 +356,16 @@
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.DatasetsReader.read">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads checksum list.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Normalize path.</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
         <span class="c1"># Catch no such file error.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No such file: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"No such file: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Read pre-computed checksums.</span>
@@ -379,10 +379,10 @@
 <div class="viewcode-block" id="VersionChecker">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.VersionChecker">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">VersionChecker</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Custom action class.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">checked_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_checker</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -392,28 +392,28 @@
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.VersionChecker.version_checker">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">version_checker</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validates version number.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Match version with appropriate regex.</span>
-        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[\d]{1,8}$&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^[\d]{1,8}$"</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)):</span>
             <span class="c1"># Validates date format in case of 8 digits version.</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">version</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">"</span><span class="p">)</span>
 
                 <span class="c1"># Catch wrong date format.</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid version date: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Invalid version date: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
                     <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
             <span class="c1"># Return version.</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="c1"># Catch wrong version format.</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid version type: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Available format is YYYYMMDD or an integer.&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Invalid version type: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Available format is YYYYMMDD or an integer."</span>
             <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 </div>
 
@@ -422,16 +422,16 @@
 <div class="viewcode-block" id="keyval_converter">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.keyval_converter">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">keyval_converter</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Validates (key = value) argument format.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Build pattern.</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^=]+)=([^=]+)(?:,|$)&quot;</span><span class="p">)</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"([^=]+)=([^=]+)(?:,|$)"</span><span class="p">)</span>
 
     <span class="c1"># Catch wrong format error.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bad argument syntax: </span><span class="si">{</span><span class="n">pair</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Bad argument syntax: </span><span class="si">{</span><span class="n">pair</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="c1"># Return pair as dictionary {key: value}.</span>
@@ -442,17 +442,17 @@
 <div class="viewcode-block" id="regex_validator">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.regex_validator">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">regex_validator</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Validates a regular expression syntax.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Try compiling regex.</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
     <span class="c1"># Catch wrong regex syntax.</span>
     <span class="k">except</span> <span class="n">re</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bad regex syntax: </span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Bad regex syntax: </span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 
@@ -460,16 +460,16 @@
 <div class="viewcode-block" id="processes_validator">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.parser.processes_validator">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">processes_validator</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Validates the maximum number of processes.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Integer conversion.</span>
     <span class="n">pnum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># Catch disallowed processes numbers.</span>
     <span class="k">if</span> <span class="n">pnum</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">pnum</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid processes number. Should be a positive integer or &quot;-1&quot;.&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">'Invalid processes number. Should be a positive integer or "-1".'</span>
         <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="c1"># Caps processes number by cpu_count().</span>

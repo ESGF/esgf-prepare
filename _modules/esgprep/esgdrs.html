@@ -83,11 +83,11 @@
   <h1>Source code for esgprep.esgdrs</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">:platform: Unix</span>
 <span class="sd">:synopsis: Toolbox to prepare ESGF data for publication.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -114,90 +114,90 @@
 <div class="viewcode-block" id="get_args">
 <a class="viewcode-back" href="../../autodoc.html#esgprep.esgdrs.get_args">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_args</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns parsed command-line arguments.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Instantiate argument parser.</span>
     <span class="n">main</span> <span class="o">=</span> <span class="n">CustomArgumentParser</span><span class="p">(</span>
-        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;esgdrs&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">PROGRAM_DESC</span><span class="p">[</span><span class="s2">&quot;drs&quot;</span><span class="p">],</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">"esgdrs"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">PROGRAM_DESC</span><span class="p">[</span><span class="s2">"drs"</span><span class="p">],</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">epilog</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">EPILOG</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-h&quot;</span><span class="p">,</span> <span class="s2">&quot;--help&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">HELP</span><span class="p">)</span>
+    <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-h"</span><span class="p">,</span> <span class="s2">"--help"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"help"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">HELP</span><span class="p">)</span>
     <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-v&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--version&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;version&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(prog)s</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">),</span>
+        <span class="s2">"-v"</span><span class="p">,</span>
+        <span class="s2">"--version"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"version"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"</span><span class="si">%(prog)s</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">VERSION_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">subparsers</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">SUBCOMMANDS</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;cmd&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">SUBCOMMANDS</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">"cmd"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">""</span>
     <span class="p">)</span>
 
     <span class="c1"># Add parent parser with common arguments.</span>
     <span class="n">parent</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-h&quot;</span><span class="p">,</span> <span class="s2">&quot;--help&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">HELP</span><span class="p">)</span>
+    <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-h"</span><span class="p">,</span> <span class="s2">"--help"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"help"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">HELP</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-l&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--log&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;CWD&quot;</span><span class="p">,</span>
+        <span class="s2">"-l"</span><span class="p">,</span>
+        <span class="s2">"--log"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"CWD"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">const</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/logs&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()),</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">=</span><span class="s2">"</span><span class="si">{}</span><span class="s2">/logs"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()),</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"?"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">LOG_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">VERBOSE_HELP</span>
+        <span class="s2">"-d"</span><span class="p">,</span> <span class="s2">"--debug"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">VERBOSE_HELP</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;action&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;tree&quot;</span><span class="p">,</span> <span class="s2">&quot;todo&quot;</span><span class="p">,</span> <span class="s2">&quot;upgrade&quot;</span><span class="p">],</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;action&quot;</span><span class="p">,</span>
+        <span class="s2">"action"</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">"list"</span><span class="p">,</span> <span class="s2">"tree"</span><span class="p">,</span> <span class="s2">"todo"</span><span class="p">,</span> <span class="s2">"upgrade"</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"list"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"action"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">ACTION_HELP</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-p&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--project&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span>
+        <span class="s2">"-p"</span><span class="p">,</span>
+        <span class="s2">"--project"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"NAME"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">PROJECT_HELP</span><span class="p">[</span><span class="s2">&quot;drs&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">PROJECT_HELP</span><span class="p">[</span><span class="s2">"drs"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--ignore-dir&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&#39;^.*/(files|</span><span class="se">\\</span><span class="s2">.</span><span class="se">\\</span><span class="s2">w*).*$&#39;&quot;</span><span class="p">,</span>
+        <span class="s2">"--ignore-dir"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"'^.*/(files|</span><span class="se">\\</span><span class="s2">.</span><span class="se">\\</span><span class="s2">w*).*$'"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">regex_validator</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;^.*/(files|</span><span class="se">\\</span><span class="s2">.[</span><span class="se">\\</span><span class="s2">w]*).*$&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"^.*/(files|</span><span class="se">\\</span><span class="s2">.[</span><span class="se">\\</span><span class="s2">w]*).*$"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">IGNORE_DIR_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--include-file&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&#39;^.*</span><span class="se">\\</span><span class="s2">.nc$&#39;&quot;</span><span class="p">,</span>
+        <span class="s2">"--include-file"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"'^.*</span><span class="se">\\</span><span class="s2">.nc$'"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">regex_validator</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;^.*</span><span class="se">\\</span><span class="s2">.nc$&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">INCLUDE_FILE_HELP</span><span class="p">[</span><span class="s2">&quot;mapfile&quot;</span><span class="p">],</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">"^.*</span><span class="se">\\</span><span class="s2">.nc$"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">INCLUDE_FILE_HELP</span><span class="p">[</span><span class="s2">"mapfile"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--exclude-file&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&#39;^</span><span class="se">\\</span><span class="s2">..*$&#39;&quot;</span><span class="p">,</span>
+        <span class="s2">"--exclude-file"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"'^</span><span class="se">\\</span><span class="s2">..*$'"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">regex_validator</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;^</span><span class="se">\\</span><span class="s2">..*$&quot;</span><span class="p">],</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">"^</span><span class="se">\\</span><span class="s2">..*$"</span><span class="p">],</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">EXCLUDE_FILE_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--color&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">COLOR_HELP</span><span class="p">)</span>
-    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no-color&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">NO_COLOR_HELP</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--color"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">COLOR_HELP</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--no-color"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">NO_COLOR_HELP</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--max-processes&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">,</span>
+        <span class="s2">"--max-processes"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"4"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">processes_validator</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">MAX_PROCESSES_HELP</span><span class="p">,</span>
@@ -205,175 +205,175 @@
 
     <span class="c1"># Add subparser.</span>
     <span class="n">make</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s2">&quot;make&quot;</span><span class="p">,</span>
-        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;esgdrs make&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_SUBCOMMANDS</span><span class="p">[</span><span class="s2">&quot;make&quot;</span><span class="p">],</span>
+        <span class="s2">"make"</span><span class="p">,</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">"esgdrs make"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_SUBCOMMANDS</span><span class="p">[</span><span class="s2">"make"</span><span class="p">],</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_HELPS</span><span class="p">[</span><span class="s2">&quot;make&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_HELPS</span><span class="p">[</span><span class="s2">"make"</span><span class="p">],</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">parent</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;directory&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s2">&quot;drs&quot;</span><span class="p">]</span>
+        <span class="s2">"directory"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">"*"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s2">"drs"</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--root&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;CWD&quot;</span><span class="p">,</span>
+        <span class="s2">"--root"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"CWD"</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">ROOT_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--version&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="s2">"--version"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">"</span><span class="p">),</span>
         <span class="n">action</span><span class="o">=</span><span class="n">VersionChecker</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;v</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)),</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">SET_VERSION_HELP</span><span class="p">[</span><span class="s2">&quot;drs&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"v</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">"</span><span class="p">)),</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">SET_VERSION_HELP</span><span class="p">[</span><span class="s2">"drs"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--set-value&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FACET_KEY=VALUE&quot;</span><span class="p">,</span>
+        <span class="s2">"--set-value"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"FACET_KEY=VALUE"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">keyval_converter</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">SET_VALUE_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--set-key&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FACET_KEY=ATTRIBUTE&quot;</span><span class="p">,</span>
+        <span class="s2">"--set-key"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"FACET_KEY=ATTRIBUTE"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">keyval_converter</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">SET_KEY_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--rescan&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">RESCAN_HELP</span>
+        <span class="s2">"--rescan"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">RESCAN_HELP</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--retry-from&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILE&quot;</span><span class="p">,</span>
+        <span class="s2">"--retry-from"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"FILE"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">RETRY_FROM_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--commands-file&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;TXT_FILE&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">COMMANDS_FILE_HELP</span>
+        <span class="s2">"--commands-file"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"TXT_FILE"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">COMMANDS_FILE_HELP</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--overwrite-commands-file&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="s2">"--overwrite-commands-file"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">OVERWRITE_COMMANDS_FILE_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--upgrade-from-latest&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="s2">"--upgrade-from-latest"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">UPGRADE_FROM_LATEST_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--ignore-from-latest&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;TXT_FILE&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">FileType</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">),</span>
+        <span class="s2">"--ignore-from-latest"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"TXT_FILE"</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">FileType</span><span class="p">(</span><span class="s2">"r"</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">IGNORE_FROM_LATEST_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--ignore-from-incoming&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;TXT_FILE&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">FileType</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">),</span>
+        <span class="s2">"--ignore-from-incoming"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"TXT_FILE"</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">FileType</span><span class="p">(</span><span class="s2">"r"</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">IGNORE_FROM_INCOMING_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">make</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--copy&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">COPY_HELP</span>
+        <span class="s2">"--copy"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">COPY_HELP</span>
     <span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--link&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">LINK_HELP</span>
+        <span class="s2">"--link"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">LINK_HELP</span>
     <span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--symlink&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">SYMLINK_HELP</span>
+        <span class="s2">"--symlink"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">SYMLINK_HELP</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--no-checksum&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="s2">"--no-checksum"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">NO_CHECKSUM_HELP</span><span class="p">[</span><span class="s2">&quot;drs&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">NO_CHECKSUM_HELP</span><span class="p">[</span><span class="s2">"drs"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--checksums-from&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;CHECKSUM_FILE&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">FileType</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">),</span>
+        <span class="s2">"--checksums-from"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"CHECKSUM_FILE"</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">FileType</span><span class="p">(</span><span class="s2">"r"</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">CHECKSUMS_FROM_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">QUIET_HELP</span>
+        <span class="s2">"--quiet"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">QUIET_HELP</span>
     <span class="p">)</span>
 
     <span class="c1"># Add subparser.</span>
     <span class="n">remove</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s2">&quot;remove&quot;</span><span class="p">,</span>
-        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;esgdrs remove&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_SUBCOMMANDS</span><span class="p">[</span><span class="s2">&quot;remove&quot;</span><span class="p">],</span>
+        <span class="s2">"remove"</span><span class="p">,</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">"esgdrs remove"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_SUBCOMMANDS</span><span class="p">[</span><span class="s2">"remove"</span><span class="p">],</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_HELPS</span><span class="p">[</span><span class="s2">&quot;remove&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_HELPS</span><span class="p">[</span><span class="s2">"remove"</span><span class="p">],</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">parents</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="p">[</span><span class="n">parent</span><span class="p">]),</span>
     <span class="p">)</span>
     <span class="c1"># remove.add_argument(  # Lolo change temporary add to be able to skip the use of pickle tree</span>
-    <span class="c1">#     &quot;--rescan&quot;, action=&quot;store_true&quot;, default=False, help=help.RESCAN_HELP</span>
+    <span class="c1">#     "--rescan", action="store_true", default=False, help=help.RESCAN_HELP</span>
     <span class="c1"># )</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">remove</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--directory&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PATH&quot;</span><span class="p">,</span>
+        <span class="s2">"--directory"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"PATH"</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s2">&quot;mapfile&quot;</span><span class="p">],</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s2">"mapfile"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--dataset-list&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;TXT_FILE&quot;</span><span class="p">,</span>
+        <span class="s2">"--dataset-list"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"TXT_FILE"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">DatasetsReader</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"?"</span><span class="p">,</span>
         <span class="n">const</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DATASET_LIST_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--dataset-id&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;DATASET_ID&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DATASET_ID_HELP</span>
+        <span class="s2">"--dataset-id"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"DATASET_ID"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DATASET_ID_HELP</span>
     <span class="p">)</span>
 
     <span class="n">group</span> <span class="o">=</span> <span class="n">remove</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--version&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="s2">"--version"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">"</span><span class="p">),</span>
         <span class="n">action</span><span class="o">=</span><span class="n">VersionChecker</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">SET_VERSION_HELP</span><span class="p">[</span><span class="s2">&quot;drs&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">SET_VERSION_HELP</span><span class="p">[</span><span class="s2">"drs"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--all-versions&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="s2">"--all-versions"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">ALL_VERSIONS_HELP</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Add subparser.</span>
     <span class="n">latest</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s2">&quot;latest&quot;</span><span class="p">,</span>
-        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;esgdrs latest&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_SUBCOMMANDS</span><span class="p">[</span><span class="s2">&quot;latest&quot;</span><span class="p">],</span>
+        <span class="s2">"latest"</span><span class="p">,</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">"esgdrs latest"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_SUBCOMMANDS</span><span class="p">[</span><span class="s2">"latest"</span><span class="p">],</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_HELPS</span><span class="p">[</span><span class="s2">&quot;make&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DRS_HELPS</span><span class="p">[</span><span class="s2">"make"</span><span class="p">],</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">parents</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="p">[</span><span class="n">parent</span><span class="p">]),</span>
     <span class="p">)</span>
     <span class="n">latest</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--directory&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;CWD&quot;</span><span class="p">,</span>
+        <span class="s2">"--directory"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"CWD"</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()],</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s2">&quot;latest&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s2">"latest"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">latest</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--rescan&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">RESCAN_HELP</span>
+        <span class="s2">"--rescan"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="o">.</span><span class="n">RESCAN_HELP</span>
     <span class="p">)</span>
     <span class="c1"># Return command-line parser &amp; program name.</span>
     <span class="k">return</span> <span class="n">main</span><span class="p">,</span> <span class="n">main</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span></div>
@@ -383,10 +383,10 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../autodoc.html#esgprep.esgdrs.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Run main program</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Get command-line arguments.</span>
     <span class="n">parser</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">()</span>
 
@@ -395,17 +395,17 @@
         <span class="k">return</span>
 
     <span class="c1"># Validate that esgdrs make has at least a directory or --retry-from.</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;make&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;retry_from&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;esgdrs make requires either a directory or --retry-from&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">cmd</span> <span class="o">==</span> <span class="s2">"make"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">directory</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">"retry_from"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"esgdrs make requires either a directory or --retry-from"</span><span class="p">)</span>
 
     <span class="c1"># Add program name as argument.</span>
-    <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;prog&quot;</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">prog</span><span class="p">)</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">"prog"</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">prog</span><span class="p">)</span>
     <span class="c1"># Run program.</span>
     <span class="n">run</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>

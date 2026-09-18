@@ -84,11 +84,11 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">:platform: Unix</span>
 <span class="sd">:synopsis: Toolbox to prepare ESGF data for publication.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -146,198 +146,198 @@
 <div class="viewcode-block" id="get_args">
 <a class="viewcode-back" href="../../autodoc.html#esgprep.esgmapfile.get_args">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_args</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns parsed command-line arguments.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Instantiate argument parser.</span>
     <span class="n">main</span> <span class="o">=</span> <span class="n">CustomArgumentParser</span><span class="p">(</span>
-        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;esgmapfile&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">PROGRAM_DESC</span><span class="p">[</span><span class="s2">&quot;mapfile&quot;</span><span class="p">],</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">"esgmapfile"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">PROGRAM_DESC</span><span class="p">[</span><span class="s2">"mapfile"</span><span class="p">],</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">epilog</span><span class="o">=</span><span class="n">EPILOG</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-h&quot;</span><span class="p">,</span> <span class="s2">&quot;--help&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">HELP</span><span class="p">)</span>
+    <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-h"</span><span class="p">,</span> <span class="s2">"--help"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"help"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">HELP</span><span class="p">)</span>
     <span class="n">main</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-v&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--version&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;version&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(prog)s</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">),</span>
+        <span class="s2">"-v"</span><span class="p">,</span>
+        <span class="s2">"--version"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"version"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"</span><span class="si">%(prog)s</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="n">VERSION_HELP</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">SUBCOMMANDS</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;cmd&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">SUBCOMMANDS</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">"cmd"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
 
     <span class="c1"># Add parent parser with common arguments.</span>
     <span class="n">parent</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-h&quot;</span><span class="p">,</span> <span class="s2">&quot;--help&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">HELP</span><span class="p">)</span>
+    <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-h"</span><span class="p">,</span> <span class="s2">"--help"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"help"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">HELP</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-l&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--log&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;CWD&quot;</span><span class="p">,</span>
+        <span class="s2">"-l"</span><span class="p">,</span>
+        <span class="s2">"--log"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"CWD"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">const</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/logs&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()),</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">=</span><span class="s2">"</span><span class="si">{}</span><span class="s2">/logs"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()),</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"?"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">LOG_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">VERBOSE_HELP</span>
+        <span class="s2">"-d"</span><span class="p">,</span> <span class="s2">"--debug"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">VERBOSE_HELP</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-p&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--project&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span>
+        <span class="s2">"-p"</span><span class="p">,</span>
+        <span class="s2">"--project"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"NAME"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">PROJECT_HELP</span><span class="p">[</span><span class="s2">&quot;mapfile&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">PROJECT_HELP</span><span class="p">[</span><span class="s2">"mapfile"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--mapfile&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{dataset_id}</span><span class="s2">.v</span><span class="si">{version}</span><span class="s2">.map&quot;</span><span class="p">,</span>
+        <span class="s2">"--mapfile"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"</span><span class="si">{dataset_id}</span><span class="s2">.v</span><span class="si">{version}</span><span class="s2">.map"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{dataset_id}</span><span class="s2">.v</span><span class="si">{version}</span><span class="s2">.map&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"</span><span class="si">{dataset_id}</span><span class="s2">.v</span><span class="si">{version}</span><span class="s2">.map"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">MAPFILE_NAME_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--outdir&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;CWD/mapfiles&quot;</span><span class="p">,</span>
+        <span class="s2">"--outdir"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"CWD/mapfiles"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;mapfiles&quot;</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">"mapfiles"</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="n">OUTDIR_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--all-versions&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">ALL_VERSIONS_HELP</span>
+        <span class="s2">"--all-versions"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">ALL_VERSIONS_HELP</span>
     <span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--version&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="s2">"--version"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">"</span><span class="p">),</span>
         <span class="n">action</span><span class="o">=</span><span class="n">VersionChecker</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">SET_VERSION_HELP</span><span class="p">[</span><span class="s2">&quot;mapfile&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">SET_VERSION_HELP</span><span class="p">[</span><span class="s2">"mapfile"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--latest-symlink&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">LATEST_SYMLINK_HELP</span>
+        <span class="s2">"--latest-symlink"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">LATEST_SYMLINK_HELP</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--ignore-dir&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&#39;^.*/(files|\.\w*).*$&#39;&quot;</span><span class="p">,</span>
+        <span class="s2">"--ignore-dir"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="sa">r</span><span class="s2">"'^.*/(files|\.\w*).*$'"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">regex_validator</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^.*/(files|\.[\w]*).*$&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="sa">r</span><span class="s2">"^.*/(files|\.[\w]*).*$"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">IGNORE_DIR_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--include-file&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&#39;^.*\.nc$&#39;&quot;</span><span class="p">,</span>
+        <span class="s2">"--include-file"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="sa">r</span><span class="s2">"'^.*\.nc$'"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">regex_validator</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">&quot;^.*\.nc$&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">INCLUDE_FILE_HELP</span><span class="p">[</span><span class="s2">&quot;mapfile&quot;</span><span class="p">],</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">"^.*\.nc$"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">INCLUDE_FILE_HELP</span><span class="p">[</span><span class="s2">"mapfile"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--exclude-file&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&#39;^\..*$&#39;&quot;</span><span class="p">,</span>
+        <span class="s2">"--exclude-file"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="sa">r</span><span class="s2">"'^\..*$'"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">regex_validator</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">&quot;^\..*$&quot;</span><span class="p">],</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">"^\..*$"</span><span class="p">],</span>
         <span class="n">help</span><span class="o">=</span><span class="n">EXCLUDE_FILE_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--max-processes&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">,</span>
+        <span class="s2">"--max-processes"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"4"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">processes_validator</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">MAX_PROCESSES_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--color&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">COLOR_HELP</span><span class="p">)</span>
-    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no-color&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">NO_COLOR_HELP</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--color"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">COLOR_HELP</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--no-color"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">NO_COLOR_HELP</span><span class="p">)</span>
 
     <span class="c1"># Add subparser.</span>
     <span class="n">make</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s2">&quot;make&quot;</span><span class="p">,</span>
-        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;esgmapfile make&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">MAPFILE_SUBCOMMANDS</span><span class="p">[</span><span class="s2">&quot;make&quot;</span><span class="p">],</span>
+        <span class="s2">"make"</span><span class="p">,</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">"esgmapfile make"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">MAPFILE_SUBCOMMANDS</span><span class="p">[</span><span class="s2">"make"</span><span class="p">],</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">MAPFILE_HELPS</span><span class="p">[</span><span class="s2">&quot;make&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">MAPFILE_HELPS</span><span class="p">[</span><span class="s2">"make"</span><span class="p">],</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">parent</span><span class="p">],</span>
     <span class="p">)</span>
 
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--directory&quot;</span><span class="p">,</span>
+        <span class="s2">"--directory"</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s2">&quot;mapfile&quot;</span><span class="p">],</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s2">"mapfile"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--no-checksum&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="s2">"--no-checksum"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">NO_CHECKSUM_HELP</span><span class="p">[</span><span class="s2">&quot;mapfile&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">NO_CHECKSUM_HELP</span><span class="p">[</span><span class="s2">"mapfile"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--checksum-type&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;TYPE&quot;</span><span class="p">,</span>
+        <span class="s2">"--checksum-type"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"TYPE"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;sha256&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"sha256"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">CHECKSUM_TYPE_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--checksums-from&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;CHECKSUM_FILE&quot;</span><span class="p">,</span>
+        <span class="s2">"--checksums-from"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"CHECKSUM_FILE"</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">ChecksumsReader</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">CHECKSUMS_FROM_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--tech-notes-url&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;URL&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">TECH_NOTES_URL_HELP</span>
+        <span class="s2">"--tech-notes-url"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"URL"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">TECH_NOTES_URL_HELP</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--tech-notes-title&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;TITLE&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">TECH_NOTES_TITLE_HELP</span>
+        <span class="s2">"--tech-notes-title"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"TITLE"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">TECH_NOTES_TITLE_HELP</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--no-cleanup&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">NO_CLEANUP_HELP</span>
+        <span class="s2">"--no-cleanup"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">NO_CLEANUP_HELP</span>
     <span class="p">)</span>
     <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--retry-from&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILE&quot;</span><span class="p">,</span>
+        <span class="s2">"--retry-from"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"FILE"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">RETRY_FROM_HELP</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="c1"># Subparser for &quot;esgmapfile show&quot;</span>
+    <span class="c1"># Subparser for "esgmapfile show"</span>
     <span class="n">show</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s2">&quot;show&quot;</span><span class="p">,</span>
-        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;esgmapfile show&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">MAPFILE_SUBCOMMANDS</span><span class="p">[</span><span class="s2">&quot;show&quot;</span><span class="p">],</span>
+        <span class="s2">"show"</span><span class="p">,</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">"esgmapfile show"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">MAPFILE_SUBCOMMANDS</span><span class="p">[</span><span class="s2">"show"</span><span class="p">],</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">MultilineFormatter</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">MAPFILE_HELPS</span><span class="p">[</span><span class="s2">&quot;show&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">MAPFILE_HELPS</span><span class="p">[</span><span class="s2">"show"</span><span class="p">],</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">parent</span><span class="p">],</span>
     <span class="p">)</span>
 
     <span class="n">group</span> <span class="o">=</span> <span class="n">show</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--directory&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PATH&quot;</span><span class="p">,</span>
+        <span class="s2">"--directory"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"PATH"</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DirectoryChecker</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s2">&quot;mapfile&quot;</span><span class="p">],</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">DIRECTORY_HELP</span><span class="p">[</span><span class="s2">"mapfile"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--dataset-list&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;TXT_FILE&quot;</span><span class="p">,</span>
+        <span class="s2">"--dataset-list"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"TXT_FILE"</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">DatasetsReader</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"?"</span><span class="p">,</span>
         <span class="n">const</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">DATASET_LIST_HELP</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--dataset-id&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;DATASET_ID&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">DATASET_ID_HELP</span>
+        <span class="s2">"--dataset-id"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"DATASET_ID"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">DATASET_ID_HELP</span>
     <span class="p">)</span>
-    <span class="n">show</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">QUIET_HELP</span><span class="p">)</span>
+    <span class="n">show</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--quiet"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">QUIET_HELP</span><span class="p">)</span>
     <span class="n">show</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--basename&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">BASENAME_HELP</span>
+        <span class="s2">"--basename"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">BASENAME_HELP</span>
     <span class="p">)</span>
 
     <span class="c1"># Return command-line parser &amp; program name.</span>
@@ -348,10 +348,10 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../autodoc.html#esgprep.esgmapfile.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Run main program</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Get command-line arguments.</span>
     <span class="n">parser</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">()</span>
 
@@ -360,14 +360,14 @@
         <span class="k">return</span>
 
     <span class="c1"># Add program name as argument.</span>
-    <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;prog&quot;</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">prog</span><span class="p">)</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">"prog"</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">prog</span><span class="p">)</span>
 
     <span class="c1"># Run program.</span>
     <span class="n">run</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>

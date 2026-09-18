@@ -84,11 +84,11 @@
   <h1>Source code for esgprep.drs.remove</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">:platform: Unix</span>
 <span class="sd">:synopsis: Manages the filesystem tree according to the project the Data Reference Syntax and versioning.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
@@ -103,16 +103,16 @@
 <div class="viewcode-block" id="Process">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep.drs.remove.Process">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Process</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Child process.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Shared processing context between child processes.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">tree</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">root</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">set_values</span>
@@ -130,22 +130,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ignore_from_incoming</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ignore_from_incoming</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Any error switches to the next child process.</span>
 <span class="sd">        It does not stop the main process at all.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Escape in case of error.</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">current_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
 
             <span class="c1"># Validate directory structure.</span>
-            <span class="c1"># assert get_terms(source), &quot;Invalid path {}&quot;.format(source)</span>
+            <span class="c1"># assert get_terms(source), "Invalid path {}".format(source)</span>
             <span class="c1">#</span>
             <span class="c1"># root = get_root(current_path)</span>
-            <span class="c1"># assert root, &quot;Invalid root path {}&quot;.format(source)</span>
+            <span class="c1"># assert root, "Invalid root path {}".format(source)</span>
             <span class="c1"># version = get_version(current_path)</span>
-            <span class="c1"># assert version, &quot;Invalid path version {}&quot;.format(source)</span>
+            <span class="c1"># assert version, "Invalid path version {}".format(source)</span>
             <span class="c1">#</span>
             <span class="c1"># Get all existing version.</span>
             <span class="n">versions</span> <span class="o">=</span> <span class="n">get_ordered_version_paths</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span>
@@ -161,7 +161,7 @@
             <span class="p">]</span>
 
             <span class="c1"># Get latest version.</span>
-            <span class="n">latest_version</span> <span class="o">=</span> <span class="s2">&quot;Initial&quot;</span>
+            <span class="n">latest_version</span> <span class="o">=</span> <span class="s2">"Initial"</span>
             <span class="k">if</span> <span class="n">versions</span><span class="p">:</span>
                 <span class="n">latest_version</span> <span class="o">=</span> <span class="n">get_ordered_version_paths</span><span class="p">(</span><span class="n">versions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
@@ -178,12 +178,12 @@
                             <span class="nb">any</span><span class="p">(</span><span class="n">v</span> <span class="o">==</span> <span class="n">current_path</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">versions</span><span class="p">)</span>
                             <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
                         <span class="p">):</span>
-                            <span class="c1"># Remove the current file from the &quot;files&quot; folder. ORIGINAL</span>
+                            <span class="c1"># Remove the current file from the "files" folder. ORIGINAL</span>
                             <span class="c1"># self.tree.create_leaf(nodes=with_file_folder(current_path).parts,</span>
                             <span class="c1">#                      label=path.name,</span>
                             <span class="c1">#                      mode=self.mode)</span>
 
-                            <span class="c1"># Remove the current file from the &quot;files&quot; folder.</span>
+                            <span class="c1"># Remove the current file from the "files" folder.</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_leaf</span><span class="p">(</span>
                                 <span class="n">nodes</span><span class="o">=</span><span class="n">file</span><span class="o">.</span><span class="n">parts</span><span class="p">,</span>
                                 <span class="n">label</span><span class="o">=</span><span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -191,16 +191,16 @@
                                 <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
                             <span class="p">)</span>
 
-                    <span class="c1"># Remove the current file symlink from the &quot;vYYYYMMDD&quot; folder in any case.</span>
+                    <span class="c1"># Remove the current file symlink from the "vYYYYMMDD" folder in any case.</span>
                     <span class="c1"># Note: get_drs_down and with_file_folder functions are not defined - commenting out broken code</span>
-                    <span class="c1"># src = [&quot;..&quot;] + [&quot;..&quot;] * len(get_drs_down(current_path).parts)</span>
-                    <span class="c1"># src.append(&quot;files&quot;)</span>
+                    <span class="c1"># src = [".."] + [".."] * len(get_drs_down(current_path).parts)</span>
+                    <span class="c1"># src.append("files")</span>
                     <span class="c1"># src += get_drs_down(with_file_folder(file)).parts</span>
                     <span class="c1"># Original logic was broken - removing broken tree leaf creation</span>
                     <span class="c1"># self.tree.create_leaf(</span>
                     <span class="c1">#     nodes=file.parts,</span>
-                    <span class="c1">#     label=&quot;{}{}{}&quot;.format(</span>
-                    <span class="c1">#         file.name, LINK_SEPARATOR, &quot;broken_path&quot;</span>
+                    <span class="c1">#     label="{}{}{}".format(</span>
+                    <span class="c1">#         file.name, LINK_SEPARATOR, "broken_path"</span>
                     <span class="c1">#     ),</span>
                     <span class="c1">#     src=None,</span>
                     <span class="c1">#     mode=self.mode,</span>
@@ -212,34 +212,34 @@
             <span class="c1"># Record entry for list() and uniqueness checkup.</span>
             <span class="c1"># En regardant make :</span>
             <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>
-                <span class="s2">&quot;dst&quot;</span><span class="p">:</span> <span class="n">current_path</span><span class="p">,</span>
-                <span class="s2">&quot;is_duplicate&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">"src"</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>
+                <span class="s2">"dst"</span><span class="p">:</span> <span class="n">current_path</span><span class="p">,</span>
+                <span class="s2">"is_duplicate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">}</span>
             <span class="c1">#####</span>
             <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_path_to_version</span><span class="p">(</span><span class="n">current_path</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">append_path</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
-                <span class="c1"># self.tree.paths[key][&#39;files&#39;].append(record) # Lolo Change file to record</span>
-                <span class="k">assert</span> <span class="n">latest_version</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;latest&quot;</span><span class="p">]</span>
-                <span class="k">assert</span> <span class="n">versions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;upgrade&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">append_path</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">"files"</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+                <span class="c1"># self.tree.paths[key]['files'].append(record) # Lolo Change file to record</span>
+                <span class="k">assert</span> <span class="n">latest_version</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">"latest"</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">versions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">"upgrade"</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">infos</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s2">&quot;files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">record</span><span class="p">],</span>
-                    <span class="s2">&quot;latest&quot;</span><span class="p">:</span> <span class="s2">&quot;Initial&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">versions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">"files"</span><span class="p">:</span> <span class="p">[</span><span class="n">record</span><span class="p">],</span>
+                    <span class="s2">"latest"</span><span class="p">:</span> <span class="s2">"Initial"</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">versions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
                 <span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">infos</span><span class="p">)</span>
 
                 <span class="c1"># Lolo Change into add_path method to set instance variable (pb for shared DRSTree between process)</span>
 
                 <span class="c1"># self.tree.paths[key] = {}</span>
-                <span class="c1"># self.tree.paths[key][&#39;files&#39;] = [record] # Lolo Change file to record</span>
-                <span class="c1"># self.tree.paths[key][&#39;latest&#39;] = &#39;Initial&#39; if len(versions) == 1 else get_version(versions[-1])</span>
-                <span class="c1">##self.tree.paths[key][&#39;upgrade&#39;] = version</span>
+                <span class="c1"># self.tree.paths[key]['files'] = [record] # Lolo Change file to record</span>
+                <span class="c1"># self.tree.paths[key]['latest'] = 'Initial' if len(versions) == 1 else get_version(versions[-1])</span>
+                <span class="c1">##self.tree.paths[key]['upgrade'] = version</span>
 
             <span class="c1"># Print info.</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DRS Path = </span><span class="si">{</span><span class="n">get_path_to_version</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; &lt;-- &quot;</span> <span class="o">+</span> <span class="n">current_path</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"DRS Path = </span><span class="si">{</span><span class="n">get_path_to_version</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s2">" &lt;-- "</span> <span class="o">+</span> <span class="n">current_path</span><span class="o">.</span><span class="n">name</span>
             <span class="n">Print</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
             <span class="c1"># Return True if success.</span>
@@ -262,8 +262,8 @@
 
                 <span class="c1"># Format &amp; print exception traceback.</span>
                 <span class="n">exc</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="n">TAGS</span><span class="o">.</span><span class="n">SKIP</span> <span class="o">+</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">HEADER</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">TAGS</span><span class="o">.</span><span class="n">SKIP</span> <span class="o">+</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">HEADER</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">))</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
                 <span class="n">Print</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="kc">None</span>
@@ -275,11 +275,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
 
                 <span class="c1"># Clear previous print.</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\r</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">" "</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_length</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                 <span class="n">Print</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
                 <span class="c1"># Print progress bar.</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\r</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">COLORS</span><span class="o">.</span><span class="n">OKBLUE</span><span class="p">(</span><span class="n">SPINNER_DESC</span><span class="p">),</span>
                     <span class="n">FRAMES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">value</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">FRAMES</span><span class="p">)],</span>
                     <span class="n">source</span><span class="p">,</span>

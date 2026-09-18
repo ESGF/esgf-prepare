@@ -450,7 +450,7 @@ ESGF publication and data integrity verification.</p>
 <p>For large datasets, pre-calculate checksums to save time:</p>
 <ol class="arabic">
 <li><p><strong>Generate checksums:</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>find<span class="w"> </span>/data<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.nc&quot;</span><span class="w"> </span>-exec<span class="w"> </span>sha256sum<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>&gt;<span class="w"> </span>checksums.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>find<span class="w"> </span>/data<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.nc"</span><span class="w"> </span>-exec<span class="w"> </span>sha256sum<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>&gt;<span class="w"> </span>checksums.txt
 </pre></div>
 </div>
 </li>
@@ -472,7 +472,7 @@ ESGF publication and data integrity verification.</p>
 <h2><a class="toc-backref" href="#id19" role="doc-backlink">Troubleshooting</a><a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
 <section id="why-is-my-project-not-recognized">
 <h3><a class="toc-backref" href="#id20" role="doc-backlink">Why is my project not recognized?</a><a class="headerlink" href="#why-is-my-project-not-recognized" title="Link to this heading"></a></h3>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ValueError: Project &#39;cmip6&#39; not found in esgvoc
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ValueError: Project 'cmip6' not found in esgvoc
 </pre></div>
 </div>
 <p><strong>Solutions:</strong></p>
@@ -506,7 +506,7 @@ $<span class="w"> </span>esgvoc<span class="w"> </span>use<span class="w"> </spa
 </section>
 <section id="what-if-i-get-facet-validation-errors">
 <h3><a class="toc-backref" href="#id21" role="doc-backlink">What if I get facet validation errors?</a><a class="headerlink" href="#what-if-i-get-facet-validation-errors" title="Link to this heading"></a></h3>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ERROR: Invalid value &#39;my_experiment&#39; for facet &#39;experiment&#39;
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ERROR: Invalid value 'my_experiment' for facet 'experiment'
 </pre></div>
 </div>
 <p><strong>This means</strong> your data contains values not in the controlled vocabulary.</p>

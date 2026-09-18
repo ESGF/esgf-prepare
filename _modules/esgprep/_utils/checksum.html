@@ -83,14 +83,14 @@
   <h1>Source code for esgprep._utils.checksum</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">.. module:: esgprep._utils.checksum.py</span>
 <span class="sd">   :platform: Unix</span>
 <span class="sd">   :synopsis: Checksumming utilities.</span>
 
 <span class="sd">.. moduleauthor:: Guillaume Levavasseur &lt;glipsl@ipsl.fr&gt;</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -102,7 +102,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_varint_encode</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Encode an integer as varint (variable-length integer encoding).</span>
 
 <span class="sd">    Args:</span>
@@ -110,7 +110,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The varint-encoded bytes</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">result</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
     <span class="k">while</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mh">0x80</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n</span> <span class="o">&amp;</span> <span class="mh">0x7F</span><span class="p">)</span> <span class="o">|</span> <span class="mh">0x80</span><span class="p">)</span>
@@ -121,32 +121,32 @@
 
 <span class="c1"># Map of supported algorithms for multihash</span>
 <span class="n">MULTIHASH_ALGOS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;sha1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x11</span><span class="p">,</span> <span class="s2">&quot;sha1&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;sha2-256&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x12</span><span class="p">,</span> <span class="s2">&quot;sha256&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;sha2-512&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x13</span><span class="p">,</span> <span class="s2">&quot;sha512&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;sha3-512&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x14</span><span class="p">,</span> <span class="s2">&quot;sha3_512&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;sha3-256&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x16</span><span class="p">,</span> <span class="s2">&quot;sha3_256&quot;</span><span class="p">),</span>
+    <span class="s2">"sha1"</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x11</span><span class="p">,</span> <span class="s2">"sha1"</span><span class="p">),</span>
+    <span class="s2">"sha2-256"</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x12</span><span class="p">,</span> <span class="s2">"sha256"</span><span class="p">),</span>
+    <span class="s2">"sha2-512"</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x13</span><span class="p">,</span> <span class="s2">"sha512"</span><span class="p">),</span>
+    <span class="s2">"sha3-512"</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x14</span><span class="p">,</span> <span class="s2">"sha3_512"</span><span class="p">),</span>
+    <span class="s2">"sha3-256"</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x16</span><span class="p">,</span> <span class="s2">"sha3_256"</span><span class="p">),</span>
 <span class="p">}</span>
 
 
 <div class="viewcode-block" id="multihash">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.checksum.multihash">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">multihash</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">algo</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generate a multihash for the given data using the specified algorithm.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        data: The data to hash</span>
-<span class="sd">        algo: The multihash algorithm name (e.g., &quot;sha2-256&quot;)</span>
+<span class="sd">        algo: The multihash algorithm name (e.g., "sha2-256")</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The multihash as bytes (code + length + digest)</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If the algorithm is not supported</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">algo</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">MULTIHASH_ALGOS</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported multihash algorithm: </span><span class="si">{</span><span class="n">algo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported multihash algorithm: </span><span class="si">{</span><span class="n">algo</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">code</span><span class="p">,</span> <span class="n">hashlib_name</span> <span class="o">=</span> <span class="n">MULTIHASH_ALGOS</span><span class="p">[</span><span class="n">algo</span><span class="p">]</span>
     <span class="n">h</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">hashlib_name</span><span class="p">)</span>
@@ -162,22 +162,22 @@
 <div class="viewcode-block" id="multihash_hex">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.checksum.multihash_hex">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">multihash_hex</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">algo</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generate a multihash for the given data and return it as a hex string.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        data: The data to hash</span>
-<span class="sd">        algo: The multihash algorithm name (e.g., &quot;sha2-256&quot;)</span>
+<span class="sd">        algo: The multihash algorithm name (e.g., "sha2-256")</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The multihash as a hexadecimal string</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">multihash</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">algo</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span></div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_varint_decode</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Decode a varint from bytes.</span>
 
 <span class="sd">    Args:</span>
@@ -186,7 +186,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A tuple of (decoded_value, new_offset)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">shift</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">pos</span> <span class="o">=</span> <span class="n">offset</span>
@@ -205,15 +205,15 @@
 <div class="viewcode-block" id="detect_multihash_algo">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.checksum.detect_multihash_algo">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">detect_multihash_algo</span><span class="p">(</span><span class="n">hash_hex</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Detect the multihash algorithm from a multihash hex string.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        hash_hex: The multihash as a hexadecimal string</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The algorithm name (e.g., &quot;sha2-256&quot;) or None if not a valid multihash</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        The algorithm name (e.g., "sha2-256") or None if not a valid multihash</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Convert hex to bytes</span>
         <span class="n">hash_bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">hash_hex</span><span class="p">)</span>
@@ -236,15 +236,15 @@
 <div class="viewcode-block" id="is_multihash_algo">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.checksum.is_multihash_algo">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_multihash_algo</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check if a checksum type is a multihash algorithm.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        checksum_type: The checksum type to check</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        True if it&#39;s a multihash algorithm, False otherwise</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        True if it's a multihash algorithm, False otherwise</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">checksum_type</span> <span class="ow">in</span> <span class="n">MULTIHASH_ALGOS</span></div>
 
 
@@ -252,10 +252,10 @@
 <div class="viewcode-block" id="checksum">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.checksum.checksum">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">checksum</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">,</span> <span class="n">include_filename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">human_readable</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes a file checksum. Supports both standard hashlib algorithms and multihash algorithms.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Get file size for progress indication</span>
         <span class="n">file_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span>
@@ -265,7 +265,7 @@
             <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.print</span><span class="w"> </span><span class="kn">import</span> <span class="n">Print</span>
 
             <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Computing </span><span class="si">{</span><span class="n">checksum_type</span><span class="si">}</span><span class="s2"> checksum for large file: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">file_size</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB)&quot;</span>
+                <span class="sa">f</span><span class="s2">"Computing </span><span class="si">{</span><span class="n">checksum_type</span><span class="si">}</span><span class="s2"> checksum for large file: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">file_size</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB)"</span>
             <span class="p">)</span>
 
         <span class="c1"># Check if this is a multihash algorithm</span>
@@ -277,7 +277,7 @@
                 <span class="n">bytes_read</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">1024</span>  <span class="c1"># 64KB chunks</span>
 
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                         <span class="n">chunk</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
@@ -288,14 +288,14 @@
                         <span class="c1"># Show progress every 1GB</span>
                         <span class="k">if</span> <span class="n">bytes_read</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                             <span class="n">progress_pct</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">bytes_read</span> <span class="o">/</span> <span class="n">file_size</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
-                            <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Progress: </span><span class="si">{</span><span class="n">progress_pct</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+                            <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Progress: </span><span class="si">{</span><span class="n">progress_pct</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
-                    <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  Converting data to bytes for hash calculation...&quot;</span><span class="p">)</span>
+                    <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"  Converting data to bytes for hash calculation..."</span><span class="p">)</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">hash_data</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Read file data normally for smaller files</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
             <span class="c1"># Include filename into the data if requested</span>
@@ -305,7 +305,7 @@
             <span class="c1"># Generate multihash</span>
             <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
                 <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;  Generating </span><span class="si">{</span><span class="n">checksum_type</span><span class="si">}</span><span class="s2"> multihash (this may take a while for large files)...&quot;</span>
+                    <span class="sa">f</span><span class="s2">"  Generating </span><span class="si">{</span><span class="n">checksum_type</span><span class="si">}</span><span class="s2"> multihash (this may take a while for large files)..."</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">human_readable</span><span class="p">:</span>
@@ -314,7 +314,7 @@
                 <span class="n">result</span> <span class="o">=</span> <span class="n">multihash</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
-                <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Checksum completed: </span><span class="si">{</span><span class="n">result</span><span class="p">[:</span><span class="mi">32</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Checksum completed: </span><span class="si">{</span><span class="n">result</span><span class="p">[:</span><span class="mi">32</span><span class="p">]</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">result</span>
 
@@ -324,25 +324,25 @@
             <span class="n">hash_algo</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">hashlib</span><span class="p">,</span> <span class="n">checksum_type</span><span class="p">)()</span>
 
             <span class="c1"># Checksumming file.</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">blocksize</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span><span class="o">.</span><span class="n">st_blksize</span>
                 <span class="n">bytes_read</span> <span class="o">=</span> <span class="mi">0</span>
 
-                <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">blocksize</span><span class="p">),</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">blocksize</span><span class="p">),</span> <span class="sa">b</span><span class="s2">""</span><span class="p">):</span>
                     <span class="n">hash_algo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
                     <span class="n">bytes_read</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
 
                     <span class="c1"># Show progress for large files every 1GB</span>
                     <span class="k">if</span> <span class="n">show_progress</span> <span class="ow">and</span> <span class="n">bytes_read</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">progress_pct</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">bytes_read</span> <span class="o">/</span> <span class="n">file_size</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
-                        <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Progress: </span><span class="si">{</span><span class="n">progress_pct</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+                        <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Progress: </span><span class="si">{</span><span class="n">progress_pct</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
 
             <span class="c1"># Include filename into the checksum.</span>
             <span class="k">if</span> <span class="n">include_filename</span><span class="p">:</span>
                 <span class="n">hash_algo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ffp</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
 
             <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
-                <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  Checksum completed&quot;</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"  Checksum completed"</span><span class="p">)</span>
 
             <span class="c1"># Return human readable checksum.</span>
             <span class="k">if</span> <span class="n">human_readable</span><span class="p">:</span>
@@ -367,16 +367,16 @@
 <div class="viewcode-block" id="get_checksum_pattern">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.checksum.get_checksum_pattern">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_checksum_pattern</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Builds a regular expression describing a checksum pattern.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Handle multihash algorithms</span>
     <span class="k">if</span> <span class="n">is_multihash_algo</span><span class="p">(</span><span class="n">checksum_type</span><span class="p">):</span>
         <span class="c1"># Multihash patterns are variable length hex strings</span>
         <span class="c1"># They start with varint-encoded code and length, followed by the digest</span>
         <span class="c1"># For hex representation, this is quite variable, so we use a more flexible pattern</span>
-        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[0-9a-f]+$&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^[0-9a-f]+$"</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Handle standard hashlib algorithms</span>
@@ -387,19 +387,19 @@
         <span class="n">checksum_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hash_algo</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">())</span>
 
         <span class="c1"># Return corresponding regex.</span>
-        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;^[0-9a-f]</span><span class="se">{{</span><span class="si">{</span><span class="n">checksum_length</span><span class="si">}</span><span class="se">}}</span><span class="s2">$&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">"^[0-9a-f]</span><span class="se">{{</span><span class="si">{</span><span class="n">checksum_length</span><span class="si">}</span><span class="se">}}</span><span class="s2">$"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="get_checksum">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.checksum.get_checksum">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_checksum</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="o">=</span><span class="s2">&quot;sha256&quot;</span><span class="p">,</span> <span class="n">checksums</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_checksum</span><span class="p">(</span><span class="n">ffp</span><span class="p">,</span> <span class="n">checksum_type</span><span class="o">=</span><span class="s2">"sha256"</span><span class="p">,</span> <span class="n">checksums</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Global method to get file checksum:</span>
 <span class="sd">    1. By computing the checksum directly.</span>
 <span class="sd">    2. Through a list of checksums in a dictionary way {file: checksum}.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># If pre-computed checksum with correct pattern exists in dictionary,</span>
     <span class="c1"># then return it.</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">checksums</span>

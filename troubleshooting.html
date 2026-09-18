@@ -169,7 +169,7 @@
 <section id="project-not-found-in-vocabulary">
 <h3><a class="toc-backref" href="#id3" role="doc-backlink">Project not found in vocabulary</a><a class="headerlink" href="#project-not-found-in-vocabulary" title="Link to this heading"></a></h3>
 <p><strong>Error message:</strong></p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ValueError: Project &#39;cmip8&#39; not found in esgvoc
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ValueError: Project 'cmip8' not found in esgvoc
 </pre></div>
 </div>
 <p><strong>Cause:</strong>
@@ -200,7 +200,7 @@ $&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> 
 <section id="no-module-named-esgvoc">
 <h3><a class="toc-backref" href="#id4" role="doc-backlink">No module named ‘esgvoc’</a><a class="headerlink" href="#no-module-named-esgvoc" title="Link to this heading"></a></h3>
 <p><strong>Error message:</strong></p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ModuleNotFoundError: No module named &#39;esgvoc&#39;
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ModuleNotFoundError: No module named 'esgvoc'
 </pre></div>
 </div>
 <p><strong>Cause:</strong>
@@ -223,7 +223,7 @@ $&gt;<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> 
 <section id="invalid-facet-value">
 <h3><a class="toc-backref" href="#id5" role="doc-backlink">Invalid facet value</a><a class="headerlink" href="#invalid-facet-value" title="Link to this heading"></a></h3>
 <p><strong>Error message:</strong></p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ERROR: Invalid value &#39;invalid_experiment&#39; for facet &#39;experiment&#39;
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ERROR: Invalid value 'invalid_experiment' for facet 'experiment'
 Valid values: historical, 1pctCO2-bgc, esm-flat10, ...
 </pre></div>
 </div>
@@ -293,7 +293,7 @@ The NetCDF file is missing required global attributes for DRS construction.</p>
 <section id="permission-denied">
 <h3><a class="toc-backref" href="#id7" role="doc-backlink">Permission denied</a><a class="headerlink" href="#permission-denied" title="Link to this heading"></a></h3>
 <p><strong>Error message:</strong></p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>PermissionError: [Errno 13] Permission denied: &#39;/data/...&#39;
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>PermissionError: [Errno 13] Permission denied: '/data/...'
 </pre></div>
 </div>
 <p><strong>Cause:</strong>
@@ -347,7 +347,7 @@ Mapfile generation takes hours for large files.</p>
 <ol class="arabic">
 <li><p>Use pre-calculated checksums:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate checksums separately</span>
-$&gt;<span class="w"> </span>find<span class="w"> </span>/data<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.nc&quot;</span><span class="w"> </span>-exec<span class="w"> </span>sha256sum<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>&gt;<span class="w"> </span>checksums.txt
+$&gt;<span class="w"> </span>find<span class="w"> </span>/data<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.nc"</span><span class="w"> </span>-exec<span class="w"> </span>sha256sum<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>&gt;<span class="w"> </span>checksums.txt
 
 <span class="c1"># Use them with esgmapfile</span>
 $&gt;<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
@@ -377,7 +377,7 @@ Process uses excessive RAM or gets killed.</p>
 <li><p>Process files in smaller batches:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process one directory at a time</span>
 <span class="k">for</span><span class="w"> </span>dir<span class="w"> </span><span class="k">in</span><span class="w"> </span>/data/*/<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">    </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dir</span><span class="s2">&quot;</span>
+<span class="w">    </span>esgmapfile<span class="w"> </span>make<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="s2">"</span><span class="nv">$dir</span><span class="s2">"</span>
 <span class="k">done</span>
 </pre></div>
 </div>
@@ -406,7 +406,7 @@ $&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> 
 </li>
 <li><p>Use include/exclude filters:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt;<span class="w"> </span>esgdrs<span class="w"> </span>make<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>cmip7<span class="w"> </span><span class="se">\</span>
-<span class="w">               </span>--include-file<span class="w"> </span><span class="s1">&#39;^.*tas.*\.nc$&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">               </span>--include-file<span class="w"> </span><span class="s1">'^.*tas.*\.nc$'</span><span class="w"> </span><span class="se">\</span>
 <span class="w">               </span>/data/
 </pre></div>
 </div>

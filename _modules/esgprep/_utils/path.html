@@ -92,43 +92,43 @@
 <div class="viewcode-block" id="extract_version">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.extract_version">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">extract_version</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extracts the version string (vXXXXXXXX) from the given path.</span>
 <span class="sd">    Raises a ValueError if no valid version is found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;v\d</span><span class="si">{8}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+<span class="sd">    """</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"v\d</span><span class="si">{8}</span><span class="s2">"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="s2">&quot;latest&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;latest&quot;</span>
-    <span class="k">elif</span> <span class="s2">&quot;files&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;files&quot;</span>
+    <span class="k">elif</span> <span class="s2">"latest"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">"latest"</span>
+    <span class="k">elif</span> <span class="s2">"files"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">"files"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid version format in path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid version format in path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="get_version_index">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_version_index">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_version_index</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the index position of the version part (vXXXXXXXX) in the path parts.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">version</span> <span class="o">=</span> <span class="n">extract_version</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="n">parts</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">parts</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parts</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">part</span> <span class="o">==</span> <span class="n">version</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">i</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No version found in path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No version found in path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="get_version_and_subpath">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_version_and_subpath">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_version_and_subpath</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns a list of path parts from the version part to the end of the path.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">index</span> <span class="o">=</span> <span class="n">get_version_index</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="n">index</span><span class="p">:])</span></div>
 
@@ -137,9 +137,9 @@
 <div class="viewcode-block" id="get_path_to_version">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_path_to_version">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_path_to_version</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns a list of path parts from the start part to the version of the path.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">index</span> <span class="o">=</span> <span class="n">get_version_index</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parts</span><span class="p">[:</span><span class="n">index</span><span class="p">])</span></div>
 
@@ -148,18 +148,18 @@
 <div class="viewcode-block" id="get_ordered_version_paths">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_ordered_version_paths">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_ordered_version_paths</span><span class="p">(</span><span class="n">base_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a list of all &quot;version directory&quot; paths in the base_path directory, ordered by version,</span>
-<span class="sd">    excluding the &#39;latest&#39; symlink.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Returns a list of all "version directory" paths in the base_path directory, ordered by version,</span>
+<span class="sd">    excluding the 'latest' symlink.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">base_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
     <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">base_path</span><span class="o">.</span><span class="n">iterdir</span><span class="p">())</span>
-    <span class="c1"># Extract versions and filter valid ones, excluding &#39;latest&#39; and &#39;files&#39;</span>
+    <span class="c1"># Extract versions and filter valid ones, excluding 'latest' and 'files'</span>
     <span class="n">versioned_paths</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">extract_version</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span>
-        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;latest&quot;</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;files&quot;</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">"latest"</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">"files"</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
     <span class="p">]</span>
 
     <span class="c1"># Sort by version (numeric sorting for vXXXXXXXX)</span>
@@ -185,10 +185,10 @@
 <div class="viewcode-block" id="get_versions">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_versions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_versions</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns a list of all version directory paths for the given path, ordered by version.</span>
 <span class="sd">    This is used to find all existing versions of a dataset.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">versions</span> <span class="o">=</span> <span class="n">get_ordered_version_paths</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">versions</span><span class="p">:</span>
         <span class="c1"># If no versions found, try the parent directory</span>
@@ -202,10 +202,10 @@
 <div class="viewcode-block" id="get_drs">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_drs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_drs</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the DRS (Data Reference Syntax) part of the path.</span>
 <span class="sd">    This returns the path up to but not including the version.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Get the path parts up to the version</span>
         <span class="n">drs_parts</span> <span class="o">=</span> <span class="n">get_path_to_version</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -219,20 +219,20 @@
 <div class="viewcode-block" id="is_latest_symlink">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.is_latest_symlink">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_latest_symlink</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Check if the path contains &#39;latest&#39; and is a symlink.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">&quot;latest&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Check if the path contains 'latest' and is a symlink.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">"latest"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="with_latest_target">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.with_latest_target">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">with_latest_target</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    If path is a &#39;latest&#39; symlink, return the target path.</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    If path is a 'latest' symlink, return the target path.</span>
 <span class="sd">    Otherwise return the original path.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">is_latest_symlink</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
@@ -246,17 +246,17 @@
 <div class="viewcode-block" id="get_project">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_project">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_project</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extract project code from a pathlib.Path object.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Get all scopes within the loaded authority.</span>
     <span class="n">scopes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">get_all_projects</span><span class="p">())</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">scopes</span><span class="p">:</span>
         <span class="n">Print</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="s2">&quot;No esgvoc vocabulary databases found. &quot;</span>
-            <span class="s2">&quot;Please install at least one project snapshot, e.g.: esgvoc use cordex-cmip6@latest&quot;</span>
+            <span class="s2">"No esgvoc vocabulary databases found. "</span>
+            <span class="s2">"Please install at least one project snapshot, e.g.: esgvoc use cordex-cmip6@latest"</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
@@ -269,23 +269,23 @@
         <span class="n">db_info</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">get_active_database_info</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">db_info</span><span class="p">:</span>
             <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Using vocabulary database for &#39;</span><span class="si">{</span><span class="n">project_id</span><span class="si">}</span><span class="s2">&#39;: &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;version=</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, source=</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Using vocabulary database for '</span><span class="si">{</span><span class="n">project_id</span><span class="si">}</span><span class="s2">': "</span>
+                <span class="sa">f</span><span class="s2">"version=</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">'version'</span><span class="p">]</span><span class="si">}</span><span class="s2">, source=</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">'source'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">project_id</span>
 
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">project</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;No project code found in path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;  Installed vocabulary databases: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">scopes</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;  None of these matched any part of the path.&quot;</span>
+            <span class="sa">f</span><span class="s2">"No project code found in path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"  Installed vocabulary databases: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">scopes</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"  None of these matched any part of the path."</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Multiple project codes found in path: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">project</span><span class="p">)</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;  Unable to determine which project to use.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Multiple project codes found in path: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">project</span><span class="p">)</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"  Unable to determine which project to use."</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -294,11 +294,11 @@
 <div class="viewcode-block" id="get_terms">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.get_terms">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_terms</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extract DRS terms from NetCDF file global attributes.</span>
 <span class="sd">    Returns a dictionary of DRS terms for the given path.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_terms: Processing path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"get_terms: Processing path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Import NetCDF utilities</span>
@@ -306,13 +306,13 @@
 
         <span class="c1"># Get NetCDF global attributes</span>
         <span class="n">attrs</span> <span class="o">=</span> <span class="n">get_ncattrs</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_terms: NetCDF attributes: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"get_terms: NetCDF attributes: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="c1"># Return the attributes as terms - they contain the DRS terms</span>
         <span class="k">return</span> <span class="n">attrs</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_terms: Error extracting terms from NetCDF </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"get_terms: Error extracting terms from NetCDF </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{}</span></div>
 
 
@@ -320,19 +320,19 @@
 <div class="viewcode-block" id="dataset_id">
 <a class="viewcode-back" href="../../../autodoc.html#esgprep._utils.path.dataset_id">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">dataset_id</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Build dataset identifier from DRS path structure using esgvoc DrsGenerator.</span>
 <span class="sd">    Returns the dataset identifier string for the given path.</span>
 
 <span class="sd">    Extracts terms from the directory path parts (between DRS root and version)</span>
 <span class="sd">    and uses the DrsGenerator to build a valid dataset ID.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Processing path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: Processing path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># Get project from path</span>
     <span class="n">project</span> <span class="o">=</span> <span class="n">get_project</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">project</span><span class="p">:</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: No project found for path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: No project found for path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -341,7 +341,7 @@
 
         <span class="c1"># Extract version from path</span>
         <span class="n">version</span> <span class="o">=</span> <span class="n">extract_version</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Found version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: Found version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="c1"># Get path parts</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span>
@@ -350,7 +350,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">version_idx</span> <span class="o">=</span> <span class="n">parts</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Version </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> not found in path parts&quot;</span><span class="p">)</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: Version </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> not found in path parts"</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># Get number of DRS directory parts (excluding version) from the spec</span>
@@ -362,7 +362,7 @@
         <span class="c1"># DRS starts at: version_idx - num_dir_parts (searching backwards from version)</span>
         <span class="n">drs_start_idx</span> <span class="o">=</span> <span class="n">version_idx</span> <span class="o">-</span> <span class="n">num_dir_parts</span>
         <span class="k">if</span> <span class="n">drs_start_idx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Invalid DRS start index: </span><span class="si">{</span><span class="n">drs_start_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: Invalid DRS start index: </span><span class="si">{</span><span class="n">drs_start_idx</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># Extract DRS terms from directory parts</span>
@@ -370,13 +370,13 @@
 
         <span class="c1"># Add version (with and without v prefix for flexibility)</span>
         <span class="n">drs_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'v'</span><span class="p">):</span>
             <span class="n">drs_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">version</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: DRS terms from path: </span><span class="si">{</span><span class="n">drs_terms</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: DRS terms from path: </span><span class="si">{</span><span class="n">drs_terms</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">drs_terms</span><span class="p">:</span>
-            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;dataset_id: No DRS terms found in path&quot;</span><span class="p">)</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"dataset_id: No DRS terms found in path"</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># Use DrsGenerator to build dataset ID from bag of terms</span>
@@ -384,26 +384,26 @@
         <span class="n">report</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">generate_dataset_id_from_bag_of_terms</span><span class="p">(</span><span class="n">drs_terms</span><span class="p">)</span>
 
         <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;dataset_id: Report generated_drs_expression: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">generated_drs_expression</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"dataset_id: Report generated_drs_expression: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">generated_drs_expression</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;dataset_id: Report errors: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">nb_errors</span><span class="si">}</span><span class="s2">, warnings: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">nb_warnings</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"dataset_id: Report errors: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">nb_errors</span><span class="si">}</span><span class="s2">, warnings: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">nb_warnings</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">report</span><span class="o">.</span><span class="n">nb_errors</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">report</span><span class="o">.</span><span class="n">generated_drs_expression</span><span class="p">:</span>
             <span class="n">identifier</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">generated_drs_expression</span>
-            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Generated identifier: </span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: Generated identifier: </span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">identifier</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;dataset_id: Generation failed. Errors: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">nb_errors</span><span class="si">}</span><span class="s2">, Expression: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">generated_drs_expression</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"dataset_id: Generation failed. Errors: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">nb_errors</span><span class="si">}</span><span class="s2">, Expression: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">generated_drs_expression</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
-                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Error details: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="s2">"errors"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: Error details: </span><span class="si">{</span><span class="n">report</span><span class="o">.</span><span class="n">errors</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dataset_id: Error generating dataset_id for </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: Error generating dataset_id for </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 </pre></div>

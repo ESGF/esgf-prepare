@@ -536,7 +536,7 @@ $<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> 
 <section id="common-issues">
 <h2>Common Issues<a class="headerlink" href="#common-issues" title="Link to this heading"></a></h2>
 <p><strong>Problem:</strong> “Project ‘cmip6’ not found in vocabulary”</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ValueError:<span class="w"> </span>Project<span class="w"> </span><span class="s1">&#39;cmip6&#39;</span><span class="w"> </span>not<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span>esgvoc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ValueError:<span class="w"> </span>Project<span class="w"> </span><span class="s1">'cmip6'</span><span class="w"> </span>not<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span>esgvoc
 </pre></div>
 </div>
 <p><strong>Solution:</strong> Check project name spelling (case-sensitive). Update esgvoc:</p>
@@ -547,7 +547,7 @@ $<span class="w"> </span>esgmapfile<span class="w"> </span>make<span class="w"> 
 <p><strong>Problem:</strong> “Invalid facet value” errors</p>
 <p><strong>Solution:</strong> Your NetCDF files may not be CMOR-compliant. Verify:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check file attributes</span>
-ncdump<span class="w"> </span>-h<span class="w"> </span>your_file.nc<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;:&quot;</span>
+ncdump<span class="w"> </span>-h<span class="w"> </span>your_file.nc<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">":"</span>
 </pre></div>
 </div>
 <p>Ensure global attributes match project requirements.</p>
@@ -592,7 +592,7 @@ esgdrs<span class="w"> </span>--version
 esgmapfile<span class="w"> </span>--version
 
 <span class="c1"># Check available projects (if esgvoc accessible)</span>
-python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import esgvoc; print(esgvoc.list_projects())&quot;</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import esgvoc; print(esgvoc.list_projects())"</span>
 
 <span class="c1"># Verify NetCDF file structure</span>
 ncdump<span class="w"> </span>-h<span class="w"> </span>your_file.nc

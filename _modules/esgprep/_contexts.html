@@ -83,14 +83,14 @@
   <h1>Source code for esgprep._contexts</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">.. module:: esgprep._contexts.__init__.py</span>
 <span class="sd">   :platform: Unix</span>
 <span class="sd">   :synopsis: esgprep processing contexts initializer.</span>
 
 <span class="sd">.. moduleauthor:: Guillaume Levavasseur &lt;glipsl@ipsl.fr&gt;</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.print</span><span class="w"> </span><span class="kn">import</span> <span class="n">Print</span>
 
@@ -98,10 +98,10 @@
 <div class="viewcode-block" id="BaseContext">
 <a class="viewcode-back" href="../../autodoc.html#esgprep._contexts.BaseContext">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for processing context manager.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
         <span class="c1"># Set arguments.</span>
@@ -111,16 +111,16 @@
         <span class="n">Print</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">prog</span><span class="p">)</span>
 
         <span class="c1"># Enable/disable colors.</span>
-        <span class="k">if</span> <span class="s2">&quot;color&quot;</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">color</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"color"</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">color</span><span class="p">:</span>
             <span class="n">Print</span><span class="o">.</span><span class="n">enable_colors</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s2">&quot;no_color&quot;</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">no_color</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"no_color"</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">no_color</span><span class="p">:</span>
             <span class="n">Print</span><span class="o">.</span><span class="n">disable_colors</span><span class="p">()</span>
 
         <span class="c1"># Set project.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;project&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"project"</span><span class="p">)</span>
 
         <span class="c1"># Set program.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;prog&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"prog"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Print command-line running.</span>
@@ -148,7 +148,7 @@
 
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;BaseContext&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"BaseContext"</span><span class="p">]</span>
 </pre></div>
 
            </div>
