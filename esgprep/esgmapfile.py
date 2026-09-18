@@ -35,6 +35,7 @@ from esgprep._utils.help import (
     NO_CHECKSUM_HELP,
     NO_CLEANUP_HELP,
     NO_COLOR_HELP,
+    OUTPUT_DEPTH_HELP,
     OUTDIR_HELP,
     PROGRAM_DESC,
     PROJECT_HELP,
@@ -177,7 +178,6 @@ def get_args():
         add_help=False,
         parents=[parent],
     )
-
     make.add_argument(
         "--directory",
         action=DirectoryChecker,
@@ -219,7 +219,10 @@ def get_args():
         default=None,
         help=RETRY_FROM_HELP,
     )
-
+    make.add_argument(
+        "--output-depth", metavar="DEPTH", type=int, default=0, help=OUTPUT_DEPTH_HELP
+    )
+    
     # Subparser for "esgmapfile show"
     show = subparsers.add_parser(
         "show",
