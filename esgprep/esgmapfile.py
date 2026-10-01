@@ -61,6 +61,13 @@ from esgprep._utils.parser import (
 from esgprep.mapfile import run
 
 
+def non_negative_int(value):
+    ivalue = int(value)
+    if ivalue < 0:
+        raise argparse.ArgumentTypeError("value cannot be negative")
+    return ivalue
+
+
 def get_args():
     """
     Returns parsed command-line arguments.
@@ -220,7 +227,7 @@ def get_args():
         help=RETRY_FROM_HELP,
     )
     make.add_argument(
-        "--output-depth", metavar="DEPTH", type=int, default=0, help=OUTPUT_DEPTH_HELP
+        "--output-depth", metavar="DEPTH", type=non_negative_int, default=0, help=OUTPUT_DEPTH_HELP
     )
     
     # Subparser for "esgmapfile show"
