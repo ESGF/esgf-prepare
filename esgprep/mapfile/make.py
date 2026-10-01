@@ -112,7 +112,7 @@ class Process(object):
             outdir = Path(self.outdir).resolve(strict=False)
 
             # Add subdirectories below outdir
-            outdir = outdir.joinpath(*outfile.name.split(".")[:self.output_depth])
+            outdir = outdir.joinpath(*dataset.split(".")[:self.output_depth])
 
             # Build full mapfile path.
             outpath = outdir.joinpath(outfile)
