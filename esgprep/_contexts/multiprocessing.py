@@ -195,7 +195,7 @@ class MultiprocessingContext(BaseContext):
 
         # Set file filters.
         self.file_filter = list()
-        if hasattr(args, "include_files"):
+        if hasattr(args, "include_file"):
             self.file_filter += [(f, True) for f in args.include_file]
         if hasattr(args, "exclude_file"):
             self.file_filter += [(f, False) for f in args.exclude_file]

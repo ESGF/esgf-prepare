@@ -110,6 +110,13 @@ class ProcessingContext(MultiprocessingContext):
             # The input source is a list directories.
             self.sources = Collector(sources=self.directory)
 
+            # Initialize file filters.
+            for regex, inclusive in self.file_filter:
+                self.sources.FileFilter.add(regex=regex, inclusive=inclusive)
+
+            # Initialize directory filter.
+            self.sources.PathFilter.add(regex=self.dir_filter, inclusive=False)
+
         else:
             # The input source is a list directories.
             if self.directory:
