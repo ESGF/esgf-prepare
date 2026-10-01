@@ -240,6 +240,9 @@ def get_args():
         add_help=False,
         parents=[parent],
     )
+    show.add_argument(
+        "--output-depth", metavar="DEPTH", type=non_negative_int, default=0, help=OUTPUT_DEPTH_HELP
+    )
 
     group = show.add_mutually_exclusive_group(required=True)
     group.add_argument(
