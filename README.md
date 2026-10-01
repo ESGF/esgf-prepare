@@ -8,8 +8,8 @@
 [`esgvoc`](https://github.com/ESGF/esgf-vocab), together with other Python
 packages. Python dependencies are installed automatically during installation.
 
-Additional system dependencies may need to be installed separately. See the
-documentation for detailed requirements.
+Additional system dependencies may need to be installed separately.
+See the documentation for detailed requirements.
 
 ## Installation
 
