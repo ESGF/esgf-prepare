@@ -35,6 +35,7 @@ from esgprep._utils.help import (
     NO_CHECKSUM_HELP,
     NO_CLEANUP_HELP,
     NO_COLOR_HELP,
+    OUTPUT_DEPTH_HELP,
     OUTDIR_HELP,
     PROGRAM_DESC,
     PROJECT_HELP,
@@ -58,6 +59,13 @@ from esgprep._utils.parser import (
     regex_validator,
 )
 from esgprep.mapfile import run
+
+
+def non_negative_int(value):
+    ivalue = int(value)
+    if ivalue < 0:
+        raise argparse.ArgumentTypeError("value cannot be negative")
+    return ivalue
 
 
 def get_args():
@@ -177,7 +185,6 @@ def get_args():
         add_help=False,
         parents=[parent],
     )
-
     make.add_argument(
         "--directory",
         action=DirectoryChecker,
@@ -219,7 +226,10 @@ def get_args():
         default=None,
         help=RETRY_FROM_HELP,
     )
-
+    make.add_argument(
+        "--output-depth", metavar="DEPTH", type=non_negative_int, default=0, help=OUTPUT_DEPTH_HELP
+    )
+    
     # Subparser for "esgmapfile show"
     show = subparsers.add_parser(
         "show",
@@ -229,6 +239,9 @@ def get_args():
         help=MAPFILE_HELPS["show"],
         add_help=False,
         parents=[parent],
+    )
+    show.add_argument(
+        "--output-depth", metavar="DEPTH", type=non_negative_int, default=0, help=OUTPUT_DEPTH_HELP
     )
 
     group = show.add_mutually_exclusive_group(required=True)

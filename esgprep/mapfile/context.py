@@ -36,6 +36,9 @@ class ProcessingContext(MultiprocessingContext):
         # Set mapfile output directory.
         self.outdir = self.set("outdir")
 
+        # Set mapfile output subdirectory depth
+        self.output_depth = self.set("output_depth")
+
         # Enable/disable working mapfile cleanup.
         self.no_cleanup = self.set("no_cleanup", None)
 

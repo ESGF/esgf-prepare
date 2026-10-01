@@ -406,7 +406,11 @@ If {dataset_id} is not present in mapfile name, then all datasets will be writte
 """
 
 OUTDIR_HELP = """Mapfile(s) output directory.
-A "mapfile_drs" can be defined per project section in INI files and joined to build a mapfiles tree.
+
+"""
+
+OUTPUT_DEPTH_HELP = """Number of subdirectories to create under mapfile output directory.
+These will be the leading components of the DRS, taken from the mapfile name.
 
 """
 
