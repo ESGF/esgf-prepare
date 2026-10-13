@@ -1,7 +1,6 @@
 requests
-fuzzywuzzy
+rapidfuzz
 netCDF4
 lockfile
 hurry.filesize
 treelib
-python-Levenshtein
