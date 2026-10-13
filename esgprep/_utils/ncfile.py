@@ -11,9 +11,10 @@
 
 from uuid import UUID
 
-from fuzzywuzzy.fuzz import partial_ratio
-from fuzzywuzzy.process import extractOne
 from netCDF4 import Dataset
+from rapidfuzz.fuzz import partial_ratio
+from rapidfuzz.process import extractOne
+from rapidfuzz.utils import default_process
 
 from esgprep._exceptions import NoProjectCodeFound
 from esgprep._exceptions.netcdf import InvalidNetCDFFile, NoNetCDFAttribute
@@ -77,7 +78,9 @@ def get_tracking_id(attrs: dict) -> str:
     project = get_project(attrs)
     assert isinstance(project, str)
     # Set project code from global attributes.
-    key, score = extractOne("tracking_id", attrs.keys(), scorer=partial_ratio)  # type: ignore
+    key, score, _ = extractOne(
+        "tracking_id", attrs.keys(), scorer=partial_ratio, processor=default_process
+    )  # type: ignore
     if score < 80:
         raise NoNetCDFAttribute("tracking_id", values=attrs.keys())
     identifier = attrs[key].lower()
@@ -135,12 +138,16 @@ def get_project(attrs: str | dict) -> str | None:
         attrs = get_ncattrs(attrs)
 
     # Try project_id first (more specific, e.g. CORDEX-CMIP6)
-    key, score = extractOne("project_id", attrs.keys(), scorer=partial_ratio)  # type: ignore
+    key, score, _ = extractOne(
+        "project_id", attrs.keys(), scorer=partial_ratio, processor=default_process
+    )  # type: ignore
     if score >= 80:
         return attrs[key].lower()
 
     # Fall back to mip_era (e.g. CMIP6, CMIP7)
-    key, score = extractOne("mip_era", attrs.keys(), scorer=partial_ratio)  # type: ignore
+    key, score, _ = extractOne(
+        "mip_era", attrs.keys(), scorer=partial_ratio, processor=default_process
+    )  # type: ignore
     if score < 80:
         raise NoProjectCodeFound(attrs)
 
