@@ -18,6 +18,13 @@ Contributors
 
 `Ag STEPHENS <ag.stephens@stfc.ac.uk>`_ (`STFC <http://www.stfc.ac.uk/>`_/`CEDA <http://www.ceda.ac.uk/>`_)
 
+License
+*******
+
+``esgprep`` is distributed under the `CeCILL-C <https://cecill.info/licences/Licence_CeCILL-C_V1-en.html>`_
+free software license. See ``LICENSE.txt`` (English) and ``LICENSE-fr.txt`` (French) in the
+`GitHub repository <https://github.com/ESGF/esgf-prepare>`_.
+
 Contacts
 ********
 
