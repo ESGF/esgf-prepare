@@ -406,11 +406,13 @@ If {dataset_id} is not present in mapfile name, then all datasets will be writte
 """
 
 OUTDIR_HELP = """Mapfile(s) output directory.
+Use "--output-depth" to organise mapfiles into subdirectories.
 
 """
 
 OUTPUT_DEPTH_HELP = """Number of subdirectories to create under mapfile output directory.
-These will be the leading components of the DRS, taken from the mapfile name.
+These will be the leading facets of the dataset identifier.
+Default is 0 (all mapfiles directly in the output directory).
 
 """
 

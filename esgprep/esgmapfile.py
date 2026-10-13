@@ -62,6 +62,10 @@ from esgprep.mapfile import run
 
 
 def non_negative_int(value):
+    """
+    Argparse type accepting only integers greater than or equal to zero.
+
+    """
     ivalue = int(value)
     if ivalue < 0:
         raise argparse.ArgumentTypeError("value cannot be negative")
@@ -185,6 +189,7 @@ def get_args():
         add_help=False,
         parents=[parent],
     )
+
     make.add_argument(
         "--directory",
         action=DirectoryChecker,
@@ -227,9 +232,13 @@ def get_args():
         help=RETRY_FROM_HELP,
     )
     make.add_argument(
-        "--output-depth", metavar="DEPTH", type=non_negative_int, default=0, help=OUTPUT_DEPTH_HELP
+        "--output-depth",
+        metavar="DEPTH",
+        type=non_negative_int,
+        default=0,
+        help=OUTPUT_DEPTH_HELP,
     )
-    
+
     # Subparser for "esgmapfile show"
     show = subparsers.add_parser(
         "show",
@@ -241,7 +250,11 @@ def get_args():
         parents=[parent],
     )
     show.add_argument(
-        "--output-depth", metavar="DEPTH", type=non_negative_int, default=0, help=OUTPUT_DEPTH_HELP
+        "--output-depth",
+        metavar="DEPTH",
+        type=non_negative_int,
+        default=0,
+        help=OUTPUT_DEPTH_HELP,
     )
 
     group = show.add_mutually_exclusive_group(required=True)

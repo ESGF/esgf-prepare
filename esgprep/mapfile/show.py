@@ -75,14 +75,7 @@ class Process(object):
             # Build mapfile directory.
             outdir = Path(self.outdir).resolve(strict=False)
             # Add subdirectories below outdir
-            outdir = outdir.joinpath(*dataset.split(".")[:self.output_depth])
-            # try:
-            #     outdir = outdir.joinpath(self.cfg.get(section='config:{}'.format(get_project(source)),
-            #                                           option='mapfile_drs',
-            #                                           vars=get_terms(source)))
-            #
-            # except:
-            #     pass
+            outdir = outdir.joinpath(*dataset.split(".")[: self.output_depth])
 
             # Build full mapfile path.
             outpath = outdir.joinpath(outfile)
