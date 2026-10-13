@@ -380,3 +380,108 @@ class TestGetProject:
         captured = capfd.readouterr()
         output = captured.out + captured.err
         assert "Multiple project codes found" in output
+
+
+def _dataset_facets(mapfile: Path) -> list[str]:
+    """Return the dataset identifier facets of a mapfile name, without the version."""
+    facets = mapfile.name.removesuffix(".map").split(".")
+    if re.fullmatch(r"v[0-9]+|latest|v\{version\}", facets[-1]):
+        facets = facets[:-1]
+    return facets
+
+
+class TestMapfileOutputDepth:
+    """Tests for the --output-depth option of esgmapfile make/show."""
+
+    def _make(self, drs_test_structure, depth=None, count=2):
+        """Build a DRS tree, run esgmapfile make and return (outdir, mapfiles)."""
+        incoming_dir = drs_test_structure["incoming"]
+        drs_root = drs_test_structure["root"]
+        outdir = drs_test_structure["tmp_dir"] / "mapfiles"
+        outdir.mkdir(parents=True)
+
+        create_files_different_variables(incoming_dir, count=count)
+        drs_run(get_default_drs_args(incoming_dir, drs_root))
+
+        mapfile_args = get_default_mapfile_args(drs_root, outdir)
+        if depth is not None:
+            mapfile_args.output_depth = depth
+        mapfile_run(mapfile_args)
+
+        mapfiles = list(outdir.rglob("*.map"))
+        assert len(mapfiles) == count, f"Expected {count} mapfiles, got {mapfiles}"
+        return outdir, mapfiles
+
+    def test_output_depth_missing_is_flat(self, drs_test_structure):
+        """Without output_depth (e.g. Python callers), mapfiles stay in outdir."""
+        outdir, mapfiles = self._make(drs_test_structure)
+
+        for mapfile in mapfiles:
+            assert mapfile.parent == outdir.resolve(), (
+                f"Mapfile should be directly in outdir: {mapfile}"
+            )
+
+    def test_output_depth_zero_is_flat(self, drs_test_structure):
+        """--output-depth 0 keeps all mapfiles directly in outdir."""
+        outdir, mapfiles = self._make(drs_test_structure, depth=0)
+
+        for mapfile in mapfiles:
+            assert mapfile.parent == outdir.resolve(), (
+                f"Mapfile should be directly in outdir: {mapfile}"
+            )
+
+    def test_output_depth_creates_leading_facet_dirs(self, drs_test_structure):
+        """--output-depth N nests mapfiles under the first N dataset facets."""
+        outdir, mapfiles = self._make(drs_test_structure, depth=3)
+
+        for mapfile in mapfiles:
+            subdirs = mapfile.parent.relative_to(outdir.resolve()).parts
+            assert list(subdirs) == _dataset_facets(mapfile)[:3], (
+                f"Unexpected subdirectories for {mapfile.name}: {subdirs}"
+            )
+
+    def test_output_depth_larger_than_facet_count(self, drs_test_structure):
+        """A depth above the facet count nests all facets, without version or working extension."""
+        outdir, mapfiles = self._make(drs_test_structure, depth=99)
+
+        for mapfile in mapfiles:
+            subdirs = mapfile.parent.relative_to(outdir.resolve()).parts
+            assert list(subdirs) == _dataset_facets(mapfile), (
+                f"Unexpected subdirectories for {mapfile.name}: {subdirs}"
+            )
+            assert "part" not in subdirs
+
+        # Working files must all have been renamed.
+        assert not list(outdir.rglob("*.part")), "Working .part files left behind"
+
+    def test_show_matches_make_directories(self, drs_test_structure, capfd):
+        """esgmapfile show reports the same subdirectories as make writes."""
+        outdir, mapfiles = self._make(drs_test_structure, depth=3)
+        capfd.readouterr()
+
+        show_args = get_default_mapfile_args(drs_test_structure["root"], outdir)
+        show_args.cmd = "show"
+        show_args.output_depth = 3
+        mapfile_run(show_args)
+
+        output = capfd.readouterr().out
+        shown = [
+            Path(line.strip())
+            for line in output.splitlines()
+            if line.strip().endswith(".map")
+        ]
+        assert len(shown) == len(mapfiles), f"Unexpected show output: {output}"
+        assert {p.parent for p in shown} == {m.parent for m in mapfiles}
+
+    def test_non_negative_int(self):
+        """--output-depth accepts integers >= 0 only."""
+        import argparse
+
+        from esgprep.esgmapfile import non_negative_int
+
+        assert non_negative_int("0") == 0
+        assert non_negative_int("5") == 5
+        with pytest.raises(argparse.ArgumentTypeError):
+            non_negative_int("-1")
+        with pytest.raises(ValueError):
+            non_negative_int("abc")

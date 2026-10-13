@@ -31,6 +31,7 @@ class Process(object):
         self.outdir = ctx.outdir
         # self.cfg = ctx.cfg
         self.basename = ctx.basename
+        self.output_depth = ctx.output_depth
         self.progress = ctx.progress
         self.msg_length = ctx.msg_length
         self.lock = ctx.lock
@@ -73,13 +74,8 @@ class Process(object):
             outfile = build_mapfile_name(self.mapfile_name, dataset, version)
             # Build mapfile directory.
             outdir = Path(self.outdir).resolve(strict=False)
-            # try:
-            #     outdir = outdir.joinpath(self.cfg.get(section='config:{}'.format(get_project(source)),
-            #                                           option='mapfile_drs',
-            #                                           vars=get_terms(source)))
-            #
-            # except:
-            #     pass
+            # Add subdirectories below outdir
+            outdir = outdir.joinpath(*dataset.split(".")[: self.output_depth])
 
             # Build full mapfile path.
             outpath = outdir.joinpath(outfile)
