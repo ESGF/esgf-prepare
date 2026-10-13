@@ -37,7 +37,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "esgvoc>=6.2.0",
+    "esgvoc>=7.0.0",
     "fuzzywuzzy>=0.18.0",
     "hurry-filesize>=0.9",
     "lockfile>=0.12.2",
