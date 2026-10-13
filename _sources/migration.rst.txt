@@ -149,7 +149,7 @@ Dependency Changes
 **New dependencies:**
 
  * ``esgvoc`` >= 4.1.1 - Controlled vocabulary and configuration management
- * ``python-levenshtein`` >= 0.27.1 - Enhanced string matching
+ * ``rapidfuzz`` >= 3.0.0 - Fuzzy string matching (replaces ``fuzzywuzzy``)
  * Updated versions of ``numpy``, ``netCDF4``, and other core libraries
 
 All dependencies are installed automatically via ``pip install esgprep``.

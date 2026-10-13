@@ -94,9 +94,10 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">fuzzywuzzy.fuzz</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial_ratio</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fuzzywuzzy.process</span><span class="w"> </span><span class="kn">import</span> <span class="n">extractOne</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">netCDF4</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rapidfuzz.fuzz</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial_ratio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rapidfuzz.process</span><span class="w"> </span><span class="kn">import</span> <span class="n">extractOne</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rapidfuzz.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_process</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoProjectCodeFound</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._exceptions.netcdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidNetCDFFile</span><span class="p">,</span> <span class="n">NoNetCDFAttribute</span>
@@ -168,7 +169,9 @@
     <span class="n">project</span> <span class="o">=</span> <span class="n">get_project</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
     <span class="c1"># Set project code from global attributes.</span>
-    <span class="n">key</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">extractOne</span><span class="p">(</span><span class="s2">"tracking_id"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">scorer</span><span class="o">=</span><span class="n">partial_ratio</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="n">key</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">extractOne</span><span class="p">(</span>
+        <span class="s2">"tracking_id"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">scorer</span><span class="o">=</span><span class="n">partial_ratio</span><span class="p">,</span> <span class="n">processor</span><span class="o">=</span><span class="n">default_process</span>
+    <span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;</span> <span class="mi">80</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NoNetCDFAttribute</span><span class="p">(</span><span class="s2">"tracking_id"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="n">identifier</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -235,12 +238,16 @@
         <span class="n">attrs</span> <span class="o">=</span> <span class="n">get_ncattrs</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
 
     <span class="c1"># Try project_id first (more specific, e.g. CORDEX-CMIP6)</span>
-    <span class="n">key</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">extractOne</span><span class="p">(</span><span class="s2">"project_id"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">scorer</span><span class="o">=</span><span class="n">partial_ratio</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="n">key</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">extractOne</span><span class="p">(</span>
+        <span class="s2">"project_id"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">scorer</span><span class="o">=</span><span class="n">partial_ratio</span><span class="p">,</span> <span class="n">processor</span><span class="o">=</span><span class="n">default_process</span>
+    <span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;=</span> <span class="mi">80</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="c1"># Fall back to mip_era (e.g. CMIP6, CMIP7)</span>
-    <span class="n">key</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">extractOne</span><span class="p">(</span><span class="s2">"mip_era"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">scorer</span><span class="o">=</span><span class="n">partial_ratio</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="n">key</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">extractOne</span><span class="p">(</span>
+        <span class="s2">"mip_era"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">scorer</span><span class="o">=</span><span class="n">partial_ratio</span><span class="p">,</span> <span class="n">processor</span><span class="o">=</span><span class="n">default_process</span>
+    <span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;</span> <span class="mi">80</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NoProjectCodeFound</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
 
