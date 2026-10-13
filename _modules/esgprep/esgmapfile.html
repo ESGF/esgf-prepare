@@ -118,6 +118,7 @@
     <span class="n">NO_CHECKSUM_HELP</span><span class="p">,</span>
     <span class="n">NO_CLEANUP_HELP</span><span class="p">,</span>
     <span class="n">NO_COLOR_HELP</span><span class="p">,</span>
+    <span class="n">OUTPUT_DEPTH_HELP</span><span class="p">,</span>
     <span class="n">OUTDIR_HELP</span><span class="p">,</span>
     <span class="n">PROGRAM_DESC</span><span class="p">,</span>
     <span class="n">PROJECT_HELP</span><span class="p">,</span>
@@ -141,6 +142,20 @@
     <span class="n">regex_validator</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep.mapfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
+
+
+<div class="viewcode-block" id="non_negative_int">
+<a class="viewcode-back" href="../../autodoc.html#esgprep.esgmapfile.non_negative_int">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">non_negative_int</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Argparse type accepting only integers greater than or equal to zero.</span>
+
+<span class="sd">    """</span>
+    <span class="n">ivalue</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ivalue</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="s2">"value cannot be negative"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ivalue</span></div>
+
 
 
 <div class="viewcode-block" id="get_args">
@@ -304,6 +319,13 @@
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">RETRY_FROM_HELP</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">make</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"--output-depth"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"DEPTH"</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">non_negative_int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">OUTPUT_DEPTH_HELP</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># Subparser for "esgmapfile show"</span>
     <span class="n">show</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
@@ -314,6 +336,13 @@
         <span class="n">help</span><span class="o">=</span><span class="n">MAPFILE_HELPS</span><span class="p">[</span><span class="s2">"show"</span><span class="p">],</span>
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">parent</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">show</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"--output-depth"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"DEPTH"</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">non_negative_int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">OUTPUT_DEPTH_HELP</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">group</span> <span class="o">=</span> <span class="n">show</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
