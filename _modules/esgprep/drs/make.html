@@ -96,9 +96,10 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgvoc.apps.drs.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">DrsGenerator</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DuplicatedFile</span><span class="p">,</span> <span class="n">OlderUpgrade</span><span class="p">,</span> <span class="n">UnchangedTrackingID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">CVDatabaseError</span><span class="p">,</span> <span class="n">DuplicatedFile</span><span class="p">,</span> <span class="n">OlderUpgrade</span><span class="p">,</span> <span class="n">UnchangedTrackingID</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._handlers.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">LINK_SEPARATOR</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.checksum</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_checksum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.cv</span><span class="w"> </span><span class="kn">import</span> <span class="n">diagnose_cv_error</span><span class="p">,</span> <span class="n">is_cv_database_error</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.ncfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ncattrs</span><span class="p">,</span> <span class="n">get_tracking_id</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">extract_version</span><span class="p">,</span>
@@ -340,6 +341,10 @@
             <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
                 <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Directory structure is None"</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">is_cv_database_error</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">diagnose_cv_error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+                <span class="k">raise</span>
 
             <span class="c1"># Instantiate latest version to "Initial"</span>
             <span class="n">latest_version</span> <span class="o">=</span> <span class="s2">"Initial"</span>
@@ -537,6 +542,16 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
 
             <span class="k">raise</span>
+
+        <span class="c1"># CV database failures are not caused by the file: print the diagnosis without traceback.</span>
+        <span class="k">except</span> <span class="n">CVDatabaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">TAGS</span><span class="o">.</span><span class="n">SKIP</span> <span class="o">+</span> <span class="n">COLORS</span><span class="o">.</span><span class="n">HEADER</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">))</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+
+            <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># Catch known exception with its traceback.</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>

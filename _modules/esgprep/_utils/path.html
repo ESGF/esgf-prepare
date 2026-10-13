@@ -403,7 +403,12 @@
             <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: Error generating dataset_id for </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">esgprep._utils.cv</span><span class="w"> </span><span class="kn">import</span> <span class="n">diagnose_cv_error</span><span class="p">,</span> <span class="n">is_cv_database_error</span>
+
+        <span class="k">if</span> <span class="n">is_cv_database_error</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">diagnose_cv_error</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">e</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Print</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataset_id: Error generating dataset_id for </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 </pre></div>
