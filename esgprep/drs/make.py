@@ -12,9 +12,10 @@ from pathlib import Path
 
 from esgvoc.apps.drs.generator import DrsGenerator
 
-from esgprep._exceptions import DuplicatedFile, OlderUpgrade, UnchangedTrackingID
+from esgprep._exceptions import CVDatabaseError, DuplicatedFile, OlderUpgrade, UnchangedTrackingID
 from esgprep._handlers.constants import LINK_SEPARATOR
 from esgprep._utils.checksum import get_checksum
+from esgprep._utils.cv import diagnose_cv_error, is_cv_database_error
 from esgprep._utils.ncfile import get_ncattrs, get_tracking_id
 from esgprep._utils.path import (
     extract_version,
@@ -254,6 +255,10 @@ class Process(object):
             except TypeError:
                 Print.debug("Directory structure is None")
                 return False
+            except Exception as e:
+                if is_cv_database_error(e):
+                    raise diagnose_cv_error(self.project, e) from e
+                raise
 
             # Instantiate latest version to "Initial"
             latest_version = "Initial"
@@ -451,6 +456,16 @@ class Process(object):
                 self.errors.value += 1
 
             raise
+
+        # CV database failures are not caused by the file: print the diagnosis without traceback.
+        except CVDatabaseError as e:
+            with self.lock:
+                self.errors.value += 1
+                msg = TAGS.SKIP + COLORS.HEADER(str(source)) + "\n" + str(e)
+                Print.exception(msg, buffer=True)
+                Print.debug(traceback.format_exc())
+
+            return None
 
         # Catch known exception with its traceback.
         except Exception:

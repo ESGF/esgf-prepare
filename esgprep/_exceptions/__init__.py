@@ -180,6 +180,31 @@ class MissingCVdata(Exception):
         super(self.__class__, self).__init__(self.msg)
 
 
+class CVDatabaseError(Exception):
+    """
+    Raised when the esgvoc controlled vocabulary database fails, independently of the processed file.
+
+    """
+
+    MAX_DUPLICATES = 10
+
+    def __init__(self, project, version, path, error, duplicates=None):
+        self.msg = "Controlled vocabulary database error (this is not caused by your files)."
+        self.msg += f"\n<project: '{project}'>"
+        self.msg += f"\n<CV version: '{version}'>"
+        self.msg += f"\n<database: '{path}'>"
+        self.msg += f"\n<error: {type(error).__name__}: {error}>"
+        if duplicates:
+            self.msg += f"\nThe database contains {len(duplicates)} duplicated term(s) (collection/term):"
+            for collection, term, count in duplicates[: self.MAX_DUPLICATES]:
+                self.msg += f"\n  - {collection}/{term} ({count} times)"
+            if len(duplicates) > self.MAX_DUPLICATES:
+                self.msg += f"\n  - ... and {len(duplicates) - self.MAX_DUPLICATES} more"
+        self.msg += "\nPlease report it to the CV maintainers of this project, or switch to another CV version:"
+        self.msg += f"\n  esgvoc status ; esgvoc use {project}@<version>"
+        super(self.__class__, self).__init__(self.msg)
+
+
 __all__ = [
     "KeyNotFound",
     "InvalidChecksumType",
@@ -193,4 +218,5 @@ __all__ = [
     "InconsistentDRSPath",
     "NoProjectCodeFound",
     "MissingCVdata",
+    "CVDatabaseError",
 ]

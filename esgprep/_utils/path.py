@@ -282,5 +282,10 @@ def dataset_id(path: Path) -> str | None:
             return None
 
     except Exception as e:
-        Print.debug(f"dataset_id: Error generating dataset_id for {path}: {e}")
+        from esgprep._utils.cv import diagnose_cv_error, is_cv_database_error
+
+        if is_cv_database_error(e):
+            Print.warning(str(diagnose_cv_error(project, e)))
+        else:
+            Print.debug(f"dataset_id: Error generating dataset_id for {path}: {e}")
         return None

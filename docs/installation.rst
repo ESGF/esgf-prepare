@@ -107,12 +107,11 @@ Dependencies and requirements
 ``esgprep`` uses standard Python libraries and the following external packages:
 
  * `esgvoc <https://pypi.org/project/esgvoc/>`_ >= 4.1.1 - ESGF controlled vocabulary and configuration handler (replaces ESGConfigParser)
- * `fuzzywuzzy <https://pypi.org/project/fuzzywuzzy/>`_ >= 0.18.0 - Fuzzy string matching
  * `hurry.filesize <https://pypi.org/project/hurry.filesize/>`_ >= 0.9 - Human-readable file sizes
  * `lockfile <https://pypi.org/project/lockfile/>`_ >= 0.12.2 - File locking
  * `netCDF4 <https://unidata.github.io/netcdf4-python/>`_ >= 1.7.2 - NetCDF file handling
  * `numpy <https://numpy.org/>`_ >= 2.2.6 - Numerical computing
- * `python-levenshtein <https://pypi.org/project/python-Levenshtein/>`_ >= 0.27.1 - Fast string matching
+ * `rapidfuzz <https://pypi.org/project/rapidfuzz/>`_ >= 3.0.0 - Fuzzy string matching
  * `requests <https://requests.readthedocs.io/>`_ >= 2.32.3 - HTTP library
  * `treelib <https://pypi.org/project/treelib/>`_ >= 1.7.1 - Tree data structure
 
