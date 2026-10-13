@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
@@ -7,6 +7,8 @@ name = "esgprep"
 version = "3.3.3"
 description = "Toolbox to prepare data for ESGF publication"
 readme = "README.md"
+license = "CECILL-C"
+license-files = ["LICENSE.txt", "LICENSE-fr.txt"]
 requires-python = ">=3.12"
 maintainers = [
     { name = "Guillaume Levavasseur", email = "glipsl@ipsl.fr" },

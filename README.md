@@ -33,3 +33,9 @@ https://esgf.github.io/esgf-prepare/
 Issues and feature requests can be reported at:
 
 https://github.com/ESGF/esgf-prepare/issues
+
+## License
+
+`esgprep` is distributed under the [CeCILL-C](https://cecill.info/licences/Licence_CeCILL-C_V1-en.html)
+free software license. The English text is in [LICENSE.txt](LICENSE.txt) and the
+French text in [LICENSE-fr.txt](LICENSE-fr.txt); both versions are equally authoritative.
