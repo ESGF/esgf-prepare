@@ -9,14 +9,12 @@
 
 """
 
-from datetime import datetime
-
 # Program version
-# Remember to change VERSION_DATE below when updating
-VERSION = "3.2.0"
+# Keep in sync with "version" in pyproject.toml and update VERSION_DATE when releasing
+VERSION = "3.4.0"
 
-# Date
-VERSION_DATE = datetime.now().strftime("%Y-%d-%m")
+# Release date (YYYY-MM-DD)
+VERSION_DATE = "2026-10-13"
 
 # Shell colors map
 SHELL_COLORS = {
