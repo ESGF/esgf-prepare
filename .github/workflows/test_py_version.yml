@@ -34,6 +34,9 @@ jobs:
       - name: Activate cmip6 vocabulary database
         run: uv run --python ${{ matrix.python-version }} esgvoc use cmip6@latest
 
+      - name: Activate cmip6plus vocabulary database
+        run: uv run --python ${{ matrix.python-version }} esgvoc use cmip6plus@latest
+
       - name: Activate cmip7 vocabulary database
         run: uv run --python ${{ matrix.python-version }} esgvoc use cmip7@latest
 
