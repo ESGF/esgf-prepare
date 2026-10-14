@@ -7,7 +7,7 @@
 """
 
 import tempfile
-from os import environ
+from getpass import getuser
 from pathlib import Path
 
 # Spinner description.
@@ -29,7 +29,7 @@ CONTROLLED_ARGS = [
 ]
 
 # Tree context file
-TREE_FILE = str(Path(tempfile.gettempdir()) / f"DRSTree_{environ['USER']}.pkl")
+TREE_FILE = str(Path(tempfile.gettempdir()) / f"DRSTree_{getuser()}.pkl")
 
 # PID prefixes
 PID_PREFIXES = {

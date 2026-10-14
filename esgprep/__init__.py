@@ -22,7 +22,7 @@ __all__ = ["__version__", "OutputControl"]
 
 class OutputControl:
     def __init__(self):
-        self.null = open("/dev/null", "w")
+        self.null = open(os.devnull, "w")
         self.null_fh = self.null.fileno()
         self.stdout_fh = sys.stdout.fileno()
         self.stdout_copy_fh = os.dup(self.stdout_fh)
